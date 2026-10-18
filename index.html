@@ -1755,7 +1755,7 @@ function memPlan(){const T0=mToday(),cfg=memPlanCfg(),M_=memGet(),B=cfg&&cfg.min
  let sim=false;const h=store.get('ll_simh',[]);
  if(days!=null&&days>=0&&days<=14){const last=h.length&&h[0].dk?dayDiff(h[0].dk,T0):99;if(last>=(days<=7?3:7))sim=true}
  return{days,B,items,sim,cfg,known:Object.keys(M_.t).length,fresh:fresh.length,nn,need:nn?Math.ceil(fresh.length/nn):null}}
-function memGo(n){if(n.startsWith('Mündlich · ')){openExam();PS.sel='O:*';PS.cat=n.slice(11);buildSel();newQ();return}
+function memGo(n){if(n.startsWith('Mündlich · ')){openOral();PS.cat=n.slice(11);buildSel();newQ();return}
  if(memUniv().includes(n))openPractice('M:'+n);else{const i=byName(n);if(i>=0)go(i)}}
 function memDueCount(){try{return memDue().length}catch(e){return 0}}
 function memCard(){const M_=memGet(),n=memDueCount(),s=memStreak(),any=Object.keys(M_.t).length;
@@ -1973,7 +1973,7 @@ function build(){
 }
 const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 SIM=store.get('ll_sim',null);
-let FAV=store.get('ll_fav',[]),REC=store.get('ll_rec',[]),prac=false,PS={sel:'Alle',cur:null,exam:false,cat:'Alle'};
+let FAV=store.get('ll_fav',[]),REC=store.get('ll_rec',[]),prac=false,PS={sel:'Alle',cur:null,exam:false,oral:false,cat:'Alle'};
 const byName=n=>M.findIndex(m=>m.name===n);
 function touch(i){const n=M[i].name;REC=[n,...REC.filter(x=>x!==n)].slice(0,8);store.set('ll_rec',REC)}
 function toggleFav(n){FAV=FAV.includes(n)?FAV.filter(x=>x!==n):[...FAV,n];store.set('ll_fav',FAV)}
@@ -1990,8 +1990,8 @@ function nav(){
  $('#home').hidden=!hm;$('#app').hidden=cur<0;$('#practice').hidden=!prac;$('#sim').hidden=!SIMV;$('#mem').hidden=!MEMV;$('#desc').hidden=cur<0;$('#gs').hidden=$('#ms').hidden=cur<0;if(cur<0){$('#fx').hidden=true;$('#erk').hidden=true}
  if(hm)homeView();
  const last=FA.length+1;
- $('#fs').innerHTML=['Übersicht',...FA,'✎ Üben','🎓 Prüfungsaufgaben',SIM&&!SIM.done?'⏱ Prüfungssimulation ●':'⏱ Prüfungssimulation','📈 Lernstand'+(memDueCount()?' ('+memDueCount()+')':'')].map((n,k)=>`<button type="button" data-k="${k}" aria-pressed="${k===0?hm:k===last?prac&&!PS.exam:k===last+1?prac&&!!PS.exam:k===last+2?SIMV:k===last+3?MEMV:(cur>=0&&k===fi+1)}">${n}</button>`).join('');
- $('#fs').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(k===0){cur=-1;prac=false;nav()}else if(k===last)openPractice('Alle');else if(k===last+1)openExam();else if(k===last+2)simOpen();else if(k===last+3)memOpen();else go(M.findIndex(m=>m.F===FA[k-1]))});
+ $('#fs').innerHTML=['Übersicht',...FA,'✎ Üben','🎓 Prüfungsaufgaben','🗣 Mündliche Prüfung',SIM&&!SIM.done?'⏱ Prüfungssimulation ●':'⏱ Prüfungssimulation','📈 Lernstand'+(memDueCount()?' ('+memDueCount()+')':'')].map((n,k)=>`<button type="button" data-k="${k}" aria-pressed="${k===0?hm:k===last?prac&&!PS.exam:k===last+1?prac&&!!PS.exam&&!PS.oral:k===last+2?prac&&!!PS.oral:k===last+3?SIMV:k===last+4?MEMV:(cur>=0&&k===fi+1)}">${n}</button>`).join('');
+ $('#fs').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(k===0){cur=-1;prac=false;nav()}else if(k===last)openPractice('Alle');else if(k===last+1)openExam();else if(k===last+2)openOral();else if(k===last+3)simOpen();else if(k===last+4)memOpen();else go(M.findIndex(m=>m.F===FA[k-1]))});
  if(cur<0)return;
  const f=M[cur].F;
  $('#gs').innerHTML=ORD[f].filter(g=>M.some(m=>m.F===f&&m.g===g)).map(g=>`<button type="button" data-g="${g}" aria-pressed="${M[cur].g===g}">${g}</button>`).join('');
@@ -2012,11 +2012,12 @@ const gfach=n=>n==='Einheiten umrechnen'?FU:(M.find(m=>m.name===n)||{}).F,unitMo
 const hasPr=m=>m.F===FU||!!GEN[m.name]||!!STEPS[m.name]||MCQ.some(x=>x[0]===m.name);
 let KIND='all';
 const KT=[['all','Alle Aufgabentypen'],['num','Rechnen'],['steps','Mehrschritt'],['mc','Ankreuzen'],['und','Verständnis']];
-function buildSel(){if(PS.exam){const o=[['W:*','Schriftlich: zufällige Aufgabe'],...EXW.map((t,i)=>['W:'+i,t[0]]),['O:*','Mündlich: Fragen mit Musterantwort']];$('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');$('#pk').innerHTML=['Alle','Chemie','Physik','Energie','Elektrotechnik','Statistik','Mathematik'].map(c=>`<option value="${c}"${c===PS.cat?' selected':''}>${c==='Alle'?'Alle Themen':c}</option>`).join('');$('#pk').hidden=!PS.sel.startsWith('O:');return}$('#pk').hidden=false;const o=[['Alle','Alle Fächer'],...FA.map(f=>['F:'+f,f])];if(PS.sel.startsWith('M:'))o.push([PS.sel,'Dieses Thema: '+PS.sel.slice(2)]);if(PS.sel==='D:')o.push(['D:','Fällige Wiederholungen']);
+function buildSel(){if(PS.oral){$('#pf').hidden=true;$('#pk').innerHTML=['Alle','Chemie','Physik','Energie','Elektrotechnik','Statistik','Mathematik'].map(c=>`<option value="${c}"${c===PS.cat?' selected':''}>${c==='Alle'?'Alle Themen':c}</option>`).join('');$('#pk').hidden=false;return}$('#pf').hidden=false;if(PS.exam){const o=[['W:*','Zufällige Aufgabe'],...EXW.map((t,i)=>['W:'+i,t[0]])];$('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');$('#pk').innerHTML=['Alle','Chemie','Physik','Energie','Elektrotechnik','Statistik','Mathematik'].map(c=>`<option value="${c}"${c===PS.cat?' selected':''}>${c==='Alle'?'Alle Themen':c}</option>`).join('');$('#pk').hidden=true;return}$('#pk').hidden=false;const o=[['Alle','Alle Fächer'],...FA.map(f=>['F:'+f,f])];if(PS.sel.startsWith('M:'))o.push([PS.sel,'Dieses Thema: '+PS.sel.slice(2)]);if(PS.sel==='D:')o.push(['D:','Fällige Wiederholungen']);
  $('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');
  $('#pk').innerHTML=KT.map(([v,t])=>`<option value="${v}"${v===KIND?' selected':''}>${t}</option>`).join('')}
-function openPractice(sel,kind){prac=true;cur=-1;PS.exam=false;PS.sel=sel;KIND=kind||'all';$('#ph2').textContent='✎ Übungsmodus';buildSel();nav();newQ()}
-function openExam(){prac=true;cur=-1;PS.exam=true;PS.sel='W:*';PS.cat='Alle';$('#ph2').textContent='🎓 Prüfungsaufgaben';buildSel();nav();newQ()}
+function openPractice(sel,kind){prac=true;cur=-1;PS.exam=false;PS.oral=false;PS.sel=sel;KIND=kind||'all';$('#ph2').textContent='✎ Übungsmodus';buildSel();nav();newQ()}
+function openOral(){prac=true;cur=-1;PS.exam=true;PS.oral=true;PS.sel='O:*';PS.cat='Alle';$('#ph2').textContent='🗣 Mündliche Prüfung';buildSel();nav();newQ()}
+function openExam(){prac=true;cur=-1;PS.exam=true;PS.oral=false;PS.sel='W:*';PS.cat='Alle';$('#ph2').textContent='🎓 Prüfungsaufgaben';buildSel();nav();newQ()}
 function match(n){const s=PS.sel;if(s==='Alle')return true;if(s==='D:')return(PS.due||[]).includes(n);if(s.startsWith('F:'))return gfach(n)===s.slice(2);const t=s.slice(2),mm=M.find(m=>m.name===t);return n===t||(n==='Einheiten umrechnen'&&!!mm&&mm.F===FU)}
 function poolQ(){const p=[],add=(k,n)=>{if((KIND==='all'||KIND===k)&&match(n))p.push([k,n])};Object.keys(GEN).forEach(n=>{add('num',n);add('mc',n)});Object.keys(STEPS).forEach(n=>add('steps',n));[...new Set(MCQ.map(x=>x[0]))].forEach(n=>add('und',n));return p}
 function newExamQ(){const s=PS.sel,r=mk(Math.floor(Math.random()*1e9)+1);let c;if(s.startsWith('O:')){const L=ORAL.filter(x=>PS.cat==='Alle'||x[0]===PS.cat),x=L[Math.floor(Math.random()*L.length)];c={k:'oral',n:x[0],q:x[1],a:x[2]}}else{const i=s==='W:*'?Math.floor(Math.random()*EXW.length):+s.slice(2),t=EXW[i][1](r);c={k:'steps',n:EXW[i][0],intro:t.intro,steps:t.steps,i:0,log:[],exam:true}}c.tried=false;PS.cur=c;renderQ()}
