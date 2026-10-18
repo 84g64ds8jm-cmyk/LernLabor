@@ -56,6 +56,12 @@ th:first-child,td:first-child{text-align:left}
 .steps{font-size:14px;margin-top:16px}
 .steps p{margin:0 0 8px}.steps .f{color:var(--mute)}.steps .v{font-variant-numeric:tabular-nums}
 h2{font-size:16px;margin:0 0 8px}
+#mem .panel{margin-bottom:14px}.mplan{list-style:none;padding:0;margin:8px 0}.mplan li{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.mplan li.dn b{text-decoration:line-through;color:var(--mute)}.mplan b{flex:1 1 12em}.mplan small{color:var(--mute)}.mk{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid var(--line)}.mk.kW{color:var(--flow)}.mk.kS{color:var(--red)}.mk.kN{color:var(--ok)}
+.mnote{background:color-mix(in srgb,var(--acc) 8%,transparent);border-radius:10px;padding:8px 12px;margin:10px 0}.mset{margin-top:10px}.mset summary{cursor:pointer;color:var(--acc);font-weight:600}.mset label{display:flex;flex-direction:column;font-size:13px;color:var(--mute);gap:2px}.mset input,.mset select{font:inherit;padding:7px 9px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.mbar{display:flex;flex:1;height:14px;border-radius:8px;overflow:hidden;background:var(--line);min-width:90px}.mbar u,.mleg u,.mtop u{text-decoration:none;display:inline-block}.mbar u{height:100%}.s-sicher{background:var(--ok)}.s-weg{background:var(--flow)}.s-unsicher{background:var(--red)}.s-wenig{background:var(--amber)}.s-neu{background:var(--line)}
+.mleg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mute);margin:6px 0}.mleg u{width:10px;height:10px;border-radius:3px;margin-right:5px}.mf{border-top:1px solid var(--line);padding:6px 0}.mf summary{cursor:pointer;display:flex;gap:10px;align-items:center}.mfn{flex:0 0 6.5em;font-weight:600}.mtop{list-style:none;padding:4px 0 0;margin:0}.mtop li{display:flex;gap:8px;align-items:baseline;padding:3px 0;flex-wrap:wrap}.mtop u{width:10px;height:10px;border-radius:50%}.mtop span{flex:1 1 12em}.mtop small{color:var(--mute)}
+.mdays{display:flex;gap:4px;align-items:flex-end;height:90px;margin:6px 0}.mdays div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}.mdays u{display:block;width:100%;background:var(--acc);border-radius:4px 4px 0 0;min-height:2px}.mdays small{font-size:9px;color:var(--mute)}.msvg{width:100%;max-width:420px;height:auto}
+.mweak{list-style:none;padding:0;margin:8px 0}.mweak li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)}.mweak small{display:block;color:var(--mute)}.mimp{display:inline-block;cursor:pointer}
 .simbar{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:10px 14px;margin-bottom:10px}#stime{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}#stime.amb{color:var(--amber)}#stime.red{color:var(--red);animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:.55}}#sprog{flex:1;color:var(--mute);font-size:14px}.swarn{color:var(--red);font-weight:600;margin:6px 0}
 .sbtn,.sbtn2{font:inherit;padding:9px 16px;border-radius:12px;border:1px solid var(--acc);cursor:pointer}.sbtn{background:var(--acc);color:#fff}.sbtn2{background:transparent;color:var(--acc)}
 .smix{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}.smix div{flex:1 1 130px;border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column}.smix b{font-size:24px;color:var(--acc)}.sck{display:block;margin:12px 0}
@@ -123,7 +129,7 @@ main{position:relative;z-index:1}
 <h1>Lernlabor</h1>
 <div class="sbox"><input id="q" type="search" placeholder="Thema oder Formel suchen, z. B. Druck, Cpk, F = m · a" aria-label="Suche" autocomplete="off"><div id="sr" hidden></div></div><div class="seg" id="fs" role="group" aria-label="Fach"></div><br><div class="seg" id="gs" role="group" aria-label="Thema"></div><br><div class="seg" id="ms" role="group" aria-label="Unterthema"></div>
 <p class="sub" id="desc"></p>
-<div class="fx" id="fx" hidden></div><div id="home"></div><div id="practice" hidden><div class="panel"><div class="ph"><h2 id="ph2">✎ Übungsmodus</h2><select id="pf" aria-label="Fach wählen"></select><select id="pk" aria-label="Aufgabentyp"></select><span id="sc"></span></div><div id="pt"></div><p class="pq" id="pq"></p><div id="popts"></div><div class="pa"><input id="pin" inputmode="decimal" placeholder="Antwort" aria-label="Antwort" autocomplete="off"><b id="pu"></b><button type="button" id="pck">Prüfen</button></div><p class="sub" id="ptol"></p><p id="pfb"></p><p class="sub" id="ptipt"></p><div class="pb"><button type="button" id="ptip" hidden>💡 Tipp</button><button type="button" id="psh">Lösungsweg</button><button type="button" id="pnx">Nächste Aufgabe</button></div><div id="psol" hidden></div></div></div><div id="sim" hidden></div><div class="grid" id="app">
+<div class="fx" id="fx" hidden></div><div id="home"></div><div id="practice" hidden><div class="panel"><div class="ph"><h2 id="ph2">✎ Übungsmodus</h2><select id="pf" aria-label="Fach wählen"></select><select id="pk" aria-label="Aufgabentyp"></select><span id="sc"></span></div><div id="pt"></div><p class="pq" id="pq"></p><div id="popts"></div><div class="pa"><input id="pin" inputmode="decimal" placeholder="Antwort" aria-label="Antwort" autocomplete="off"><b id="pu"></b><button type="button" id="pck">Prüfen</button></div><p class="sub" id="ptol"></p><p id="pfb"></p><p class="sub" id="ptipt"></p><div class="pb"><button type="button" id="ptip" hidden>💡 Tipp</button><button type="button" id="psh">Lösungsweg</button><button type="button" id="pnx">Nächste Aufgabe</button></div><div id="psol" hidden></div></div></div><div id="sim" hidden></div><div id="mem" hidden></div><div class="grid" id="app">
  <div><div class="panel"><svg id="svg" role="img" aria-label="Schaubild"></svg><p class="legend" id="leg"></p></div><div class="panel steps" id="steps"></div></div>
  <div class="panel"><h2>Werte einstellen</h2><div id="ctls"></div><div class="btns" id="btns"></div><div class="res" id="res"></div><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
 </div>
@@ -1325,6 +1331,111 @@ const DCs=x=>typeof x=='string'?x.replace(/(\d)\.(\d)/g,'$1,$2'):Array.isArray(x
 for(const k in GEN){const f=GEN[k];GEN[k]=r=>DCs(f(r))}
 for(const k in STEPS){const f=STEPS[k];STEPS[k]=r=>DCs(f(r))}
 EXW.forEach(t=>{const f=t[1];t[1]=r=>DCs(f(r))});
+/* ===== Lern-Gedächtnis: Fortschritt, Schwächen, Wiederholung, Lernplan ===== */
+const MEMINT=[1,3,7,14,30,60];
+let MEMV=false,MEMN=false,MEMC=null,MEMNOW=()=>new Date();
+const EXTOP={'Schaltschrank auf Transportbrett: Kippen oder Rutschen':'Gleit-, Haft- & Rollreibung','Langloch stanzen: Scherfläche und Schneidkraft':'Scherung & Flächenpressung','Hochbehälter befüllen: Pumpe und Motor':'Hydraulische Leistung & Volumenstrom','Härteölbad aufheizen: Gasbedarf':'Wärmekapazität','Trockenschrank mit drei Heizstäben':'Gemischt R₁+(R₂∥R₃)','Kühlkreislauf eines Spritzgießwerkzeugs':'Wärmekapazität','Heizpatronen im Salzbad: Stern- und Dreieckschaltung':'Drehstrom (Stern & Dreieck)','Hydrauliköltank befüllen: Füllzeit':'Einheiten umrechnen','Zugstange: Spannung und Dehnung':'Zug-/Druckspannung & Sicherheit','Seilwinde im Lager: Hubleistung und Energie':'Arbeit & Leistung','Heizungsrohr: Längenänderung durch Erwärmung':'Wärmeausdehnung','Hydrauliköl im Behälter: Überlauf bei Erwärmung':'Wärmeausdehnung','Gabelstapler beschleunigt in der Halle':'Beschleunigung & Bremsen','Containerzug: Reisegeschwindigkeit und Bremsung':'Beschleunigung & Bremsen','Handwagen im Winkel ziehen: Kraftkomponenten und Arbeit':'Kräftezerlegung (Seilkräfte)','Hallenbeleuchtung: LED statt Halogen':'Elektrische Arbeit & Leistung','NTC-Fühler im Spannungsteiler':'Reihe','Kupplungsbetätigung: Pedal und Hydraulik':'Hydraulik','Vakuumheber für Blechtafeln':'Druck','Werkstück auf dem Drehteller':'Kreisbewegung','Pneumatikzylinder: Kolbenkraft und Luftverbrauch':'Pneumatik: Luftverbrauch','Verlängerungskabel am Schweißgerät: Spannungsfall':'Ohmsches Gesetz','Abschrecken im Wasserbad: Mischungstemperatur':'Mischungstemperatur','Auslegerkran: Gegengewicht und Standkraft':'Drehmoment','Last an zwei Seilen: Kräftezerlegung':'Kräftezerlegung (Seilkräfte)','Energiespeicher: Wirkungsgradkette':'Wirkungsgrad','Palette im Hochregal: Lageenergie und Fall':'Energieformen & Erhaltung','Pufferfeder am Ende der Rollenbahn':'Gesetz von Hooke','Notstromaggregat: Wirkungsgrad':'Wirkungsgrad','Ausschuss je Schicht: Kennwerte aus Strichliste':'Mittelwert, Median & Modalwert','Stichprobenkontrolle: Fehler je Stichprobe':'Spannweite, Varianz & Standardabweichung','Dosieranlage: Prozessfähigkeit':'Prozess- & Maschinenfähigkeit','Zwei Heizstäbe parallel: Stromaufteilung':'Parallel','Zwei Zugkräfte am Haken: Kräfteparallelogramm':'Kräfteparallelogramm','Pendelstütze mit Bohrung: Spannung und Sicherheit':'Zug-/Druckspannung & Sicherheit','Gabelkopf mit Bolzen: Scherung und Flächenpressung':'Scherung & Flächenpressung','Hydraulikpresse: Leistung, Kraft, Geschwindigkeit':'Hydraulische Leistung & Volumenstrom','Pneumatikzylinder: maximal möglicher Hub':'Gasgesetze','Erdgas im Heizraum: Dichte bei Betriebszustand':'Gasdichte (Normzustand → Betrieb)','Schleifscheibe: Winkelgeschwindigkeit und Umfangsgeschwindigkeit':'Kreisbewegung','Personenaufzug: Anfahren, Fahren, Bremsen':'Kraftgesetz F = m · a','Kühlmittelgemisch: Dichte und Masse':'Auftrieb und Dichte','Kohlekraftwerk: Brennstoffbedarf und Verluste':'Dampfkraftwerk (Wärmekraftwerk)','Pumpspeicherwerk: Speichern und Zurückgewinnen':'Wasserkraftwerke','Windkraftanlage: Leistung und Windverhältnisse':'Windkraftanlage','Biogas-BHKW: Strom und Wärme aus Substrat':'Biogasanlage mit BHKW','Kernkraftwerk: Brennstoffumsatz und Massendefekt':'Kernkraftwerk (Druckwasserreaktor)','Wahrscheinlichkeitsnetz: Kennwerte und Ausschuss':'Wahrscheinlichkeitsnetz','Wahrscheinlichkeitsnetz: Kennwerte und Prozessfähigkeit':'Wahrscheinlichkeitsnetz','Werkzeug fällt vom Gerüst: freier Fall':'Freier Fall (mit Luftwiderstand)','Salzsäure titrieren: Verbrauch an Natronlauge':'Neutralisation & Titration','Verdünnen: pH-Wert von Säure und Lauge':'Säuren & Basen','Aluminium verbrennen: Stoffmengen und Sauerstoff':'Reaktionsgleichungen & Mol','Verkupfern: Faraday-Gesetz und Schichtdicke':'Elektrolyse','Wasserhärte: Kalk im Warmwasserspeicher':'Wasserhärte','Galvanisches Element: Spannung und Zinkverbrauch':'Galvanische Zelle & Spannungsreihe','Drehstrommotor: Wirkungsgrad, Strom und Kosten':'Drehstrom (Stern & Dreieck)','Kupferdrahtspule: Widerstand und Heizleistung':'Ohmsches Gesetz','Lastkreis mit vier Widerständen':'Gemischt R₁+(R₂∥R₃)+R₄','Steuertransformator: Windungen, Ströme, Leistung':'Elektrische Arbeit & Leistung','Rampe zur Laderampe: Steigung und Winkel':'Schiefe Ebene'};
+const ERRN={u:'Einheit oder Zehnerpotenz (Faktor 10, 100, 1000 …)',r:'Rundung oder Zwischenwert',o:'Formel oder Rechenweg'};
+const pd=k=>{const a=k.split('-').map(Number);return new Date(a[0],a[1]-1,a[2])};
+const dkey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const mToday=()=>dkey(MEMNOW());
+const addDays=(k,n)=>{const d=pd(k);d.setDate(d.getDate()+n);return dkey(d)};
+const dayDiff=(a,b)=>Math.round((pd(b)-pd(a))/864e5);
+const dshow=k=>{const a=k.split('-');return a[2]+'.'+a[1]+'.'};
+function memGet(){return MEMC||(MEMC=(()=>{const m=store.get('ll_mem',null);return m&&m.t?m:{t:{},d:{},e:{u:0,r:0,o:0}}})())}
+function memSave(){store.set('ll_mem',memGet())}
+function topicOf(n){return EXTOP[n]||n}
+function errKind(u,a){if(!isFinite(u)||!isFinite(a)||a===0||u===0)return 'o';const lg=Math.log10(Math.abs(u/a));if(isFinite(lg)&&Math.abs(lg-Math.round(lg))<.03&&Math.round(lg)!==0)return 'u';if(Math.abs(u-a)/Math.abs(a)<.1)return 'r';return 'o'}
+function memRec(name,ok,err){if(!name)return;const k=topicOf(name),M_=memGet(),T0=mToday();
+ const t=M_.t[k]||(M_.t[k]={n:0,ok:0,h:[],lvl:0,due:null,td:null,last:null,e:{u:0,r:0,o:0}});
+ t.n++;if(ok)t.ok++;t.h.push(ok?1:0);if(t.h.length>10)t.h.shift();t.last=T0;
+ if(!ok&&err){t.e[err]=(t.e[err]||0)+1;M_.e[err]=(M_.e[err]||0)+1}
+ if(!t.td||t.td.d!==T0)t.td={d:T0,n:0,ok:0,base:t.lvl};
+ t.td.n++;if(ok)t.td.ok++;
+ if(t.td.n>=3){const r=t.td.ok/t.td.n;t.lvl=r>=.7?Math.min(5,t.td.base+1):r>=.5?t.td.base:0;t.due=addDays(T0,MEMINT[t.lvl])}
+ M_.d[T0]=(M_.d[T0]||0)+1;
+ const cut=addDays(T0,-120);Object.keys(M_.d).forEach(x=>{if(x<cut)delete M_.d[x]});
+ memSave()}
+const memRate=t=>t&&t.h.length?t.h.reduce((x,y)=>x+y,0)/t.h.length:0;
+function memState(t){if(!t||!t.n)return'neu';if(t.h.length<3)return'wenig';const r=memRate(t);return r>=.8&&t.lvl>=2?'sicher':r>=.6?'weg':'unsicher'}
+const STN={sicher:'sicher',weg:'auf dem Weg',unsicher:'unsicher',wenig:'wenig Daten',neu:'neu'};
+function memW(n){if(n.startsWith('Mündlich'))return .8;const f=gfach(n),m=M.find(x=>x.name===n);if(f==='Physik')return m&&m.g==='Elektrotechnik'?1.6:1;return{Chemie:1.5,Statistik:1.3,Energie:.8,Umrechnen:.8}[f]||1}
+function memUniv(){const s=new Set([...Object.keys(GEN),...Object.keys(STEPS),...MCQ.map(x=>x[0])]);return[...s]}
+function memWeak(){const M_=memGet();return Object.keys(M_.t).map(n=>{const t=M_.t[n],r=memRate(t);return{n,t,r,s:(1-r)*memW(n)*Math.min(1,t.n/6)}}).filter(x=>x.t.h.length>=3&&x.r<.8).sort((a,b)=>b.s-a.s)}
+function memDone(t){return!!t&&!!t.td&&t.td.d===mToday()&&t.td.n>=3}
+function memDue(){const T0=mToday(),M_=memGet();return Object.keys(M_.t).filter(n=>{const t=M_.t[n];return t.due&&t.due<=T0&&!memDone(t)}).sort((a,b)=>M_.t[a].due<M_.t[b].due?-1:M_.t[a].due>M_.t[b].due?1:memW(b)-memW(a))}
+function memStreak(){const d=memGet().d;let k=mToday(),n=0;if(!d[k])k=addDays(k,-1);while(d[k]){n++;k=addDays(k,-1)}return n}
+function memPlanCfg(){return store.get('ll_plan',null)}
+function memPlan(){const T0=mToday(),cfg=memPlanCfg(),M_=memGet(),B=cfg&&cfg.min?cfg.min:30,days=cfg&&cfg.date?dayDiff(T0,cfg.date):null,U=memUniv(),items=[],used=new Set();
+ const add=(kind,n,min)=>{if(used.has(n))return false;used.add(n);items.push({kind,n,min,done:memDone(M_.t[n])});return true};
+ const due=memDue().filter(n=>U.includes(n));let spent=0;
+ due.forEach(n=>{if(spent+4<=B*.5||!items.length){if(add('Wiederholen',n,4))spent+=4}});
+ memWeak().filter(x=>U.includes(x.n)).forEach(x=>{if(spent+8<=B*.8||!items.length){if(add('Schwäche',x.n,8))spent+=8}});
+ const fresh=U.filter(n=>!(M_.t[n]&&M_.t[n].n)).sort((a,b)=>memW(b)-memW(a));
+ const cap=days!=null&&days<=7?B*.5:B;let nn=0;
+ fresh.forEach(n=>{if(spent+8<=cap){if(add('Neu',n,8)){spent+=8;nn++}}});
+ due.forEach(n=>{if(spent+4<=B&&add('Wiederholen',n,4))spent+=4});
+ if(!items.length&&fresh.length)add('Neu',fresh[0],8);
+ let sim=false;const h=store.get('ll_simh',[]);
+ if(days!=null&&days>=0&&days<=14){const last=h.length&&h[0].dk?dayDiff(h[0].dk,T0):99;if(last>=(days<=7?3:7))sim=true}
+ return{days,B,items,sim,cfg,known:Object.keys(M_.t).length,fresh:fresh.length,nn,need:nn?Math.ceil(fresh.length/nn):null}}
+function memGo(n){if(n.startsWith('Mündlich · ')){openExam();PS.sel='O:*';PS.cat=n.slice(11);buildSel();newQ();return}
+ if(memUniv().includes(n))openPractice('M:'+n);else{const i=byName(n);if(i>=0)go(i)}}
+function memDueCount(){try{return memDue().length}catch(e){return 0}}
+function memCard(){const M_=memGet(),n=memDueCount(),s=memStreak(),any=Object.keys(M_.t).length;
+ return`<div class="hc qk"><h2>📈 Lernstand</h2><p>${any?`Heute: <b>${n}</b> ${n===1?'Wiederholung':'Wiederholungen'} fällig${s>1?` · Serie: ${s} Tage`:''}. `:'Übe ein paar Aufgaben, dann zeigt Dir das Lernlabor Fortschritt, Schwächen und Wiederholungen. '}<button type="button" class="chip" id="mcard">Zum Lernstand →</button></p></div>`}
+function memOpen(){prac=false;cur=-1;MEMN=true;nav();memView()}
+function memExport(){const o={v:1,mem:memGet(),plan:memPlanCfg(),sim:store.get('ll_simh',[]),score:store.get('ll_score',null),oral:store.get('ll_oral',null)},b=new Blob([JSON.stringify(o)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='lernlabor-lernstand-'+mToday()+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function memImport(f){const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!o.mem||!o.mem.t)throw 0;MEMC=o.mem;memSave();if(o.plan)store.set('ll_plan',o.plan);if(o.sim)store.set('ll_simh',o.sim);if(o.score)store.set('ll_score',o.score);if(o.oral)store.set('ll_oral',o.oral);memView('Lernstand importiert.')}catch(e){memView('Die Datei konnte nicht gelesen werden.')}};r.readAsText(f)}
+function memView(msg){const M_=memGet(),T0=mToday(),P=memPlan(),U=memUniv(),due=memDue(),wk=memWeak().filter(x=>x.n).slice(0,5),h=store.get('ll_simh',[]);
+ const q=s=>String(s).replace(/"/g,'&quot;');
+ const stOf=n=>memState(M_.t[n]);
+ /* Heute */
+ const doneN=P.items.filter(i=>i.done).length;
+ let today=`<div class="panel"><h2>📅 Heute</h2>${msg?`<p class="swarn" role="status">${msg}</p>`:''}`;
+ if(P.days!=null&&P.days>=0)today+=`<p class="sub">Noch <b>${P.days}</b> ${P.days===1?'Tag':'Tage'} bis zur Prüfung · Zeit pro Tag: ${P.B} Minuten</p>`;
+ else if(P.days!=null)today+=`<p class="sub">Das Prüfungsdatum liegt in der Vergangenheit. Stelle unten ein neues Datum ein.</p>`;
+ else today+=`<p class="sub">Tagesplan für ${P.B} Minuten. Trage unten Dein Prüfungsdatum ein, dann plant das Lernlabor die Wochen bis dahin mit.</p>`;
+ if(P.need&&P.days!=null&&P.days>=0)today+=`<p class="sub">Bei diesem Tempo (${P.nn} neue Themen pro Tag) bist Du in etwa <b>${P.need}</b> ${P.need===1?'Tag':'Tagen'} durch alle noch neuen Themen. ${P.need>P.days-7?'<b>Das wird knapp:</b> Erhöhe die Minuten pro Tag, oder lass Randthemen weg.':'Das passt zu Deinem Prüfungstermin.'}</p>`;
+ if(P.items.length){today+=`<p class="sub">${doneN} von ${P.items.length} Punkten erledigt (ein Punkt gilt als erledigt, wenn Du heute mindestens 3 Aufgaben dazu beantwortet hast).</p><ul class="mplan">${P.items.map(i=>`<li class="${i.done?'dn':''}"><span class="mk k${i.kind[0]}">${i.kind}</span><b>${i.n}</b><small>ca. ${i.min} min</small><button type="button" class="chip" data-go="${q(i.n)}">${i.done?'✓ nochmal':'Üben →'}</button></li>`).join('')}</ul>`}
+ else today+=`<p class="sub">Für heute ist nichts offen. Schau morgen wieder vorbei, oder übe frei.</p>`;
+ if(P.sim)today+=`<p class="mnote">💡 Empfehlung: Mach in dieser Woche eine <button type="button" class="chip" id="msim">⏱ Prüfungssimulation</button> (90 Minuten).</p>`;
+ today+=`<details class="mset"><summary>Lernplan einstellen</summary><div class="pa"><label>Prüfungsdatum <input type="date" id="mpd" value="${P.cfg&&P.cfg.date||''}"></label><label>Minuten pro Tag <select id="mpm">${[15,30,45,60,90,120].map(v=>`<option${v===P.B?' selected':''}>${v}</option>`).join('')}</select></label><button type="button" class="sbtn2" id="mps">Speichern</button></div></details></div>`;
+ /* Fortschritt */
+ const seg=n=>{const c={sicher:0,weg:0,unsicher:0,wenig:0,neu:0};n.forEach(x=>c[stOf(x)]++);return c};
+ const tot=seg(U),Fs=FA.map(f=>[f,U.filter(n=>gfach(n)===f)]).filter(x=>x[1].length);
+ const bar=c=>{const N=Object.values(c).reduce((a,b)=>a+b,0)||1;return`<i class="mbar">${['sicher','weg','unsicher','wenig','neu'].map(k=>c[k]?`<u class="s-${k}" style="width:${c[k]/N*100}%" title="${STN[k]}: ${c[k]}"></u>`:'').join('')}</i>`};
+ let prog=`<div class="panel"><h2>📊 Fortschritt</h2><p class="sub"><b>${tot.sicher}</b> von ${U.length} Themen sicher · ${tot.weg} auf dem Weg · ${tot.unsicher} unsicher · ${tot.wenig+tot.neu} noch offen. ${memStreak()>0?`Lernserie: <b>${memStreak()}</b> ${memStreak()===1?'Tag':'Tage'}.`:''}</p>
+ <div class="mleg">${['sicher','weg','unsicher','wenig','neu'].map(k=>`<span><u class="s-${k}"></u>${STN[k]}</span>`).join('')}</div>
+ ${Fs.map(([f,L])=>`<details class="mf"><summary><span class="mfn">${f}</span>${bar(seg(L))}<small>${seg(L).sicher}/${L.length}</small></summary><ul class="mtop">${L.map(n=>{const t=M_.t[n],s=stOf(n);return`<li><u class="s-${s}"></u><span>${n}</span><small>${t&&t.n?Math.round(memRate(t)*100)+' % · '+t.n+' Aufg.':STN[s]}${t&&t.due?' · fällig '+(t.due<=T0?'jetzt':dshow(t.due)):''}</small></li>`}).join('')}</ul></details>`).join('')}`;
+ const days=[];for(let i=13;i>=0;i--){const k=addDays(T0,-i);days.push([k,M_.d[k]||0])}const mx=Math.max(5,...days.map(x=>x[1]));
+ prog+=`<h3 class="sh">Aufgaben der letzten 14 Tage</h3><div class="mdays" role="img" aria-label="Aufgaben pro Tag in den letzten 14 Tagen">${days.map(([k,v])=>`<div title="${dshow(k)}: ${v}"><u style="height:${v/mx*100}%"></u><small>${k.slice(8)}</small></div>`).join('')}</div>`;
+ if(h.length>=2){const H=h.slice(0,10).reverse(),W=300,Hh=110,pts=H.map((x,i)=>[10+i*(W-20)/Math.max(1,H.length-1),Hh-10-x.t/100*(Hh-20)]);
+  prog+=`<h3 class="sh">Prüfungssimulationen</h3><svg viewBox="0 0 ${W} ${Hh}" class="msvg" role="img" aria-label="Punkte der letzten Simulationen"><line x1="10" x2="${W-10}" y1="${Hh-10-.5*(Hh-20)}" y2="${Hh-10-.5*(Hh-20)}" stroke="var(--red)" stroke-dasharray="4 3"/><text x="${W-12}" y="${Hh-14-.5*(Hh-20)}" font-size="9" text-anchor="end" fill="var(--red)">Bestehen: 50</text><polyline fill="none" stroke="var(--acc)" stroke-width="2.5" points="${pts.map(p=>p.join(',')).join(' ')}"/>${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--acc)"/><text x="${p[0]}" y="${p[1]-8}" font-size="9" text-anchor="middle" fill="var(--ink)">${Math.round(H[i].t)}</text>`).join('')}</svg>`}
+ else prog+=`<p class="sub">Nach zwei Prüfungssimulationen siehst Du hier Deinen Verlauf gegenüber der 50-Punkte-Grenze.</p>`;
+ prog+=`</div>`;
+ /* Schwächen */
+ const E=M_.e,Et=(E.u||0)+(E.r||0)+(E.o||0),ek=Et>=5?Object.keys(ERRN).sort((a,b)=>(E[b]||0)-(E[a]||0))[0]:null;
+ let weak=`<div class="panel"><h2>🎯 Schwächen</h2>`;
+ if(!wk.length)weak+=`<p class="sub">Noch keine auffälligen Schwächen. Die Auswertung braucht mindestens 3 beantwortete Aufgaben je Thema. Sie gewichtet Themen, die in der Prüfung mehr Punkte bringen (Elektrotechnik, Chemie, Statistik), stärker.</p>`;
+ else weak+=`<p class="sub">Die Themen mit dem größten Gewinn für Dein Prüfungsergebnis, nach Fehlerquote und Prüfungsgewicht sortiert:</p><ul class="mweak">${wk.map(x=>{const e=x.t.e,ee=Object.keys(ERRN).sort((a,b)=>(e[b]||0)-(e[a]||0))[0],en=(e.u||0)+(e.r||0)+(e.o||0);return`<li><div><b>${x.n}</b><small>${Math.round(x.r*100)} % richtig in den letzten ${x.t.h.length} Aufgaben${en>=2?` · häufigster Fehler: ${ERRN[ee]}`:''}</small></div><button type="button" class="chip" data-go="${q(x.n)}">Gezielt üben →</button></li>`}).join('')}</ul>`;
+ if(ek)weak+=`<p class="mnote">Über alle Themen ist Dein häufigster Fehlertyp: <b>${ERRN[ek]}</b> (${E[ek]} von ${Et} erkannten Fehlern). Die Zuordnung ist eine Schätzung aus der Abweichung zur richtigen Lösung.</p>`;
+ weak+=`</div>`;
+ /* Wiederholung */
+ const nxt=[];for(let i=1;i<=7;i++){const k=addDays(T0,i),c=Object.keys(M_.t).filter(n=>M_.t[n].due===k).length;if(c)nxt.push(`${dshow(k)}: ${c} ${c===1?"Thema":"Themen"}`)}
+ let rep=`<div class="panel"><h2>🔁 Wiederholung</h2><p class="sub">Themen kommen in wachsenden Abständen wieder: ${MEMINT.join(' → ')} Tage. Wer an einem Tag mindestens 3 Aufgaben zu etwa 70 % richtig löst, rückt eine Stufe weiter. Bei weniger als 50 % geht es morgen von vorn los.</p>`;
+ if(!due.length)rep+=`<p class="sub">Heute ist nichts fällig.${nxt.length?' Als Nächstes: '+nxt.join(' · ')+'.':''}</p>`;
+ else{const dd=due.filter(n=>U.includes(n));rep+=`<ul class="mplan">${due.map(n=>`<li><span class="mk kW">fällig ${M_.t[n].due<T0?'seit '+dayDiff(M_.t[n].due,T0)+' T.':'heute'}</span><b>${n}</b><button type="button" class="chip" data-go="${q(n)}">Üben →</button></li>`).join('')}</ul>${dd.length>1?`<div class="pb"><button type="button" class="sbtn" id="mdue">Alle fälligen Themen mischen</button></div>`:''}${nxt.length?`<p class="sub">Danach: ${nxt.join(' · ')}</p>`:''}`}
+ rep+=`</div>`;
+ /* Daten */
+ const data=`<div class="panel"><h2>💾 Daten</h2><p class="sub">Dein Lernstand liegt nur in diesem Browser auf diesem Gerät. Mit dem Export kannst Du ihn sichern oder auf ein anderes Gerät übertragen.</p><div class="pb"><button type="button" class="sbtn2" id="mex">Exportieren</button><label class="sbtn2 mimp">Importieren<input type="file" accept="application/json,.json" id="mim" hidden></label><button type="button" class="sbtn2" id="mrs">Zurücksetzen</button></div></div>`;
+ $('#mem').innerHTML=today+prog+weak+rep+data;
+ $('#mem').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>memGo(b.dataset.go));
+ if($('#msim'))$('#msim').onclick=simOpen;
+ $('#mps').onclick=()=>{const d=$('#mpd').value;store.set('ll_plan',{date:d||null,min:+$('#mpm').value});memView('Lernplan gespeichert.')};
+ if($('#mdue'))$('#mdue').onclick=()=>{PS.due=due.filter(n=>U.includes(n));openPractice('D:')};
+ $('#mex').onclick=memExport;$('#mim').onchange=e=>{if(e.target.files[0])memImport(e.target.files[0])};
+ $('#mrs').onclick=()=>{const b=$('#mrs');if(b.dataset.s){MEMC={t:{},d:{},e:{u:0,r:0,o:0}};memSave();store.set('ll_simh',[]);store.set('ll_plan',null);store.set('ll_score',{ok:0,n:0});store.set('ll_oral',{k:0,n:0});memView('Lernstand zurückgesetzt.')}else{b.dataset.s=1;b.textContent='Wirklich alles löschen?';setTimeout(()=>{if($('#mrs')){delete $('#mrs').dataset.s;$('#mrs').textContent='Zurücksetzen'}},6000)}}}
 /* ===== Prüfungssimulation: 90 min, 100 Punkte, Bestehen ab 50 ===== */
 const SIMMIN=90,SIMPT=10,SIMPASS=50;
 const SIMCFG=[['E',3],['P',3],['C',2],['S',1],['M',1]];
@@ -1379,7 +1490,7 @@ function simTask(){const t=SIM.tasks[SIM.cur],d=simData(t),n=SIM.tasks.length;
  $('#sprev').onclick=()=>{SIM.cur--;simSave();simTask();scrollTo(0,0)};$('#snext').onclick=()=>{SIM.cur++;simSave();simTask();scrollTo(0,0)}}
 function simAskFin(){const b=$('#sfin');if(!SIMASK){SIMASK=true;const open=simTotalSteps()-simAnswered();b.textContent=open?`Wirklich abgeben? (${open} offen)`:'Wirklich abgeben?';b.className='sbtn';setTimeout(()=>{if(SIMASK&&$('#sfin')){SIMASK=false;$('#sfin').textContent='Abgeben';$('#sfin').className='sbtn2'}},6000)}else simFinish(false)}
 function simFinish(auto){simStop();if(!SIM||SIM.done)return;SIM.done=true;SIM.endAt=Math.min(Date.now(),SIM.timed?SIM.end:Date.now());SIM.auto=!!auto;simSave();
- const g=simGrade(),h=store.get('ll_simh',[]);h.unshift({t:Math.round(g.total*10)/10,d:new Date().toLocaleDateString('de-DE'),m:Math.max(1,Math.round((SIM.endAt-SIM.start)/60000))});store.set('ll_simh',h.slice(0,20));
+ const g=simGrade(),h=store.get('ll_simh',[]);g.tasks.forEach(r=>r.steps.forEach(x=>memRec(EXW[r.t.i][0],x.ok,x.ok||!x.raw?null:errKind(parseFloat(x.raw.replace(',','.')),x.a))));h.unshift({dk:mToday(),t:Math.round(g.total*10)/10,d:new Date().toLocaleDateString('de-DE'),m:Math.max(1,Math.round((SIM.endAt-SIM.start)/60000))});store.set('ll_simh',h.slice(0,20));
  simResult()}
 function simResult(){simStop();const g=simGrade(),ok=g.total>=SIMPASS,used=Math.round((SIM.endAt-SIM.start)/60000);
  $('#sim').innerHTML=`<div class="panel sres ${ok?'pass':'fail'}"><h2>Ergebnis der Prüfungssimulation</h2>${SIM.auto?'<p class="swarn">Die Zeit ist abgelaufen. Deine Eingaben wurden automatisch abgegeben.</p>':''}
@@ -1432,17 +1543,17 @@ function go(i){prac=false;cur=i;fi=FA.indexOf(M[i].F);clock=0;touch(i);nav();bui
 const IC={Physik:'⚙️',Chemie:'⚗️',Statistik:'📊',Umrechnen:'🔁',Energie:'⚡'},SUBT={Physik:'Mechanik, Hydraulik, Wärme, Elektrotechnik',Chemie:'Atome, Bindungen, Reaktionen, Redox, Wasser',Statistik:'Kennwerte, Verteilungen, Qualität',Umrechnen:'Länge, Volumen, Masse, Druck, Energie, Temperatur',Energie:'Kraftwerke, Wind, Sonne, Wasser, Biogas, Brennstoffzelle'};
 function chipRow(t,names){const ix=names.map(byName).filter(i=>i>=0);return ix.length?`<div class="hc qk"><h2>${t}</h2><p>${ix.map(i=>`<button type="button" class="chip" data-i="${i}">${M[i].name}</button>`).join('')}</p></div>`:''}
 function homeView(){
- $('#home').innerHTML='<p class="sub">Wähle ein Fach und tippe auf ein Unterthema. Jeder Simulator lässt sich live einstellen und zeigt Grundgleichungen und Rechenweg. Im Übungsmodus gibt es Aufgaben zum Selbsttest.</p>'+chipRow('★ Favoriten',FAV)+chipRow('Zuletzt benutzt',REC.slice(0,6))+'<div class="hg">'+FA.map(f=>`<div class="hc" data-f="${f}"><h2><span class="ic">${IC[f]}</span>${f}<small>${M.filter(m=>m.F===f).length} Themen</small></h2><p class="hs">${SUBT[f]}</p>`+ORD[f].map(g=>{const ms=M.map((m,i)=>[m,i]).filter(([m])=>m.F===f&&m.g===g);return ms.length?`<p><b>${g}</b><br>`+ms.map(([m,i])=>`<button type="button" class="chip" data-i="${i}">${m.name}</button>`).join('')+'</p>':''}).join('')+'</div>').join('')+'</div>';
- $('#home').querySelectorAll('.chip').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+ $('#home').innerHTML='<p class="sub">Wähle ein Fach und tippe auf ein Unterthema. Jeder Simulator lässt sich live einstellen und zeigt Grundgleichungen und Rechenweg. Im Übungsmodus gibt es Aufgaben zum Selbsttest.</p>'+memCard()+chipRow('★ Favoriten',FAV)+chipRow('Zuletzt benutzt',REC.slice(0,6))+'<div class="hg">'+FA.map(f=>`<div class="hc" data-f="${f}"><h2><span class="ic">${IC[f]}</span>${f}<small>${M.filter(m=>m.F===f).length} Themen</small></h2><p class="hs">${SUBT[f]}</p>`+ORD[f].map(g=>{const ms=M.map((m,i)=>[m,i]).filter(([m])=>m.F===f&&m.g===g);return ms.length?`<p><b>${g}</b><br>`+ms.map(([m,i])=>`<button type="button" class="chip" data-i="${i}">${m.name}</button>`).join('')+'</p>':''}).join('')+'</div>').join('')+'</div>';
+ $('#home').querySelectorAll('.chip[data-i]').forEach(b=>b.onclick=()=>go(+b.dataset.i));if($('#mcard'))$('#mcard').onclick=memOpen;
 }
 function nav(){
- SIMV=SIMN;SIMN=false;const hm=cur<0&&!prac&&!SIMV;document.body.dataset.f=cur>=0?M[cur].F:'';
+ SIMV=SIMN;SIMN=false;MEMV=MEMN;MEMN=false;const hm=cur<0&&!prac&&!SIMV&&!MEMV;document.body.dataset.f=cur>=0?M[cur].F:'';
  $('#bgr').setAttribute('fill','url(#p-'+(cur>=0?({Physik:'phys',Chemie:'chem',Statistik:'stat',Umrechnen:'unit',Energie:'energy'}[M[cur].F]||'home'):'home')+')');
- $('#home').hidden=!hm;$('#app').hidden=cur<0;$('#practice').hidden=!prac;$('#sim').hidden=!SIMV;$('#desc').hidden=cur<0;$('#gs').hidden=$('#ms').hidden=cur<0;if(cur<0)$('#fx').hidden=true;
+ $('#home').hidden=!hm;$('#app').hidden=cur<0;$('#practice').hidden=!prac;$('#sim').hidden=!SIMV;$('#mem').hidden=!MEMV;$('#desc').hidden=cur<0;$('#gs').hidden=$('#ms').hidden=cur<0;if(cur<0)$('#fx').hidden=true;
  if(hm)homeView();
  const last=FA.length+1;
- $('#fs').innerHTML=['Übersicht',...FA,'✎ Üben','🎓 Prüfungsaufgaben',SIM&&!SIM.done?'⏱ Prüfungssimulation ●':'⏱ Prüfungssimulation'].map((n,k)=>`<button type="button" data-k="${k}" aria-pressed="${k===0?hm:k===last?prac&&!PS.exam:k===last+1?prac&&!!PS.exam:k===last+2?SIMV:(cur>=0&&k===fi+1)}">${n}</button>`).join('');
- $('#fs').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(k===0){cur=-1;prac=false;nav()}else if(k===last)openPractice('Alle');else if(k===last+1)openExam();else if(k===last+2)simOpen();else go(M.findIndex(m=>m.F===FA[k-1]))});
+ $('#fs').innerHTML=['Übersicht',...FA,'✎ Üben','🎓 Prüfungsaufgaben',SIM&&!SIM.done?'⏱ Prüfungssimulation ●':'⏱ Prüfungssimulation','📈 Lernstand'+(memDueCount()?' ('+memDueCount()+')':'')].map((n,k)=>`<button type="button" data-k="${k}" aria-pressed="${k===0?hm:k===last?prac&&!PS.exam:k===last+1?prac&&!!PS.exam:k===last+2?SIMV:k===last+3?MEMV:(cur>=0&&k===fi+1)}">${n}</button>`).join('');
+ $('#fs').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(k===0){cur=-1;prac=false;nav()}else if(k===last)openPractice('Alle');else if(k===last+1)openExam();else if(k===last+2)simOpen();else if(k===last+3)memOpen();else go(M.findIndex(m=>m.F===FA[k-1]))});
  if(cur<0)return;
  const f=M[cur].F;
  $('#gs').innerHTML=ORD[f].filter(g=>M.some(m=>m.F===f&&m.g===g)).map(g=>`<button type="button" data-g="${g}" aria-pressed="${M[cur].g===g}">${g}</button>`).join('');
@@ -1463,12 +1574,12 @@ const gfach=n=>n==='Einheiten umrechnen'?FU:(M.find(m=>m.name===n)||{}).F,unitMo
 const hasPr=m=>m.F===FU||!!GEN[m.name]||!!STEPS[m.name]||MCQ.some(x=>x[0]===m.name);
 let KIND='all';
 const KT=[['all','Alle Aufgabentypen'],['num','Rechnen'],['steps','Mehrschritt'],['mc','Ankreuzen'],['und','Verständnis']];
-function buildSel(){if(PS.exam){const o=[['W:*','Schriftlich: zufällige Aufgabe'],...EXW.map((t,i)=>['W:'+i,t[0]]),['O:*','Mündlich: Fragen mit Musterantwort']];$('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');$('#pk').innerHTML=['Alle','Chemie','Physik','Energie','Elektrotechnik','Statistik'].map(c=>`<option value="${c}"${c===PS.cat?' selected':''}>${c==='Alle'?'Alle Themen':c}</option>`).join('');$('#pk').hidden=!PS.sel.startsWith('O:');return}$('#pk').hidden=false;const o=[['Alle','Alle Fächer'],...FA.map(f=>['F:'+f,f])];if(PS.sel.startsWith('M:'))o.push([PS.sel,'Dieses Thema: '+PS.sel.slice(2)]);
+function buildSel(){if(PS.exam){const o=[['W:*','Schriftlich: zufällige Aufgabe'],...EXW.map((t,i)=>['W:'+i,t[0]]),['O:*','Mündlich: Fragen mit Musterantwort']];$('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');$('#pk').innerHTML=['Alle','Chemie','Physik','Energie','Elektrotechnik','Statistik'].map(c=>`<option value="${c}"${c===PS.cat?' selected':''}>${c==='Alle'?'Alle Themen':c}</option>`).join('');$('#pk').hidden=!PS.sel.startsWith('O:');return}$('#pk').hidden=false;const o=[['Alle','Alle Fächer'],...FA.map(f=>['F:'+f,f])];if(PS.sel.startsWith('M:'))o.push([PS.sel,'Dieses Thema: '+PS.sel.slice(2)]);if(PS.sel==='D:')o.push(['D:','Fällige Wiederholungen']);
  $('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');
  $('#pk').innerHTML=KT.map(([v,t])=>`<option value="${v}"${v===KIND?' selected':''}>${t}</option>`).join('')}
 function openPractice(sel,kind){prac=true;cur=-1;PS.exam=false;PS.sel=sel;KIND=kind||'all';$('#ph2').textContent='✎ Übungsmodus';buildSel();nav();newQ()}
 function openExam(){prac=true;cur=-1;PS.exam=true;PS.sel='W:*';PS.cat='Alle';$('#ph2').textContent='🎓 Prüfungsaufgaben';buildSel();nav();newQ()}
-function match(n){const s=PS.sel;if(s==='Alle')return true;if(s.startsWith('F:'))return gfach(n)===s.slice(2);const t=s.slice(2),mm=M.find(m=>m.name===t);return n===t||(n==='Einheiten umrechnen'&&!!mm&&mm.F===FU)}
+function match(n){const s=PS.sel;if(s==='Alle')return true;if(s==='D:')return(PS.due||[]).includes(n);if(s.startsWith('F:'))return gfach(n)===s.slice(2);const t=s.slice(2),mm=M.find(m=>m.name===t);return n===t||(n==='Einheiten umrechnen'&&!!mm&&mm.F===FU)}
 function poolQ(){const p=[],add=(k,n)=>{if((KIND==='all'||KIND===k)&&match(n))p.push([k,n])};Object.keys(GEN).forEach(n=>{add('num',n);add('mc',n)});Object.keys(STEPS).forEach(n=>add('steps',n));[...new Set(MCQ.map(x=>x[0]))].forEach(n=>add('und',n));return p}
 function newExamQ(){const s=PS.sel,r=mk(Math.floor(Math.random()*1e9)+1);let c;if(s.startsWith('O:')){const L=ORAL.filter(x=>PS.cat==='Alle'||x[0]===PS.cat),x=L[Math.floor(Math.random()*L.length)];c={k:'oral',n:x[0],q:x[1],a:x[2]}}else{const i=s==='W:*'?Math.floor(Math.random()*EXW.length):+s.slice(2),t=EXW[i][1](r);c={k:'steps',n:EXW[i][0],intro:t.intro,steps:t.steps,i:0,log:[],exam:true}}c.tried=false;PS.cur=c;renderQ()}
 function newQ(){if(PS.exam)return newExamQ();const p=poolQ(),[k,n]=p.length?p[Math.floor(Math.random()*p.length)]:['num','Ohmsches Gesetz'],r=mk(Math.floor(Math.random()*1e9)+1);let c;
@@ -1478,7 +1589,7 @@ function newQ(){if(PS.exam)return newExamQ();const p=poolQ(),[k,n]=p.length?p[Ma
  else{const L=MCQ.filter(x=>x[0]===n),x=L[Math.floor(r()*L.length)];c={k,n,...shuf(x[1],x[2],x[3],r)}}
  c.tried=false;PS.cur=c;renderQ()}
 function item(){const c=PS.cur;if(c.k==='num')return{a:c.q[1],u:c.q[2],t:c.q[4]||{rel:.02},s:c.q[3]};const s=c.steps[c.i];return{a:s[1],u:s[2],t:s[4]||{rel:.02},s:s[3]}}
-function score(ok){const sc=store.get('ll_score',{ok:0,n:0});sc.n++;if(ok)sc.ok++;store.set('ll_score',sc);$('#sc').textContent=`Richtig: ${sc.ok} von ${sc.n}`}
+function score(ok,err){memRec(PS.cur&&PS.cur.n,ok,err);const sc=store.get('ll_score',{ok:0,n:0});sc.n++;if(ok)sc.ok++;store.set('ll_score',sc);$('#sc').textContent=`Richtig: ${sc.ok} von ${sc.n}`}
 function fb(t,ok){$('#pfb').textContent=t;$('#pfb').className=ok?'ok':'bad'}
 function renderQ(){const c=PS.cur,sc=store.get('ll_score',{ok:0,n:0}),mcq=c.k==='mc'||c.k==='und',orl=c.k==='oral',i=c.n==='Einheiten umrechnen'?unitMod():byName(c.n);
  if(c.exam||orl){$('#pt').innerHTML=`<span class="chip">${orl?'Mündliche Frage':'Prüfungsaufgabe'}: ${c.n}</span>`}else{$('#pt').innerHTML=`<button type="button" class="chip" id="pgo">Thema: ${c.n} →</button>`;$('#pgo').onclick=()=>go(i)}
@@ -1496,9 +1607,9 @@ function checkQ(){const c=PS.cur;if(!c)return;
  const u=parseFloat(String($('#pin').value).replace(',','.')),it=item();
  if(!isFinite(u)){fb('Bitte eine Zahl eingeben.',false);return}
  const ok=Math.abs(u-it.a)<=(it.t.abs!=null?it.t.abs:(it.t.rel||.02)*Math.abs(it.a));
- if(!c.tried){c.tried=true;score(ok)}
+ if(!c.tried){c.tried=true;score(ok,ok?null:errKind(u,it.a))}
  if(ok){fb(c.k==='steps'&&c.i===c.steps.length-1?'✓ Richtig! Alle Schritte geschafft.':'✓ Richtig!',true);finishStep(c,it)}else fb('✗ Noch nicht. Prüfe Einheit und Rundung oder öffne den Lösungsweg.',false)}
-function rateOral(k){const o=store.get('ll_oral',{k:0,n:0});o.n++;if(k)o.k++;store.set('ll_oral',o);newQ()}
+function rateOral(k){memRec('Mündlich · '+PS.cur.n,!!k);const o=store.get('ll_oral',{k:0,n:0});o.n++;if(k)o.k++;store.set('ll_oral',o);newQ()}
 function showSol(){const c=PS.cur;if(!c)return;if(c.k==='oral'){$('#psol').innerHTML='<b>Musterantwort</b><p>'+c.a+'</p>';$('#psol').hidden=false;$('#popts').innerHTML='<button type="button" class="opt" data-j="1"><b>✓</b> Gewusst</button><button type="button" class="opt" data-j="0"><b>↻</b> Noch unsicher</button>';$('#popts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>rateOral(+b.dataset.j));return}
  if(c.k==='mc'||c.k==='und'){c.done=true;if(!c.tried){c.tried=true;score(false)}$('#popts').querySelectorAll('.opt').forEach((b,k)=>b.className='opt'+(k===c.ok?' right':''));$('#psol').innerHTML='<b>Richtig ist '+'ABCD'[c.ok]+'</b><p>'+c.why+'</p>';$('#psol').hidden=false;$('#pck').textContent='Nächste Aufgabe';return}
  const it=item();if(!c.tried){c.tried=true;score(false)}
