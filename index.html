@@ -2042,6 +2042,35 @@ const KI=(()=>{
  const E=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
  function md(t){let h=E(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>');
   const out=[];let ul=false;h.split('\n').forEach(l=>{const m=l.match(/^\s*[-*•]\s+(.*)/);if(m){if(!ul){out.push('<ul>');ul=true}out.push('<li>'+m[1]+'</li>')}else{if(ul){out.push('</ul>');ul=false}out.push(l.trim()?'<p style="margin:.4em 0">'+l.replace(/^#+\s*/,'')+'</p>':'')}});if(ul)out.push('</ul>');return out.join('')}
+
+ /* Sprache: Ausgabe (SpeechSynthesis) und Eingabe (SpeechRecognition) */
+ const SS=typeof speechSynthesis!=='undefined'&&typeof SpeechSynthesisUtterance!=='undefined';
+ const SR=(typeof window!=='undefined')&&(window.SpeechRecognition||window.webkitSpeechRecognition);
+ const VK='ki-voice';let vs={on:false,rate:1,auto:false};
+ try{vs=Object.assign(vs,JSON.parse(localStorage.getItem(VK)||'{}'))}catch(e){}
+ const vsave=()=>{try{localStorage.setItem(VK,JSON.stringify(vs))}catch(e){}};
+ const plain=t=>String(t).replace(/\*\*/g,'').replace(/`/g,'').replace(/^\s*[-*•]\s+/gm,'').replace(/^#+\s*/gm,'').replace(/\s+/g,' ').trim();
+ function pick(per){const l=speechSynthesis.getVoices().filter(v=>/^de/i.test(v.lang));if(!l.length)return null;const re=per==='s'?/male|klaus|markus|conrad|stefan|hans|florian|jonas|martin|reed/i:/female|anna|petra|katja|vicki|marlene|amala|seraphina|hedda|sandy|shelley|flo/i;
+  const pool=l.filter(v=>re.test(v.name)&&!(per==='s'&&/female/i.test(v.name)));return pool[0]||l.find(v=>re.test(v.name))||l[per==='s'?l.length-1:0]}
+ function say(t,per){if(!SS)return;stop();const s=plain(t);if(!s)return;const parts=s.match(/[^.!?:;]+[.!?:;]?\s*/g)||[s];const ch=[];let cur='';parts.forEach(p=>{if((cur+p).length>180&&cur){ch.push(cur);cur=p}else cur+=p});if(cur)ch.push(cur);
+  const v=pick(per);ch.forEach(c=>{const u=new SpeechSynthesisUtterance(c);u.lang='de-DE';if(v)u.voice=v;u.rate=vs.rate*(per==='s'?1.04:0.97);u.pitch=per==='s'?0.8:1.05;speechSynthesis.speak(u)})}
+ function stop(){if(SS)try{speechSynthesis.cancel()}catch(e){}}
+ if(SS)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}
+ const VNOTE='<p class="sub">Vorlesen nutzt die Stimmen Deines Geräts (Qualität je nach Browser). Die Spracheingabe läuft je nach Browser über Server des Browser-Herstellers (z. B. Google bei Chrome). Nutze sie nicht für vertrauliche Inhalte.</p>';
+ function voiceBar(w,ta,onAuto){
+  const bar=document.createElement('div');bar.className='row';
+  bar.innerHTML=(SS?'<label><input type="checkbox" class="vo"> 🔊 Antworten vorlesen</label> <label>Tempo <select class="vr"><option value="0.85">langsam</option><option value="1">normal</option><option value="1.15">schnell</option></select></label> <button class="btn sec vs" type="button">⏹ Stopp</button>':'')+(SR?' <button class="btn sec vm" type="button">🎤 Sprechen</button>'+(onAuto?' <label><input type="checkbox" class="va"> Nach dem Sprechen automatisch abgeben</label>':''):'');
+  if(!SS&&!SR)return bar;
+  const q=s=>bar.querySelector(s);
+  if(SS){q('.vo').checked=vs.on;q('.vr').value=String(vs.rate);q('.vo').onchange=e=>{vs.on=e.target.checked;vsave();if(!vs.on)stop()};q('.vr').onchange=e=>{vs.rate=+e.target.value;vsave()};q('.vs').onclick=stop}
+  if(SR){const mb=q('.vm');let rec=null,base='';
+   if(onAuto){q('.va').checked=vs.auto;q('.va').onchange=e=>{vs.auto=e.target.checked;vsave()}}
+   mb.onclick=()=>{if(rec){rec.stop();return}stop();let r;try{r=new SR()}catch(e){mb.hidden=true;return}rec=r;r.lang='de-DE';r.interimResults=true;r.continuous=false;base=ta.value?ta.value.trim()+' ':'';
+    r.onresult=ev=>{let t='';for(let i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript;ta.value=base+t};
+    r.onerror=ev=>{if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){mb.hidden=true;alert('Das Mikrofon ist hier nicht freigegeben. Erlaube den Zugriff in Deinem Browser, oder öffne die Seite in einem Fenster, das Mikrofon erlaubt. Tippen funktioniert weiterhin.')}};
+    r.onend=()=>{rec=null;mb.textContent='🎤 Sprechen';mb.classList.add('sec');if(onAuto&&vs.auto&&ta.value.trim())onAuto()};
+    mb.textContent='⏺ Zuhören … (nochmal tippen = Ende)';mb.classList.remove('sec');try{r.start()}catch(e){rec=null}}}
+  return bar}
  const BASE='Du bist ein erfahrener IHK-Prüfer und Dozent für die Industriemeister-Prüfung. Antworte immer auf Deutsch, duze die Person, sei fachlich korrekt und prüfungsnah. Rechtsstand: Oktober 2026. Wenn Du Dir bei Gesetzesstand, Paragrafen oder Zahlen nicht sicher bist, sage das klar. Antworte kompakt (höchstens ca. 200 Wörter), nutze bei Aufzählungen Spiegelstriche.';
  const NOKI='<div class="panel"><h3>🤖 KI nur im Claude-Artifact</h3><p>Die KI-Funktionen laufen über Dein eigenes Claude-Konto und sind nur verfügbar, wenn Du diese Lernplattform als Artifact in Claude öffnest. In der installierten App oder auf einer normalen Webseite sind sie nicht nutzbar. Alle anderen Bereiche funktionieren überall.</p></div>';
  const WARN='<p class="sub">KI-Antworten können Fehler enthalten. Prüfe wichtige Aussagen in der Merkbox oder in der Quelle (Gesetz, Norm).</p>';
@@ -2054,8 +2083,8 @@ const KI=(()=>{
  async function tutor(v,cfg,pre){
   const sp=await get();if(!sp){v.insertAdjacentHTML('beforeend',NOKI);return}
   const w=document.createElement('div');w.className='panel';
-  w.innerHTML='<h2>🤖 KI-Tutor</h2><p class="sub">Stelle eine Frage zu einem Thema und bekomme eine Antwort wie vom Dozenten. Beispiel: „Was passiert bei der Neutralisation von Schwefelsäure und Natronlauge?“ oder „Erkläre mir den Unterschied zwischen Brutto und Netto.“</p><div class="row">'+selects(cfg,true)+'</div><div id="kl" style="margin:10px 0"></div><textarea id="kq" aria-label="Deine Frage" placeholder="Deine Frage …"></textarea><div class="row"><button class="btn" id="ks">Frage stellen</button><button class="btn sec" id="kx" hidden>Stopp</button><button class="btn sec" id="kn">Neues Gespräch</button></div>'+WARN;
-  v.append(w);const $q=s=>w.querySelector(s);let hist=[],ctl=null;
+  w.innerHTML='<h2>🤖 KI-Tutor</h2><p class="sub">Stelle eine Frage zu einem Thema und bekomme eine Antwort wie vom Dozenten. Beispiel: „Was passiert bei der Neutralisation von Schwefelsäure und Natronlauge?“ oder „Erkläre mir den Unterschied zwischen Brutto und Netto.“</p><div class="row">'+selects(cfg,true)+'</div><div id="kl" style="margin:10px 0"></div><textarea id="kq" aria-label="Deine Frage" placeholder="Deine Frage …"></textarea><div class="row"><button class="btn" id="ks">Frage stellen</button><button class="btn sec" id="kx" hidden>Stopp</button><button class="btn sec" id="kn">Neues Gespräch</button></div>'+VNOTE+WARN;
+  v.append(w);const $q=s=>w.querySelector(s);let hist=[],ctl=null;stop();w.querySelector('#kq').before(voiceBar(w,w.querySelector('#kq')));
   $q('#kf').onchange=()=>{fillMods(cfg,true);hist=[];$q('#kl').innerHTML=''};
   w.querySelector('#kf').addEventListener('change',()=>{});
   const fm=()=>{const f=$q('#kf').value,s=cfg.subjects.find(x=>x.key===f);$q('#km').innerHTML='<option value="-1">Alle Themen / freie Frage</option>'+s.topics.map((t,i)=>'<option value="'+i+'">'+E(t.t)+'</option>').join('');cfg.setAcc&&cfg.setAcc(f)};
@@ -2068,7 +2097,7 @@ const KI=(()=>{
    hist.push({role:'user',content:user});$q('#kq').value='';
    const qd=document.createElement('div');qd.className='q';qd.innerHTML='<b>Du:</b> '+E(q);const ad=document.createElement('div');ad.className='sol';ad.innerHTML='<i>Die KI denkt nach …</i>';$q('#kl').append(qd,ad);
    ctl=new AbortController();$q('#ks').disabled=true;$q('#kx').hidden=false;
-   try{const r=await stream(hist,ad,ctl);hist.push({role:'assistant',content:r.text});ad.innerHTML=md(r.text)+(r.truncated?'<p class="sub">(Antwort gekürzt)</p>':'')}
+   try{const r=await stream(hist,ad,ctl);hist.push({role:'assistant',content:r.text});ad.innerHTML=md(r.text)+(r.truncated?'<p class="sub">(Antwort gekürzt)</p>':'');if(SS){const sb=document.createElement('button');sb.className='btn sec';sb.type='button';sb.textContent='🔊 Vorlesen';sb.onclick=()=>say(r.text,'w');ad.append(sb);if(vs.on)say(r.text,'w')}}
    catch(e){hist.pop();ad.innerHTML=E(errMsg(e))+(e&&e.text?'<hr>'+md(e.text):'')}
    $q('#ks').disabled=false;$q('#kx').hidden=true}
  }
@@ -2080,18 +2109,18 @@ const KI=(()=>{
   const sp=await get();if(!sp){v.insertAdjacentHTML('beforeend',NOKI);return}
   const w=document.createElement('div');w.className='panel';
   w.innerHTML='<h2>🎤 KI-Prüfer: mündliche Prüfung</h2><p class="sub">Die KI führt ein Prüfungsgespräch mit Dir. Wähle Fach und Prüfertyp. Am Ende bekommst Du eine Bewertung mit Punkten und Lernempfehlung.</p><div class="row"><label>Fach <select id="kf">'+cfg.subjects.map(s=>'<option value="'+s.key+'">'+E(s.name)+'</option>').join('')+'</select></label><label>Prüfer <select id="kp"><option value="w">'+PERS.w.name+'</option><option value="s">'+PERS.s.name+'</option></select></label><label>Fragen <select id="kn"><option>3</option><option selected>5</option><option>7</option></select></label></div><div class="row"><button class="btn" id="kg">Prüfung starten</button></div>'+WARN+'<div id="kl" style="margin:10px 0"></div><div id="kb" hidden><textarea id="ka" aria-label="Deine Antwort" placeholder="Deine Antwort …"></textarea><div class="row"><button class="btn" id="ks">Antwort abgeben</button><button class="btn sec" id="ke">Prüfung vorzeitig beenden</button></div></div>';
-  v.append(w);const $q=s=>w.querySelector(s);$q('#kf').onchange=()=>cfg.setAcc&&cfg.setAcc($q('#kf').value);cfg.setAcc&&cfg.setAcc($q('#kf').value);
+  v.append(w);const $q=s=>w.querySelector(s);stop();$q('#ka').before(voiceBar(w,$q('#ka'),()=>$q('#ks').click()));w.insertAdjacentHTML('beforeend',VNOTE);$q('#kf').onchange=()=>cfg.setAcc&&cfg.setAcc($q('#kf').value);cfg.setAcc&&cfg.setAcc($q('#kf').value);
   let hist=[],k=0,N=5,ctl=null,sys='',busy=false,f='',per=null;
   const add=(cls,h)=>{const d=document.createElement('div');d.className=cls;d.innerHTML=h;$q('#kl').append(d);d.scrollIntoView({block:'nearest'});return d};
   const turn=async(instr,label)=>{busy=true;$q('#ks').disabled=true;const d=add('sol','<i>'+E(per.name.split(' (')[0])+' überlegt …</i>');ctl=new AbortController();
    hist.push({role:'user',content:instr});
-   try{const r=await stream(hist,d,ctl);hist.push({role:'assistant',content:r.text});d.innerHTML='<b>'+E(per.name.split(' (')[0])+':</b> '+md(r.text)}
+   try{const r=await stream(hist,d,ctl);hist.push({role:'assistant',content:r.text});d.innerHTML='<b>'+E(per.name.split(' (')[0])+':</b> '+md(r.text);if(vs.on)say(r.text,per===PERS.s?'s':'w')}
    catch(e){hist.pop();d.innerHTML=E(errMsg(e));busy=false;$q('#ks').disabled=false;return false}
    busy=false;$q('#ks').disabled=false;return true};
   const finish=async()=>{$q('#kb').hidden=true;const d=add('sol','<i>Bewertung wird erstellt …</i>');
    const ins=hist.concat([{role:'user',content:'Die Prüfung ist beendet. Bewerte als '+per.name.split(' (')[0]+' ('+per.txt+') die Leistung des Prüflings insgesamt anhand seiner Antworten. Antworte als JSON mit: punkte (Zahl 0-50, wie bei der IHK), note (Text, z. B. "befriedigend"), staerken (Text), schwaechen (Text), empfehlung (Text mit 2-3 konkreten Lernthemen). Bewertungsmaßstab laut Prüfertyp.'}]);
    try{const j=await sp.json(ins,{cache:false});const p=Math.max(0,Math.min(50,+j.punkte||0));
-    d.innerHTML='<h3>Bewertung: '+nf0(p)+' von 50 Punkten · '+E(j.note||'')+'</h3><p><b>Stärken:</b> '+E(j.staerken||'')+'</p><p><b>Schwächen:</b> '+E(j.schwaechen||'')+'</p><p><b>Empfehlung:</b> '+E(j.empfehlung||'')+'</p>'+WARN;cfg.onScore&&cfg.onScore(f,Math.round(p/50*100),per.name)}
+    d.innerHTML='<h3>Bewertung: '+nf0(p)+' von 50 Punkten · '+E(j.note||'')+'</h3><p><b>Stärken:</b> '+E(j.staerken||'')+'</p><p><b>Schwächen:</b> '+E(j.schwaechen||'')+'</p><p><b>Empfehlung:</b> '+E(j.empfehlung||'')+'</p>'+WARN;cfg.onScore&&cfg.onScore(f,Math.round(p/50*100),per.name);if(vs.on)say('Bewertung: '+nf0(p)+' von 50 Punkten, '+(j.note||'')+'. Stärken: '+(j.staerken||'')+' Schwächen: '+(j.schwaechen||'')+' Empfehlung: '+(j.empfehlung||''),per===PERS.s?'s':'w')}
    catch(e){d.innerHTML=E(errMsg(e))}};
   const nf0=n=>String(Math.round(n*10)/10).replace('.',',');
   $q('#kg').onclick=async()=>{f=$q('#kf').value;per=PERS[$q('#kp').value];N=+$q('#kn').value;k=1;hist=[];$q('#kl').innerHTML='';$q('#kg').disabled=true;$q('#kb').hidden=false;
@@ -2110,7 +2139,8 @@ const KI=(()=>{
   try{const j=await sp.json(BASE+'\n\nBewerte die Antwort eines Prüflings streng aber fair anhand der Musterlösung. Aufgabe: '+task.q+'\nMusterlösung: '+task.a+'\nMaximale Punktzahl: '+max+'\nAntwort des Prüflings: '+answer+'\n\nAntworte als JSON mit: punkte (Zahl von 0 bis '+max+', halbe Punkte erlaubt), feedback (2-4 Sätze: was stimmt, was fehlt).',{cache:false});
    const p=Math.max(0,Math.min(max,Math.round((+j.punkte||0)*2)/2));box.innerHTML='<b>KI-Bewertung: '+String(p).replace('.',',')+' von '+max+' Punkten.</b> '+E(j.feedback||'')+WARN;return p}
   catch(e){box.innerHTML=E(errMsg(e));return null}}
- return{tutor,pruefer,grade,available:get};
+ const readBtn=(txt,per)=>{if(!SS)return null;const b=document.createElement('button');b.className='btn sec';b.type='button';b.textContent='🔊 Vorlesen';let on=false;b.onclick=()=>{if(on){stop();on=false;b.textContent='🔊 Vorlesen'}else{say(txt,per||'w');on=true;b.textContent='⏹ Stopp'}};return b};
+ return{tutor,pruefer,grade,available:get,stop,say,readBtn};
 })();
 
 let KIV=false,KIN=false,KIMODE='tutor';
@@ -2163,7 +2193,7 @@ function homeView(){
  $('#home').querySelectorAll('.chip[data-i]').forEach(b=>b.onclick=()=>go(+b.dataset.i));if($('#mcard'))$('#mcard').onclick=memOpen;
 }
 function nav(){
- SIMV=SIMN;SIMN=false;MEMV=MEMN;MEMN=false;KIV=KIN;KIN=false;const hm=cur<0&&!prac&&!SIMV&&!MEMV&&!KIV;document.body.dataset.f=cur>=0?M[cur].F:'';
+ KI.stop();SIMV=SIMN;SIMN=false;MEMV=MEMN;MEMN=false;KIV=KIN;KIN=false;const hm=cur<0&&!prac&&!SIMV&&!MEMV&&!KIV;document.body.dataset.f=cur>=0?M[cur].F:'';
  $('#bgr').setAttribute('fill','url(#p-'+(cur>=0?({Physik:'phys',Chemie:'chem',Statistik:'stat',Umrechnen:'unit',Energie:'energy'}[M[cur].F]||'home'):'home')+')');
  $('#home').hidden=!hm;$('#app').hidden=cur<0;$('#practice').hidden=!prac;$('#sim').hidden=!SIMV;$('#mem').hidden=!MEMV;$('#ki').hidden=!KIV;$('#desc').hidden=cur<0;$('#gs').hidden=$('#ms').hidden=cur<0;if(cur<0){$('#fx').hidden=true;$('#erk').hidden=true}
  if(hm)homeView();
@@ -2235,5 +2265,6 @@ $('#ptip').onclick=()=>{const c=PS.cur;if(c&&c.k==='steps'&&c.steps[c.i][5])$('#
 function loop(n){const dt=Math.min((n-last)/1000,.1);last=n;if(cur>=0&&M[cur].anim&&play){clock+=dt;render()}requestAnimationFrame(loop)}
 nav();requestAnimationFrame(loop);
 </script>
-<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+</body>
 </html>
