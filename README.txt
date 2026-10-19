@@ -1,6 +1,6 @@
 LERNLABOR ALS WEB-APP
 =====================
-Inhalt: index.html (die App), manifest.webmanifest, sw.js (Offline-Funktion), 3 Symbole.
+Inhalt: index.html (die App), manifest.webmanifest, sw.js (Offline-Funktion), 3 Symbole, Ordner fonts/ (Schrift).
 
 1) HOCHLADEN (einmalig)
    Die App muss über https erreichbar sein, sonst funktioniert Installation und Offline-Modus nicht
@@ -18,5 +18,12 @@ Inhalt: index.html (die App), manifest.webmanifest, sw.js (Offline-Funktion), 3 
    Die Schriftart wird nur geladen, wenn sie einmal online abgerufen wurde, sonst Standardschrift.
 
 4) UPDATES
-   Neue index.html hochladen und in sw.js die Version erhöhen (const V='lernlabor-v2'),
+   Neue index.html hochladen und in sw.js die Version erhöhen (const V='lernlabor-v31'),
    dann holen sich die Geräte beim nächsten Start die neue Fassung.
+   In index.html APPV auf dieselbe Nummer setzen und NEWS kurz beschreiben
+   (erscheint als "Neu in Version ..." auf der Startseite).
+
+5) KONTAKT
+   In index.html OWNER (Name) und MAIL (Projekt-Adresse) eintragen. Sie erscheinen
+   im Impressum, im Datenschutz und im Knopf "Fehler melden".
+   Die Schrift liegt im Ordner fonts/ (SIL Open Font License, siehe fonts/OFL.txt).
