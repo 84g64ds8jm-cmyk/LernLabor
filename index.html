@@ -2045,7 +2045,11 @@ const KI=(()=>{
 
  /* Sprache: Ausgabe (SpeechSynthesis) und Eingabe (SpeechRecognition) */
  const SS=typeof speechSynthesis!=='undefined'&&typeof SpeechSynthesisUtterance!=='undefined';
- const SR=(typeof window!=='undefined')&&(window.SpeechRecognition||window.webkitSpeechRecognition);
+ const IOS=typeof navigator!=='undefined'&&(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
+ const STANDALONE=typeof window!=='undefined'&&((navigator.standalone===true)||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
+ const SR0=(typeof window!=='undefined')&&(window.SpeechRecognition||window.webkitSpeechRecognition);
+ const SR=(IOS&&STANDALONE)?null:SR0;
+ let unl=false;function unlock(){if(!SS||unl)return;unl=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}catch(e){}}
  const VK='ki-voice';let vs={on:false,rate:1,auto:false};
  try{vs=Object.assign(vs,JSON.parse(localStorage.getItem(VK)||'{}'))}catch(e){}
  const vsave=()=>{try{localStorage.setItem(VK,JSON.stringify(vs))}catch(e){}};
@@ -2059,13 +2063,13 @@ const KI=(()=>{
  const VNOTE='<p class="sub">Vorlesen nutzt die Stimmen Deines Geräts (Qualität je nach Browser). Die Spracheingabe läuft je nach Browser über Server des Browser-Herstellers (z. B. Google bei Chrome). Nutze sie nicht für vertrauliche Inhalte.</p>';
  function voiceBar(w,ta,onAuto){
   const bar=document.createElement('div');bar.className='row';
-  bar.innerHTML=(SS?'<label><input type="checkbox" class="vo"> 🔊 Antworten vorlesen</label> <label>Tempo <select class="vr"><option value="0.85">langsam</option><option value="1">normal</option><option value="1.15">schnell</option></select></label> <button class="btn sec vs" type="button">⏹ Stopp</button>':'')+(SR?' <button class="btn sec vm" type="button">🎤 Sprechen</button>'+(onAuto?' <label><input type="checkbox" class="va"> Nach dem Sprechen automatisch abgeben</label>':''):'');
+  bar.innerHTML=(SS?'<label><input type="checkbox" class="vo"> 🔊 Antworten vorlesen</label> <label>Tempo <select class="vr"><option value="0.85">langsam</option><option value="1">normal</option><option value="1.15">schnell</option></select></label> <button class="btn sec vs" type="button">⏹ Stopp</button>':'')+(IOS&&STANDALONE?'<p class="sub" style="flex-basis:100%">🎤 iPhone: In der installierten App funktioniert die Spracherkennung der Seite nicht. Tippe in das Textfeld und nutze das Mikrofon-Symbol Deiner Tastatur (Diktieren).</p>':'')+(SR?' <button class="btn sec vm" type="button">🎤 Sprechen</button>'+(onAuto?' <label><input type="checkbox" class="va"> Nach dem Sprechen automatisch abgeben</label>':''):'');
   if(!SS&&!SR)return bar;
   const q=s=>bar.querySelector(s);
-  if(SS){q('.vo').checked=vs.on;q('.vr').value=String(vs.rate);q('.vo').onchange=e=>{vs.on=e.target.checked;vsave();if(!vs.on)stop()};q('.vr').onchange=e=>{vs.rate=+e.target.value;vsave()};q('.vs').onclick=stop}
+  if(SS){q('.vo').checked=vs.on;q('.vr').value=String(vs.rate);q('.vo').onchange=e=>{unlock();vs.on=e.target.checked;vsave();if(!vs.on)stop()};q('.vr').onchange=e=>{vs.rate=+e.target.value;vsave()};q('.vs').onclick=stop}
   if(SR){const mb=q('.vm');let rec=null,base='';
    if(onAuto){q('.va').checked=vs.auto;q('.va').onchange=e=>{vs.auto=e.target.checked;vsave()}}
-   mb.onclick=()=>{if(rec){rec.stop();return}stop();let r;try{r=new SR()}catch(e){mb.hidden=true;return}rec=r;r.lang='de-DE';r.interimResults=true;r.continuous=false;base=ta.value?ta.value.trim()+' ':'';
+   mb.onclick=()=>{unlock();if(rec){rec.stop();return}stop();let r;try{r=new SR()}catch(e){mb.hidden=true;return}rec=r;r.lang='de-DE';r.interimResults=true;r.continuous=false;base=ta.value?ta.value.trim()+' ':'';
     r.onresult=ev=>{let t='';for(let i=0;i<ev.results.length;i++)t+=ev.results[i][0].transcript;ta.value=base+t};
     r.onerror=ev=>{if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){mb.hidden=true;alert('Das Mikrofon ist hier nicht freigegeben. Erlaube den Zugriff in Deinem Browser, oder öffne die Seite in einem Fenster, das Mikrofon erlaubt. Tippen funktioniert weiterhin.')}};
     r.onend=()=>{rec=null;mb.textContent='🎤 Sprechen';mb.classList.add('sec');if(onAuto&&vs.auto&&ta.value.trim())onAuto()};
@@ -2092,7 +2096,7 @@ const KI=(()=>{
   if(pre){$q('#kf').value=pre.f;fm();$q('#km').value=String(pre.m)}
   $q('#kn').onclick=()=>{hist=[];$q('#kl').innerHTML=''};
   $q('#kx').onclick=()=>ctl&&ctl.abort();
-  $q('#ks').onclick=async()=>{const q=$q('#kq').value.trim();if(!q)return;const c=ctxOf(cfg,$q('#kf').value,+$q('#km').value);
+  $q('#ks').onclick=async()=>{unlock();const q=$q('#kq').value.trim();if(!q)return;const c=ctxOf(cfg,$q('#kf').value,+$q('#km').value);
    const first=hist.length===0;const user=(first?BASE+'\n\n'+c.txt+'\n\nBeantworte die Frage des Lernenden fachlich korrekt und prüfungsnah. Bei Rechenfragen zeige den Rechenweg.\n\nFrage: ':'')+q;
    hist.push({role:'user',content:user});$q('#kq').value='';
    const qd=document.createElement('div');qd.className='q';qd.innerHTML='<b>Du:</b> '+E(q);const ad=document.createElement('div');ad.className='sol';ad.innerHTML='<i>Die KI denkt nach …</i>';$q('#kl').append(qd,ad);
@@ -2123,11 +2127,11 @@ const KI=(()=>{
     d.innerHTML='<h3>Bewertung: '+nf0(p)+' von 50 Punkten · '+E(j.note||'')+'</h3><p><b>Stärken:</b> '+E(j.staerken||'')+'</p><p><b>Schwächen:</b> '+E(j.schwaechen||'')+'</p><p><b>Empfehlung:</b> '+E(j.empfehlung||'')+'</p>'+WARN;cfg.onScore&&cfg.onScore(f,Math.round(p/50*100),per.name);if(vs.on)say('Bewertung: '+nf0(p)+' von 50 Punkten, '+(j.note||'')+'. Stärken: '+(j.staerken||'')+' Schwächen: '+(j.schwaechen||'')+' Empfehlung: '+(j.empfehlung||''),per===PERS.s?'s':'w')}
    catch(e){d.innerHTML=E(errMsg(e))}};
   const nf0=n=>String(Math.round(n*10)/10).replace('.',',');
-  $q('#kg').onclick=async()=>{f=$q('#kf').value;per=PERS[$q('#kp').value];N=+$q('#kn').value;k=1;hist=[];$q('#kl').innerHTML='';$q('#kg').disabled=true;$q('#kb').hidden=false;
+  $q('#kg').onclick=async()=>{unlock();f=$q('#kf').value;per=PERS[$q('#kp').value];N=+$q('#kn').value;k=1;hist=[];$q('#kl').innerHTML='';$q('#kg').disabled=true;$q('#kb').hidden=false;
    const s=cfg.subjects.find(x=>x.key===f);const stoff=s.topics.map(t=>t.t+': '+t.ctx.slice(0,500)).join('\n').slice(0,6000);
    sys=BASE+'\n\n'+per.txt+'\n\nDu führst eine mündliche Ergänzungsprüfung im Fach '+s.name+'. Stoffgrundlage:\n'+stoff+'\n\nRegeln: Stelle immer genau eine Frage, nie mehrere. Die Fragen sollen aus der Praxis stammen und unterschiedliche Themen abdecken. Verrate die Lösung nicht.';
    await turn(sys+'\n\nBegrüße den Prüfling in einem Satz und stelle Frage 1 von '+N+'.')};
-  $q('#ks').onclick=async()=>{if(busy)return;const a=$q('#ka').value.trim();if(!a)return;$q('#ka').value='';add('q','<b>Du:</b> '+E(a));
+  $q('#ks').onclick=async()=>{unlock();if(busy)return;const a=$q('#ka').value.trim();if(!a)return;$q('#ka').value='';add('q','<b>Du:</b> '+E(a));
    if(k<N){k++;await turn('Antwort des Prüflings: '+a+'\n\nGib in höchstens 2 Sätzen Rückmeldung zu dieser Antwort passend zu Deinem Prüfertyp (Fehler konkret benennen, richtige Lösung kurz nennen) und stelle dann Frage '+k+' von '+N+'.')}
    else{const ok=await turn('Antwort des Prüflings: '+a+'\n\nGib in höchstens 2 Sätzen Rückmeldung zu dieser letzten Antwort und sage, dass die Prüfung beendet ist.');if(ok)await finish();$q('#kg').disabled=false}};
   $q('#ke').onclick=async()=>{if(busy||hist.length<2)return;ctl&&ctl.abort();await finish();$q('#kg').disabled=false}
@@ -2177,7 +2181,7 @@ function build(){
  const fb=add(FAV.includes(m.name)?'★ Favorit':'☆ Favorit',()=>{toggleFav(m.name);fb.textContent=FAV.includes(m.name)?'★ Favorit':'☆ Favorit'});
  if(hasPr(m))add('✎ Üben',()=>openPractice('M:'+m.name));
  if(m.anim){const b=add(play?'Pause':'Start',()=>{play=!play;b.textContent=play?'Pause':'Start'})}
- {const E=ERK[m.name];$('#erk').hidden=!E;if(E){$('#erk').innerHTML='<summary>💡 Verstehen und typische Fehler</summary><p>'+E[0]+'</p><p><b>Hier passieren die meisten Fehler:</b></p><ul>'+E[1].map(x=>`<li>${x}</li>`).join('')+'</ul>';$('#erk').open=!(memGet().t[m.name]&&memGet().t[m.name].n)}}$('#fx').hidden=!FX[m.name];$('#fx').innerHTML=FX[m.name]?'<b>Grundgleichungen</b><br>'+FX[m.name].map(x=>`<span>${x}</span>`).join(''):'';$('#desc').textContent=m.desc;$('#leg').textContent=m.leg;render();
+ {const E=ERK[m.name];$('#erk').hidden=!E;if(E){$('#erk').innerHTML='<summary>💡 Verstehen und typische Fehler</summary><p>'+E[0]+'</p><p><b>Hier passieren die meisten Fehler:</b></p><ul>'+E[1].map(x=>`<li>${x}</li>`).join('')+'</ul>';{const rb=KI.readBtn((E[0]+' Hier passieren die meisten Fehler: '+E[1].join('. ')).replace(/<[^>]+>/g,' '));if(rb)$('#erk').append(rb)}$('#erk').open=!(memGet().t[m.name]&&memGet().t[m.name].n)}}$('#fx').hidden=!FX[m.name];$('#fx').innerHTML=FX[m.name]?'<b>Grundgleichungen</b><br>'+FX[m.name].map(x=>`<span>${x}</span>`).join(''):'';$('#desc').textContent=m.desc;$('#leg').textContent=m.leg;render();
 }
 const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 SIM=store.get('ll_sim',null);
@@ -2242,7 +2246,7 @@ function renderQ(){const c=PS.cur,sc=store.get('ll_score',{ok:0,n:0}),mcq=c.k===
  if(c.exam||orl){$('#pt').innerHTML=`<span class="chip">${orl?'Mündliche Frage':'Prüfungsaufgabe'}: ${c.n}</span>`}else{$('#pt').innerHTML=`<button type="button" class="chip" id="pgo">Thema: ${c.n} →</button>`;$('#pgo').onclick=()=>go(i)}
  if(orl){const o=store.get('ll_oral',{k:0,n:0});$('#sc').textContent=`Mündlich gewusst: ${o.k} von ${o.n}`}else $('#sc').textContent=`Richtig: ${sc.ok} von ${sc.n}`;
  $('#psol').hidden=true;$('#pfb').textContent='';$('#pfb').className='';$('#ptipt').textContent='';$('#pck').textContent='Prüfen';$('#pck').hidden=orl;$('#psh').textContent=orl?'Musterantwort':'Lösungsweg';c.done=false;c.sel=-1;$('#pin').hidden=$('#pu').hidden=mcq||orl;$('#ptip').hidden=true;
- if(orl){$('#pq').textContent=c.q;$('#popts').innerHTML='';$('#ptol').textContent='Überlege zuerst, wie Du antworten würdest. Dann die Musterantwort ansehen und Dich ehrlich einschätzen.';return}
+ if(orl){$('#pq').textContent=c.q;{const old=$('#prd');if(old&&old.remove)old.remove();const rb=KI.readBtn(c.q);if(rb){rb.id='prd';$('#pq').after(rb)}}$('#popts').innerHTML='';$('#ptol').textContent='Überlege zuerst, wie Du antworten würdest. Dann die Musterantwort ansehen und Dich ehrlich einschätzen.';return}
  if(mcq){$('#pq').textContent=(c.k==='und'?'Verständnis: ':'Ankreuzen: ')+c.q;$('#popts').innerHTML=c.opts.map((o,j)=>`<button type="button" class="opt" data-j="${j}"><b>${'ABCD'[j]}</b> ${o}</button>`).join('');$('#popts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pickOpt(+b.dataset.j));$('#ptol').textContent='Wähle eine Antwort und tippe auf Prüfen.'}
  else{$('#popts').innerHTML='';const it=item(),t=it.t;$('#pq').textContent=c.k==='steps'?c.intro+(c.log.length?'\n'+c.log.join('\n'):'')+`\nSchritt ${c.i+1} von ${c.steps.length}: `+c.steps[c.i][0]:c.q[0];$('#pu').textContent=it.u;$('#pin').value='';$('#ptol').textContent=t.abs!=null?`Toleranz ±${String(t.abs).replace('.',',')}`:`Toleranz ±${(t.rel||.02)*100} % (Dezimalkomma ist erlaubt)`;$('#ptip').hidden=!(c.k==='steps'&&c.steps[c.i][5])}}
 function pickOpt(j){const c=PS.cur;if(!c||c.done)return;c.sel=j;$('#popts').querySelectorAll('.opt').forEach((b,k)=>b.className='opt'+(k===j?' sel':''))}
@@ -2257,7 +2261,7 @@ function checkQ(){const c=PS.cur;if(!c)return;
  if(!c.tried){c.tried=true;score(ok,ok?null:errKind(u,it.a))}
  if(ok){fb(c.k==='steps'&&c.i===c.steps.length-1?'✓ Richtig! Alle Schritte geschafft.':'✓ Richtig!',true);finishStep(c,it)}else fb('✗ Noch nicht. '+(errHint(u,it.a)||'Prüfe Einheit und Rundung oder öffne den Lösungsweg.'),false)}
 function rateOral(k){memRec('Mündlich · '+PS.cur.n,!!k);const o=store.get('ll_oral',{k:0,n:0});o.n++;if(k)o.k++;store.set('ll_oral',o);newQ()}
-function showSol(){const c=PS.cur;if(!c)return;if(c.k==='oral'){$('#psol').innerHTML='<b>Musterantwort</b><p>'+c.a+'</p>';$('#psol').hidden=false;$('#popts').innerHTML='<button type="button" class="opt" data-j="1"><b>✓</b> Gewusst</button><button type="button" class="opt" data-j="0"><b>↻</b> Noch unsicher</button>';$('#popts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>rateOral(+b.dataset.j));return}
+function showSol(){const c=PS.cur;if(!c)return;if(c.k==='oral'){$('#psol').innerHTML='<b>Musterantwort</b><p>'+c.a+'</p>';{const rb=KI.readBtn(c.a.replace(/<[^>]+>/g,' '));if(rb)$('#psol').append(rb)}$('#psol').hidden=false;$('#popts').innerHTML='<button type="button" class="opt" data-j="1"><b>✓</b> Gewusst</button><button type="button" class="opt" data-j="0"><b>↻</b> Noch unsicher</button>';$('#popts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>rateOral(+b.dataset.j));return}
  if(c.k==='mc'||c.k==='und'){c.done=true;if(!c.tried){c.tried=true;score(false)}$('#popts').querySelectorAll('.opt').forEach((b,k)=>b.className='opt'+(k===c.ok?' right':''));$('#psol').innerHTML='<b>Richtig ist '+'ABCD'[c.ok]+'</b><p>'+c.why+'</p>';$('#psol').hidden=false;$('#pck').textContent='Nächste Aufgabe';return}
  const it=item();if(!c.tried){c.tried=true;score(false)}
  $('#psol').innerHTML='<b>Lösungsweg</b>'+it.s.map(x=>`<p>${x}</p>`).join('')+`<p><b>Ergebnis: ${nf(it.a,4)} ${it.u}</b></p>`;$('#psol').hidden=false;if(!c.done)finishStep(c,it)}
