@@ -1810,10 +1810,97 @@ const ERK={
 const ERKU=['Beim Umrechnen immer die Einheit und ihren Faktor bestimmen: Bei der Länge ändert jeder Schritt (zum Beispiel mm → cm → dm → m) den Wert um 10, bei der Fläche um 100, beim Volumen um 1000. Das Ergebnis zum Schluss auf Plausibilität prüfen.',['Fläche und Länge oder Volumen verwechseln (1 m² = 10 000 cm², nicht 100 cm²).','Bei der Zeit mit 100 statt 60 rechnen.','Kommastellen beim Verschieben falsch setzen.']];
 'Länge ⇄,Fläche ⇄,Volumen ⇄,Masse ⇄,Dichte ⇄,Zeit ⇄,Geschwindigkeit ⇄,Kraft ⇄,Druck ⇄,Energie ⇄,Leistung ⇄,Temperatur ⇄,Winkel ⇄'.split(',').forEach(n=>ERK[n]=ERKU);
 ERK['Zeit ⇄']=['Zeit ist nicht dezimal aufgebaut: 1 h = 60 min = 3600 s. Dezimale Stunden (1,5 h) werden mit 60 in Minuten verwandelt (90 min).',['Mit 100 statt 60 umrechnen (1,5 h sind 90 min, nicht 150 min).','Minuten und Sekunden in einem Schritt falsch kombinieren.','Dezimale Stunden mit Stunden und Minuten verwechseln.']];
+/* ===== Im Betrieb: ein Praxisbezug je Thema (eigene Beispiele) ===== */
+const BET={
+'Reihe':'Ein Vorwiderstand vor einer Meldeleuchte ist eine Reihenschaltung. Er übernimmt die überschüssige Spannung, damit die Leuchte nur ihre Nennspannung bekommt.',
+'Parallel':'Alle Geräte an einer Steckdosenleiste in der Werkstatt hängen parallel an 230 V. Jedes weitere Gerät erhöht den Gesamtstrom, bis die Sicherung auslöst.',
+'Gemischt R₁+(R₂∥R₃)':'Eine lange Zuleitung (R₁) versorgt zwei parallel geschaltete Heizwiderstände eines Ofens. An der Zuleitung fällt Spannung ab, darum bekommen die Heizungen etwas weniger als die Netzspannung.',
+'Gemischt (R₁+R₂)∥R₃':'Ein Spannungsteiler aus R₁ und R₂ liefert einem Sensor sein Signal. Er liegt parallel zu einer Meldeleuchte R₃ an derselben Versorgung.',
+'Gemischt R₁+(R₂∥R₃)+R₄':'Hin- und Rückleiter einer Zuleitung (R₁ und R₄) führen zu zwei parallel betriebenen Heizpatronen. Die Leitungswiderstände liegen in Reihe und verringern die Spannung an den Patronen.',
+'Gemischt (R₁+R₂)∥(R₃+R₄)':'Eine Trocknungsanlage hat zwei Heizkreise mit je zwei Heizstäben in Reihe. Beide Kreise hängen parallel an derselben Spannung. Fällt ein Stab aus, heizt der andere Kreis weiter.',
+'Ohmsches Gesetz':'Die Zuleitung zu einer Maschine hat 0,5 Ω. Bei 16 A fallen daran U = R · I = 8 V ab, die dem Motor fehlen.',
+'Elektrische Arbeit & Leistung':'Ein Kompressor mit 4 kW läuft 6 h pro Schicht. Das sind 24 kWh, bei 0,25 €/kWh also 6 € Stromkosten je Schicht.',
+'Drehstrom (Stern & Dreieck)':'Große Motoren laufen am 400-V-Drehstromnetz. Beim Stern-Dreieck-Anlauf startet der Motor in Stern mit nur einem Drittel des Anlaufstroms und wird dann auf Dreieck umgeschaltet.',
+[GW]:'Die Steuerung einer Anlage arbeitet meist mit 24 V Gleichspannung, die Motoren mit 230/400 V Wechselspannung. Ein Netzteil im Schaltschrank macht aus dem Wechselstrom den Gleichstrom.',
+'Hydraulik':'In einer Werkstattpresse drückt ein kleiner Pumpenkolben auf das Öl. Hat der Arbeitskolben die 50-fache Fläche, wird die Kraft 50-mal größer, der Weg aber 50-mal kleiner.',
+'Hebel':'Mit einem Brecheisen hebt man eine Maschine an. Bei 1,2 m Kraftarm und 0,1 m Lastarm reichen 250 N Handkraft für 3000 N Last.',
+'Rolle & Flaschenzug':'Ein Flaschenzug mit 4 tragenden Seilen hebt einen 200-kg-Motor (rund 2000 N) mit etwa 500 N Zugkraft, ohne Reibung gerechnet. Dafür zieht man 4 m Seil für 1 m Hub.',
+'Reibung (schiefe Ebene)':'Eine Kiste wird über eine Laderampe auf den LKW geschoben. Die nötige Kraft ist Hangabtrieb plus Reibung, also mehr als ohne Reibung berechnet.',
+'Beschleunigung & Bremsen':'Ein Gabelstapler fährt 10 km/h (rund 2,8 m/s) und bremst mit 2 m/s². Sein Bremsweg ist s = v² / (2 · a) = rund 2 m. So plant man Abstände in der Halle.',
+'Kreisbewegung':'Eine Schleifscheibe mit 300 mm Durchmesser dreht mit 3000 U/min. Ihre Umfangsgeschwindigkeit ist v = π · d · n = rund 47 m/s und darf die Angabe auf der Scheibe nicht überschreiten.',
+'Sinus & Kosinus':'Die Netzspannung verläuft als Sinuskurve mit 50 Hz. Im Drehstromnetz laufen drei solche Kurven um 120° versetzt.',
+'Schwingung':'Ein Lüfter mit Unwucht dreht mit 1500 U/min und schwingt dadurch mit f = 25 Hz. Schwingungsmessungen an Lagern zeigen früh, wann ein Lager verschleißt.',
+'Aggregatzustand':'Im Kältekreis einer Klimaanlage verdampft das Kältemittel und nimmt dabei Wärme auf. Im Verflüssiger wird es wieder flüssig und gibt die Wärme ab.',
+'Drehmoment':'Eine Radmutter soll mit 120 N·m angezogen werden. Mit einem 0,4 m langen Schlüssel braucht man dafür 300 N, wenn man senkrecht zum Schlüssel zieht.',
+'Gleit-, Haft- & Rollreibung':'Eine Palette auf dem Hallenboden loszureißen ist schwerer, als sie danach weiterzuschieben, weil die Haftreibung größer ist. Mit einem Hubwagen auf Rollen geht es fast mühelos.',
+'Schiefe Ebene':'Auf einer Rampe mit 10° Neigung wirkt bei einer Last mit F_G = 2000 N eine Hangabtriebskraft von F_H = 2000 N · sin 10° = rund 350 N.',
+'Gesetz von Hooke':'Die Feder in einem Sicherheitsventil hat D = 50 N/mm. Um 8 mm zusammengedrückt, drückt sie mit 400 N auf den Ventilteller.',
+'Druck':'Ein Hydraulikzylinder mit 80 mm Kolbendurchmesser (A ≈ 50 cm²) drückt bei 160 bar (1600 N/cm²) mit rund 80 kN.',
+'Gasgesetze':'Eine Gasflasche steht im Sommer in der Sonne. Steigt die Temperatur von 20 °C auf 50 °C, steigt der Druck um rund 10 %. Darum gehören Gasflaschen nicht in die Hitze.',
+'Auftrieb und Dichte':'Im Ölabscheider schwimmt Öl (ρ ≈ 0,9 g/cm³) auf dem Wasser, weil seine Dichte kleiner ist. So kann man es oben abziehen.',
+'Gleichförmige Bewegung':'Ein Förderband läuft mit 0,5 m/s. Ein Teil braucht für 12 m Strecke t = s / v = 24 s. Daraus ergibt sich der Takt der Anlage.',
+'Freier Fall (mit Luftwiderstand)':'Ein Werkzeug fällt von einer 5 m hohen Bühne. Es trifft nach rund 1 s mit etwa 10 m/s (36 km/h) auf. Darum gilt unter Arbeitsbühnen Helmpflicht.',
+'Kraftgesetz F = m · a':'Ein Kran beschleunigt eine Last von 1000 kg mit 0,5 m/s² nach oben. Das Seil muss dann F_G + m · a = 9810 N + 500 N = 10 310 N tragen.',
+'Arbeit & Leistung':'Ein Kran hebt 500 kg in 10 s um 6 m. Das sind W = 500 kg · 9,81 m/s² · 6 m = rund 29 kJ und P = W / t = rund 2,9 kW.',
+'Energieformen & Erhaltung':'Ein Fallhammer mit 50 kg wird 2 m hochgehoben. Seine Lageenergie von rund 1 kJ wird beim Fallen zu Bewegungsenergie und verformt das Werkstück.',
+'Wirkungsgrad':'Ein Förderbandmotor gibt 3 kW ab und hat η = 0,85. Er nimmt also 3 kW / 0,85 = rund 3,5 kW auf. Der Rest wird im Motor zu Wärme.',
+'Wärmeausdehnung':'Eine 10 m lange Stahlrohrleitung wird von 20 °C auf 80 °C erwärmt. Mit α = 0,000012 1/K wird sie um ΔL = 0,000012 · 10 000 mm · 60 K = 7,2 mm länger.',
+'Wärmekapazität':'Ein 200-l-Speicher für die Waschräume soll von 15 °C auf 60 °C erwärmt werden: Q = 200 kg · 4,18 kJ/(kg·K) · 45 K = rund 37 600 kJ, also etwa 10,5 kWh.',
+'Schmelz- & Verdampfungswärme':'In der Gießerei wird das Metall erst auf Schmelztemperatur erwärmt. Danach braucht es zusätzlich die Schmelzwärme, bevor es flüssig ist. Beides zusammen bestimmt die Energiekosten.',
+'Mischungstemperatur':'Im Kühlwasserkreislauf mischt sich warmes Rücklaufwasser mit kaltem Frischwasser. Die Mischungstemperatur zeigt, ob die Kühlung der Maschine noch reicht.',
+'Steuerung oder Regelung (Heizung)':'Ein Härteofen mit Temperaturfühler ist eine Regelung: Der Regler vergleicht den Istwert mit dem Sollwert und heizt nach. Eine Zeitschaltuhr für die Hallenbeleuchtung ist dagegen eine Steuerung.',
+'Zug-/Druckspannung & Sicherheit':'Eine Zugstange aus S235 (R_e = 235 N/mm²) mit 100 mm² Querschnitt trägt 10 kN. Die Spannung ist σ = 100 N/mm², die Sicherheit S = 235 / 100 = 2,35.',
+'Scherung & Flächenpressung':'Der Bolzen in der Anhängerkupplung wird auf Abscheren belastet. Scherfläche und Flächenpressung in der Bohrung entscheiden, welcher Durchmesser nötig ist.',
+'Kräfteparallelogramm':'Zwei Ketten ziehen in verschiedene Richtungen an einem Anschlagpunkt. Der Anschlagpunkt muss die Resultierende aufnehmen, nicht die einfache Summe der beiden Kräfte.',
+'Kräftezerlegung (Seilkräfte)':'Hängt eine Last an zwei Anschlagketten, wächst die Kraft in jeder Kette, je flacher die Ketten hängen. Bei 60° zwischen den Ketten trägt jede schon rund 58 % der Last statt 50 %.',
+'Hydraulische Leistung & Volumenstrom':'Eine Hydraulikpumpe fördert 20 l/min bei 150 bar. Ihre hydraulische Leistung ist P = p · Q = 150 · 10⁵ Pa · 20 / 60 000 m³/s = 5 kW.',
+'Pneumatik: Luftverbrauch':'Jeder Zylinder einer Taktstraße verbraucht bei jedem Hub Druckluft. Aus Kolbenfläche, Hub und Hubzahl berechnet man, ob der Kompressor für alle Zylinder reicht.',
+'Gasdichte (Normzustand → Betrieb)':'Ein Gaszähler misst das Volumen im Betriebszustand. Abgerechnet wird im Normzustand, darum rechnet der Versorger mit Druck und Temperatur um.',
+'Säuren & Basen':'Abwasser aus einer Galvanik ist oft stark sauer oder basisch. Vor dem Einleiten wird der pH-Wert gemessen und das Wasser in den erlaubten Bereich nahe pH 7 gebracht.',
+'Korrosion':'Sitzt eine Edelstahlschraube in einem Aluminiumblech, löst sich bei Feuchtigkeit das unedlere Aluminium um die Schraube auf. Eine Kunststoffscheibe dazwischen verhindert das.',
+'Atommodell':'Cobalt-60 hat mehr Neutronen im Kern als normales Cobalt und ist radioaktiv. Solche Isotope nutzt man bei der Durchstrahlungsprüfung von Schweißnähten.',
+'Bindungstypen':'Metalle leiten Strom, weil die Metallbindung freie Elektronen hat. Kunststoffe mit Atombindungen haben keine und dienen deshalb als Kabelisolierung.',
+'Periodensystem':'Kupfer, Silber und Gold stehen in derselben Gruppe und leiten alle sehr gut Strom. Darum findet man sie in Kabeln und Kontakten.',
+'Reaktionsgleichungen & Mol':'Beim Gasschweißen mit Acetylen gilt 2 C₂H₂ + 5 O₂ → 4 CO₂ + 2 H₂O. Die Gleichung zeigt, wie viel Sauerstoff für eine vollständige Verbrennung nötig ist.',
+'Neutralisation & Titration':'Die Konzentration eines Reinigungsbades wird durch Titration geprüft. So weiß man, wann das Bad nachdosiert werden muss.',
+'Oxidationszahlen':'Beim Rosten wird Eisen von 0 auf +III oxidiert. An der Oxidationszahl erkennt man, welcher Stoff Elektronen abgibt.',
+'Galvanische Zelle & Spannungsreihe':'Eine Opferanode aus Magnesium im Warmwasserspeicher löst sich mit der Zeit bewusst auf und schützt so den Stahlbehälter.',
+'Elektrolyse':'Beim galvanischen Verzinken bestimmen Stromstärke und Zeit, wie viel Zink sich abscheidet. Doppelte Zeit bei gleichem Strom heißt doppelte Schichtmasse.',
+'Wasserhärte':'Hartes Wasser bildet in Kühlkreisläufen und Heizkesseln Kalkstein. Darum wird Wasser für solche Anlagen oft enthärtet.',
+'Blei-Batterie (Akkumulator)':'Viele Gabelstapler fahren mit Blei-Säure-Batterien. Beim Laden entsteht Wasserstoff, darum muss der Laderaum gut belüftet sein.',
+'Mittelwert, Median & Modalwert':'Bei 10 gemessenen Wellendurchmessern zeigt der Mittelwert die Lage. Ein einzelner Ausreißer verschiebt den Mittelwert stark, den Median kaum.',
+'Spannweite, Varianz & Standardabweichung':'Zwei Drehmaschinen fertigen im Mittel denselben Durchmesser. Die Maschine mit der kleineren Standardabweichung fertigt gleichmäßiger und erzeugt weniger Ausschuss.',
+'Normalverteilung':'Die Durchmesser gedrehter Bolzen streuen meist normalverteilt um den Mittelwert. Damit schätzt man, wie viele Teile außerhalb der Toleranz liegen.',
+'σ-Bereiche':'Liegen die Toleranzgrenzen bei μ ± 3σ, sind etwa 99,73 % der Teile in Ordnung. Rund 27 von 10 000 Teilen sind Ausschuss.',
+'Von der Glocke zum Netz':'Mit Messwerten aus der Fertigung prüft man im Netz, ob sie normalverteilt sind. Liegen die Punkte auf einer Geraden, darf man mit μ und σ weiterrechnen.',
+'Wahrscheinlichkeitsnetz':'Aus einer Stichprobe von 50 Teilen liest man im Netz μ und σ ab, ohne viel zu rechnen. Daraus schätzt man den Ausschussanteil der Serie.',
+'Prozess- & Maschinenfähigkeit':'Viele Kunden verlangen von Zulieferern Cpk ≥ 1,33. Liegt der Wert darunter, muss der Prozess verbessert oder jedes Teil geprüft werden.',
+'Qualitätsregelkarte (x̄-Karte)':'An der Drehmaschine misst der Werker stündlich 5 Teile und trägt den Mittelwert ein. Läuft der Wert Richtung Eingriffsgrenze, korrigiert er das Werkzeug, bevor Ausschuss entsteht.',
+'Histogramm':'Das Histogramm der Messwerte einer Schicht zeigt sofort, ob die Teile mittig in der Toleranz liegen oder die Maschine zu einer Seite wegläuft.',
+'Prozentrechnung':'Die Ausschussquote steigt von 2 % auf 3 %. Das ist 1 Prozentpunkt mehr, aber 50 % mehr Ausschuss.',
+'Dreisatz (proportional & umgekehrt)':'Drei Maschinen schaffen einen Auftrag in 12 h. Mit vier gleichen Maschinen dauert er umgekehrt proportional nur 3 · 12 h / 4 = 9 h.',
+'Pythagoras & rechtwinkliges Dreieck':'Ein Regal ist 2,4 m hoch und 1,8 m breit. Damit es nicht wackelt, braucht es eine Diagonalstrebe. Ihre Länge liefert der Pythagoras: √(2,4² + 1,8²) = 3,0 m.',
+'Formeln umstellen (Formeldreieck)':'Aus P = U · I wird I = P / U. Ein Heizlüfter mit 2,3 kW zieht an 230 V also 10 A. So prüfst Du schnell, ob die Sicherung reicht.',
+'Kraftwerke im Überblick':'Für die Stromversorgung eines Betriebs zählt der Mix: Grundlast aus großen Kraftwerken, Spitzen aus schnell regelbaren Gaskraftwerken, dazu Wind und Sonne je nach Wetter.',
+'Dampfkraftwerk (Wärmekraftwerk)':'Viele Chemie- und Papierwerke haben ein eigenes Dampfkraftwerk. Der Dampf treibt die Turbine und wird danach noch als Prozesswärme genutzt.',
+'Kernkraftwerk (Druckwasserreaktor)':'Ein Druckwasserreaktor hat zwei getrennte Wasserkreisläufe. Das radioaktive Wasser bleibt im Primärkreis, die Turbine läuft mit nicht radioaktivem Dampf.',
+'Wasserkraftwerke':'Ein Pumpspeicherwerk pumpt bei Stromüberschuss Wasser nach oben und erzeugt Strom, wenn der Bedarf hoch ist. Es ist ein großer Energiespeicher für das Netz.',
+'Windkraftanlage':'Weil v³ in die Leistung eingeht, liefert eine Windkraftanlage bei doppelter Windgeschwindigkeit die achtfache Leistung. Darum ist der Standort so wichtig.',
+'Photovoltaik':'Eine PV-Anlage mit 100 kWp auf dem Hallendach liefert in Deutschland etwa 90 000 bis 100 000 kWh im Jahr. Am meisten lohnt sie sich, wenn die Fertigung den Strom tagsüber direkt verbraucht.',
+'Solarthermie':'Solarkollektoren auf dem Werksdach wärmen Wasser für Duschen oder Reinigungsbäder vor. Das spart Gas oder Strom für die Heizung.',
+'Geothermie':'Eine Wärmepumpe mit Erdsonden heizt ein Bürogebäude. In 100 m Tiefe ist es das ganze Jahr über etwa 10 bis 15 °C warm, auch im Winter.',
+'Brennstoffzelle (Wasserstoff)':'Gabelstapler mit Brennstoffzelle werden in wenigen Minuten mit Wasserstoff betankt statt stundenlang geladen. Das lohnt sich vor allem im Mehrschichtbetrieb.',
+'Biogasanlage mit BHKW':'Ein BHKW im Betrieb liefert Strom und nutzt die Abwärme für Heizung oder Prozesswärme. So wird bis zu rund 90 % der Brennstoffenergie genutzt.',
+'Verbrennungsmotor (Viertakt)':'Das Notstromaggregat für die Serverräume läuft meist mit einem Dieselmotor. Ein Viertakter mit 1500 U/min hat je Zylinder 750 Arbeitsspiele pro Minute.'
+};
 ERK['Temperatur ⇄']=['Die Kelvin-Skala beginnt am absoluten Nullpunkt: T in K = ϑ in °C + 273,15. Temperaturdifferenzen sind in K und °C gleich groß.',['K und °C bei Gasgesetzen mischen.','Bei Differenzen 273 dazuzählen.','Fahrenheit mit einem einzigen Faktor umrechnen. Es gibt auch einen Versatz.']];
 ERK['Lineare Gleichungen lösen']=['Eine Gleichung ist eine Waage: Was links passiert, muss rechts genauso passieren. Zuerst alle x-Terme auf eine Seite, alle Zahlen auf die andere, dann durch die Zahl vor dem x teilen. Mit der Probe prüfst Du das Ergebnis.',['Nur auf einer Seite gerechnet.','Beim Verschieben das Vorzeichen vergessen (aus + wird −).','Durch die falsche Zahl geteilt oder das Minuszeichen des Faktors übersehen.','Keine Probe gemacht.']];
 ERK['Ausmultiplizieren & Ausklammern']=['Beim Ausmultiplizieren trifft jeder Summand der ersten Klammer auf jeden der zweiten (bei 2 × 2 Summanden also vier Produkte). Beim Ausklammern sucht man den größten gemeinsamen Faktor (Zahl und Variable) und zieht ihn vor die Klammer.',['Ein Produkt vergessen (meist das innere oder äußere).','x · x als 2x statt als x² geschrieben.','Beim Ausklammern nur die Zahl, aber nicht das x herausgezogen.','Keine Probe durch Wiederausmultiplizieren.']];
 ERK['Diagramme lesen']=['Erst Titel, Achsen, Einheiten und Legende lesen, dann die Werte. Säulen und Balken vergleichen, Linien zeigen Verläufe, Kreise zeigen Anteile an einem Ganzen von 100 %.',['Einheit der Achse übersehen (z. B. % statt Stück).','Eine Achse, die nicht bei 0 beginnt, wirkt wie ein großer Unterschied.','Datenreihen in der Legende verwechselt.','Aus dem Diagramm mehr herausgelesen, als dort steht.']];
+Object.assign(BET,{
+'Lineare Gleichungen lösen':'Ein Auftrag kostet 80 € Rüstkosten plus 2,50 € je Teil. Bei 330 € Budget gilt 80 + 2,5 · x = 330, also x = 100 Teile.',
+'Ausmultiplizieren & Ausklammern':'Ein Blech wird ringsum um den Randzuschlag r größer zugeschnitten: (a + 2r) · (b + 2r) = a · b + 2r · a + 2r · b + 4r². Ausmultipliziert sieht man, wie viel Material allein der Rand kostet.',
+'Diagramme lesen':'Ein Liniendiagramm zeigt den Stromverbrauch der Halle über die Woche. Spitzen am Wochenende verraten Maschinen, die unnötig weiterlaufen.'});
 ERK['Winkel ⇄']=['Winkel in Grad (360° = voller Kreis) und im Bogenmaß (2π = voller Kreis). Umrechnung: α in rad = α in Grad · π / 180.',['Taschenrechner im falschen Modus (DEG oder RAD).','π vergessen oder mit 3,14 zu grob runden.','Grad und Neugrad verwechseln.']];
 ERK['Geschwindigkeit ⇄']=['km/h und m/s hängen über den Faktor 3,6 zusammen: km/h ÷ 3,6 = m/s.',['Mit 3,6 in die falsche Richtung rechnen.','Mit 60 statt 3,6 rechnen.','Zeit- und Wegeinheiten einzeln, aber falsch umrechnen.']];
 ERK['Druck ⇄']=['1 bar = 100 000 Pa = 10 N/cm² = 0,1 N/mm². Überdruck und absoluter Druck unterscheiden sich um den Umgebungsdruck.',['bar und Pa verwechseln (Faktor 10⁵).','N/mm² und bar vertauschen (1 N/mm² = 10 bar).','Überdruck als absoluten Druck behandeln.']];
@@ -2391,7 +2478,7 @@ function build(){
  const fb=add(FAV.includes(m.name)?'★ Favorit':'☆ Favorit',()=>{toggleFav(m.name);fb.textContent=FAV.includes(m.name)?'★ Favorit':'☆ Favorit'});
  if(hasPr(m))add('✏️ Üben',()=>openPractice('M:'+m.name));
  if(m.anim){const b=add(play?'Pause':'Start',()=>{play=!play;b.textContent=play?'Pause':'Start'})}
- {const E=ERK[m.name];$('#erk').hidden=!E;if(E){$('#erk').innerHTML='<summary>💡 Verstehen und typische Fehler</summary><p>'+E[0]+'</p><p><b>Hier passieren die meisten Fehler:</b></p><ul>'+E[1].map(x=>`<li>${x}</li>`).join('')+'</ul>';{const rb=KI.readBtn((E[0]+' Hier passieren die meisten Fehler: '+E[1].join('. ')).replace(/<[^>]+>/g,' '));if(rb)$('#erk').append(rb)}$('#erk').open=!(memGet().t[m.name]&&memGet().t[m.name].n)}}$('#fx').hidden=!FX[m.name];$('#fx').innerHTML=FX[m.name]?'<b>Grundgleichungen</b><br>'+FX[m.name].map(x=>`<span>${x}</span>`).join(''):'';$('#desc').textContent=m.desc;$('#leg').textContent=m.leg;render();
+ {const E=ERK[m.name];$('#erk').hidden=!E;if(E){$('#erk').innerHTML='<summary>💡 Verstehen und typische Fehler</summary><p>'+E[0]+'</p>'+(BET[m.name]?'<p><b>🏭 Im Betrieb:</b> '+BET[m.name]+'</p>':'')+'<p><b>Hier passieren die meisten Fehler:</b></p><ul>'+E[1].map(x=>`<li>${x}</li>`).join('')+'</ul>';{const rb=KI.readBtn((E[0]+(BET[m.name]?' Im Betrieb: '+BET[m.name]:'')+' Hier passieren die meisten Fehler: '+E[1].join('. ')).replace(/<[^>]+>/g,' '));if(rb)$('#erk').append(rb)}$('#erk').open=!(memGet().t[m.name]&&memGet().t[m.name].n)}}$('#fx').hidden=!FX[m.name];$('#fx').innerHTML=FX[m.name]?'<b>Grundgleichungen</b><br>'+FX[m.name].map(x=>`<span>${x}</span>`).join(''):'';$('#desc').textContent=m.desc;$('#leg').textContent=m.leg;render();
 }
 const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 SIM=store.get('ll_sim',null);
@@ -2556,7 +2643,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=43,NEWS='Die Gewichtskraft heißt jetzt überall F_G, und Indizes wie das G in F_G stehen tiefgestellt. Bei der Kreisbewegung geht der Drehzahl-Regler jetzt bis 100 U/min und startet bei 15 U/min. Lange Themennamen stehen jetzt linksbündig wie die anderen. Bei den Prüfungsaufgaben steht der Name nur noch im Auswahlmenü.';
+const APPV=44,NEWS='Im Kasten „Verstehen und typische Fehler“ zeigt jetzt fast jedes Thema mit „Im Betrieb“ ein Beispiel aus dem Arbeitsalltag. Die Gewichtskraft heißt jetzt überall F_G, und Indizes wie das G in F_G stehen tiefgestellt. Bei der Kreisbewegung geht der Drehzahl-Regler jetzt bis 100 U/min und startet bei 15 U/min. Lange Themennamen stehen jetzt linksbündig wie die anderen. Bei den Prüfungsaufgaben steht der Name nur noch im Auswahlmenü.';
 const OWNER='Dr. rer. nat. Markus Baum',MAIL='baum.ma91@yahoo.de';
 document.querySelectorAll('.ft-name').forEach(e=>e.textContent=OWNER);document.querySelectorAll('.ft-mail').forEach(e=>e.textContent=MAIL);
 $('#prep').onclick=()=>{const c=PS.cur||{},inp=$('#pin').hidden?'':$('#pin').value;
