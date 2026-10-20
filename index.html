@@ -2556,7 +2556,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=38,NEWS='Mathematik ist jetzt ein eigenes Fach 📐 unter Fächer: Prozent, Dreisatz, Formeln, Gleichungen, Geometrie und Diagramme. Sinus & Kosinus findest Du jetzt auch dort, Dein Lernstand bleibt derselbe.';
+const APPV=39,NEWS='Beim Satz des Pythagoras zeigen jetzt Quadrate über den Seiten, was a² + b² = c² bedeutet. Das Bild rechnet live mit, wenn Du a und b änderst.';
 const OWNER='Dr. rer. nat. Markus Baum',MAIL='baum.ma91@yahoo.de';
 document.querySelectorAll('.ft-name').forEach(e=>e.textContent=OWNER);document.querySelectorAll('.ft-mail').forEach(e=>e.textContent=MAIL);
 $('#prep').onclick=()=>{const c=PS.cur||{},inp=$('#pin').hidden?'':$('#pin').value;
