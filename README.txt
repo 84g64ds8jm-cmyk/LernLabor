@@ -18,7 +18,7 @@ Inhalt: index.html (die App), manifest.webmanifest, sw.js (Offline-Funktion), 3 
    Die Schriftart wird nur geladen, wenn sie einmal online abgerufen wurde, sonst Standardschrift.
 
 4) UPDATES
-   Neue index.html hochladen und in sw.js die Version erhöhen (const V='lernlabor-v31'),
+   Neue index.html hochladen und in sw.js die Version erhöhen (const V='lernlabor-v32'),
    dann holen sich die Geräte beim nächsten Start die neue Fassung.
    In index.html APPV auf dieselbe Nummer setzen und NEWS kurz beschreiben
    (erscheint als "Neu in Version ..." auf der Startseite).
