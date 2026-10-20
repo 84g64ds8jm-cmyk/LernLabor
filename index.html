@@ -249,7 +249,7 @@ M.push({g:'Bewegung',name:'Beschleunigung & Bremsen',anim:1,desc:'Gleichmäßig 
   st:[['v = v₀ + a · t',`${nf(v0)} + (${nf(a)}) · ${nf(Math.min(tau,ts),3)} = ${nf(v)} m/s`],['s = v₀ · t + ½ · a · t²',nf(x)+' m'],['v² = v₀² + 2 · a · s',`${nf(v*v)} = ${nf(v0*v0+2*a*x)}`],['Bremsen: t_b = v₀/|a|, s_b = v₀²/(2|a|)',br?`t_b = ${nf(tb)} s, s_b = ${nf(sb)} m, mit Reaktionsweg ${nf(sr)} m: Anhalteweg ${nf(sr+sb)} m`:'gilt für a < 0'],['Gleichförmig (a = 0)','s = v · t, die Geschwindigkeit bleibt konstant']]}}});
 /* Kreisbewegung */
 M.push({g:'Bewegung',name:'Kreisbewegung',anim:1,desc:'Auf der Kreisbahn zeigt die Geschwindigkeit tangential, die Zentripetalbeschleunigung zum Mittelpunkt. Die Höhe des Punktes über der Mitte ergibt eine Sinuskurve.',leg:'Die Animation läuft höchstens mit 6 rad/s, die berechneten Werte gelten für die eingestellte Drehzahl.',
- p:[['r','r',.1,5,.1,'m',1],['n','n',1,600,1,'U/min',60],['m','m',.1,10,.1,'kg',1]],
+ p:[['r','r',.1,5,.1,'m',1],['n','n',1,100,1,'U/min',60],['m','m',.1,10,.1,'kg',1]],
  f(s,t){
   const w=2*PI*s.n/60,v=w*s.r,az=w*w*s.r,Fz=s.m*az,th=Math.min(w,6)*t,cx=170,cy=150,R=100,x=cx+R*Math.cos(th),y=cy-R*Math.sin(th),ph=th%(4*PI);
   let pts='';for(let i=0;i<=80;i++){const f=i/80*4*PI;pts+=`${360+f/(4*PI)*260},${cy-R*Math.sin(f)} `}
@@ -2556,7 +2556,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=40,NEWS='Die Gewichtskraft heißt jetzt überall F_G, und Indizes wie das G in F_G stehen tiefgestellt.';
+const APPV=40,NEWS='Die Gewichtskraft heißt jetzt überall F_G, und Indizes wie das G in F_G stehen tiefgestellt. Bei der Kreisbewegung geht der Drehzahl-Regler jetzt bis 100 U/min.';
 const OWNER='Dr. rer. nat. Markus Baum',MAIL='baum.ma91@yahoo.de';
 document.querySelectorAll('.ft-name').forEach(e=>e.textContent=OWNER);document.querySelectorAll('.ft-mail').forEach(e=>e.textContent=MAIL);
 $('#prep').onclick=()=>{const c=PS.cur||{},inp=$('#pin').hidden?'':$('#pin').value;
