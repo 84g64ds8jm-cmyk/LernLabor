@@ -2643,7 +2643,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=44,NEWS='Im Kasten „Verstehen und typische Fehler“ zeigt jetzt fast jedes Thema mit „Im Betrieb“ ein Beispiel aus dem Arbeitsalltag. Die Gewichtskraft heißt jetzt überall F_G, und Indizes wie das G in F_G stehen tiefgestellt. Bei der Kreisbewegung geht der Drehzahl-Regler jetzt bis 100 U/min und startet bei 15 U/min. Lange Themennamen stehen jetzt linksbündig wie die anderen. Bei den Prüfungsaufgaben steht der Name nur noch im Auswahlmenü.';
+const APPV=45,NEWS='Neu unter Fächer: das 📖 Glossar. Es erklärt alle Formelzeichen und Einheiten mit Name und Bedeutung, zum Beispiel F_G, σ oder bar. Du kannst nach Zeichen, Namen oder griechischem Namen suchen (etwa „sigma“). Ein Tipp auf ein Thema öffnet es.';
 const OWNER='Dr. rer. nat. Markus Baum',MAIL='baum.ma91@yahoo.de';
 document.querySelectorAll('.ft-name').forEach(e=>e.textContent=OWNER);document.querySelectorAll('.ft-mail').forEach(e=>e.textContent=MAIL);
 $('#prep').onclick=()=>{const c=PS.cur||{},inp=$('#pin').hidden?'':$('#pin').value;
