@@ -20,7 +20,7 @@ main{max-width:1060px;margin:0 auto;padding:20px 16px 40px}
 h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing:-.02em}
 .seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:0 8px 10px 0}
 .seg button{font:inherit;font-weight:600;color:var(--ink);background:none;border:0;border-radius:7px;padding:7px 12px;cursor:pointer}
-.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}.seg button,.chip{text-align:left}
 button:focus-visible,input:focus-visible{outline:3px solid var(--flow);outline-offset:2px}
 .sub{color:var(--mute);margin:4px 0 14px;max-width:64ch}
 .grid{display:grid;gap:16px;grid-template-columns:1fr}
@@ -2556,7 +2556,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=40,NEWS='Die Gewichtskraft heißt jetzt überall F_G, und Indizes wie das G in F_G stehen tiefgestellt. Bei der Kreisbewegung geht der Drehzahl-Regler jetzt bis 100 U/min.';
+const APPV=41,NEWS='Die Gewichtskraft heißt jetzt überall F_G, und Indizes wie das G in F_G stehen tiefgestellt. Bei der Kreisbewegung geht der Drehzahl-Regler jetzt bis 100 U/min. Lange Themennamen stehen jetzt linksbündig wie die anderen.';
 const OWNER='Dr. rer. nat. Markus Baum',MAIL='baum.ma91@yahoo.de';
 document.querySelectorAll('.ft-name').forEach(e=>e.textContent=OWNER);document.querySelectorAll('.ft-mail').forEach(e=>e.textContent=MAIL);
 $('#prep').onclick=()=>{const c=PS.cur||{},inp=$('#pin').hidden?'':$('#pin').value;
