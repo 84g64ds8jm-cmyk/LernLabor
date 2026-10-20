@@ -2007,7 +2007,7 @@ ORAL.push(
 );
 /* ===== Funktionen: Gerade & Parabel (Geometrie & Diagramme) ===== */
 const FNN='Funktionen: Gerade & Parabel',FNM=['Gerade: y = m · x + b','Parabel: y = a · x² + b · x + c','Parabel in Scheitelform: y = a · (x − d)² + e'];
-const fnP=f=>f==0?[['m','m (Steigung)',-5,5,.5,'',1],['b','b (y-Achsenabschnitt)',-8,8,.5,'',2]]:f==1?[['a','a (Öffnung)',-3,3,.25,'',1],['b','b',-8,8,.5,'',-2],['c','c (y-Achsenabschnitt)',-8,8,.5,'',-3]]:[['a','a (Öffnung)',-3,3,.25,'',1],['d','d (nach rechts)',-6,6,.5,'',2],['e','e (nach oben)',-8,8,.5,'',-3]];
+const fnP=f=>f==0?[['m','m',-5,5,.5,'',1],['b','b',-8,8,.5,'',2]]:f==1?[['a','a',-3,3,.25,'',1],['b','b',-8,8,.5,'',-2],['c','c',-8,8,.5,'',-3]]:[['a','a',-3,3,.25,'',1],['d','d',-6,6,.5,'',2],['e','e',-8,8,.5,'',-3]];
 const fsq=d=>d?'(x'+fsg(-d)+')²':'x²',fpoly=(a,b,c)=>{let t=a?fk(a,'x²'):'';if(b)t+=t?(b<0?' − ':' + ')+fk(Math.abs(b),'x'):fk(b,'x');if(c||!t)t+=t?fsg(c):nf(c,4);return t},fsg=v=>v==0?'':v<0?' − '+nf(-v,4):' + '+nf(v,4),fk=(v,t)=>v==1?t:v==-1?'−'+t:nf(v,4)+' · '+t;
 fm(FM,MGD,FNN,'Eine Funktion ordnet jedem x genau ein y zu. Die Gerade y = m · x + b steigt um m, wenn x um 1 wächst, und schneidet die y-Achse bei b. Die Parabel y = a · x² + b · x + c ist für a > 0 nach oben geöffnet, für a < 0 nach unten. Je größer a ist, desto schmaler wird sie. Ihr tiefster oder höchster Punkt heißt Scheitelpunkt.',
  [['f','Art','sel',FNM,0],...fnP(0)],
