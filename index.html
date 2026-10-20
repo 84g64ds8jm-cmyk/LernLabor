@@ -2473,7 +2473,7 @@ $('#ptip').onclick=()=>{const c=PS.cur;if(c&&c.k==='steps'&&c.steps[c.i][5])$('#
 function loop(n){const dt=Math.min((n-last)/1000,.1);last=n;if(cur>=0&&M[cur].anim&&play){clock+=dt;render()}requestAnimationFrame(loop)}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
 const APPV=34,NEWS='Neues Menü: Start, Fächer, Prüfen und Ich, auf dem Handy unten am Bildschirm. Hausaufgaben: zu jeder Unterrichtseinheit drei Wiederholungsaufgaben. Im Lernstand kannst Du Deinen Lernfortschritt an Deinen Dozenten senden. Knopf „Fehler melden“ in den Aufgaben.';
-const OWNER='Dr. rer. nat. Markus Baum',MAIL='adresse-eintragen@example.org';
+const OWNER='Dr. rer. nat. Markus Baum',MAIL='baum.ma91@yahoo.de';
 document.querySelectorAll('.ft-name').forEach(e=>e.textContent=OWNER);document.querySelectorAll('.ft-mail').forEach(e=>e.textContent=MAIL);
 $('#prep').onclick=()=>{const c=PS.cur||{},inp=$('#pin').hidden?'':$('#pin').value;
  const body=['Modul: '+(c.n||'?'),'Art: '+({num:'Rechnen',steps:'Mehrschritt',mc:'Ankreuzen',und:'Verständnis',oral:'Mündlich'}[c.k]||'?')+(c.exam?' (Prüfungsaufgabe)':''),'Aufgabe:\n'+$('#pq').textContent,inp?'Meine Eingabe: '+inp:'','Version: '+APPV,'','Was ist falsch?',''].filter(x=>x!=='').join('\n');
