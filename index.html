@@ -137,7 +137,7 @@ main{position:relative;z-index:1}
 <h1>Lernlabor</h1>
 <div class="sbox"><input id="q" type="search" placeholder="Thema oder Formel suchen, z. B. Druck, Cpk, F = m · a" aria-label="Suche" autocomplete="off"><div id="sr" hidden></div></div><nav id="nw" aria-label="Hauptmenü"><div class="seg" id="fs"></div><div id="nmb" hidden></div><div id="nm" role="menu" hidden></div></nav><br><div class="seg" id="gs" role="group" aria-label="Thema"></div><br><div class="seg" id="ms" role="group" aria-label="Unterthema"></div>
 <p class="sub" id="desc"></p>
-<div class="fx" id="fx" hidden></div><details class="erk" id="erk" hidden></details><div id="home"></div><div id="practice" hidden><div class="panel"><div class="ph"><h2 id="ph2">✎ Übungsmodus</h2><select id="pf" aria-label="Fach wählen"></select><select id="pk" aria-label="Aufgabentyp"></select><span id="sc"></span></div><div id="pt"></div><p class="pq" id="pq"></p><div id="popts"></div><div class="pa"><input id="pin" inputmode="decimal" placeholder="Antwort" aria-label="Antwort" autocomplete="off"><b id="pu"></b><button type="button" id="pck">Prüfen</button></div><p class="sub" id="ptol"></p><p id="pfb"></p><p class="sub" id="ptipt"></p><div class="pb"><button type="button" id="ptip" hidden>💡 Tipp</button><button type="button" id="psh">Lösungsweg</button><button type="button" id="pnx">Nächste Aufgabe</button><button type="button" id="prep" class="sbtn2">⚑ Fehler melden</button></div><div id="psol" hidden></div></div></div><div id="sim" hidden></div><div id="mem" hidden></div><div id="ki" hidden></div><div id="doz" hidden></div><div id="hw" hidden></div><div id="mc" hidden></div><div class="grid" id="app">
+<div class="fx" id="fx" hidden></div><details class="erk" id="erk" hidden></details><div id="home"></div><div id="practice" hidden><div class="panel"><div class="ph"><h2 id="ph2">✏️ Übungsmodus</h2><select id="pf" aria-label="Fach wählen"></select><select id="pk" aria-label="Aufgabentyp"></select><span id="sc"></span></div><div id="pt"></div><p class="pq" id="pq"></p><div id="popts"></div><div class="pa"><input id="pin" inputmode="decimal" placeholder="Antwort" aria-label="Antwort" autocomplete="off"><b id="pu"></b><button type="button" id="pck">Prüfen</button></div><p class="sub" id="ptol"></p><p id="pfb"></p><p class="sub" id="ptipt"></p><div class="pb"><button type="button" id="ptip" hidden>💡 Tipp</button><button type="button" id="psh">Lösungsweg</button><button type="button" id="pnx">Nächste Aufgabe</button><button type="button" id="prep" class="sbtn2">⚑ Fehler melden</button></div><div id="psol" hidden></div></div></div><div id="sim" hidden></div><div id="mem" hidden></div><div id="ki" hidden></div><div id="doz" hidden></div><div id="hw" hidden></div><div id="mc" hidden></div><div class="grid" id="app">
  <div><div class="panel"><svg id="svg" role="img" aria-label="Schaubild"></svg><p class="legend" id="leg"></p></div><div class="panel steps" id="steps"></div></div>
  <div class="panel"><h2>Werte einstellen</h2><div id="ctls"></div><div class="btns" id="btns"></div><div class="res" id="res"></div><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
 </div>
@@ -1882,7 +1882,7 @@ function memView(msg){const M_=memGet(),T0=mToday(),P=memPlan(),U=memUniv(),due=
  if(P.need&&P.days!=null&&P.days>=0)today+=`<p class="sub">Bei diesem Tempo (${P.nn} neue Themen pro Tag) bist Du in etwa <b>${P.need}</b> ${P.need===1?'Tag':'Tagen'} durch alle noch neuen Themen. ${P.need>P.days-7?'<b>Das wird knapp:</b> Erhöhe die Minuten pro Tag, oder lass Randthemen weg.':'Das passt zu Deinem Prüfungstermin.'}</p>`;
  if(P.items.length){today+=`<p class="sub">${doneN} von ${P.items.length} Punkten erledigt (ein Punkt gilt als erledigt, wenn Du heute mindestens 3 Aufgaben dazu beantwortet hast).</p><ul class="mplan">${P.items.map(i=>`<li class="${i.done?'dn':''}"><span class="mk k${i.kind[0]}">${i.kind}</span><b>${i.n}</b><small>ca. ${i.min} min</small><button type="button" class="chip" data-go="${q(i.n)}">${i.done?'✓ nochmal':'Üben →'}</button></li>`).join('')}</ul>`}
  else today+=`<p class="sub">Für heute ist nichts offen. Schau morgen wieder vorbei, oder übe frei.</p>`;
- if(P.sim)today+=`<p class="mnote">💡 Empfehlung: Mach in dieser Woche eine <button type="button" class="chip" id="msim">⏱ Prüfungssimulation</button> (90 Minuten).</p>`;
+ if(P.sim)today+=`<p class="mnote">💡 Empfehlung: Mach in dieser Woche eine <button type="button" class="chip" id="msim">⏱️ Prüfungssimulation</button> (90 Minuten).</p>`;
  today+=`<details class="mset"><summary>Lernplan einstellen</summary><div class="pa"><label>Prüfungsdatum <input type="date" id="mpd" value="${P.cfg&&P.cfg.date||''}"></label><label>Minuten pro Tag <select id="mpm">${[15,30,45,60,90,120].map(v=>`<option${v===P.B?' selected':''}>${v}</option>`).join('')}</select></label><button type="button" class="sbtn2" id="mps">Speichern</button></div></details></div>`;
  /* Fortschritt */
  const seg=n=>{const c={sicher:0,weg:0,unsicher:0,wenig:0,neu:0};n.forEach(x=>c[stOf(x)]++);return c};
@@ -1999,7 +1999,7 @@ function simOpen(){prac=false;cur=-1;SIMN=true;nav();
 function simStop(){clearInterval(SIMTM);SIMTM=null}
 function simStart(){simStop();const h=store.get('ll_simh',[]);
  const resume=SIM&&SIM.done?`<button type="button" id="sres" class="sbtn2">Letztes Ergebnis ansehen</button>`:'';
- $('#sim').innerHTML=`<div class="panel"><h2>⏱ Prüfungssimulation</h2>
+ $('#sim').innerHTML=`<div class="panel"><h2>⏱️ Prüfungssimulation</h2>
  <p class="sub">Eine Probeprüfung unter Prüfungsbedingungen: ${SIMMIN} Minuten Bearbeitungszeit, 100 Punkte, bestanden ab ${SIMPASS} Punkten. Es gibt <b>kein Feedback während der Prüfung</b>. Erst nach dem Abgeben siehst Du Punkte, Lösungen und Rechenwege.</p>
  <div class="smix">${SIMGRP.map(([n,c,p])=>`<div><b>${p} %</b><span>${n}</span></div>`).join('')}</div>
  <p class="sub">Zusammensetzung: 6 Aufgaben Physik (davon 3 Elektrotechnik), 2 Chemie, 1 Statistik und 1 Mathematik. Jede Aufgabe zählt 10 Punkte, verteilt gleichmäßig auf ihre Teilfragen. Jede Teilfrage wird einzeln bewertet. Folgefehler werden anerkannt: Rechnest Du mit Deinem eigenen, falschen Zwischenergebnis richtig weiter, bekommst Du für die Folgeschritte trotzdem die Punkte. Das erkennt die App automatisch aus dem Lösungsweg, aber nicht in jedem Fall.</p>
@@ -2019,10 +2019,10 @@ function simAnswered(){return SIM.tasks.reduce((x,t)=>x+t.a.filter(v=>String(v||
 function simTotalSteps(){return SIM.tasks.reduce((x,t)=>x+simData(t).steps.length,0)}
 function simTick(){if(!SIM||SIM.done||!$('#stime'))return;
  const el=$('#stime');let rem;
- if(SIM.timed){rem=SIM.end-Date.now();el.textContent='⏱ '+smm(rem);el.className=rem<300000?'red':rem<900000?'amb':'';
+ if(SIM.timed){rem=SIM.end-Date.now();el.textContent='⏱️ '+smm(rem);el.className=rem<300000?'red':rem<900000?'amb':'';
   [[30,'Noch 30 Minuten.'],[10,'Noch 10 Minuten.'],[5,'Noch 5 Minuten.'],[1,'Noch eine Minute!']].forEach(([m,t])=>{if(rem<=m*60000&&!SIM.warned[m]){SIM.warned[m]=1;simSave();$('#swarn').textContent=t}});
   if(rem<=0){simFinish(true);return}}
- else el.textContent='⏱ '+smm(Date.now()-SIM.start)+' (ohne Limit)';
+ else el.textContent='⏱️ '+smm(Date.now()-SIM.start)+' (ohne Limit)';
  $('#sprog').textContent=`${simAnswered()} von ${simTotalSteps()} Teilfragen beantwortet`}
 function simTask(){const t=SIM.tasks[SIM.cur],d=simData(t),n=SIM.tasks.length;
  $('#sbody').innerHTML=`<div class="panel"><div class="stabs">${SIM.tasks.map((x,k)=>{const a=x.a.filter(v=>String(v||'').trim()!=='').length,N=simData(x).steps.length;return`<button type="button" class="chip" data-k="${k}" aria-pressed="${k===SIM.cur}" aria-label="Aufgabe ${k+1}, ${a} von ${N} beantwortet">${k+1}${a===N?' ✓':a?' ·':''}</button>`}).join('')}</div>
@@ -2380,7 +2380,7 @@ function build(){
  const add=(l,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.onclick=fn;$('#btns').appendChild(b);return b};
  (m.btn||[]).forEach(([l,fn])=>add(l,()=>{fn(S[cur]);build()}));
  const fb=add(FAV.includes(m.name)?'★ Favorit':'☆ Favorit',()=>{toggleFav(m.name);fb.textContent=FAV.includes(m.name)?'★ Favorit':'☆ Favorit'});
- if(hasPr(m))add('✎ Üben',()=>openPractice('M:'+m.name));
+ if(hasPr(m))add('✏️ Üben',()=>openPractice('M:'+m.name));
  if(m.anim){const b=add(play?'Pause':'Start',()=>{play=!play;b.textContent=play?'Pause':'Start'})}
  {const E=ERK[m.name];$('#erk').hidden=!E;if(E){$('#erk').innerHTML='<summary>💡 Verstehen und typische Fehler</summary><p>'+E[0]+'</p><p><b>Hier passieren die meisten Fehler:</b></p><ul>'+E[1].map(x=>`<li>${x}</li>`).join('')+'</ul>';{const rb=KI.readBtn((E[0]+' Hier passieren die meisten Fehler: '+E[1].join('. ')).replace(/<[^>]+>/g,' '));if(rb)$('#erk').append(rb)}$('#erk').open=!(memGet().t[m.name]&&memGet().t[m.name].n)}}$('#fx').hidden=!FX[m.name];$('#fx').innerHTML=FX[m.name]?'<b>Grundgleichungen</b><br>'+FX[m.name].map(x=>`<span>${x}</span>`).join(''):'';$('#desc').textContent=m.desc;$('#leg').textContent=m.leg;render();
 }
@@ -2406,7 +2406,7 @@ function nav(){
  if(hm)homeView();
  const last=FA.length+1;
  const dn=memDueCount(),simr=SIM&&!SIM.done;
- const L={0:'🏠 Startseite',[last]:'✎ Üben',[last+1]:'🎓 Prüfungsaufgaben',[last+2]:'🗣 Mündliche Prüfung',[last+3]:'⏱ Prüfungssimulation'+(simr?' ●':''),[last+4]:'📈 Lernstand'+(dn?' ('+dn+')':''),[last+5]:'📝 Hausaufgaben',[last+6]:KIOK?'🤖 KI-Tutor':null,[last+7]:KIOK?'🎤 KI-Prüfer':null,[last+8]:DOZENT?'👩‍🏫 Kursübersicht':null,100:'📤 Lernfortschritt senden',101:'§ Impressum & Datenschutz',102:'🧮 Mathe-Check'};FA.forEach((f,i)=>L[i+1]=(IC[f]||'')+' '+f);
+ const L={0:'🏠 Startseite',[last]:'✏️ Üben',[last+1]:'🎓 Prüfungsaufgaben',[last+2]:'🗣️ Mündliche Prüfung',[last+3]:'⏱️ Prüfungssimulation'+(simr?' ●':''),[last+4]:'📈 Lernstand'+(dn?' ('+dn+')':''),[last+5]:'📝 Hausaufgaben',[last+6]:KIOK?'🤖 KI-Tutor':null,[last+7]:KIOK?'🎤 KI-Prüfer':null,[last+8]:DOZENT?'👩‍🏫 Kursübersicht':null,100:'📤 Lernfortschritt senden',101:'⚖️ Impressum & Datenschutz',102:'🧮 Mathe-Check'};FA.forEach((f,i)=>L[i+1]=(IC[f]||'')+' '+f);
  const P={0:hm,[last]:prac&&!PS.exam,[last+1]:prac&&!!PS.exam&&!PS.oral,[last+2]:prac&&!!PS.oral,[last+3]:SIMV,[last+4]:MEMV,[last+5]:HWV,[last+6]:KIV&&KIMODE==='tutor',[last+7]:KIV&&KIMODE==='pruef',[last+8]:DOZV,102:MCV};FA.forEach((f,i)=>P[i+1]=cur>=0&&i===fi);
  NG=[['🏠','Start',[0]],cur>=0?[IC[FA[fi]]||'📚',FA[fi],FA.map((f,i)=>i+1)]:['📚','Fächer',FA.map((f,i)=>i+1)],['🎓','Prüfen',[102,last,last+1,last+2,last+3,last+7]],['👤','Ich',[last+5,last+4,100,last+6,last+8,101]]].map(g=>[g[0],g[1],g[2].filter(k=>L[k]!=null)]);
  nmClose();$('#fs').innerHTML=NG.map((g,i)=>`<button type="button" data-g="${i}" aria-pressed="${g[2].some(k=>P[k])}"${i?` aria-haspopup="menu" aria-expanded="false"`:''}><span class="ni" aria-hidden="true">${g[0]}</span><span>${g[1]}</span>${i===3&&dn?`<i aria-label="${dn} fällig">${dn}</i>`:i===2&&simr?'<i aria-label="läuft">●</i>':''}</button>`).join('');
@@ -2435,8 +2435,8 @@ const KT=[['all','Alle Aufgabentypen'],['num','Rechnen'],['steps','Mehrschritt']
 function buildSel(){if(PS.oral){$('#pf').hidden=true;$('#pk').innerHTML=['Alle','Chemie','Physik','Energie','Elektrotechnik','Statistik','Mathematik'].map(c=>`<option value="${c}"${c===PS.cat?' selected':''}>${c==='Alle'?'Alle Themen':c}</option>`).join('');$('#pk').hidden=false;return}$('#pf').hidden=false;if(PS.exam){const o=[['W:*','Zufällige Aufgabe'],...EXW.map((t,i)=>['W:'+i,t[0]])];$('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');$('#pk').innerHTML=['Alle','Chemie','Physik','Energie','Elektrotechnik','Statistik','Mathematik'].map(c=>`<option value="${c}"${c===PS.cat?' selected':''}>${c==='Alle'?'Alle Themen':c}</option>`).join('');$('#pk').hidden=true;return}$('#pk').hidden=false;const o=[['Alle','Alle Fächer'],...FA.map(f=>['F:'+f,f])];if(PS.sel.startsWith('M:'))o.push([PS.sel,'Dieses Thema: '+PS.sel.slice(2)]);if(PS.sel==='D:')o.push(['D:','Fällige Wiederholungen']);
  $('#pf').innerHTML=o.map(([v,t])=>`<option value="${v}"${v===PS.sel?' selected':''}>${t}</option>`).join('');
  $('#pk').innerHTML=KT.map(([v,t])=>`<option value="${v}"${v===KIND?' selected':''}>${t}</option>`).join('')}
-function openPractice(sel,kind){prac=true;cur=-1;PS.exam=false;PS.oral=false;PS.sel=sel;KIND=kind||'all';$('#ph2').textContent='✎ Übungsmodus';buildSel();nav();newQ()}
-function openOral(){prac=true;cur=-1;PS.exam=true;PS.oral=true;PS.sel='O:*';PS.cat='Alle';$('#ph2').textContent='🗣 Mündliche Prüfung';buildSel();nav();newQ()}
+function openPractice(sel,kind){prac=true;cur=-1;PS.exam=false;PS.oral=false;PS.sel=sel;KIND=kind||'all';$('#ph2').textContent='✏️ Übungsmodus';buildSel();nav();newQ()}
+function openOral(){prac=true;cur=-1;PS.exam=true;PS.oral=true;PS.sel='O:*';PS.cat='Alle';$('#ph2').textContent='🗣️ Mündliche Prüfung';buildSel();nav();newQ()}
 function openExam(){prac=true;cur=-1;PS.exam=true;PS.oral=false;PS.sel='W:*';PS.cat='Alle';$('#ph2').textContent='🎓 Prüfungsaufgaben';buildSel();nav();newQ()}
 function match(n){const s=PS.sel;if(s==='Alle')return true;if(s==='D:')return(PS.due||[]).includes(n);if(s.startsWith('F:'))return gfach(n)===s.slice(2);const t=s.slice(2),mm=M.find(m=>m.name===t);return n===t||(n==='Einheiten umrechnen'&&!!mm&&mm.F===FU)}
 function poolQ(){const p=[],add=(k,n)=>{if((KIND==='all'||KIND===k)&&match(n))p.push([k,n])};Object.keys(GEN).forEach(n=>{add('num',n);add('mc',n)});Object.keys(STEPS).forEach(n=>add('steps',n));[...new Set(MCQ.map(x=>x[0]))].forEach(n=>add('und',n));return p}
@@ -2546,7 +2546,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=36,NEWS='Mathematik ist jetzt ein eigenes Fach 📐 unter Fächer: Prozent, Dreisatz, Formeln, Gleichungen, Geometrie und Diagramme. Den Mathe-Check findest Du weiter unter Prüfen.';
+const APPV=37,NEWS='Mathematik ist jetzt ein eigenes Fach 📐 unter Fächer: Prozent, Dreisatz, Formeln, Gleichungen, Geometrie und Diagramme. Außerdem haben alle Menüpunkte jetzt gleich große Symbole.';
 const OWNER='Dr. rer. nat. Markus Baum',MAIL='baum.ma91@yahoo.de';
 document.querySelectorAll('.ft-name').forEach(e=>e.textContent=OWNER);document.querySelectorAll('.ft-mail').forEach(e=>e.textContent=MAIL);
 $('#prep').onclick=()=>{const c=PS.cur||{},inp=$('#pin').hidden?'':$('#pin').value;
