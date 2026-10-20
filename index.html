@@ -2007,23 +2007,24 @@ ORAL.push(
 );
 /* ===== Funktionen: Gerade & Parabel (Geometrie & Diagramme) ===== */
 const FNN='Funktionen: Gerade & Parabel',FNM=['Gerade: y = m · x + b','Parabel: y = a · x² + b · x + c','Parabel in Scheitelform: y = a · (x − d)² + e'];
-const fnP=f=>f==0?[['m','m',-5,5,.5,'',1],['b','b',-8,8,.5,'',2]]:f==1?[['a','a',-3,3,.25,'',1],['b','b',-8,8,.5,'',-2],['c','c',-8,8,.5,'',-3]]:[['a','a',-3,3,.25,'',1],['d','d',-6,6,.5,'',2],['e','e',-8,8,.5,'',-3]];
+const fnW=f=>[['w','Bewegen','sel',['nichts (Regler nutzen)',...(f==0?['m (Steigung)','b (Achsenabschnitt)']:f==1?['a (Öffnung)','b','c (y-Achsenabschnitt)']:['a (Öffnung)','d (links/rechts)','e (hoch/runter)'])],0]],fnP0=f=>f==0?[['m','m',-5,5,.5,'',1],['b','b',-8,8,.5,'',2]]:f==1?[['a','a',-3,3,.25,'',1],['b','b',-8,8,.5,'',-2],['c','c',-8,8,.5,'',-3]]:[['a','a',-3,3,.25,'',1],['d','d',-6,6,.5,'',2],['e','e',-8,8,.5,'',-3]],fnP=f=>[...fnP0(f),...fnW(f)];
 const fsq=d=>d?'(x'+fsg(-d)+')²':'x²',fpoly=(a,b,c)=>{let t=a?fk(a,'x²'):'';if(b)t+=t?(b<0?' − ':' + ')+fk(Math.abs(b),'x'):fk(b,'x');if(c||!t)t+=t?fsg(c):nf(c,4);return t},fsg=v=>v==0?'':v<0?' − '+nf(-v,4):' + '+nf(v,4),fk=(v,t)=>v==1?t:v==-1?'−'+t:nf(v,4)+' · '+t;
 fm(FM,MGD,FNN,'Eine Funktion ordnet jedem x genau ein y zu. Die Gerade y = m · x + b steigt um m, wenn x um 1 wächst, und schneidet die y-Achse bei b. Die Parabel y = a · x² + b · x + c ist für a > 0 nach oben geöffnet, für a < 0 nach unten. Je größer a ist, desto schmaler wird sie. Ihr tiefster oder höchster Punkt heißt Scheitelpunkt.',
  [['f','Art','sel',FNM,0],...fnP(0)],
- s=>{const f=s.f,X=x=>20+(x+10)*30,Y=y=>410-y*30,cl=v=>Math.max(-11,Math.min(11,v));
+ (s0,t)=>{const s={...s0},f=s.f;let mv='';if(s.w&&play){const q=fnP0(f)[s.w-1],v=q[2]+(q[3]-q[2])*(.5-.5*Math.cos(t*.9));s[q[0]]=Math.round(v/q[4])*q[4];mv=q[0]}const X=x=>20+(x+10)*30,Y=y=>410-y*30,cl=v=>Math.max(-11,Math.min(11,v));
   let g=`<clipPath id="fnclip"><rect x="20" y="110" width="600" height="600"/></clipPath>`;
   for(let k=-10;k<=10;k++)g+=`<line x1="${X(k)}" x2="${X(k)}" y1="110" y2="710" stroke="var(--grid)" stroke-width="${k%5?0.6:1.2}"/><line x1="20" x2="620" y1="${Y(k)}" y2="${Y(k)}" stroke="var(--grid)" stroke-width="${k%5?0.6:1.2}"/>`;
   g+=`<line x1="20" x2="624" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--ink)" stroke-width="2"/><line x1="${X(0)}" x2="${X(0)}" y1="106" y2="710" stroke="var(--ink)" stroke-width="2"/>`+GB(616,Y(0)-8,'x',22,'end')+GB(X(0)+10,128,'y',22);
   for(let k=-10;k<=10;k+=2)if(k){g+=`<text x="${X(k)}" y="${Y(0)+22}" text-anchor="middle" style="font-size:18px;fill:var(--mute)">${String(k).replace('-','−')}</text><text x="${X(0)-7}" y="${Y(k)+6}" text-anchor="end" style="font-size:18px;fill:var(--mute)">${String(k).replace('-','−')}</text>`}
   const curve=(fn,col,wd,da)=>{let p='';for(let i=0;i<=400;i++){const x=-10+i*.05;p+=`${X(x).toFixed(1)},${Y(cl(fn(x))).toFixed(1)} `}return`<polyline points="${p}" fill="none" stroke="${col}" stroke-width="${wd}" ${da?'stroke-dasharray="6 5"':''} clip-path="url(#fnclip)"/>`};
   const dot=(x,y,col,lb,dx=8,dy=-8,an='start')=>Math.abs(x)<=10&&Math.abs(y)<=10?`<circle cx="${X(x)}" cy="${Y(y)}" r="8" fill="${col}" stroke="var(--ink)" stroke-width="1.5"/>`+(lb?GB(X(x)+dx,Y(y)+dy,lb,20,an):''):'';
-  const fbox=(eq,t)=>{const w=Math.max(eq.length*14.5,t.length*9.2)+28;return``+GB(20,48,eq.replace(/-(?=\d)/g,'−'),26,'start','var(--acc)')+T(20,84,t.replace(/-(?=\d)/g,'−'),'t1')},P=(x,y)=>`(${nf(x,3)} | ${nf(y,3)})`.replace(/-(?=\d)/g,'−');let res,rows,st,R='';
+  const fbox=(pa,t)=>`<text x="20" y="48" style="font-size:26px;font-weight:800">${pa.map(([x,c,k])=>`<tspan fill="${c}"${k&&k==mv?' text-decoration="underline"':''}>${x.replace(/-(?=\d)/g,'−')}</tspan>`).join('')}</text>`+T(20,84,t.replace(/-(?=\d)/g,'−'),'t1'),P=(x,y)=>`(${nf(x,3)} | ${nf(y,3)})`.replace(/-(?=\d)/g,'−');let res,rows,st,R='';
   if(f==0){const m=s.m,b=s.b,fn=x=>m*x+b,x0=m?-b/m:null,eq=`y = ${m==0?nf(b,4):fk(m,'x')+fsg(b)}`.replace(/-(?=\d)/g,'−');
    g+=curve(x=>x,'var(--mute)',1.5,1)+curve(fn,'var(--acc)',4);
    const dx=Math.abs(m)<=1.5?2:1;if(m)g+=`<path d="M${X(0)} ${Y(b)}H${X(dx)}V${Y(b+m*dx)}" fill="none" stroke="var(--amber)" stroke-width="3" clip-path="url(#fnclip)"/>`+GB(X(dx/2),Y(b)+(m>0?24:-10),'Δx = '+dx,17,'middle','var(--amber)')+GB(X(dx)+8,Y(b+m*dx/2)+6,'Δy = '+nf(m*dx,3).replace('-','−'),17,'start','var(--amber)');
    g+=dot(0,b,'var(--flow)','b = '+nf(b,3).replace('-','−'),-10,-10,'end')+(x0!=null?dot(x0,0,'var(--ok)','',0,0):'');
-   R=fbox(eq,(m>0?'steigend':m<0?'fallend':'waagerecht')+(x0!=null?' · Nullstelle x₀ = '+nf(x0,3):''));
+   const ink='var(--ink)',pa=m==0?[['y = ',ink],[nf(b,4),'var(--flow)','b']]:[['y = ',ink],[fk(m,'x'),'var(--amber)','m'],[fsg(b),'var(--flow)','b']];
+   R=fbox(pa,(m>0?'steigend':m<0?'fallend':'waagerecht')+(x0!=null?' · Nullstelle x₀ = '+nf(x0,3):'')+'   (orange: m, blau: b)');
    res=[[nf(m,3),'Steigung m'],[nf(b,3),'y-Achsenabschnitt b'],[x0!=null?nf(x0,3):'–','Nullstelle x₀']];
    rows=[['Gleichung',eq],['Steigung',m>0?'steigend':m<0?'fallend':'waagerecht (konstant)'],['Schnitt mit y-Achse',P(0,b)],['Nullstelle',x0!=null?P(x0,0):'keine'],['Wert bei x = 3',`y = ${nf(fn(3),4)}`]];
    st=[['Steigung',`m = Δy / Δx = ${nf(m*dx,3)} / ${dx} = ${nf(m,3)}`],['Achsenabschnitt',`Für x = 0 ist y = b = ${nf(b,3)}`],['Nullstelle',m?`0 = ${nf(m,3)} · x${fsg(b)} ⇒ x = −b / m = ${nf(x0,3)}`:'m = 0: Die Gerade läuft waagerecht.'],['Steigung aus zwei Punkten','m = (y₂ − y₁) / (x₂ − x₁)'],['Merke','m sagt, wie schief die Gerade ist, b, wo sie die y-Achse schneidet.']]}
@@ -2035,13 +2036,14 @@ fm(FM,MGD,FNN,'Eine Funktion ordnet jedem x genau ein y zu. Die Gerade y = m · 
     if(f==2&&(d||e))g+=`<path d="M${X(0)} ${Y(0)}H${X(d)}V${Y(e)}" fill="none" stroke="var(--red)" stroke-width="2.5" clip-path="url(#fnclip)"/>`}
    g+=dot(0,c,'var(--flow)','',0,0)+zs.map(z=>dot(z,0,'var(--ok)','',0,0)).join('');
    const op=a>0?'nach oben geöffnet':a<0?'nach unten geöffnet':'a = 0: keine Parabel, sondern eine Gerade',br=a==0?'':Math.abs(a)>1?'schmaler als y = x²':Math.abs(a)<1?'breiter als y = x²':'so breit wie y = x²';
-   R=fbox(eq,a?(a>0?'nach oben offen':'nach unten offen')+' · Scheitel S '+P(d,e):'a = 0: eine Gerade');
+   const ink='var(--ink)',pa=f==1?[['y = ',ink],[a?fk(a,'x²'):'','var(--acc)','a'],[b?(a?(b<0?' − ':' + ')+fk(Math.abs(b),'x'):fk(b,'x')):'','var(--amber)','b'],[c||(!a&&!b)?(a||b?fsg(c):nf(c,4)):'','var(--flow)','c']]:[['y = ',ink],[a==1?'':a==-1?'−':nf(a,4)+' · ','var(--acc)','a'],[d?'(x':'x',ink],[d?fsg(-d):'','var(--amber)','d'],[d?')²':'²',ink],[fsg(e),'var(--amber)','e']];
+   R=fbox(pa,(a?(a>0?'nach oben offen':'nach unten offen')+' · Scheitel S '+P(d,e):'a = 0: eine Gerade')+(f==1?'   (rot: a, orange: b, blau: c)':'   (rot: a, orange: d, e)'));
    res=[[a?P(d,e):'–','Scheitelpunkt S'],[zs.length?zs.map(z=>nf(z,3)).join('; '):'keine','Nullstellen'],[nf(c,3),'Schnitt mit y-Achse']];
    rows=[['Gleichung',eq.replace(/-(?=\d)/g,'−')],['Öffnung',op],['Form',br||'–'],['Scheitelform',a?`y = ${fk(a,fsq(d))}${fsg(e)}`.replace(/-(?=\d)/g,'−'):'–'],['Allgemeine Form',('y = '+fpoly(a,b,c)).replace(/-(?=\d)/g,'−')],['Diskriminante',`b² − 4 · a · c = ${nf(D,4)}`]];
    st=f==1?[['Scheitelpunkt',a?`x_S = −b / (2 · a) = ${nf(-b,3)} / ${nf(2*a,3)} = ${nf(d,3)}, y_S = ${nf(e,3)}`:'a = 0: Es gibt keinen Scheitel.'],['Nullstellen (Mitternachtsformel)',a?`x = (−b ± √(b² − 4 · a · c)) / (2 · a), Diskriminante = ${nf(D,4)}`:'Gerade: x = −c / b'],['Ergebnis',zs.length?zs.map(z=>'x = '+nf(z,3)).join(', '):'Die Diskriminante ist negativ: keine Nullstellen.'],['Schnitt mit der y-Achse',`x = 0 einsetzen: y = c = ${nf(c,3)}`],['Merke','a bestimmt Öffnung und Breite, c den Schnitt mit der y-Achse, b verschiebt den Scheitel schräg.']]
     :[['Scheitelform',`y = a · (x − d)² + e: Scheitel S (d | e) = ${P(d,e)}`],['Verschiebung',`Die Normalparabel y = x² wird um ${nf(d,3)} nach rechts und um ${nf(e,3)} nach oben verschoben (negativ: links bzw. unten).`],['Achtung beim Vorzeichen',`In der Klammer steht x − d. Bei (x + 2)² liegt der Scheitel bei x = −2.`],['Nullstellen',zs.length?`a · (x − d)² = −e ⇒ x = d ± √(−e / a) = ${zs.map(z=>nf(z,3)).join(' und ')}`:'−e / a ist negativ: keine Nullstellen.']]}
   return{vb:'0 0 640 720',d:g+R,res,rows,st}},
- 'Rot: Dein Graph. Grau gestrichelt: die Grundform zum Vergleich. Grün: Nullstellen, blau: Schnitt mit der y-Achse, orange: Steigungsdreieck oder Scheitel.',0);
+ 'Die Farben in der Gleichung passen zum Bild: Orange (m bzw. d, e) gehört zum Steigungsdreieck oder Scheitel, Blau (b bzw. c) zum Schnitt mit der y-Achse, Rot (a) zur Öffnung der Parabel. Grau gestrichelt: die Grundform zum Vergleich, grün: Nullstellen. Bei „Bewegen“ läuft der gewählte Term von allein hin und her (Start/Pause).',1);
 M[M.length-1].sync=(o,k)=>{if(k!='f')return;const m=M[cur],q=fnP(o.f);m.p.splice(1,m.p.length-1,...q);q.forEach(x=>o[x[0]]=x[6]);build()};
 FX[FNN]=['Gerade: y = m · x + b','m = (y₂ − y₁) / (x₂ − x₁)','Parabel: y = a · x² + b · x + c','Scheitel: x_S = −b / (2 · a)','Scheitelform: y = a · (x − d)² + e'];
 Object.assign(GEN,{
