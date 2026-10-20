@@ -1800,6 +1800,104 @@ ORAL.push(
 ['Mathematik','Warum musst Du bei Flächen und Volumen mit anderen Faktoren umrechnen als bei Längen?','Weil sich die Umrechnung mehrfach auswirkt: Bei Flächen zählt jede Länge, also 10 · 10 = 100 pro Stufe (cm² → dm²: durch 100). Bei Volumen sind es drei Längen: 10 · 10 · 10 = 1000 pro Stufe.']
 );
 
+/* ===== Grundrechenregeln (Rechnen im Alltag, steht dort ganz vorn) ===== */
+GORD[MR]=['Grundrechenregeln'];
+const gq=v=>{if(!Number.isInteger(v))return nf(v,4);const s=String(Math.abs(v));return(v<0?'−':'')+(Math.abs(v)>=10000?s.replace(/\B(?=(\d{3})+(?!\d))/g,' '):s)},gsup=n=>String(n).replace(/./g,c=>'⁰¹²³⁴⁵⁶⁷⁸⁹'['0123456789'.indexOf(c)]||(c=='-'?'⁻':c)),
+ GB=(x,y,s,fs=20,a='start',col='var(--ink)')=>`<text x="${x}" y="${y}" text-anchor="${a}" style="font-size:${fs}px;font-weight:800;fill:${col}">${s}</text>`;
+const GRM=['Begriffe: Summe, Differenz, Produkt, Quotient','Vertauschen (Kommutativgesetz)','Klammern versetzen (Assoziativgesetz)','Ausmultiplizieren (Distributivgesetz)','Punkt vor Strich und Klammern','Quadrat und Wurzel','Potenzen: Länge, Fläche, Volumen','Übersicht: Rechenarten und Umkehrung'];
+fm(FM,MR,'Grundrechenregeln','Plus ergibt eine Summe, Minus eine Differenz, Mal ein Produkt, Geteilt einen Quotienten. Beim Plus- und Malrechnen darf man Zahlen vertauschen und Klammern versetzen, beim Minus- und Geteiltrechnen nicht. Gerechnet wird in der Reihenfolge Klammer, Potenz, Punkt, Strich. Jede Rechenart hat eine Umkehrung: Die Wurzel macht das Quadrieren rückgängig.',
+ [['m','Regel','sel',GRM,0],['a','a',1,12,1,'',3],['b','b',1,12,1,'',4],['c','c',1,12,1,'',5]],
+ s=>{const a=s.a,b=s.b,c=s.c,m=s.m;let d='',vb='0 0 640 320',res,rows,st;
+  if(m==0){const L=[['Addition','+',a+b,'Summand + Summand = Summe'],['Subtraktion','−',a-b,'Minuend − Subtrahend = Differenz'],['Multiplikation','·',a*b,'Faktor · Faktor = Produkt'],['Division',':',a/b,'Dividend : Divisor = Quotient']];
+   d=T(20,26,'Rechenart','t2')+T(165,26,'Rechnung','t2')+T(325,26,'So heißen die Teile','t2')+L.map(([n,op,v,w],i)=>{const y=70+i*68;return`<rect x="10" y="${y-34}" width="620" height="56" rx="8" fill="${['var(--flow)','var(--red)','var(--amber)','var(--ok)'][i]}" fill-opacity=".14"/>`+T(20,y,n,'t1')+GB(165,y+2,`${a} ${op} ${b} = ${gq(v)}`,22)+T(325,y,w,'t1')}).join('');
+   res=[[gq(a+b),'Summe a + b'],[gq(a*b),'Produkt a · b'],[gq(a/b),'Quotient a : b']];
+   rows=[['Summe',`${a} + ${b} = ${gq(a+b)}`],['Differenz',`${a} − ${b} = ${gq(a-b)}`],['Produkt',`${a} · ${b} = ${gq(a*b)}`],['Quotient',`${a} : ${b} = ${gq(a/b)}`],['Strichrechnung','Plus und Minus'],['Punktrechnung','Mal und Geteilt']];
+   st=[['Summe','Das Ergebnis einer Addition heißt Summe, die Zahlen heißen Summanden.'],['Differenz','Das Ergebnis einer Subtraktion heißt Differenz.'],['Produkt',`Das Ergebnis einer Multiplikation heißt Produkt, die Zahlen heißen Faktoren: ${a} · ${b} = ${gq(a*b)}`],['Quotient',`Das Ergebnis einer Division heißt Quotient. Statt „:“ schreibt man oft einen Bruchstrich oder „/“: ${a} / ${b} = ${gq(a/b)}`],['Merke','Durch 0 darf man nie teilen.']]}
+  else if(m==1){const sz=Math.min(30,210/Math.max(a,b)),grid=(x0,y0,r,k,col)=>{let g='';for(let i=0;i<r;i++)for(let j=0;j<k;j++)g+=`<rect x="${x0+j*sz}" y="${y0+i*sz}" width="${sz-2}" height="${sz-2}" rx="2" fill="${col}" fill-opacity=".55" stroke="var(--ink)" stroke-width=".8"/>`;return g};
+   d=GB(40,32,`${a} · ${b} = ${gq(a*b)}`,22)+T(40,54,`${a} Reihen mit je ${b}`,'t2')+grid(40,66,a,b,'var(--flow)')+GB(350,32,`${b} · ${a} = ${gq(a*b)}`,22)+T(350,54,`${b} Reihen mit je ${a} (gedreht)`,'t2')+grid(350,66,b,a,'var(--amber)')+
+    T(20,300,`Auch bei Plus: ${a} + ${b} = ${b} + ${a} = ${a+b}.  Nicht bei Minus: ${a} − ${b} ≠ ${b} − ${a}`,'t1');
+   res=[[gq(a*b),'a · b = b · a'],[gq(a+b),'a + b = b + a'],[gq(a-b)+' ≠ '+gq(b-a),'a − b und b − a']];
+   rows=[['Plus',`${a} + ${b} = ${b} + ${a} ✓`],['Mal',`${a} · ${b} = ${b} · ${a} ✓`],['Minus',`${a} − ${b} = ${gq(a-b)}, aber ${b} − ${a} = ${gq(b-a)} ✗`],['Geteilt',`${a} : ${b} = ${gq(a/b)}, aber ${b} : ${a} = ${gq(b/a)} ✗`]];
+   st=[['Regel','a + b = b + a und a · b = b · a'],['Bild','Das Rechteck hat gleich viele Kästchen, egal ob man es quer oder hochkant hinlegt.'],['Nutzen',`Geschickt rechnen: 4 · 7 · 25 = 4 · 25 · 7 = 100 · 7 = 700`],['Achtung','Bei Minus und Geteilt darf man nicht vertauschen.']]}
+  else if(m==2){const u=520/(a+b+c),x0=60,seg=(x,w,v,col,y)=>`<rect x="${x}" y="${y}" width="${w}" height="34" fill="${col}" fill-opacity=".6" stroke="var(--ink)" stroke-width="1.5"/>`+(w>=20?T(x+w/2,y+23,String(v),'t1','middle'):''),
+    br=(x1,x2,y,t)=>`<path d="M${x1} ${y+8}V${y}H${x2}V${y+8}" fill="none" stroke="var(--red)" stroke-width="2.5"/>`+T((x1+x2)/2,y-6,t,'t2','middle'),row=y=>seg(x0,a*u,a,'var(--flow)',y)+seg(x0+a*u,b*u,b,'var(--amber)',y)+seg(x0+(a+b)*u,c*u,c,'var(--ok)',y);
+   d=GB(20,30,`(${a} + ${b}) + ${c} = ${a+b} + ${c} = ${a+b+c}`,20)+br(x0,x0+(a+b)*u,62,'zuerst: '+(a+b))+row(72)+
+    GB(20,150,`${a} + (${b} + ${c}) = ${a} + ${b+c} = ${a+b+c}`,20)+br(x0+a*u,x0+(a+b+c)*u,182,'zuerst: '+(b+c))+row(192)+
+    T(20,268,`Auch bei Mal: (${a} · ${b}) · ${c} = ${a} · (${b} · ${c}) = ${gq(a*b*c)}`,'t1')+T(20,296,`Nicht bei Minus: (${a} − ${b}) − ${c} = ${gq(a-b-c)}, aber ${a} − (${b} − ${c}) = ${gq(a-b+c)}`,'t2');
+   res=[[gq(a+b+c),'a + b + c'],[gq(a*b*c),'a · b · c'],[gq(a-b-c)+' ≠ '+gq(a-b+c),'mit Minus']];
+   rows=[['Plus',`(${a} + ${b}) + ${c} = ${a} + (${b} + ${c}) = ${a+b+c}`],['Mal',`(${a} · ${b}) · ${c} = ${a} · (${b} · ${c}) = ${gq(a*b*c)}`],['Minus',`(${a} − ${b}) − ${c} = ${gq(a-b-c)}, ${a} − (${b} − ${c}) = ${gq(a-b+c)}`]];
+   st=[['Regel','(a + b) + c = a + (b + c) und (a · b) · c = a · (b · c)'],['Bedeutung','Bei reinen Plus- oder reinen Malaufgaben ist es egal, welches Paar man zuerst rechnet. Man darf die Klammern weglassen.'],['Nutzen','Geschickt rechnen: 17 + 38 + 2 = 17 + (38 + 2) = 17 + 40 = 57'],['Achtung','Gilt nicht für Minus und Geteilt.']]}
+  else if(m==3){const k=Math.min(440/(b+c),190/a),x0=90,y0=56,W1=b*k,W2=c*k,H=a*k;
+   d=`<rect x="${x0}" y="${y0}" width="${W1}" height="${H}" fill="var(--flow)" fill-opacity=".45" stroke="var(--ink)" stroke-width="2"/><rect x="${x0+W1}" y="${y0}" width="${W2}" height="${H}" fill="var(--amber)" fill-opacity=".55" stroke="var(--ink)" stroke-width="2"/>`+
+    T(x0+W1/2,y0-10,'b = '+b,'t1','middle')+T(x0+W1+W2/2,y0-10,'c = '+c,'t1','middle')+T(x0-10,y0+H/2+5,'a = '+a,'t1','end')+
+    (W1>=60&&H>=24?T(x0+W1/2,y0+H/2+6,`${a} · ${b} = ${a*b}`,'t1','middle'):'')+(W2>=60&&H>=24?T(x0+W1+W2/2,y0+H/2+6,`${a} · ${c} = ${a*c}`,'t1','middle'):'')+
+    GB(20,282,`${a} · (${b} + ${c}) = ${a} · ${b} + ${a} · ${c} = ${a*b} + ${a*c} = ${a*(b+c)}`,20)+T(20,308,'Ganze Fläche = Summe der Teilflächen. Rückwärts heißt das Ausklammern.','t2');
+   res=[[gq(a*(b+c)),'a · (b + c)'],[gq(a*b),'Teil a · b'],[gq(a*c),'Teil a · c']];
+   rows=[['Regel','a · (b + c) = a · b + a · c'],['Mit Minus','a · (b − c) = a · b − a · c'],['Ausklammern','a · b + a · c = a · (b + c)'],['Beispiel',`${a} · (${b} + ${c}) = ${a*b} + ${a*c} = ${a*(b+c)}`]];
+   st=[['Regel','Die Zahl vor der Klammer wird mit jedem Summanden in der Klammer malgenommen.'],['Rechnung',`${a} · (${b} + ${c}) = ${a} · ${b} + ${a} · ${c} = ${a*b} + ${a*c} = ${a*(b+c)}`],['Probe mit Klammer zuerst',`${a} · ${b+c} = ${a*(b+c)}`],['Nutzen','Kopfrechnen: 7 · 102 = 7 · 100 + 7 · 2 = 714'],['Häufiger Fehler','3 · (x + 2) ist 3x + 6, nicht 3x + 2.']]}
+  else if(m==4){const r1=a+b*c,w1=(a+b)*c,r3=a+b*c*c;
+   d=GB(20,40,`${a} + ${b} · ${c}`,22)+T(20,66,`Punkt vor Strich: erst ${b} · ${c} = ${b*c}, dann ${a} + ${b*c}`,'t2')+GB(395,40,'= '+gq(r1),22,'end','var(--ok)')+
+    T(20,92,`✗ Falsch von links nach rechts: ${a} + ${b} = ${a+b}, · ${c} = ${gq(w1)}`,'t2')+
+    GB(20,142,`(${a} + ${b}) · ${c}`,22)+T(20,168,`Klammer zuerst: ${a} + ${b} = ${a+b}, dann ${a+b} · ${c}`,'t2')+GB(395,142,'= '+gq(w1),22,'end','var(--ok)')+
+    GB(20,222,`${a} + ${b} · ${c}²`,22)+T(20,248,`Potenz zuerst: ${c}² = ${c*c}, dann ${b} · ${c*c} = ${b*c*c}, dann + ${a}`,'t2')+GB(395,222,'= '+gq(r3),22,'end','var(--ok)')+
+    `<rect x="420" y="14" width="208" height="248" rx="10" fill="var(--amber)" fill-opacity=".14" stroke="var(--amber)" stroke-width="2"/>`+T(436,40,'Reihenfolge','t1')+
+    [['1.','Klammern ( )'],['2.','Potenz, Wurzel'],['3.','Punkt: · und :'],['4.','Strich: + und −']].map(([n,t],i)=>GB(436,78+i*40,n,20)+T(466,78+i*40,t,'t1')).join('')+T(436,244,'Gleiche Stufe: von links','t2')+
+    T(20,300,'Merkwort: KlaPoPuStri (Klammer, Potenz, Punkt, Strich)','t1');
+   res=[[gq(r1),'a + b · c'],[gq(w1),'(a + b) · c'],[gq(r3),'a + b · c²']];
+   rows=[['1. Klammern','zuerst ausrechnen, innen nach außen'],['2. Potenzen und Wurzeln','vor dem Malnehmen'],['3. Punktrechnung','Mal und Geteilt'],['4. Strichrechnung','Plus und Minus'],['Gleiche Stufe','von links nach rechts: 20 : 4 · 5 = 25']];
+   st=[['a + b · c',`${a} + ${b} · ${c} = ${a} + ${b*c} = ${gq(r1)}`],['(a + b) · c',`(${a} + ${b}) · ${c} = ${a+b} · ${c} = ${gq(w1)}`],['a + b · c²',`${a} + ${b} · ${c}² = ${a} + ${b} · ${c*c} = ${a} + ${b*c*c} = ${gq(r3)}`],['Taschenrechner','Moderne Rechner beachten Punkt vor Strich. Klammern trotzdem eintippen, wenn sie in der Formel stehen.']]}
+  else if(m==5){const sz=Math.min(40,200/a),x0=150-a*sz/2,y0=50,sq=Math.sqrt(b);let g='';for(let i=0;i<a;i++)for(let j=0;j<a;j++)g+=`<rect x="${x0+j*sz}" y="${y0+i*sz}" width="${sz}" height="${sz}" fill="var(--flow)" fill-opacity=".4" stroke="var(--ink)" stroke-width=".8"/>`;
+   d=g+`<rect x="${x0}" y="${y0}" width="${a*sz}" height="${a*sz}" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`+T(x0+a*sz/2,y0-10,'Seite a = '+a,'t1','middle')+T(x0+a*sz/2,y0+a*sz+22,'Fläche a² = '+a*a+' Kästchen','t1','middle')+
+    T(320,50,'Quadrieren: Seite → Fläche','t2')+GB(320,82,`${a}² = ${a} · ${a} = ${a*a}`,22)+T(320,124,'Wurzelziehen: Fläche → Seite','t2')+GB(320,156,`√${a*a} = ${a}`,22)+T(320,184,`weil ${a} · ${a} = ${a*a}`,'t2')+
+    T(320,226,'Wurzel aus b (geht nicht immer glatt auf):','t2')+GB(320,256,`√${b} ≈ ${nf(sq,4)}`,22)+T(320,282,`Probe: ${nf(sq,4)}² ≈ ${b}`,'t2');
+   res=[[gq(a*a),'a² = a · a'],[String(a),'√(a²)'],[nf(sq,4),'√b']];
+   rows=[['Quadratzahlen','1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144'],['Wurzel','√ ist die Umkehrung von ²'],['Probe',`√${a*a} = ${a}, weil ${a}² = ${a*a}`],['Wurzel aus b',`√${b} = ${nf(sq,4)}`]];
+   st=[['Quadrieren',`${a}² = ${a} · ${a} = ${a*a} (nicht ${a} · 2 = ${2*a})`],['Wurzelziehen',`√${a*a} = ${a}: Welche Zahl mal sich selbst ergibt ${a*a}?`],['Taschenrechner',`√${b} = ${nf(sq,4)}, Probe: ${nf(sq,4)} · ${nf(sq,4)} ≈ ${b}`],['Achtung','√(a² + b²) ist nicht a + b: √(9 + 16) = √25 = 5, nicht 3 + 4 = 7.']]}
+  else if(m==6){const k=Math.min(40,140/a),x1=30,yb=250,L=a*k;
+   const cube=(x,y,e)=>{const o=e*.45;return`<polygon points="${x},${y} ${x+e},${y} ${x+e},${y-e} ${x},${y-e}" fill="var(--ok)" fill-opacity=".5" stroke="var(--ink)" stroke-width="2"/><polygon points="${x},${y-e} ${x+o},${y-e-o} ${x+e+o},${y-e-o} ${x+e},${y-e}" fill="var(--ok)" fill-opacity=".3" stroke="var(--ink)" stroke-width="2"/><polygon points="${x+e},${y} ${x+e+o},${y-o} ${x+e+o},${y-e-o} ${x+e},${y-e}" fill="var(--ok)" fill-opacity=".7" stroke="var(--ink)" stroke-width="2"/>`};
+   d=`<line x1="${x1}" x2="${x1+L}" y1="${yb}" y2="${yb}" stroke="var(--red)" stroke-width="6"/>`+T(x1,yb+26,'a¹ = '+a,'t1')+T(x1,yb+46,'Länge in m','t2')+
+    `<rect x="215" y="${yb-L}" width="${L}" height="${L}" fill="var(--flow)" fill-opacity=".45" stroke="var(--ink)" stroke-width="2"/>`+T(215,yb+26,`a² = ${a} · ${a} = ${gq(a*a)}`,'t1')+T(215,yb+46,'Fläche in m²','t2')+
+    cube(400,yb,L)+T(400,yb+26,`a³ = ${a} · ${a} · ${a} = ${gq(a**3)}`,'t1')+T(400,yb+46,'Volumen in m³','t2')+
+    GB(20,32,'aⁿ = a · a · … · a  (n Faktoren)',20)+T(20,56,'a heißt Basis, n heißt Exponent (Hochzahl)','t2');
+   res=[[gq(a*a),'a²'],[gq(a**3),'a³'],[gq(a**4),'a⁴']];
+   rows=[['a⁰','1 (immer)'],['a¹',String(a)],['a²',gq(a*a)],['a³',gq(a**3)],['10³','1000 (kilo)'],['10⁶','1 000 000 (Mega)'],['10⁻³','0,001 (milli)'],['aⁿ · aᵐ','aⁿ⁺ᵐ, z. B. 10² · 10³ = 10⁵']];
+   st=[['Potenz',`${a}³ = ${a} · ${a} · ${a} = ${gq(a**3)} (nicht ${a} · 3 = ${3*a})`],['Einheiten','m · m = m², m · m · m = m³. Darum steigt die Fläche mit dem Quadrat, das Volumen mit der dritten Potenz.'],['Zehnerpotenzen','4,5 · 10³ = 4500, 2,5 · 10⁻³ = 0,0025: Der Exponent sagt, um wie viele Stellen das Komma wandert.'],['Umkehrung','Die Wurzel macht die Potenz rückgängig: ∛' + gq(a**3) + ' = ' + a]]}
+  else{const R=[['Strichrechnung','+ Addition','− Subtraktion',`${a} + ${b} = ${a+b}`,`${a+b} − ${b} = ${a}`],['Punktrechnung','· Multiplikation',': Division',`${a} · ${b} = ${a*b}`,`${a*b} : ${b} = ${a}`],['Potenzrechnung','x² Quadrieren','√ Wurzelziehen',`${a}² = ${a*a}`,`√${a*a} = ${a}`]];
+   d=T(20,30,'Stufe','t2')+T(190,30,'Rechnen','t2')+T(420,30,'Umkehrung','t2')+R.map(([n,o1,o2,e1,e2],i)=>{const y=52+i*76,col=['var(--flow)','var(--amber)','var(--ok)'][i];return`<rect x="10" y="${y}" width="620" height="66" rx="8" fill="${col}" fill-opacity=".16" stroke="${col}" stroke-width="1.5"/>`+T(20,y+28,(3-i)+'. '+n,'t1')+T(20,y+50,['zuletzt','in der Mitte','zuerst'][i],'t2')+T(190,y+26,o1,'t1')+GB(190,y+52,e1,19)+GB(398,y+40,'⇄',24,'middle','var(--red)')+T(420,y+26,o2,'t1')+GB(420,y+52,e2,19)}).join('')+
+    T(20,300,'Höhere Stufe zuerst: Klammer → Potenz/Wurzel → Punkt → Strich','t1');
+   res=[['+ ⇄ −','Strich'],['· ⇄ :','Punkt'],['² ⇄ √','Potenz']];
+   rows=[['Summe','Ergebnis von +'],['Differenz','Ergebnis von −'],['Produkt','Ergebnis von ·'],['Quotient','Ergebnis von :'],['Potenz','aⁿ = a · a · … · a'],['Wurzel','√ macht ² rückgängig'],['Reihenfolge','Klammer, Potenz, Punkt, Strich']];
+   st=[['Gesetze für + und ·','Vertauschen: a · b = b · a. Klammern versetzen: (a · b) · c = a · (b · c). Ausmultiplizieren: a · (b + c) = a · b + a · c'],['Umkehrungen',`${a} + ${b} − ${b} = ${a}, ${a} · ${b} : ${b} = ${a}, √(${a}²) = ${a}`],['Beim Umstellen von Formeln','Was auf einer Seite mit Plus steht, kommt mit Minus auf die andere Seite. Aus Mal wird Geteilt, aus dem Quadrat die Wurzel.']]}
+  return{vb,d,res,rows,st}},
+ 'Oben die Regel wählen. Mit a, b und c änderst Du die Zahlen im Bild.',0);
+FX['Grundrechenregeln']=['a + b = b + a, a · b = b · a','(a + b) + c = a + (b + c)','a · (b + c) = a · b + a · c','Klammer → Potenz → Punkt → Strich','aⁿ = a · a · … · a, √(a²) = a'];
+Object.assign(GEN,{
+'Grundrechenregeln':r=>{const v=Math.floor(r()*8);
+ if(v==0){const a=rg(r,2,20,1),b=rg(r,2,9,1),c=rg(r,2,9,1),x=a+b*c;return[`Berechne ${a} + ${b} · ${c}.`,x,'',['Punkt vor Strich',`${b} · ${c} = ${b*c}`,`${a} + ${b*c} = ${x}`]]}
+ if(v==1){const a=rg(r,2,12,1),b=rg(r,2,12,1),c=rg(r,2,9,1),x=(a+b)*c;return[`Berechne (${a} + ${b}) · ${c}.`,x,'',['Klammer zuerst',`${a} + ${b} = ${a+b}`,`${a+b} · ${c} = ${x}`]]}
+ if(v==2){const c=rg(r,2,9,1),b=c*rg(r,2,9,1),a=b/c+rg(r,3,40,1),x=a-b/c;return[`Berechne ${a} − ${b} : ${c}.`,x,'',['Punkt vor Strich',`${b} : ${c} = ${b/c}`,`${a} − ${b/c} = ${x}`]]}
+ if(v==3){const a=rg(r,3,9,1),b=rg(r,10,40,1),c=100-b,x=a*100;return[`Rechne geschickt mit dem Distributivgesetz: ${a} · ${b} + ${a} · ${c}.`,x,'',['Ausklammern',`${a} · (${b} + ${c}) = ${a} · 100 = ${x}`]]}
+ if(v==4){const a=rg(r,2,15,1),x=a*a;return[`Berechne ${a}².`,x,'',[`${a}² = ${a} · ${a} = ${x}`]]}
+ if(v==5){const a=rg(r,2,15,1);return[`Berechne √${a*a}.`,a,'',[`Gesucht ist die Zahl, die mit sich selbst malgenommen ${a*a} ergibt`,`${a} · ${a} = ${a*a}, also √${a*a} = ${a}`]]}
+ if(v==6){const a=rg(r,2,9,1),b=rg(r,2,6,1),c=rg(r,1,20,1),x=c+a*b*b;return[`Berechne ${c} + ${a} · ${b}².`,x,'',['Potenz vor Punkt vor Strich',`${b}² = ${b*b}`,`${a} · ${b*b} = ${a*b*b}`,`${c} + ${a*b*b} = ${x}`]]}
+ const z=pk(r,[1.2,2.5,3.75,4.5,6.8]),e=pk(r,[2,3]),x=Math.round(z*10**e);return[`Schreibe ${nf(z,4)} · 10${gsup(e)} als normale Zahl.`,x,'',[`10${gsup(e)} = ${10**e}: Das Komma wandert ${e} Stellen nach rechts`,`${nf(z,4)} · ${10**e} = ${x}`]]}
+});
+Object.assign(STEPS,{
+'Grundrechenregeln':r=>{const k=pk(r,[6,8,10,12]),n=pk(r,[24,36,48]),x=rg(r,10,40,2),g=pk(r,[15,20,25,30]),s=pk(r,[4,6,8]),B=x+k*n,V=g*s;return{intro:`Im Lager stehen ${k} Kartons mit je ${n} Schrauben, dazu ${x} lose Schrauben. Ein Auftrag umfasst ${g} Baugruppen mit je ${s} Schrauben.`,steps:[['Wie viele Schrauben sind im Lager?',B,'Stück',['Punkt vor Strich',`${x} + ${k} · ${n} = ${x} + ${k*n} = ${B}`]],['Wie viele Schrauben braucht der Auftrag?',V,'Stück',[`${g} · ${s} = ${V}`]],['Wie viele Schrauben bleiben übrig?',B-V,'Stück',[`${B} − ${V} = ${B-V}`]]]}}
+});
+MCQ.push(
+['Grundrechenregeln','Wie heißt das Ergebnis einer Multiplikation?',['Produkt','Summe','Quotient','Differenz'],'Mal ergibt ein Produkt, die Zahlen heißen Faktoren. Plus ergibt eine Summe, Minus eine Differenz, Geteilt einen Quotienten.'],
+['Grundrechenregeln','Was ergibt 6 + 4 · 3?',['18','30','13','24'],'Punkt vor Strich: zuerst 4 · 3 = 12, dann 6 + 12 = 18. Von links nach rechts gerechnet käme fälschlich 30 heraus.'],
+['Grundrechenregeln','Bei welcher Rechenart darf man die Zahlen nicht vertauschen?',['Subtraktion','Addition','Multiplikation','Bei allen darf man vertauschen'],'Das Kommutativgesetz gilt nur für Plus und Mal: 3 + 5 = 5 + 3, aber 8 − 3 ist nicht 3 − 8.'],
+['Grundrechenregeln','Was besagt das Distributivgesetz?',['a · (b + c) = a · b + a · c','a · (b + c) = a · b + c','a + (b · c) = (a + b) · c','a · b = b · a'],'Die Zahl vor der Klammer wird mit jedem Summanden in der Klammer malgenommen. Rückwärts heißt das Ausklammern.'],
+['Grundrechenregeln','Was ergibt 2³?',['8','6','9','5'],'Der Exponent 3 sagt: Die Basis 2 wird dreimal mit sich selbst malgenommen: 2 · 2 · 2 = 8, nicht 2 · 3 = 6.'],
+['Grundrechenregeln','Was ist √81?',['9','40,5','8,1','18'],'Die Wurzel sucht die Zahl, die mit sich selbst malgenommen 81 ergibt: 9 · 9 = 81.']
+);
+ORAL.push(
+['Mathematik','Erkläre an einem Beispiel, in welcher Reihenfolge gerechnet wird.','Erst Klammern, dann Potenzen und Wurzeln, dann Punktrechnung (Mal, Geteilt), zuletzt Strichrechnung (Plus, Minus). Beispiel: 20 + 12 · 4 = 20 + 48 = 68. Wer von links nach rechts rechnet, kommt falsch auf 128. Bei gleicher Stufe rechnet man von links nach rechts.'],
+['Mathematik','Was besagen Kommutativ-, Assoziativ- und Distributivgesetz?','Kommutativgesetz: Bei Plus und Mal darf man vertauschen, a · b = b · a. Assoziativgesetz: Bei Plus und Mal darf man Klammern versetzen, (a + b) + c = a + (b + c). Distributivgesetz: a · (b + c) = a · b + a · c, die Zahl vor der Klammer wird mit jedem Summanden malgenommen. Für Minus und Geteilt gelten die ersten beiden nicht.'],
+['Mathematik','Was hat die Wurzel mit dem Quadrat zu tun?','Quadrieren heißt eine Zahl mit sich selbst malnehmen: 5² = 25, das ist die Fläche eines Quadrats mit der Seite 5. Die Wurzel ist die Umkehrung: Sie findet zur Fläche die Seite, √25 = 5. Darum braucht man sie beim Pythagoras: c = √(a² + b²).']
+);
 /* Dezimalpunkte in erzeugten Texten durch Kommas ersetzen */
 const DCs=x=>typeof x=='string'?x.replace(/(\d)\.(\d)/g,'$1,$2'):Array.isArray(x)?x.map(DCs):x&&typeof x=='object'?Object.fromEntries(Object.entries(x).map(([k,v])=>[k,DCs(v)])):x;
 for(const k in GEN){const f=GEN[k];GEN[k]=r=>DCs(f(r))}
@@ -1984,6 +2082,8 @@ Object.assign(BET,{
 'Lineare Gleichungen lösen':'Ein Auftrag kostet 80 € Rüstkosten plus 2,50 € je Teil. Bei 330 € Budget gilt 80 + 2,5 · x = 330, also x = 100 Teile.',
 'Ausmultiplizieren & Ausklammern':'Ein Blech wird ringsum um den Randzuschlag r größer zugeschnitten: (a + 2r) · (b + 2r) = a · b + 2r · a + 2r · b + 4r². Ausmultipliziert sieht man, wie viel Material allein der Rand kostet.',
 'Diagramme lesen':'Ein Liniendiagramm zeigt den Stromverbrauch der Halle über die Woche. Spitzen am Wochenende verraten Maschinen, die unnötig weiterlaufen.'});
+ERK['Grundrechenregeln']=['Plus und Minus sind Strichrechnung, Mal und Geteilt Punktrechnung, Potenz und Wurzel die höchste Stufe. Gerechnet wird von oben nach unten: erst Klammern, dann Potenzen und Wurzeln, dann Punkt, dann Strich. Jede Rechenart hat eine Umkehrung: Plus und Minus, Mal und Geteilt, Quadrat und Wurzel. Beim Formelumstellen nutzt Du genau diese Umkehrungen.',['Stur von links nach rechts rechnen: 2 + 3 · 4 ist 14, nicht 20.','Bei Minus oder Geteilt vertauschen: 10 − 4 ist nicht dasselbe wie 4 − 10.','Beim Ausmultiplizieren nur den ersten Summanden malnehmen: 3 · (x + 2) ist 3x + 6, nicht 3x + 2.','Potenz mit Malnehmen verwechseln: 4² ist 16, nicht 8.']];
+BET['Grundrechenregeln']='20 Ersatzschrauben plus 12 Platten mit je 4 Schrauben: 20 + 12 · 4 = 68 Schrauben. Wer stur von links nach rechts rechnet, kommt auf (20 + 12) · 4 = 128 und bestellt fast doppelt so viel.';
 ERK['Winkel ⇄']=['Winkel in Grad (360° = voller Kreis) und im Bogenmaß (2π = voller Kreis). Umrechnung: α in rad = α in Grad · π / 180.',['Taschenrechner im falschen Modus (DEG oder RAD).','π vergessen oder mit 3,14 zu grob runden.','Grad und Neugrad verwechseln.']];
 ERK['Geschwindigkeit ⇄']=['km/h und m/s hängen über den Faktor 3,6 zusammen: km/h ÷ 3,6 = m/s.',['Mit 3,6 in die falsche Richtung rechnen.','Mit 60 statt 3,6 rechnen.','Zeit- und Wegeinheiten einzeln, aber falsch umrechnen.']];
 ERK['Druck ⇄']=['1 bar = 100 000 Pa = 10 N/cm² = 0,1 N/mm². Überdruck und absoluter Druck unterscheiden sich um den Umgebungsdruck.',['bar und Pa verwechseln (Faktor 10⁵).','N/mm² und bar vertauschen (1 N/mm² = 10 bar).','Überdruck als absoluten Druck behandeln.']];
@@ -2674,7 +2774,7 @@ const MCB=[
  {k:'E',t:'Einheiten und Zehnerpotenzen',m:[],fu:true},
  {k:'P',t:'Prozentrechnung',m:['Prozentrechnung']},
  {k:'D',t:'Dreisatz und Brüche',m:['Dreisatz (proportional & umgekehrt)']},
- {k:'W',t:'Potenzen und Wurzeln',m:['Pythagoras & rechtwinkliges Dreieck']}];
+ {k:'W',t:'Potenzen und Wurzeln',m:['Grundrechenregeln','Pythagoras & rechtwinkliges Dreieck']}];
 const mcn=v=>Number(v).toLocaleString('de-DE',{maximumFractionDigits:2}),mcR={i:(a,b)=>a+Math.floor(Math.random()*(b-a+1)),p:a=>a[Math.floor(Math.random()*a.length)]};
 const MCG={
  U:[()=>{const p=mcR.p([40,50,60,80]),A=mcR.p([5,8,12,15,20,25]),F=p*A;return{q:`Ein Hydraulikzylinder soll eine Kraft von F = ${hf(F,0)} N erzeugen. Der Druck beträgt p = ${p} N/cm². Wie groß muss die Kolbenfläche A sein? (F = p · A)`,a:A,u:'cm²',d:1,sol:['F = p · A, nach A umstellen: beide Seiten durch p teilen.',`A = F ÷ p = ${hf(F,0)} N ÷ ${p} N/cm² = ${hf(A,1)} cm²`]}},
@@ -2808,6 +2908,7 @@ const GL=[
 ['N','Umfang der Grundgesamtheit','Anzahl aller Werte, wenn die ganze Menge gemessen wird.','','S',['Spannweite, Varianz & Standardabweichung']],
 ['n','Drehzahl','Umdrehungen je Zeit.','1/min, U/min','P',['Kreisbewegung','Verbrennungsmotor (Viertakt)']],
 ['n','Stoffmenge','Anzahl der Teilchen, gezählt in mol: n = m / M.','mol','C',['Reaktionsgleichungen & Mol','Neutralisation & Titration','Elektrolyse']],
+['n','Exponent (Hochzahl)','Sagt, wie oft die Basis a mit sich selbst malgenommen wird: aⁿ = a · a · … · a, z. B. 2³ = 2 · 2 · 2 = 8.','','M',['Grundrechenregeln']],
 ['n','Anzahl','Anzahl der Messwerte (Stichprobe), der tragenden Seile oder der Zellen.','','S',['Mittelwert, Median & Modalwert','Qualitätsregelkarte (x̄-Karte)','Rolle & Flaschenzug','Brennstoffzelle (Wasserstoff)']],
 ['OEG','obere Eingriffsgrenze','Grenze auf der Regelkarte. Liegt ein Punkt darüber, muss man eingreifen (UEG entsprechend unten).','','S',['Qualitätsregelkarte (x̄-Karte)']],
 ['OSG','obere Spezifikationsgrenze','Größter zulässiger Wert laut Zeichnung (USG entsprechend der kleinste).','','S',['Prozess- & Maschinenfähigkeit','Wahrscheinlichkeitsnetz']],
@@ -2879,6 +2980,7 @@ const GL=[
 ['μ₀','Haftreibungszahl','Wie μ, aber für den Ruhezustand. Immer größer als μ.','','P',['Gleit-, Haft- & Rollreibung','Reibung (schiefe Ebene)']],
 ['μ_r','Rollreibungszahl','Reibungszahl für Rollen und Räder, viel kleiner als μ.','','P',['Gleit-, Haft- & Rollreibung']],
 ['ν','Sicherheitszahl','Wie viel stärker das Bauteil ist als nötig: σ_zul = R_e / ν.','','P',['Zug-/Druckspannung & Sicherheit','Scherung & Flächenpressung']],
+['√','Wurzel','Umkehrung des Quadrierens: √25 = 5, weil 5² = 25. Zur Fläche eines Quadrats findet die Wurzel die Seitenlänge.','','M',['Grundrechenregeln','Pythagoras & rechtwinkliges Dreieck']],
 ['π','Kreiszahl','π ≈ 3,14159. Kreisfläche A = π/4 · d².','','M',['Kreisbewegung','Zug-/Druckspannung & Sicherheit']],
 ['ρ','Dichte','Masse je Volumen: ρ = m / V. Wasser: 1000 kg/m³.','kg/m³, g/cm³','P',['Auftrieb und Dichte','Druck','Gasdichte (Normzustand → Betrieb)','Windkraftanlage']],
 ['Σ','Summe','Kein Formelzeichen, sondern „alles zusammenzählen“: Σx = Summe aller Werte.','','S',['Mittelwert, Median & Modalwert','Spannweite, Varianz & Standardabweichung']],
