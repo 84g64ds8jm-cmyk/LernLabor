@@ -5111,10 +5111,9 @@ if(location.hash.length>1){REPLACE=true;try{openRoute(location.hash)}finally{REP
  r.addEventListener('scroll',up,{passive:true});addEventListener('resize',up);mq.addEventListener('change',up);new MutationObserver(()=>requestAnimationFrame(up)).observe(r,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class']});requestAnimationFrame(()=>{/* Verschieben setzt die Position zurück: aktiven Reiter wieder mittig */const b=r.querySelector('[aria-pressed="true"]');if(b&&r.scrollWidth>r.clientWidth){r.style.scrollBehavior='auto';r.scrollLeft=b.offsetLeft-(r.clientWidth-b.offsetWidth)/2;r.style.scrollBehavior=''}up()})});
 /* Einrasten mit Tick: beim Wischen kurzes Vibrieren, wenn ein neuer Reiter in die Mitte rastet.
    Android: navigator.vibrate. iPhone (ab iOS 18): Umschalten eines versteckten Kippschalters löst das System-Tick aus. */
-const tick=(()=>{let t=0,lb=null;return()=>{const n=Date.now();if(n-t<45)return;t=n;
+const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
  if(navigator.vibrate){navigator.vibrate(6);return}
- if(!lb){lb=document.createElement('label');lb.setAttribute('aria-hidden','true');lb.style.cssText='position:fixed;left:-99px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';lb.innerHTML='<input type="checkbox" switch tabindex="-1">';document.body.appendChild(lb)}
- lb.click()}})();
+ const l=document.createElement('label');l.ariaHidden='true';l.style.display='none';l.innerHTML='<input type="checkbox" switch>';document.head.appendChild(l);l.click();l.remove()}})();
 ['#gs','#ms'].forEach(s=>{const r=$(s);if(!r)return;let touch=false,last=null,idle=0;
  const mid=()=>{const c=r.scrollLeft+r.clientWidth/2;let best=null,d=1e9;for(const b of r.querySelectorAll('button')){const x=b.offsetLeft+b.offsetWidth/2,e=Math.abs(x-c);if(e<d){d=e;best=b}}return best};
  r.addEventListener('touchstart',()=>{touch=true;last=mid()},{passive:true});
