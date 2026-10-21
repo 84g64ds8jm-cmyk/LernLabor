@@ -1,7 +1,7 @@
 {
- "name": "Lernlabor: Physik, Chemie, Statistik",
+ "name": "Lernlabor: Physik, Chemie, Mathematik, Statistik, Energie",
  "short_name": "Lernlabor",
- "description": "Simulatoren und Rechner für Physik, Chemie, Statistik und Einheiten",
+ "description": "Lernen für die Industriemeister-Prüfung (NTG): Simulationen zum Ausprobieren, unbegrenzt Übungsaufgaben, Prüfungsaufgaben und Lernstand ohne Konto.",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
@@ -23,10 +23,56 @@
    "purpose": "any"
   },
   {
-   "src": "icon-512.png",
+   "src": "icon-maskable-512.png",
    "sizes": "512x512",
    "type": "image/png",
    "purpose": "maskable"
   }
+ ],
+ "id": "./",
+ "shortcuts": [
+  {
+   "name": "Üben",
+   "url": "./#ueben",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Hausaufgaben",
+   "url": "./#hausaufgaben",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Meine Fehler",
+   "url": "./#fehler",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Prüfungssimulation",
+   "url": "./#simulation",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
+ ],
+ "categories": [
+  "education"
  ]
 }
