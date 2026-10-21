@@ -530,7 +530,7 @@ fm(FP,HP,'Gasgesetze','Boyle-Mariotte: p · V = konstant bei gleicher Temperatur
 fm(FP,HP,'Auftrieb und Dichte','Auftrieb = Gewichtskraft der verdrängten Flüssigkeit: F_A = ρ_Fl · g · V_eingetaucht. Ist die Körperdichte kleiner als die der Flüssigkeit, schwimmt der Körper.',
  [['f','Stoff','sel',FN,0],['rk','ρ_K',100,8000,10,'kg/m³',700],['V','V',1,50,1,'dm³',10]],
  s=>{const rf=FL[s.f][1],fr=Math.min(1,s.rk/rf),V=s.V/1000,Gw=s.rk*V*G,FA=rf*V*fr*G,sd=Math.abs(s.rk-rf)<rf*.02?'schwebt':s.rk<rf?'schwimmt':'sinkt',q=60,yb=sd=='sinkt'?200:130-(1-fr)*q+(sd=='schwebt'?60:0);
- const GA=GLAS(60,96,260,164,{lv:130,c:'var(--flow)',op:.3,ry:12});return{d:GA.b+CUBE(160,yb,q,q,'#e0a030',10)+(yb+q>130?`<rect x="159" y="${Math.max(130,yb-11)}" width="${q+12}" height="${yb+q-Math.max(130,yb-11)+1}" fill="var(--flow)" opacity=".35"/><path d="M159 ${Math.max(130,yb-11)}h${q+12}" stroke="#fff" stroke-width="1.5" opacity=".7"/>`:'')+GA.f+AR(185,yb+q/2,0,Math.min(Gw/FA,1.6)*40,'var(--ink)','F_G')+AR(235,yb+q/2,0,-40,'var(--flow)','F_A')+T(190,288,sd,'t1','middle'),
+ return{d:`<rect x="60" y="130" width="260" height="130" fill="var(--flow)" opacity=".25"/><path d="M60 100V260H320V100" fill="none" stroke="var(--ink)" stroke-width="3"/><rect class="box" x="160" y="${yb}" width="${q}" height="${q}" rx="3"/>`+AR(185,yb+q/2,0,Math.min(Gw/FA,1.6)*40,'var(--ink)','F_G')+AR(235,yb+q/2,0,-40,'var(--flow)','F_A')+T(190,288,sd,'t1','middle'),
  res:[[fmt(Gw,'N'),'Gewichtskraft F_G'],[fmt(FA,'N'),'Auftrieb F_A'],[sd,'Zustand']],rows:[['ρ Flüssigkeit',nf(rf)+' kg/m³'],['eingetaucht',nf(fr*100)+' %']],st:[['F_A = ρ_Fl · g · V_eingetaucht',fmt(FA,'N')],['F_G = ρ_K · g · V',fmt(Gw,'N')],['Schwimmen / Schweben / Sinken','ρ_K < ρ_Fl / ρ_K = ρ_Fl / ρ_K > ρ_Fl']]}});
 /* Kinematik und Dynamik */
 fm(FP,KD,'Gleichförmige Bewegung','Bei konstanter Geschwindigkeit gilt v = s / t. Zwei Fahrzeuge: A fährt voraus (Vorsprung s₀), B ist schneller und holt auf.',
@@ -616,7 +616,7 @@ fm(FP,WL,'Schmelz- & Verdampfungswärme','Beim Schmelzen (334 kJ/kg) und Verdamp
 const hc=v=>`hsl(${220-2.2*Math.min(Math.max(v,0),100)},80%,55%)`;
 fm(FP,WL,'Mischungstemperatur','Richmannsche Mischungsregel: Die abgegebene Wärme des warmen Körpers ist gleich der aufgenommenen Wärme des kalten, T_m = (m₁c₁T₁ + m₂c₂T₂) / (m₁c₁ + m₂c₂).',
  [['s','Stoff 2','sel',CM2.map(x=>x[0]),0],['m1','m₁',.1,10,.1,'kg',1],['T1','T₁',0,100,1,'°C',80],['m2','m₂',.1,10,.1,'kg',2],['T2','T₂',0,100,1,'°C',20]],
- s=>{const c1=4182,c2=CM2[s.s][1],Tm=(s.m1*c1*s.T1+s.m2*c2*s.T2)/(s.m1*c1+s.m2*c2),Q=s.m1*c1*(s.T1-Tm),bk=(x,tt,l)=>{const G=GLAS(x,96,120,140,{lv:110,c:hc(tt),op:.8,ry:10});return G.b+G.f+TH(x+60,185,nf(tt)+' °C','t1','middle')+T(x+60,268,l,'t2','middle')};
+ s=>{const c1=4182,c2=CM2[s.s][1],Tm=(s.m1*c1*s.T1+s.m2*c2*s.T2)/(s.m1*c1+s.m2*c2),Q=s.m1*c1*(s.T1-Tm),bk=(x,tt,l)=>`<rect x="${x}" y="110" width="120" height="120" fill="${hc(tt)}" opacity=".85" stroke="var(--ink)" stroke-width="3"/>`+T(x+60,175,nf(tt)+' °C','t1','middle')+T(x+60,255,l,'t2','middle');
  return{d:bk(30,s.T1,'Wasser m₁')+bk(190,s.T2,CM2[s.s][0]+' m₂')+T(335,175,'→','t1','middle')+bk(380,Tm,'Mischung'),
  res:[[nf(Tm)+' °C','Mischtemperatur'],[fmt(Q,'J'),'übertragene Wärme'],[nf(s.m1*c1+s.m2*c2)+' J/K','Wärmekapazität']],rows:[['Q abgegeben',fmt(Q,'J')],['Q aufgenommen',fmt(s.m2*c2*(Tm-s.T2),'J')]],st:[['T_m = (m₁c₁T₁ + m₂c₂T₂) / (m₁c₁ + m₂c₂)',nf(Tm)+' °C'],['Q_ab = Q_auf','m₁ · c₁ · (T₁ − T_m) = m₂ · c₂ · (T_m − T₂)'],['Gleicher Stoff','T_m = (m₁T₁ + m₂T₂) / (m₁ + m₂)']]}});
 /* Elektrotechnik */
