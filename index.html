@@ -46,7 +46,7 @@ svg text{fill:var(--ink);font-family:inherit}
 .pst{fill:var(--mute);stroke:var(--ink);stroke-width:2}
 .box{fill:var(--amber);stroke:var(--ink);stroke-width:2}
 .legend{font-size:13px;color:var(--mute);margin:8px 2px 0}
-.ctl{display:grid;grid-template-columns:3.6em 1fr 7em;gap:10px;align-items:center;margin-bottom:12px}
+.ctl{display:grid;grid-template-columns:var(--lw,3.6em) 1fr 7em;gap:10px;align-items:center;margin-bottom:12px}
 .ctl label{font-weight:700}
 .ctl input[type=range]{width:100%;accent-color:var(--flow)}
 .ctl .n{display:flex;align-items:center;gap:4px;color:var(--mute);white-space:nowrap;overflow-wrap:normal}.ctl .n input{min-width:0}
@@ -55,10 +55,11 @@ svg text{fill:var(--ink);font-family:inherit}
 .fx{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;padding:8px 12px;margin:0 0 14px;font-size:15px}.fx>span{display:inline-block;background:var(--bg);border-radius:6px;padding:2px 8px;margin:4px 6px 0 0}.ctl input.tx{grid-column:2/4;width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:5px 6px}[hidden]{display:none!important}.hc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}.hc h2{font-size:20px}.hc p{margin:8px 0}.chip{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 10px;margin:4px 6px 0 0;cursor:pointer}
 .btns{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .btns button{font:inherit;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
-.res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}
+.res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 14px}
 .res div{background:var(--bg);border-radius:8px;padding:8px 10px}
 .res b{display:block;font-size:18px}
 .res span{font-size:13px;color:var(--mute)}
+#res b,#res span,#tb td,#ctls label{hyphens:manual;-webkit-hyphens:manual}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:right;padding:5px 4px;border-bottom:1px solid var(--line)}
 th:first-child,td:first-child{text-align:left}
@@ -3826,7 +3827,49 @@ function render(){
  $('#th').innerHTML='<tr>'+o.th.map(t=>`<th>${t}</th>`).join('')+'</tr>';
  $('#tb').innerHTML=o.rows.map(r=>'<tr>'+r.map(t=>`<td>${t}</td>`).join('')+'</tr>').join('');
  $('#steps').innerHTML='<h2>Rechenweg und Hintergrund</h2>'+o.st.map(s=>`<p><span class="f">${s[0]}</span><br><span class="v">${s[1]}</span></p>`).join('');
+ fitAll();requestAnimationFrame(fitAll);
 }
+// Lange Wörter in schmalen Kästen (Ergebnisse, Tabelle, Reglernamen) nie an beliebiger Stelle umbrechen:
+// 1. fehlt nur wenig, Schrift leicht verkleinern; 2. sonst an Wortfugen trennen (Kollektor-wirkungs-grad);
+// 3. reicht das nicht, nach Silben (Oxi-da-tions); weiches Trennzeichen U+00AD, Textinhalt der Daten bleibt unverändert
+const SHYP='abschnitt differenz teile verstärkung zustand verhältnis konfiguration elektronen stabilität änderung kapazität pressung wechsel schaltung bindung punkt zahl reihe gleich farb multiplizieren klammern diagramm wirkungs grad leistung energie wärme umwandlung wandlung speicher verbrauch stoff motor kollektor gesamt zeit mittel last spitzen strom spannung widerstand kraft werk temperatur druck menge ausbeute betrieb fläche dichte gewicht volumen strahlung arbeit kopplung zelle anlage turbine generator pumpe wasser wind sonne dampf kühl kreis höhe verlust ertrag abgabe aufnahme zufuhr geschwindigkeit frequenz drehzahl moment kosten faktor anteil modul richter umgebung quelle tiefe sonde wert brenn kolben hub takt raum fluss dauer bedarf zufluss abfluss einsatz netz'.split(' ');
+const shyW=w=>{if(w.length<9||w.includes('­'))return w;const l=w.toLowerCase(),cut=new Set();
+ SHYP.forEach(q=>{let i=l.indexOf(q,3);while(i>=3){if(w.length-i>=3&&/[a-zäöüß]/.test(l[i-1]))cut.add(i);i=l.indexOf(q,i+1)}});
+ return [...cut].sort((a,b)=>b-a).reduce((x,i)=>x.slice(0,i)+'­'+x.slice(i),w)};
+// Silbenregel: ein Mitlaut zwischen Selbstlauten kommt auf die neue Zeile, von mehreren nur der letzte (sch, ch, ck, ph, th, qu bleiben zusammen)
+const SYLC=['sch','ch','ck','ph','th','qu'],SYLV=['ei','ie','au','eu','äu','ai','aa','ee','oo'],isV=c=>'aeiouyäöü'.includes(c);
+const sylW=w=>{const l=w.toLowerCase(),u=[];for(let i=0;i<l.length;){const c=SYLC.find(x=>l.startsWith(x,i)),v=SYLV.find(x=>l.startsWith(x,i)),t=c||v||l[i];u.push([i,isV(t[0])]);i+=t.length}
+ const cut=[];let lastV=-1;u.forEach(([i,v],k)=>{if(!v)return;const nc=k-lastV-1;if(lastV>=0&&nc>=1){const p=u[k-1][0];if(p>=2&&w.length-p>=2)cut.push(p)}lastV=k});
+ return cut.reverse().reduce((x,i)=>x.slice(0,i)+'­'+x.slice(i),w)};
+const FITC=new Map(),FITSEL='#res b,#res span,#tb td,#ctls label',HYW=/[A-Za-zÄÖÜäöüß­]{6,}/g;
+const wordW=(n,a,b)=>{const r=document.createRange();r.setStart(n,a);r.setEnd(n,b);let w=0;for(const x of r.getClientRects())w+=x.width;return w};
+function fitEl(e){const blk=getComputedStyle(e).display!=='inline',box=blk?e:e.parentElement,cs=getComputedStyle(box),
+ av=box.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);if(av<=0)return;
+ if(FITC.size>800)FITC.clear();const key=e.tagName+'|'+e.textContent+'|'+Math.round(av),hit=FITC.get(key);
+ const ts=()=>{const w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT),a=[];while(w.nextNode())a.push(w.currentNode);return a};
+ // „U-235“, „30–40 °C“: nach Binde- oder Gedankenstrich vor einer Zahl nicht umbrechen (Wortverbinder U+2060); „Grund-/Mittellast“ darf nach dem Schrägstrich umbrechen
+ const apply=c=>{ts().forEach(n=>{let v=n.nodeValue.replace(/([A-Za-z0-9])([-–])(?=\d)/g,'$1$2⁠').replace(/-\/(?!​)/g,'-/​');
+  if(c.shy)v=v.replace(/[A-Za-zÄÖÜäöüß]{9,}/g,shyW);if(c.shy>1)v=v.replace(HYW,x=>x.split('­').map(q=>q.length>=6?sylW(q):q).join('­'));
+  if(v!==n.nodeValue)n.nodeValue=v});if(c.fs)e.style.fontSize=c.fs+'px';if(c.nw)e.style.whiteSpace='nowrap'};
+ if(hit){apply(hit);return}
+ const fs=parseFloat(getComputedStyle(e).fontSize),c={};
+ // am Zeilenende steht beim Trennen noch der Trennstrich: seine Breite mitrechnen
+ const widest=()=>{const hy=.45*parseFloat(getComputedStyle(e).fontSize);let m=0;ts().forEach(n=>{const v=n.nodeValue,re=/(?:[^\s­​-]|-(?![A-Za-zÄÖÜäöü]))+-?/g;let x;while((x=re.exec(v)))m=Math.max(m,wordW(n,x.index,x.index+x[0].length)+(v[x.index+x[0].length]==='\u00AD'?hy:0))});return m};
+ const shrink=(m,lo)=>{if(m>av)c.fs=Math.max(Math.floor(fs*lo*2)/2,Math.floor(fs*av/m*.97*2)/2)};
+ // Ergebniswert (z. B. „4000 m³/d“, „0,2777778“) möglichst ganz in einer Zeile
+ if(e.tagName==='B'&&e.parentElement.parentElement.id==='res'){const all=ts().reduce((s,x)=>s+wordW(x,0,x.nodeValue.length),0);
+  if(all>av&&av/all>=.7){c.nw=1;shrink(all,.7);FITC.set(key,c);apply(c);return}
+  if(!/[A-Za-zÄÖÜäöüß]{6,}/.test(e.textContent)){shrink(widest(),.65);FITC.set(key,c);apply(c);return}}
+ // Tabellenspalten passen ihre Breite dem Inhalt an: dort immer Trennstellen anbieten
+ let m=widest();if(e.tagName==='TD'||(m>av&&av/m<.85)){c.shy=1;apply(c);m=widest();if(m>av&&av/m<.85){c.shy=2;apply(c);m=widest()}}
+ shrink(m,.75);FITC.set(key,c);if(c.fs)e.style.fontSize=c.fs+'px'}
+// Reglernamen: Spalte so breit wie der längste Name (höchstens 38 % der Breite), in allen Zeilen gleich
+function fitLab(){const c=$('#ctls');if(!c||!c.clientWidth)return;let m=0;c.querySelectorAll('.ctl>label').forEach(l=>{const fs=parseFloat(getComputedStyle(l).fontSize),w=document.createTreeWalker(l,NodeFilter.SHOW_TEXT);let s=0;while(w.nextNode())s+=wordW(w.currentNode,0,w.currentNode.nodeValue.length);m=Math.max(m,s*16/fs)});
+ const lw=Math.ceil(Math.min(Math.max(57.6,m+2),c.clientWidth*.38))+'px';if(c.style.getPropertyValue('--lw')!==lw)c.style.setProperty('--lw',lw)}
+// Kästen einer Reihe bekommen dieselbe Schriftgröße (die kleinste), damit das Bild ruhig bleibt
+const fitSame=q=>{const a=[...document.querySelectorAll(q)];if(!a.some(e=>e.style.fontSize))return;const f=Math.min(...a.map(e=>parseFloat(getComputedStyle(e).fontSize)));a.forEach(e=>e.style.fontSize=f+'px')};
+function fitAll(){fitLab();document.querySelectorAll(FITSEL).forEach(fitEl);fitSame('#res b');fitSame('#res span')}
+addEventListener('resize',()=>{if(cur>=0)render()});
 let UI={};const sy=(o,k)=>{const m=M[cur];if(m&&m.sync)m.sync(o,k,UI)};
 function ctl(o,q){
  const [k,lab,min,max,step,unit]=q,id='c'+uid++,d=document.createElement('div');d.className='ctl';
