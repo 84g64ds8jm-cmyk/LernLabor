@@ -5,7 +5,7 @@ on:
     branches: [main]
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest wird Ubuntu 26, dort scheitert playwright install --with-deps
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
