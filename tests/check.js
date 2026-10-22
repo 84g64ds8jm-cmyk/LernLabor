@@ -29,6 +29,10 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
  errs.push(...await p.evaluate(()=>{const bad=[];if(!llDemo.on())bad.push('Beispiel JK: nicht aktiv');if(store.get('ll_score',{}).n!==439)bad.push('Beispiel JK: Lernstand fehlt');if(!document.querySelector('.demob'))bad.push('Beispiel JK: Hinweisleiste fehlt');if(Object.keys(store.get('ll_mem',{t:{}}).t).length<10)bad.push('Beispiel JK: Themen fehlen');llDemo.stop();return bad}));
  await p.waitForLoadState('load');await p.waitForTimeout(400);
  errs.push(...await p.evaluate(()=>{const bad=[];if(llDemo.on())bad.push('Beispiel JK: lässt sich nicht beenden');if(store.get('ll_score',{}).n!==2)bad.push('Beispiel JK: eigener Lernstand nicht zurück');return bad}));
+ // Einführung: erscheint nur ohne Lernstand und nur einmal
+ {const c2=await b.newContext();const q=await c2.newPage();q.on('pageerror',e=>errs.push('Einführung: '+e.message));await q.goto('file://'+path.resolve(__dirname,'../index.html'));await q.waitForTimeout(900);
+  if(!(await q.$('.tour')))errs.push('Einführung: erscheint beim ersten Öffnen nicht');else{for(let i=0;i<7;i++){await q.click('.tnx');await q.waitForTimeout(80)}if(await q.$('.tour'))errs.push('Einführung: lässt sich nicht beenden')}
+  await q.reload();await q.waitForTimeout(900);if(await q.$('.tour'))errs.push('Einführung: erscheint ein zweites Mal');await c2.close()}
  // Service Worker: Datei vorhanden und Cache-Name passt zur Version
  {const fs=require('fs'),sw=fs.readFileSync(path.resolve(__dirname,'../sw.js'),'utf8'),ix=fs.readFileSync(path.resolve(__dirname,'../index.html'),'utf8'),v=(ix.match(/APPV=(\d+)/)||[])[1];
   if(!/addEventListener\('fetch'/.test(sw))errs.push('sw.js: leer oder ohne fetch-Handler');if(!sw.includes("'lernlabor-v"+v+"'"))errs.push('sw.js: Cache-Name passt nicht zu APPV '+v)}
