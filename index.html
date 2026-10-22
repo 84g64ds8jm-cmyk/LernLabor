@@ -744,7 +744,7 @@ fm(FP,MF,'Schiefe Ebene','Einfache Maschine: Auf der Rampe braucht man nur die K
  return{d:`<polygon points="60,250 ${60+dx},250 ${60+dx},${250-Math.min(s.h,s.l)*50}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${bx} ${by}) rotate(${-al*180/PI})"><rect class="box" x="-22" y="-30" width="44" height="30" rx="3"/></g>`+AR(bx-12*Math.sin(al),by-12*Math.cos(al),60*Math.cos(al),-60*Math.sin(al),'var(--flow)','F')+T(60+dx/2,278,'l = '+nf(s.l)+' m, h = '+nf(s.h)+' m','t2','middle'),
  res:[[fmt(F,'N'),'Zugkraft F'],[fmt(Gw,'N'),'Gewichtskraft F_G'],['× '+nf(Gw/F),'Kraftersparnis']],rows:[['Arbeit F_G · h',fmt(Gw*s.h,'J')],['Arbeit F · l',fmt(F*s.l,'J')]],st:[['F = F_G · h / l',`${fmt(Gw,'N')} · ${nf(s.h)} / ${nf(s.l)} = ${fmt(F,'N')}`],['Goldene Regel der Mechanik','Was man an Kraft spart, muss man an Weg zugeben']]}});
 fm(FP,MF,'Gesetz von Hooke','Die Federkraft ist proportional zur Dehnung: F = D · Δl. In der gespannten Feder steckt die Spannenergie E = ½ · D · Δl².',
- [['D','D',10,2000,10,'N/m',200],['m','m',.1,20,.1,'kg',2],['l0','l₀',10,40,1,'cm',20]],
+ [['D','D',70,2000,10,'N/m',200],['m','m',.1,6.6,.1,'kg',2],['l0','l₀',10,40,1,'cm',20]],
  s=>{const F=s.m*G,dl=F/s.D,E=.5*s.D*dl*dl,len=Math.min(4*(s.l0+dl*100),210),len0=Math.min(4*s.l0,210),xm=Math.max(dl*1.5,.01);
  /* Schraubenfeder räumlich: hintere Windungen hell, vordere metallisch; Massestück als Zylinder; Maßstab mit l₀ und Δl */
  const cx=90,y1=40,R=17,N=12,S=24,yE=y1+len-18;let bk='',fr='';
@@ -757,6 +757,8 @@ fm(FP,MF,'Gesetz von Hooke','Die Federkraft ist proportional zur Dehnung: F = D 
  return{d,
  pl:[x=>s.D*x,xm,s.D*xm,dl,'Δl in m','F in N'],res:[[fmt(F,'N'),'Kraft F'],[nf(dl*100)+' cm','Dehnung Δl'],[fmt(E,'J'),'Spannenergie']],rows:[['D',nf(s.D)+' N/m'],['neue Länge',nf(s.l0+dl*100)+' cm']],st:[['F = m · g',fmt(F,'N')],['F = D · Δl',`Δl = ${fmt(F,'N')} / ${nf(s.D)} N/m = ${nf(dl*100)} cm`],['E = ½ · D · Δl²',fmt(E,'J')]]}});
 /* Hydraulik und Pneumatik */
+/* Hooke: Reglerbereiche gekoppelt, damit die größte gezeichnete Dehnung (Maßstab voll) ganz rechts bzw. ganz links liegt */
+{const HK=(o,k,UI)=>{const dm=(52.5-o.l0)/100;if(k!='m'){const mx=Math.max(.5,Math.floor(dm*o.D/G*10)/10);if(o.m>mx)o.m=mx;if(UI.m){UI.m[0].max=mx;UI.m[1].max=mx;UI.m[0].value=o.m;UI.m[1].value=o.m}}if(k!='D'){const mn=Math.max(10,Math.ceil(o.m*G/dm/10)*10);if(o.D<mn)o.D=mn;if(UI.D){UI.D[0].min=mn;UI.D[1].min=mn;UI.D[0].value=o.D;UI.D[1].value=o.D}}};const m=M.find(x=>x.name=='Gesetz von Hooke');m.sync=HK;m.init=(o,UI)=>HK(o,'',UI)}
 fm(FP,HP,'Druck','Hydrostatischer Druck (Schweredruck): p = ρ · g · h. Den Kolbendruck p = F / A zeigt der Reiter Hydraulik.',
  [['f','Stoff','sel',FN,0],['h','h',0,100,.5,'m',10],['A','A',1,1000,1,'cm²',100]],
  s=>{const r=FL[s.f][1],ph=r*G*s.h,pg=ph+101325,xm=Math.max(s.h,1)*1.2;
@@ -4963,7 +4965,7 @@ function ctl(o,q){
 }
 function build(){
  const m=M[cur];UI={};$('#ctls').innerHTML='';$('#btns').innerHTML='';
- m.p.forEach(q=>ctl(S[cur],q));pvis();
+ m.p.forEach(q=>ctl(S[cur],q));pvis();if(m.init)m.init(S[cur],UI);
  const add=(l,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.onclick=fn;$('#btns').appendChild(b);return b};
  (m.btn||[]).forEach(([l,fn])=>add(l,()=>{fn(S[cur]);build()}));
  const fb=add(FAV.includes(m.name)?'★ Favorit':'☆ Favorit',()=>{toggleFav(m.name);fb.textContent=FAV.includes(m.name)?'★ Favorit':'☆ Favorit'});
