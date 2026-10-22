@@ -4443,7 +4443,7 @@ function render(){
 // 3. reicht das nicht, nach Silben (Oxi-da-tions); weiches Trennzeichen U+00AD, Textinhalt der Daten bleibt unverändert
 const SHYP='freiheit abschnitt durchmesser messer differenz teile verstärkung zustand verhältnis konfiguration elektronen stabilität änderung kapazität pressung wechsel schaltung bindung punkt zahl reihe gleich farb multiplizieren klammern diagramm wirkungs grad leistung energie wärme umwandlung wandlung speicher verbrauch stoff motor kollektor gesamt zeit mittel last spitzen strom spannung widerstand kraft werk temperatur druck menge ausbeute betrieb fläche dichte gewicht volumen strahlung arbeit kopplung zelle anlage turbine generator pumpe wasser wind sonne dampf kühl kreis höhe verlust ertrag abgabe aufnahme zufuhr geschwindigkeit frequenz drehzahl moment kosten faktor anteil modul richter umgebung quelle tiefe sonde wert brenn kolben hub takt raum fluss dauer bedarf zufluss abfluss einsatz netz'.split(' ');
 // Ausnahmen, die keine Regel richtig trennt
-const HYEX={};'Kraft-er-spar-nis Pfer-de-stär-ken Schutz-ein-rich-tung Si-cher-heits-da-ten-blatt Span-nungs-frei-heit Wie-der-ein-schal-ten Wie-der-ein-schal-tens Spannungs-frei-heit'.split(' ').forEach(x=>HYEX[x.replace(/-/g,'').toLowerCase()]=x);
+const HYEX={};'Zu-stand Zu-stän-de Ver-stand Kraft-er-spar-nis Pfer-de-stär-ken Schutz-ein-rich-tung Si-cher-heits-da-ten-blatt Span-nungs-frei-heit Wie-der-ein-schal-ten Wie-der-ein-schal-tens Spannungs-frei-heit'.split(' ').forEach(x=>HYEX[x.replace(/-/g,'').toLowerCase()]=x);
 const shyW=w=>{if(w.length<9||w.includes('­'))return w;const l=w.toLowerCase(),cut=new Set();
  if(HYEX[l]){let k=0,o='';for(const ch of HYEX[l]){if(ch==='-')o+='­';else o+=w[k++]}return o}
  const hits=[];SHYP.forEach(q=>{let i=l.indexOf(q);while(i>=0){hits.push([i,i+q.length]);i=l.indexOf(q,i+1)}});
@@ -4453,8 +4453,8 @@ const shyW=w=>{if(w.length<9||w.includes('­'))return w;const l=w.toLowerCase(),
 // Silbenregel: ein Mitlaut zwischen Selbstlauten kommt auf die neue Zeile, von mehreren nur der letzte (sch, ch, ck, ph, th, qu bleiben zusammen)
 // Silbenanlaute wie br, kl, schl, pf bleiben zusammen (Be-schleu-ni-gung, Klas-sen-brei-te)
 const SYLC=['sch','ch','ck','ph','th','qu'],SYLV=['ei','ie','au','eu','äu','ai','aa','ee','oo'],isV=c=>'aeiouyäöü'.includes(c),SYLO=new Set('br bl pr pl tr dr kr kl gr gl fr fl schl schr schw schm schn pfl pfr'.split(' '));
-const sylW=w=>{const l=w.toLowerCase(),u=[];for(let i=0;i<l.length;){const c=SYLC.find(x=>l.startsWith(x,i)),v=SYLV.find(x=>l.startsWith(x,i)),t=c||v||l[i];u.push([i,isV(t[0]),t]);i+=t.length}
- const cut=[];let lastV=-1;u.forEach(([i,v],k)=>{if(!v)return;const nc=k-lastV-1;if(lastV>=0&&nc>=1){let p=u[k-1][0];if(nc>=2&&SYLO.has(u[k-2][2]+u[k-1][2])&&!/^(ab|ob|sub|halb|gelb)$/.test(l.slice(0,p)))p=u[k-2][0];if(p>=2&&w.length-p>=2)cut.push(p)}lastV=k});
+const sylW=w=>{const l=w.toLowerCase(),u=[];if(HYEX[l]){let k=0,o='';for(const ch of HYEX[l]){if(ch==='-')o+='­';else o+=w[k++]}return o}for(let i=0;i<l.length;){const c=SYLC.find(x=>l.startsWith(x,i)),v=SYLV.find(x=>l.startsWith(x,i)),t=c||v||l[i];u.push([i,isV(t[0]),t]);i+=t.length}
+ const cut=[];let lastV=-1;u.forEach(([i,v],k)=>{if(!v)return;const nc=k-lastV-1;if(lastV>=0&&nc>=1){let p=u[k-1][0];const c2=k>=2?u[k-2][2]+u[k-1][2]:'',c3=k>=3?u[k-3][2]+c2:'';if(nc>=4&&/^(str|spr|spl)$/.test(c3))p=u[k-3][0];else if(nc>=2&&SYLO.has(c2)&&!/^(ab|ob|sub|halb|gelb)$/.test(l.slice(0,p)))p=u[k-2][0];else if(nc>=3&&c2==='st')p=u[k-2][0];if(p>=2&&w.length-p>=2)cut.push(p)}lastV=k});
  return cut.reverse().reduce((x,i)=>x.slice(0,i)+'­'+x.slice(i),w)};
 const FITC=new Map(),FITSEL='#res b,#res span,#tb td,#ctls label',HYW=/[A-Za-zÄÖÜäöüß­]{6,}/g;
 const wordW=(n,a,b)=>{const r=document.createRange();r.setStart(n,a);r.setEnd(n,b);let w=0;for(const x of r.getClientRects())w+=x.width;return w};
