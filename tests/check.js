@@ -11,9 +11,19 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
   for(const k of Object.keys(STEPS))for(let i=0;i<N;i++){try{const d=STEPS[k](mk(i*104729+3));if(!txt(d.intro))bad.push('Mehrschritt „'+k+'“: Einleitung leer');d.steps.forEach((s,j)=>chk('Mehrschritt „'+k+'“ Schritt '+(j+1),s[0],s[1],s[2],s[3]));n++}catch(e){bad.push('Mehrschritt „'+k+'“: '+e.message)}}
   EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{const d=f(mk(i*31337+5));d.steps.forEach((s,j)=>chk('Prüfungsaufgabe „'+k+'“ Schritt '+(j+1),s[0],s[1],s[2],s[3]));n++}catch(e){bad.push('Prüfungsaufgabe „'+k+'“: '+e.message)}}});
   MCQ.forEach(x=>{if(!txt(x[1])||!Array.isArray(x[2])||x[2].length<2||x[2].some(o=>!txt(o)))bad.push('Ankreuzfrage „'+x[0]+'“: Antworten oder Lösung fehlerhaft')});
-  M.forEach((m,i)=>{try{go(i);render()}catch(e){bad.push('Thema „'+m.name+'“: '+e.message)}});cur=-1;prac=false;nav();
-  return{n,topics:M.length,bad:[...new Set(bad)]}});
+  M.forEach((m,i)=>{try{go(i);render();if(!document.title.startsWith(m.name+' · '))bad.push('Thema „'+m.name+'“: Seitentitel fehlt ('+document.title+')')}catch(e){bad.push('Thema „'+m.name+'“: '+e.message)}});cur=-1;prac=false;nav();
+  // Fachliche Regeln
+  const hint=[];
+  [[3.3*0.35,'1,16'],[136.805,'136,81'],[1.005,'1,01'],[-2.675,'−2,68'],[-0.004,'0,00'],[1234.5,'1234,50']].forEach(([v,w])=>{if(nfe(v)!==w)bad.push('Geldrundung: nfe('+v+') ergibt '+nfe(v)+' statt '+w)});
+  if(hf(-1234.5,1)!=='−1.234,5')bad.push('Zahlenformat: hf(−1234,5) ergibt '+hf(-1234.5,1));
+  const r1=JSON.stringify(mcNew(4711).qs.map(x=>[x.q,x.a])),r2=JSON.stringify(mcNew(4711).qs.map(x=>[x.q,x.a]));if(r1!==r2)bad.push('Mathe-Check: gleicher Satz ergibt verschiedene Aufgaben');
+  for(let sd=1;sd<=40;sd++)mcNew(sd).qs.forEach(x=>{const t=x.q+' '+(x.sol||[]).join(' ');if(!ok(x.a))bad.push('Mathe-Check: Ergebnis keine Zahl');if(/\^|÷/.test(t))bad.push('Mathe-Check: „^“ oder „÷“ im Text: '+t.slice(0,80))});
+  const CNT=/^(Windungen|Teile|Stück|Haushalte|Personen|Fahrten)$/,AVG=/Median|Quartil|Mittel|Durchschnitt|Standardabweichung|Spannweite|durchschnittlich|je Schicht im Mittel/i,cnt=(w,a,u,q)=>{if((CNT.test(String(u).trim())||/^Wie viele (Windungen|Haushalte|Teile|fehlerhafte|Stück|Fahrten)/.test(q||''))&&!AVG.test(q||'')&&ok(a)&&Math.abs(a-Math.round(a))>1e-9)hint.push(w+': Zählgröße nicht ganzzahlig, z. B. '+a+' '+u)};
+  for(const k of Object.keys(GEN))for(let i=0;i<N;i++){try{const x=GEN[k](mk(i*7919+1));cnt('Übung „'+k+'“',x[1],x[2],x[0])}catch(e){}}
+  EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{f(mk(i*31337+5)).steps.forEach(s=>cnt('Prüfungsaufgabe „'+k+'“',s[1],s[2],s[0]))}catch(e){}}});
+  const hs={};hint.forEach(h=>{const k=h.split(':')[0];if(!hs[k])hs[k]=h});return{n,topics:M.length,bad:[...new Set(bad)],hint:Object.values(hs)}});
  await b.close();const all=[...r.bad,...errs];
  console.log(`${r.n} Aufgaben erzeugt, ${r.topics} Themen geöffnet.`);
+ if(r.hint.length)console.log(r.hint.length+' fachliche Hinweise (blockieren nicht):\n- '+r.hint.slice(0,30).join('\n- '));
  if(all.length){console.log(all.length+' Probleme:\n- '+all.slice(0,80).join('\n- '));process.exit(1)}else console.log('Alles in Ordnung.');
 })().catch(e=>{console.error(e);process.exit(1)});
