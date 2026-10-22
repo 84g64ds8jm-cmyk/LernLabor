@@ -288,10 +288,11 @@ svg.ico{background:none;border-radius:0;flex:none}#fs .ni svg{width:20px;height:
 }
 /* Laptop: Aufklapper und Regler gut treffbar */
 @media(pointer:fine) and (min-width:900px){input[type=range]{min-height:28px}details>summary{padding-block:4px}}
-/* Regler für den Daumen: Handy zweizeilig (Name und Wert oben, breiter Regler darunter), großer Griff, Spur füllt sich */
+/* Regler für den Daumen: Handy einzeilig mit schmalem Zahlenfeld, damit der Regler lang wird; großer Griff, Spur füllt sich */
 @media(max-width:899px){
- .ctl.rg{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l n" "r r";row-gap:2px;column-gap:8px;margin-bottom:10px}
- .ctl.rg>label{grid-area:l}.ctl.rg>.n{grid-area:n;justify-self:end;width:8em}.ctl.rg>input[type=range]{grid-area:r;width:100%}
+ .ctl.rg{grid-template-columns:var(--lwm,var(--lw,3.6em)) minmax(0,1fr) auto;grid-template-areas:"l r n";column-gap:8px;margin-bottom:6px}
+ .ctl.rg>label{grid-area:l}.ctl.rg>.n{grid-area:n;width:auto}
+ /* lange Namen (z. B. Fallhöhe): Name über die Zeile, Regler und Zahl darunter */.lwide>.ctl.rg{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l l" "r n";row-gap:0}.ctl.rg>.n input.nw{width:4.8em}.ctl.rg>.n input{width:3.8em;padding-inline:5px;font-size:16px}.ctl.rg>.n{gap:3px;font-size:15px;min-width:5.8em}.ctl.rg>input[type=range]{grid-area:r;width:100%}
  .ctl.rg input[type=range]{-webkit-appearance:none;appearance:none;height:44px;min-height:44px;margin:0;background:transparent;touch-action:pan-y;--rc:var(--acc,var(--flow))}
  .ctl.rg input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--rc) var(--p,50%),var(--line) var(--p,50%))}
  .ctl.rg input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;margin-top:-11px;border-radius:50%;background:#fff;border:3px solid var(--rc);box-shadow:0 2px 6px rgba(0,0,0,.3)}
@@ -4732,7 +4733,7 @@ function fitEl(e){const blk=getComputedStyle(e).display!=='inline',box=blk?e:e.p
  FITC.set(key,c);if(c.fs)e.style.fontSize=c.fs+'px'}
 // Reglernamen: Spalte so breit wie der längste Name (höchstens 38 % der Breite), in allen Zeilen gleich
 function fitLab(){const c=$('#ctls');if(!c||!c.clientWidth)return;let m=0;c.querySelectorAll('.ctl>label').forEach(l=>{const fs=parseFloat(getComputedStyle(l).fontSize),w=document.createTreeWalker(l,NodeFilter.SHOW_TEXT);let s=0;while(w.nextNode())s+=wordW(w.currentNode,0,w.currentNode.nodeValue.length);m=Math.max(m,s*16/fs)});
- const lwn=Math.ceil(Math.min(Math.max(57.6,m+2),c.clientWidth*.38)),lw=lwn+'px';if(c.style.getPropertyValue('--lw')!==lw)c.style.setProperty('--lw',lw);
+ const lwn=Math.ceil(Math.min(Math.max(57.6,m+2),c.clientWidth*.38)),lw=lwn+'px';if(c.style.getPropertyValue('--lw')!==lw)c.style.setProperty('--lw',lw);c.classList.toggle('lwide',lwn>76);c.style.setProperty('--lwm',Math.ceil(Math.max(28,m+2))+'px');
  // sehr lange Namen (mehr als zwei Zeilen, z. B. „a bzw. D (Außendurchmesser) in mm“) in kleinerer Schrift
  c.querySelectorAll('.ctl>label').forEach(l=>{const w=document.createTreeWalker(l,NodeFilter.SHOW_TEXT);let t=0;while(w.nextNode())t+=wordW(w.currentNode,0,w.currentNode.nodeValue.length);const fs=parseFloat(getComputedStyle(l).fontSize),x=t*16/fs>lwn*2;if(l.classList.contains('lsm')!==x)l.classList.toggle('lsm',x)})}
 // Kästen einer Reihe bekommen dieselbe Schriftgröße (die kleinste), damit das Bild ruhig bleibt
@@ -5528,7 +5529,7 @@ const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
  r.addEventListener('touchend',()=>{clearTimeout(idle);idle=setTimeout(()=>touch=false,600)},{passive:true})});
 </script>
 <script>/* Regler für den Daumen: Spur zeigt den Stand, Ziehen geht überall auf der Spur */
-(function(){const fill=r=>{const a=+r.min,b=+r.max;r.style.setProperty('--p',(b>a?(r.value-a)/(b-a)*100:0)+'%')},all=()=>document.querySelectorAll('.ctl.rg input[type=range]').forEach(fill);
+(function(){const fill=r=>{const a=+r.min,b=+r.max;r.style.setProperty('--p',(b>a?(r.value-a)/(b-a)*100:0)+'%')},all=()=>{document.querySelectorAll('.ctl.rg input[type=range]').forEach(fill);/* große Höchstwerte (z. B. 100000 Ω): Zahlenfeld etwas breiter */document.querySelectorAll('.ctl.rg .n input:not(.nw)').forEach(i=>{if(String(Math.round(Math.abs(+i.max))).length>4)i.classList.add('nw')})};
  const r0=render,b0=build;render=function(){const x=r0.apply(this,arguments);all();return x};build=function(){const x=b0.apply(this,arguments);all();return x};
  document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('.ctl.rg input'))all()});
  const set=(r,v)=>{const a=+r.min,b=+r.max,st=+r.step||1;v=Math.min(b,Math.max(a,a+Math.round((v-a)/st)*st));v=+v.toFixed(10);if(+r.value===v)return;r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}))};
