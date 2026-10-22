@@ -12,11 +12,13 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
   EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{const d=f(mk(i*31337+5));d.steps.forEach((s,j)=>chk('Prüfungsaufgabe „'+k+'“ Schritt '+(j+1),s[0],s[1],s[2],s[3]));n++}catch(e){bad.push('Prüfungsaufgabe „'+k+'“: '+e.message)}}});
   HW.forEach(u=>(u.x?[...u.tasks,u.x]:u.tasks).forEach(t=>{if(t.typ==='num')for(let i=0;i<N;i++){try{const c=t.gen();chk('Hausaufgabe „'+t.name+'“',c.q,c.a,c.u,c.sol);n++}catch(e){bad.push('Hausaufgabe „'+t.name+'“: '+e.message)}}}));
   MCQ.forEach(x=>{if(!txt(x[1])||!Array.isArray(x[2])||x[2].length<2||x[2].some(o=>!txt(o)))bad.push('Ankreuzfrage „'+x[0]+'“: Antworten oder Lösung fehlerhaft')});
+  if(keyTxt(151.74,'',{dp:2})!=='151,74'||keyTxt(1094.8,'€',{})!=='1094,80 €')bad.push('Ergebnisanzeige: Stellen oder Cent falsch ('+keyTxt(151.74,'',{dp:2})+', '+keyTxt(1094.8,'€',{})+')');
+  if(tolOf(.0005,'mm',8).rel!==.0005||tolOf(undefined,'€',100).abs!==.5)bad.push('Toleranz: Zahl oder Geld falsch ausgewertet');
   M.forEach((m,i)=>{try{go(i);render();if(!document.title.startsWith(m.name+' · '))bad.push('Thema „'+m.name+'“: Seitentitel fehlt ('+document.title+')')}catch(e){bad.push('Thema „'+m.name+'“: '+e.message)}});cur=-1;prac=false;nav();
   // Fachliche Regeln
   const hint=[];
   [[3.3*0.35,'1,16'],[136.805,'136,81'],[1.005,'1,01'],[-2.675,'−2,68'],[-0.004,'0,00'],[1234.5,'1234,50']].forEach(([v,w])=>{if(nfe(v)!==w)bad.push('Geldrundung: nfe('+v+') ergibt '+nfe(v)+' statt '+w)});
-  if(hf(-1234.5,1)!=='−1.234,5')bad.push('Zahlenformat: hf(−1234,5) ergibt '+hf(-1234.5,1));
+  if(hf(-1234.5,1)!=='−1\u202f234,5')bad.push('Zahlenformat: hf(−1234,5) ergibt '+hf(-1234.5,1));
   const r1=JSON.stringify(mcNew(4711).qs.map(x=>[x.q,x.a])),r2=JSON.stringify(mcNew(4711).qs.map(x=>[x.q,x.a]));if(r1!==r2)bad.push('Mathe-Check: gleicher Satz ergibt verschiedene Aufgaben');
   EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{f(mk(i*31337+5)).steps.forEach(s=>{const t=s[4];if(t&&t.ch&&!(Number.isInteger(s[1])&&s[1]>=0&&s[1]<t.ch.length))bad.push('Prüfungsaufgabe „'+k+'“: Auswahlantwort ungültig')})}catch(e){}}});
   for(let sd=1;sd<=40;sd++)mcNew(sd).qs.forEach(x=>{const t=x.q+' '+(x.sol||[]).join(' ');if(!ok(x.a))bad.push('Mathe-Check: Ergebnis keine Zahl');if(/\^|÷/.test(t))bad.push('Mathe-Check: „^“ oder „÷“ im Text: '+t.slice(0,80))});
