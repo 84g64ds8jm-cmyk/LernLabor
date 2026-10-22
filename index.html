@@ -631,8 +631,11 @@ function KKON(s,t){
 
 /* Aggregatzustand */
 const SU=[['Wasser',0,100],['Ethanol',-114,78],['Stickstoff',-210,-196],['Quecksilber',-39,357],['Eisen',1538,2861]];
+/* Reglerbereich je Stoff: Anfang und Ende der Erwärmungskurve (Schmelzpunkt − 80 K bis Siedepunkt + 80 K) */
+const AGT=i=>{const [,mp,bp]=SU[i],a=Math.max(-273,mp-80),b=bp+80;return['T','T',a,b,1,'°C',Math.min(b,Math.max(a,20))]};
 M.push({g:'Chemie',name:'Aggregatzustand',anim:1,desc:'Fest, flüssig, gasförmig: Je höher die Temperatur, desto schneller bewegen sich die Teilchen. Bei Schmelz- und Siedepunkt bleibt die Temperatur trotz Heizen konstant.',leg:'Rechts die Erwärmungskurve des Stoffes, der Punkt zeigt den aktuellen Zustand.',
- p:[['s','Stoff','sel',SU.map(x=>x[0]),0],['T','T',-273,3000,1,'°C',20]],
+ p:[['s','Stoff','sel',SU.map(x=>x[0]),0],AGT(0)],
+ sync(o,k){if(k!='s')return;const q=AGT(o.s);M[cur].p.splice(1,1,q);o.T=Math.min(q[3],Math.max(q[2],o.T));build()},
  f(s,t){
   const [nm,mp,bp]=SU[s.s],Tc=s.T,Tk=Tc+273.15,st=Tc<mp-.5?0:Tc<=mp+.5?1.5:Tc<bp-.5?1:Tc<=bp+.5?2.5:2,sp=Math.sqrt(Math.max(Tk,1))/9;
   const GA=GLAS(30,34,270,236,{ry:12});let h=GA.b;
