@@ -48,6 +48,22 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
    GLS.t='a';glOpen();if(document.querySelectorAll('#gll .gla tr').length<GLA.length)bad.push('Glossar: Schreibweisen fehlen');
    const lk=b64e(JSON.stringify({n:'Test',a:[{id:'1',th:'T <i>x</i>',t:'num',q:'Q?',a:2.5,u:'W',tol:2,s:['a']}]}));location.hash='#aufgaben/'+lk;return bad}));
   await q.waitForTimeout(400);errs.push(...await q.evaluate(()=>{const bad=[];if(!/Vom Dozenten/.test(document.querySelector('#hw').textContent))bad.push('Eigene Aufgaben: Link wird nicht übernommen');if(document.querySelector('#hw i'))bad.push('Eigene Aufgaben: HTML wird nicht maskiert');return bad}));await c3.close()}
+ // Lernenden-Konsortium: Lösungsweg bei jedem Typ, Übungsmix, Fehlerhinweise, Hausaufgaben im Lernstand, Begriffe, Suche
+ {const c4=await b.newContext();const q=await c4.newPage();q.on('pageerror',e=>errs.push('Konsortium: '+e.message));
+  await q.addInitScript(()=>{try{localStorage.setItem('ll_tour','1')}catch(e){}});await q.goto('file://'+path.resolve(__dirname,'../index.html'));await q.waitForTimeout(700);
+  errs.push(...await q.evaluate(()=>{const bad=[];
+   ['num','steps','mc','und','fehl'].forEach(k=>{for(let i=0;i<6;i++){openPractice('Alle',k);if(!PS.cur)continue;try{showSol()}catch(e){bad.push('Lösungsweg „'+k+'“: '+e.message);break}if(!document.querySelector('#psol').textContent.trim()){bad.push('Lösungsweg „'+k+'“: bleibt leer');break}}});
+   openPractice('Alle');const c={};for(let i=0;i<400;i++){newQ();c[PS.cur.k]=(c[PS.cur.k]||0)+1}if(((c.num||0)+(c.steps||0))/400<.4)bad.push('Übungsmix „Gemischt“: zu wenig Rechnen ('+JSON.stringify(c)+')');
+   if(!/°C/.test(errHint(25,298.15,{n:'Gasgesetze',u:'K'})||''))bad.push('Fehlerhinweis: °C statt K wird nicht erkannt');
+   if(/Str[aä]ng|Phase/.test(errHint(30,10,{n:'Wärmekapazität',u:'kJ'})||''))bad.push('Fehlerhinweis: Drehstrom-Hinweis bei Wärmekapazität');
+   GLB.forEach(r=>{try{new RegExp(r[4],'i')}catch(e){bad.push('Begriff „'+r[0]+'“: Suchmuster ungültig')}r[3].forEach(n=>{if(!M.some(m=>m.name===n))bad.push('Begriff „'+r[0]+'“: Thema „'+n+'“ gibt es nicht')})});
+   $('#q').value='Om';search();if(!/Ohmsches Gesetz/.test($('#sr').textContent))bad.push('Suche: „Om“ findet das Ohmsche Gesetz nicht');$('#q').value='';search();
+   location.hash='#hausaufgaben/k11';return bad}));
+  await q.waitForTimeout(500);
+  errs.push(...await q.evaluate(()=>{const bad=[],i=document.querySelector('#hw .hwin');if(!i){bad.push('Hausaufgabe: keine Rechenaufgabe in Einheit 1.1');return bad}
+   i.value='12345';i.closest('.panel,div').querySelector('.hwck').click();const m=store.get('ll_mem',{t:{}});if(!Object.keys(m.t||{}).length)bad.push('Hausaufgabe: Antwort fehlt im Lernstand');if(!(store.get('ll_fehler',[])||[]).length)bad.push('Hausaufgabe: falsche Antwort fehlt unter Meine Fehler');
+   if(!document.querySelector('#hw .glbb'))bad.push('Hausaufgabe: Begriffe-Kasten fehlt');return bad}));
+  await c4.close()}
  // Service Worker: Datei vorhanden und Cache-Name passt zur Version
  {const fs=require('fs'),sw=fs.readFileSync(path.resolve(__dirname,'../sw.js'),'utf8'),ix=fs.readFileSync(path.resolve(__dirname,'../index.html'),'utf8'),v=(ix.match(/APPV=(\d+)/)||[])[1];
   if(!/addEventListener\('fetch'/.test(sw))errs.push('sw.js: leer oder ohne fetch-Handler');if(!sw.includes("'lernlabor-v"+v+"'"))errs.push('sw.js: Cache-Name passt nicht zu APPV '+v)}
