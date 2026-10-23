@@ -26,6 +26,14 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
   for(const k of Object.keys(GEN))for(let i=0;i<N;i++){try{const x=GEN[k](mk(i*7919+1));cnt('Übung „'+k+'“',x[1],x[2],x[0])}catch(e){}}
   EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{f(mk(i*31337+5)).steps.forEach(s=>cnt('Prüfungsaufgabe „'+k+'“',s[1],s[2],s[0]))}catch(e){}}});
   const hs={};hint.forEach(h=>{const k=h.split(':')[0];if(!hs[k])hs[k]=h});return{n,topics:M.length,bad:[...new Set(bad)],hint:Object.values(hs)}});
+ // Stufen: Filter liefert nur Aufgaben der gewählten Stufe, Vorschlag nach zwei Fehlern, Karte im Lernstand
+ errs.push(...await p.evaluate(()=>{const bad=[];try{const seen={};for(const l of [1,2,3]){openPractice('Alle',null,l);for(let i=0;i<60;i++){newQ();const c=PS.cur;if(lvOf(c)!==l)bad.push('Stufen: Stufe '+l+' liefert '+c.k+' „'+c.n+'“ mit Stufe '+lvOf(c));if(c.xp)seen.xp=1;if(!$('#pt .lvb'))bad.push('Stufen: Etikett fehlt')}}
+  if(!seen.xp)bad.push('Stufen: Prüfungsniveau mischt keine Prüfungsaufgaben ein');
+  ['num','steps','und','fehl','bew'].forEach(k=>{KIND=k;[1,2,3].forEach(l=>{LVSEL=l;poolQ().forEach(([kk,n])=>{if(!lvPool(kk,n).includes(l))bad.push('Stufen: Pool falsch '+kk+' '+n)})})});
+  openPractice('Alle','num',2);for(let i=0;i<2;i++){newQ();const it=item();$('#pin').value=String(it.a*1000+7);checkQ()}if($('#plvs').hidden||!$('#plvg'))bad.push('Stufen: kein Vorschlag nach zwei Fehlern');else{$('#plvg').click();if(LVSEL!==1)bad.push('Stufen: Vorschlag wechselt nicht auf Grundlagen')}
+  openPractice('M:Gasgesetze','und',3);if(LVSEL!==0)bad.push('Stufen: leere Stufe fällt nicht auf alle Stufen zurück');
+  memOpen();if(!$('#lvpan'))bad.push('Stufen: Karte „Dein Niveau“ fehlt im Lernstand');if(!document.querySelector('#mem .lvd'))bad.push('Stufen: Punkte in der Themenliste fehlen');
+  localStorage.removeItem('ll_lv');localStorage.removeItem('ll_mem');localStorage.removeItem('ll_score');location.hash='';cur=-1;prac=false;nav()}catch(e){bad.push('Stufen: '+e.message)}return bad}));
  // Kurskalender und Beispiel JK: Termine eingetragen, Umschalten hin und zurück ohne Datenverlust
  const kb=await p.evaluate(()=>{const bad=[],k=store.get('ll_kurs',null);if(!k||k.n!==KURS0.n||KURS0.d.some(d=>!k.d.includes(d)))bad.push('Kurskalender: Kurstermine fehlen');return bad});errs.push(...kb);
  await p.evaluate(()=>{localStorage.setItem('ll_score',JSON.stringify({ok:1,n:2}));llDemo.start()});await p.waitForLoadState('load');await p.waitForTimeout(400);
