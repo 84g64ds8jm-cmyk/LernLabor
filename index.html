@@ -780,8 +780,13 @@ fm(FP,MF,'Gesetz von Hooke','Die Federkraft ist proportional zur Dehnung: F = D 
 fm(FP,HP,'Druck','Hydrostatischer Druck (Schweredruck): p = ρ · g · h. Den Kolbendruck p = F / A zeigt der Reiter Hydraulik.',
  [['f','Stoff','sel',FN,0],['h','h',0,100,.5,'m',10],['A','A',1,1000,1,'cm²',100]],
  s=>{const r=FL[s.f][1],ph=r*G*s.h,pg=ph+101325,xm=Math.max(s.h,1)*1.2;
- const G1=GLAS(70,44,180,222,{lv:206,ry:11,c:FLC[s.f][0],op:FLC[s.f][1]});
- return{d:G1.b+G1.f+[.25,.5,.75,.97].map(k=>AR(247,60+196*k,-70*k,0,'var(--red)')).join('')+`<path d="M86 60V256" stroke="var(--ink)" stroke-width="1.5"/><path d="M80 60H92M80 256H92" stroke="var(--ink)" stroke-width="1.5"/>`+TH(160,164,'h = '+nf(s.h)+' m','t1','middle'),
+ /* Becherglas folgt den Reglern: Füllhöhe ~ h (100 m = 196 px), Durchmesser ~ √A (1000 cm² = 240 px), Glas 20 px höher als die Säule, Bodenfläche A orange, Pfeile zeigen den Druck auf die Wand */
+ const lv=196*s.h/100,gw=Math.max(20,240*Math.sqrt(s.A/1000)),gh=Math.max(46,lv+20),gx=150-gw/2,gy=266-gh,ys=266-lv,yd=263,
+  ry0=Math.max(3,Math.min(12,gw*.06)),G1=GLAS(gx,gy,gw,gh,{lv,ry:ry0,c:FLC[s.f][0],op:FLC[s.f][1]}),dx=gw<110?gx-12:gx+16,rs=Math.max(2,Math.min(10.8,gw*.054)),
+  ar=lv<4?[]:lv<40?[.97]:[.25,.5,.75,.97];
+ return{d:G1.b+G1.f+(lv>0?`<ellipse cx="150" cy="${yd}" rx="${gw/2-3}" ry="${rs}" fill="var(--amber)" fill-opacity=".22" stroke="var(--amber)" stroke-width="2.5"/>`:'')+ar.map(k=>AR(gx+gw,ys+(yd-ys)*k,Math.min(8+44*k,312-gx-gw),0,'var(--red)')).join('')+
+  (lv>=4?`<path d="M${dx} ${ys}V${yd}" stroke="var(--ink)" stroke-width="1.5"/><path d="M${dx-6} ${ys}H${dx+6}M${dx-6} ${yd}H${dx+6}" stroke="var(--ink)" stroke-width="1.5"/>`:'')+
+  (gw<110?TH(dx-6,Math.max(36,(ys+yd)/2+5),'h = '+nf(s.h)+' m','t1','end'):TH(150,lv<36?gy-ry0-6:(ys+yd)/2+5,'h = '+nf(s.h)+' m','t1','middle'))+TH(150,292,'A = '+nf(s.A)+' cm²','t2','middle'),
  pl:[x=>r*G*x/1e5,xm,r*G*xm/1e5,s.h,'Tiefe h in m','p in bar'],res:[[nf(ph/1e5)+' bar','Schweredruck'],[nf(pg/1e5)+' bar','mit Luftdruck'],[fmt(pg*s.A/1e4,'N'),'Kraft auf A']],rows:[['ρ',nf(r)+' kg/m³'],['p = ρ·g·h',fmt(ph,'Pa')]],st:[['p = ρ · g · h',`${nf(r)} · 9,81 · ${nf(s.h)} = ${fmt(ph,'Pa')}`],['F = p · A',fmt(pg*s.A/1e4,'N')],['Kolbendruck','p = F / A, überall gleich (Pascal)']]}});
 fm(FP,HP,'Gasgesetze','Boyle-Mariotte: p · V = konstant bei gleicher Temperatur. Allgemein: p₁ · V₁ / T₁ = p₂ · V₂ / T₂ (T in Kelvin).',
  [['p1','p₁',.1,10,.1,'bar',1],['V1','V₁',.5,10,.1,'L',2],['T1','T₁',-50,300,1,'°C',20],['V2','V₂',.5,10,.1,'L',1],['T2','T₂',-50,500,1,'°C',20]],
@@ -5387,7 +5392,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=127,NEWS='Gleichförmige Bewegung: Die Fahrbahn hat jetzt eine feste Meterskala, dieselbe wie im Diagramm. Die Fahrzeuge fahren sichtbar, s₀ ist markiert und der Treffpunkt von A und B wird angezeigt. Gemischte Schaltungen schneller wechseln: Unter Elektrotechnik › Gemischt klappt keine Leiste mehr auf. Zwischen Schaltbild und Werten sitzt ein kleiner Kasten „Art der Schaltung“ mit einem Regler, mit dem Du zwischen den vier gemischten Schaltungen umschaltest. Deine eingestellten Werte bleiben dabei erhalten.';
+const APPV=129,NEWS='Druck: Das Becherglas passt sich jetzt den Reglern an. Die Flüssigkeitssäule wächst mit der Höhe h, die Glasbreite mit der Fläche A, und die Bodenfläche A ist markiert. Gleichförmige Bewegung: Die Fahrbahn hat jetzt eine feste Meterskala, dieselbe wie im Diagramm. Die Fahrzeuge fahren sichtbar, s₀ ist markiert und der Treffpunkt von A und B wird angezeigt. Gemischte Schaltungen schneller wechseln: Unter Elektrotechnik › Gemischt klappt keine Leiste mehr auf. Zwischen Schaltbild und Werten sitzt ein kleiner Kasten „Art der Schaltung“ mit einem Regler, mit dem Du zwischen den vier gemischten Schaltungen umschaltest. Deine eingestellten Werte bleiben dabei erhalten.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['23.10.2026',108,['Hinweise bei falschen Ergebnissen: „Faktor 3“ und „√3“ nur noch bei Drehstrom, eigener Hinweis bei °C statt K, Einheitenhinweis passend zur Einheit der Aufgabe (vorher in allen Themen gleich).','Hilfe beim Üben und in den Hausaufgaben beginnt mit einem Denkanstoß statt mit dem Ansatz.']],
