@@ -804,9 +804,21 @@ M[M.length-1].sync=(o,k)=>{if(k!='f')return;const q=ARK(o.f);M[cur].p.splice(1,1
 /* Kinematik und Dynamik */
 fm(FP,KD,'Gleichförmige Bewegung','Bei konstanter Geschwindigkeit gilt v = s / t. Zwei Fahrzeuge: A fährt voraus (Vorsprung s₀), B ist schneller und holt auf.',
  [['vA','v_A',0,30,.5,'m/s',5],['vB','v_B',0,30,.5,'m/s',10],['s0','s₀',0,200,5,'m',50],['t','t',0,60,.5,'s',10]],
- s=>{const sA=s.s0+s.vA*s.t,sB=s.vB*s.t,sm=Math.max(sA,sB,1)*1.05,tm=s.vB>s.vA?s.s0/(s.vB-s.vA):NaN,ym=Math.max(s.vB*60,s.s0+s.vA*60,1);
- return{d:`<line x1="30" x2="300" y1="120" y2="120" stroke="var(--ink)" stroke-width="3"/><rect class="box" x="${30+sA/sm*220}" y="90" width="40" height="22" rx="4"/><rect x="${30+sB/sm*220}" y="60" width="40" height="22" rx="4" fill="var(--flow)" stroke="var(--ink)" stroke-width="2"/>`+T(30,150,'A (gelb): s = '+nf(sA)+' m','t2')+T(30,172,'B (blau): s = '+nf(sB)+' m','t2')+`<polyline points="330,${270-200*s.s0/ym} 610,${270-200*(s.s0+s.vA*60)/ym}" fill="none" stroke="var(--amber)" stroke-width="3"/>`,
- pl:[x=>s.vB*x,60,ym,s.t,'t in s','s in m (B blau, A gelb)'],res:[[nf(sB)+' m','Weg B'],[nf(sA)+' m','Ort A'],[isNaN(tm)?'–':nf(tm)+' s','Einholzeit']],rows:[['v_A',nf(s.vA*3.6)+' km/h'],['v_B',nf(s.vB*3.6)+' km/h'],['Abstand',nf(sA-sB)+' m']],st:[['v = s / t','s = v · t'],['s_A = s₀ + v_A · t, s_B = v_B · t',`${nf(sA)} m und ${nf(sB)} m`],['Einholzeit t = s₀ / (v_B − v_A)',isNaN(tm)?'B ist nicht schneller':nf(tm)+' s'],['Ungleichförmig','Durchschnittsgeschwindigkeit v̄ = Δs / Δt']]}});
+ s=>{const sA=s.s0+s.vA*s.t,sB=s.vB*s.t,tm=s.vB>s.vA?s.s0/(s.vB-s.vA):NaN,ym=Math.max(s.vB*60,s.s0+s.vA*60,1),sT=s.vB*tm,hit=tm<=60,
+ // Fahrbahn und s-Achse im Diagramm haben denselben festen Maßstab (alle Orte bis t = 60 s), damit t, s₀ und die Fahrzeuge zusammenpassen
+ X=v=>50+225*Math.min(v,ym)/ym,yR=122,car=(x,y,f,c)=>`<rect x="${x-34}" y="${y}" width="34" height="18" rx="4" fill="${f}" stroke="var(--ink)" stroke-width="2"${c||''}/>`+(c?'':`<circle cx="${x-26}" cy="${y+19}" r="3.5" fill="var(--ink)"/><circle cx="${x-8}" cy="${y+19}" r="3.5" fill="var(--ink)"/>`),
+ Y=v=>270-200*v/ym,dot=(t,v,f)=>`<circle cx="${330+280*t/60}" cy="${Y(v)}" r="6" fill="${f}" stroke="var(--ink)" stroke-width="1.5"/>`;
+ return{d:TICKS(ym).map(v=>`<line x1="${X(v)}" x2="${X(v)}" y1="${yR}" y2="${yR+6}" stroke="var(--wire)"/>`+(X(ym)-X(v)>24||v===0?T(X(v),yR+20,nf(v),'t2 tk','middle'):'')).join('')+T(275,yR+20,'m','t2 tk','end')
+ +`<line x1="${X(s.s0)}" x2="${X(s.s0)}" y1="50" y2="${yR}" stroke="var(--amber)" stroke-width="2" stroke-dasharray="4 4"/>`+T(Math.min(X(s.s0),240),44,'s₀ = '+nf(s.s0)+' m','t2','middle')
+ +(hit?`<line x1="${X(sT)}" x2="${X(sT)}" y1="58" y2="${yR}" stroke="var(--red)" stroke-width="2" stroke-dasharray="2 4"/>`:'')
+ +`<line x1="40" x2="285" y1="${yR}" y2="${yR}" stroke="var(--ink)" stroke-width="3"/>`
+ +car(X(s.s0),94,'none',' stroke-dasharray="4 3" opacity=".5"')+car(X(sA),94,'var(--amber)')+car(X(sB),64,'var(--flow)')
+ +T(30,172,'A (gelb): s = '+nf(sA)+' m','t2')+T(30,194,'B (blau): s = '+nf(sB)+' m','t2')+(hit?T(30,216,'Treffpunkt: '+nf(sT)+' m nach '+nf(tm)+' s','t2'):'')
+ +PLOT(x=>s.vB*x,60,ym,s.t,'t in s','s in m (B blau, A gelb)')
+ +`<polyline points="330,${Y(s.s0)} 610,${Y(s.s0+s.vA*60)}" fill="none" stroke="var(--amber)" stroke-width="3"/>`+`<line x1="322" x2="338" y1="${Y(s.s0)}" y2="${Y(s.s0)}" stroke="var(--amber)" stroke-width="3"/>`
+ +(hit?`<circle cx="${330+280*tm/60}" cy="${Y(sT)}" r="5" fill="none" stroke="var(--red)" stroke-width="2.5"/>`:'')
+ +dot(s.t,sB,'var(--flow)')+dot(s.t,sA,'var(--amber)'),
+ res:[[nf(sB)+' m','Weg B'],[nf(sA)+' m','Ort A'],[isNaN(tm)?'–':nf(tm)+' s','Einholzeit']],rows:[['v_A',nf(s.vA*3.6)+' km/h'],['v_B',nf(s.vB*3.6)+' km/h'],['Abstand',nf(sA-sB)+' m']],st:[['v = s / t','s = v · t'],['s_A = s₀ + v_A · t, s_B = v_B · t',`${nf(sA)} m und ${nf(sB)} m`],['Einholzeit t = s₀ / (v_B − v_A)',isNaN(tm)?'B ist nicht schneller':nf(tm)+' s'],['Ungleichförmig','Durchschnittsgeschwindigkeit v̄ = Δs / Δt']]}});
 const G_=9.81,RHO_=1.2,FFO=[['Feder',.0005,1,.004,'var(--ok)',0,0],['Tischtennisball',.0027,.47,.00126,'var(--amber)',1,6],['Tennisball',.057,.55,.0033,'#d9e04a',1,8],['Bowlingkugel',7,.47,.0373,'var(--flow)',1,13],['Auto (1000 kg)',1000,1.1,7.5,'var(--red)',2,0],['Springer (Fallposition)',80,1,.45,'var(--acc)',3,0],['Springer mit Schirm',80,1.3,25,'var(--acc)',4,0]];
 const lncosh=y=>y+Math.log(1+Math.exp(-2*y))-Math.LN2;
 const ffo=(m,cw,A,h)=>{const vt=Math.sqrt(2*m*G_/(RHO_*cw*A)),x=G_*h/(vt*vt),ta=(vt/G_)*(x+Math.log(1+Math.sqrt(Math.max(0,1-Math.exp(-2*x)))));return{m,cw,A,vt,ta,tv:Math.sqrt(2*h/G_),va:t=>vt*Math.tanh(G_*t/vt),sa:t=>vt*vt/G_*lncosh(G_*t/vt)}};
