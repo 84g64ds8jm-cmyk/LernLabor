@@ -1,3 +1,4 @@
 # GitHub Pages (Jekyll): Übergabe-Unterlagen nicht mit ausliefern
 exclude:
   - transfer
+  - archiv
