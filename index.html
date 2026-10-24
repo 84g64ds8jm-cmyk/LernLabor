@@ -384,6 +384,21 @@ const T=(x,y,s,c='t1',a='start')=>`<text class="${c}" x="${x}" y="${y}" text-anc
 /* Kraftpfeil-Längen: FLIN wächst mit der Kraft bis Fmax (Wurzel, damit kleine Kräfte sichtbar bleiben), FLOG gestaucht für sehr große Bereiche */
 const FLIN=(F,Fmax,a=16,b=80)=>a+(b-a)*Math.sqrt(Math.min(1,Math.max(0,F/Fmax))),FLOG=(F,a=18,k=20,b=140)=>Math.min(b,a+k*Math.log10(Math.max(1,F)));
 const AR=(x,y,dx,dy,col,lab)=>{const l=Math.hypot(dx,dy);if(l<4)return '';const ux=dx/l,uy=dy/l,X=x+dx,Y=y+dy;return `<line x1="${x}" y1="${y}" x2="${X-ux*8}" y2="${Y-uy*8}" stroke="${col}" stroke-width="3.5"/><polygon points="${X},${Y} ${X-ux*11-uy*5},${Y-uy*11+ux*5} ${X-ux*11+uy*5},${Y-uy*11-ux*5}" fill="${col}"/>`+(lab?T(Math.min(X+6,600),Math.max(Y-6,14),lab,'t2'):'')};
+/* Zerlegung der Gewichtskraft an der schiefen Ebene als Kasten (rechts bzw. am Handy unten), genutzt von Schiefe Ebene und Reibung */
+const KZERL=(m,adeg,nar,ex,mx=100)=>{const al=rad(adeg),co=Math.cos(al),si=Math.sin(al),Gw=m*G,FH=Gw*si,FN=Gw*co,W=nar?400:640,s={m,a:adeg};let h='';
+  /* Kräftedreieck: F_G = F_N + F_H, rechter Winkel zwischen F_N und F_H, α zwischen F_G und F_N */
+  const x0=nar?12:352,y0=nar?244:0,Lg=FLIN(Gw,mx*G,nar?60:70,nar?118:124),ax=x0+(nar?36:44),ay=y0+(nar?20:46),B=[ax+Lg*co*si,ay+Lg*co*co],Cc=[ax,ay+Lg];
+  const TC=(x,y,s,c,col,an='start')=>`<text class="${c}" x="${x}" y="${y}" text-anchor="${an}"${col?` style="fill:${col}"`:''}>${s}</text>`;
+  h+=`<rect x="${x0-6}" y="${y0+(nar?2:6)}" width="${W-x0-2}" height="${nar?151+17*(ex?ex.length:1):306}" rx="10" fill="var(--bg)" stroke="var(--wire)" stroke-width="1.2"/>`;
+  if(!nar)h+=TC(x0+6,y0+30,'Zerlegung von F_G','t1');
+  if(FH/Gw>.03&&FN>.5){const u1=[-si,-co],u2=[-co,si],q=9;h+=`<path d="M${B[0]+q*u1[0]} ${B[1]+q*u1[1]}L${B[0]+q*u1[0]+q*u2[0]} ${B[1]+q*u1[1]+q*u2[1]}L${B[0]+q*u2[0]} ${B[1]+q*u2[1]}" fill="none" stroke="var(--mute)" stroke-width="1.5"/>`}
+  if(s.a>=3){const r=30;h+=`<path d="M${ax} ${ay+r}A${r} ${r} 0 0 0 ${ax+r*si} ${ay+r*co}" fill="none" stroke="var(--amber)" stroke-width="2.5"/>`+(s.a>=12?TC(ax+(r+11)*Math.sin(al/2)-4,ay+(r+11)*Math.cos(al/2)+5,'α','t2','var(--ink)'):'')}
+  h+=AR(ax,ay,Cc[0]-ax,Cc[1]-ay,'var(--ink)','')+AR(ax,ay,B[0]-ax,B[1]-ay,'var(--ok)','')+AR(B[0],B[1],Cc[0]-B[0],Cc[1]-B[1],'var(--flow)','');
+  h+=TC(ax-8,ay+Lg*.55,'F_G','t2','var(--ink)','end')+TC((ax+B[0])/2+8,(ay+B[1])/2-2,'F_N','t2','var(--ok)')+(FH/Gw>.03?TC((B[0]+Cc[0])/2+8,(B[1]+Cc[1])/2+12,'F_H','t2','var(--flow)'):'');
+  const fx=nar?x0+150:x0+6,fy=nar?y0+30:y0+190,dy=18,fl=[['F_G = m · g',`= ${nf(s.m)} kg · 9,81 m/s² = ${fmt(Gw,'N')}`,'var(--ink)'],['F_H = F_G · sin α',`= ${fmt(Gw,'N')} · sin ${nf(s.a,3)}° = ${fmt(FH,'N')}`,'var(--flow)'],['F_N = F_G · cos α',`= ${fmt(Gw,'N')} · cos ${nf(s.a,3)}° = ${fmt(FN,'N')}`,'var(--ok)']];
+  fl.forEach(([f1,f2,col],i)=>{h+=TC(fx,fy+i*42,f1,'t1',col)+TC(fx,fy+i*42+dy,f2,'t2')});
+  (ex||(nar?['α zwischen F_G und F_N = Winkel der Ebene']:['α zwischen F_G','und F_N ist der','Winkel der Ebene'])).forEach((z,i)=>{h+=nar?TC(x0+6,y0+160+i*17,z,'t2'):TC(x0+150,y0+70+i*17,z,'t2')});
+  return h};
 const sub=['₁','₂','₃','₄'],pr=(a,b)=>a*b/(a+b);
 const sup=n=>String(n).replace('-','⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
 const sc=v=>{const e=Math.floor(Math.log10(v));return nf(v/10**e,2)+' · 10'+sup(e)};
@@ -474,18 +489,7 @@ M.push({g:'Mechanik',name:'Reibung (schiefe Ebene)',anim:1,desc:'Der Klotz hafte
   let h=`<polygon points="${O[0]},${O[1]} ${O[0]+L*co},${O[1]} ${O[0]+L*co},${O[1]-L*si}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${P[0]} ${P[1]}) rotate(${-s.a})"><rect class="box" x="-28" y="-36" width="56" height="36" rx="3"/></g>`;
   h+=AR(C[0],C[1],0,Gw*k,'var(--ink)','F_G')+AR(C[0],C[1],-si*FN*k,-co*FN*k,'var(--ok)','F_N')+AR(C[0],C[1],-co*FH*k,si*FH*k,'var(--flow)','F_H')+AR(C[0],C[1],co*FR*k,-si*FR*k,'var(--red)','F_R');
   h+=T(O[0]+8,O[1]+19,'α = '+nf(s.a)+'°','t2')+T(cx,24,slide?`Gleiten, a = ${nf(a)} m/s²`:'Haftung, Klotz bleibt liegen','t1','middle');
-  /* Kräftedreieck: F_G = F_N + F_H, rechter Winkel zwischen F_N und F_H, α zwischen F_G und F_N */
-  const x0=nar?12:352,y0=nar?244:0,Lg=FLIN(Gw,100*G,nar?60:70,nar?118:124),ax=x0+(nar?36:44),ay=y0+(nar?20:46),B=[ax+Lg*co*si,ay+Lg*co*co],Cc=[ax,ay+Lg];
-  const TC=(x,y,s,c,col,an='start')=>`<text class="${c}" x="${x}" y="${y}" text-anchor="${an}"${col?` style="fill:${col}"`:''}>${s}</text>`;
-  h+=`<rect x="${x0-6}" y="${y0+(nar?2:6)}" width="${W-x0-2}" height="${nar?168:306}" rx="10" fill="var(--bg)" stroke="var(--wire)" stroke-width="1.2"/>`;
-  if(!nar)h+=TC(x0+6,y0+30,'Zerlegung von F_G','t1');
-  if(FH*k>3&&FN>.5){const u1=[-si,-co],u2=[-co,si],q=9;h+=`<path d="M${B[0]+q*u1[0]} ${B[1]+q*u1[1]}L${B[0]+q*u1[0]+q*u2[0]} ${B[1]+q*u1[1]+q*u2[1]}L${B[0]+q*u2[0]} ${B[1]+q*u2[1]}" fill="none" stroke="var(--mute)" stroke-width="1.5"/>`}
-  if(s.a>=3){const r=30;h+=`<path d="M${ax} ${ay+r}A${r} ${r} 0 0 0 ${ax+r*si} ${ay+r*co}" fill="none" stroke="var(--amber)" stroke-width="2.5"/>`+(s.a>=12?TC(ax+(r+11)*Math.sin(al/2)-4,ay+(r+11)*Math.cos(al/2)+5,'α','t2','var(--ink)'):'')}
-  h+=AR(ax,ay,Cc[0]-ax,Cc[1]-ay,'var(--ink)','')+AR(ax,ay,B[0]-ax,B[1]-ay,'var(--ok)','')+AR(B[0],B[1],Cc[0]-B[0],Cc[1]-B[1],'var(--flow)','');
-  h+=TC(ax-8,ay+Lg*.55,'F_G','t2','var(--ink)','end')+TC((ax+B[0])/2+8,(ay+B[1])/2-2,'F_N','t2','var(--ok)')+(FH*k>3?TC((B[0]+Cc[0])/2+8,(B[1]+Cc[1])/2+12,'F_H','t2','var(--flow)'):'');
-  const fx=nar?x0+150:x0+6,fy=nar?y0+30:y0+190,dy=18,fl=[['F_G = m · g',`= ${nf(s.m)} kg · 9,81 m/s² = ${fmt(Gw,'N')}`,'var(--ink)'],['F_H = F_G · sin α',`= ${fmt(Gw,'N')} · sin ${nf(s.a)}° = ${fmt(FH,'N')}`,'var(--flow)'],['F_N = F_G · cos α',`= ${fmt(Gw,'N')} · cos ${nf(s.a)}° = ${fmt(FN,'N')}`,'var(--ok)']];
-  fl.forEach(([f1,f2,col],i)=>{h+=TC(fx,fy+i*42,f1,'t1',col)+TC(fx,fy+i*42+dy,f2,'t2')});
-  h+=nar?TC(x0+6,y0+160,'α zwischen F_G und F_N = Winkel der Ebene','t2'):TC(x0+150,y0+70,'α zwischen F_G','t2')+TC(x0+150,y0+87,'und F_N ist der','t2')+TC(x0+150,y0+104,'Winkel der Ebene','t2');
+  h+=KZERL(s.m,s.a,nar);
   return{vb:nar?'0 0 400 420':'0 0 640 318',svg:h,res:[[fmt(FH,'N'),'Hangabtrieb F_H'],[fmt(FR,'N'),slide?'Gleitreibung':'Haftreibung'],[slide?nf(a)+' m/s²':'Ruhe','Beschleunigung']],th:['Kraft','Wert'],rows:[['F_G = m·g',fmt(Gw,'N')],['F_N',fmt(FN,'N')],['F_H',fmt(FH,'N')],['F_R,max (Haft)',fmt(F0,'N')],['F_R (Gleit)',fmt(Fg,'N')]],
   st:[['F_H = F_G · sin α, F_N = F_G · cos α',`${fmt(FH,'N')} und ${fmt(FN,'N')}`],['Haftung bis F_H ≤ μ₀ · F_N',`${fmt(FH,'N')} ${slide?'>':'≤'} ${fmt(F0,'N')}`],['kritischer Winkel α = arctan μ₀',nf(ak)+'°'],['a = g · (sin α − μ · cos α)',slide?nf(a)+' m/s²':'0, der Klotz haftet']]}}});
 /* Beschleunigung */
@@ -787,8 +791,10 @@ fm(FP,MF,'Gleit-, Haft- & Rollreibung','Die Haftreibung hält den Körper bis F_
  res:[[fmt(a,'N'),'Haftreibung max'],[fmt(b,'N'),'Gleitreibung'],[fmt(c,'N'),'Rollreibung']],rows:[['F_N = m · g',fmt(FN_,'N')],['Rutschen',gl?'a = '+nf((s.F-b)/s.m)+' m/s²':'Ruhe'],['Rollen',s.F>c?'a = '+nf((s.F-c)/s.m)+' m/s²':'Ruhe']],st:[['F_R = μ · F_N',`μ₀ = ${nf(m0)}, μ = ${nf(m1)}, μ_roll = ${nf(mr)}`],['Rangfolge','F_Haft,max > F_Gleit > F_Roll'],['Beschleunigung','a = (F − F_R) / m']]}});
 fm(FP,MF,'Schiefe Ebene','Einfache Maschine: Auf der Rampe braucht man nur die Kraft F = F_G · h / l, muss die Last aber über den längeren Weg l schieben. Die Arbeit W = F_G · h bleibt gleich.',
  [['m','m',1,500,1,'kg',100],['h','h',.1,2,.05,'m',1],['l','l',.5,6,.1,'m',4]],
- s=>{const Gw=s.m*G,sa=Math.min(s.h/s.l,1),F=Gw*sa,dx=Math.sqrt(Math.max(s.l*s.l-s.h*s.h,.01))*50,al=Math.asin(sa),bx=60+dx*.5,by=250-Math.min(s.h,s.l)*25;
- return{d:`<polygon points="60,250 ${60+dx},250 ${60+dx},${250-Math.min(s.h,s.l)*50}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${bx} ${by}) rotate(${-al*180/PI})"><rect class="box" x="-22" y="-30" width="44" height="30" rx="3"/></g>`+AR(bx-12*Math.sin(al),by-12*Math.cos(al),FLIN(F,500*G,16,90)*Math.cos(al),-FLIN(F,500*G,16,90)*Math.sin(al),'var(--flow)','F')+T(60+dx/2,278,'l = '+nf(s.l)+' m, h = '+nf(s.h)+' m','t2','middle'),
+ s=>{const Gw=s.m*G,sa=Math.min(s.h/s.l,1),F=Gw*sa,al=Math.asin(sa),nar=matchMedia('(max-width:599px)').matches,sc=Math.min(nar?60:80,(nar?350:290)/s.l,(nar?170:230)/s.h),x0=nar?20:24,yb=nar?200:270,dx=Math.sqrt(Math.max(s.l*s.l-s.h*s.h,.01))*sc,hh=Math.min(s.h,s.l)*sc,bx=x0+dx*.5,by=yb-hh*.5,adeg=al*180/PI,Fl=FLIN(F,500*G,16,90);
+ /* Rampe links bzw. oben, Zerlegung von F_G im Kasten daneben bzw. darunter */
+ const ex=nar?[`sin α = h / l = ${nf(s.h)} / ${nf(s.l)} → α = ${nf(adeg,3)}°`,'Zugkraft F = F_H (ohne Reibung)']:['sin α = h / l',`= ${nf(s.h)} / ${nf(s.l)} = ${nf(sa,3)}`,`α = ${nf(adeg,3)}°`,'Zugkraft F = F_H'];
+ return{vb:nar?'0 0 400 440':'0 0 640 318',d:`<polygon points="${x0},${yb} ${x0+dx},${yb} ${x0+dx},${yb-hh}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${bx} ${by}) rotate(${-adeg})"><rect class="box" x="-22" y="-30" width="44" height="30" rx="3"/></g>`+AR(bx-12*Math.sin(al),by-12*Math.cos(al),Fl*Math.cos(al),-Fl*Math.sin(al),'var(--flow)','F')+T(x0+dx/2,yb+24,'l = '+nf(s.l)+' m, h = '+nf(s.h)+' m','t2','middle')+KZERL(s.m,adeg,nar,ex,500),
  res:[[fmt(F,'N'),'Zugkraft F'],[fmt(Gw,'N'),'Gewichtskraft F_G'],['× '+nf(Gw/F),'Kraftersparnis']],rows:[['Arbeit F_G · h',fmt(Gw*s.h,'J')],['Arbeit F · l',fmt(F*s.l,'J')]],st:[['F = F_G · h / l',`${fmt(Gw,'N')} · ${nf(s.h)} / ${nf(s.l)} = ${fmt(F,'N')}`],['Goldene Regel der Mechanik','Was man an Kraft spart, muss man an Weg zugeben']]}});
 fm(FP,MF,'Gesetz von Hooke','Die Federkraft ist proportional zur Dehnung: F = D · Δl. In der gespannten Feder steckt die Spannenergie E = ½ · D · Δl².',
  [['D','D',70,2000,10,'N/m',200],['m','m',.1,6.6,.1,'kg',2],['l0','l₀',10,40,1,'cm',20]],
