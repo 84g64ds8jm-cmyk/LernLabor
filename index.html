@@ -1541,17 +1541,17 @@ fm(FP,SR,'Ampelschaltung (Steuerung)','Eine Verkehrsampel mit festem Programm is
    +LBL(14,126,'Taktgeber: fester Zeitplan')+LBL(14,146,'Stau wird nicht gemessen');
   /* Signalzeitenplan */
   const X0=400,WW=220,sx=v=>X0+WW*v/TU;let o2=0;
-  g+=T(345,26,'Signalzeitenplan (ein Umlauf)','t2')+T(345,52,'Autos','t2')+T(345,78,'Fußg.','t2');
-  PH.forEach(p=>{g+=`<rect x="${sx(o2)}" y="38" width="${WW*p[0]/TU}" height="18" fill="${PC[p[1]]}" stroke="var(--bg)" stroke-width=".8"/><rect x="${sx(o2)}" y="64" width="${WW*p[0]/TU}" height="18" fill="${p[2]?PC[2]:PC[0]}" stroke="var(--bg)" stroke-width=".8"/>`;o2+=p[0]});
-  g+=`<line x1="${sx(u)}" x2="${sx(u)}" y1="32" y2="88" stroke="var(--ink)" stroke-width="2.5"/>`+T(X0,102,'0','t2','middle')+T(X0+WW,102,'T_U = '+TU+' s','t2','end');
+  g+=T(345,62,'Signalzeitenplan','t2')+T(345,92,'Autos','t2')+T(345,116,'Fußg.','t2');
+  PH.forEach(p=>{g+=`<rect x="${sx(o2)}" y="78" width="${WW*p[0]/TU}" height="18" fill="${PC[p[1]]}" stroke="var(--bg)" stroke-width=".8"/><rect x="${sx(o2)}" y="102" width="${WW*p[0]/TU}" height="18" fill="${p[2]?PC[2]:PC[0]}" stroke="var(--bg)" stroke-width=".8"/>`;o2+=p[0]});
+  g+=`<line x1="${sx(u)}" x2="${sx(u)}" y1="72" y2="126" stroke="var(--ink)" stroke-width="2.5"/>`+T(X0,140,'0','t2','middle')+T(X0+WW,140,'T_U = '+TU+' s','t2','end');
   /* Warteschlange über vier Umläufe */
-  const Lm=Math.max(6,Math.ceil(Math.max(...L))),py=v=>290-v/Lm*150,px=v=>X0+WW*v/W;
-  g+=`<line x1="${X0}" x2="${X0+WW}" y1="290" y2="290" stroke="var(--wire)"/><line x1="${X0}" x2="${X0}" y1="136" y2="290" stroke="var(--wire)"/>`+T(345,128,'Warteschlange (Autos)','t2')+T(X0-6,145,Lm,'t2','end')+T(X0-6,294,'0','t2','end')
+  const Lm=Math.max(6,Math.ceil(Math.max(...L))),py=v=>300-v/Lm*120,px=v=>X0+WW*v/W;
+  g+=`<line x1="${X0}" x2="${X0+WW}" y1="300" y2="300" stroke="var(--wire)"/><line x1="${X0}" x2="${X0}" y1="176" y2="300" stroke="var(--wire)"/>`+T(345,166,'Warteschlange (Autos)','t2')+T(X0-6,185,Lm,'t2','end')+T(X0-6,304,'0','t2','end')
    +`<polyline fill="none" stroke="var(--red)" stroke-width="2.6" points="${L.map((v,i)=>i%2?'':px(i/2).toFixed(1)+','+py(v).toFixed(1)).filter(x=>x).join(' ')}"/>`
-   +`<circle cx="${px(ts)}" cy="${py(Lq)}" r="5" fill="var(--red)"/>`+T(X0+WW/2,310,'Zeit: 4 Umläufe (Zeitraffer)','t2','middle');
+   +`<circle cx="${px(ts)}" cy="${py(Lq)}" r="5" fill="var(--red)"/>`+T(X0+WW/2,320,'Zeit: 4 Umläufe (Zeitraffer)','t2','middle');
   /* Wirkungsweg */
-  g+=['Taktgeber (Zeitplan)','Steuergerät','Ampel (Aktor)','Verkehr (Strecke)'].map((q,i)=>BOX(8+i*158,326,140,30,q,i==3&&dL>0?'var(--red)':'var(--ink)')+(i<3?AR(148+i*158,341,10,0,'var(--mute)',''):'')).join('')+T(320,374,'offene Kette: keine Rückführung vom Verkehr zum Steuergerät','t2','middle');
-  return{vb:'0 0 640 382',d:g,res:[[TU+' s','Umlaufzeit T_U'],[nf(Nab,3)+' Autos','fahren je Umlauf ab'],[nf(Nan,3)+' Autos','kommen je Umlauf an']],
+  g+=['Taktgeber (Zeitplan)','Steuergerät','Ampel (Aktor)','Verkehr (Strecke)'].map((q,i)=>BOX(8+i*158,334,140,30,q,i==3&&dL>0?'var(--red)':'var(--ink)')+(i<3?AR(148+i*158,349,10,0,'var(--mute)',''):'')).join('')+T(320,384,'offene Kette: keine Rückführung vom Verkehr zum Steuergerät','t2','middle');
+  return{vb:'0 0 640 392',d:g,res:[[TU+' s','Umlaufzeit T_U'],[nf(Nab,3)+' Autos','fahren je Umlauf ab'],[nf(Nan,3)+' Autos','kommen je Umlauf an']],
    rows:[['Autoampel',['Rot','Rot-Gelb','Grün','Gelb'][A]],['Fußgängerampel',FG?'Grün':'Rot'],['Warteschlange jetzt',nq+' Autos'],['Trend je Umlauf',dL>0?'wächst um '+nf(dL,3)+' Autos (Stau)':'baut sich ab']],
    st:[['T_U = 1 + t_Grün + 3 + 2 + t_Fuß + 5',`1 + ${tg} + 3 + 2 + ${tf} + 5 = ${TU} s`],['Abfluss je Umlauf',`0,5 Autos/s · ${tg} s = ${nf(Nab,3)} Autos`],['Zufluss je Umlauf',`${s.q} Autos/min · ${TU} s / 60 = ${nf(Nan,3)} Autos`]]}},
  'Probiere: Zufluss z erhöhen. Die Ampel schaltet stur weiter, der Stau wächst von Umlauf zu Umlauf. Eine Steuerung bemerkt das nicht. Erst ein Fühler (z. B. Induktionsschleife) mit Rückmeldung an das Steuergerät macht daraus eine verkehrsabhängige Schaltung.',1);
@@ -1577,10 +1577,10 @@ fm(FP,SR,'Lüfterregelung (Feuchte & Luftstrom)','Ein Lüfter soll die Luftfeuch
    g+=BOX3(74,48,54,42,7,'#cbd5e1','#e2e8f0','#94a3b8')+SXT(101,66,reg?'Regler':'Stufe',12,'middle','#1e293b',700)+SXT(101,82,'n = '+nf(n,2)+'%',11,'middle','#1e293b',500)
     +(reg?wire('150,80 128,80','var(--flow)',0):wire('150,80 136,80','#94a3b8',1))+wire('101,48 101,38 276,38 276,47','#e3a21a',0);
    if(!reg)g+=LBL(66,150,'keine Rückmeldung');
-   const X=i=>350+i/N*270,Y=v=>280-Math.min(100,Math.max(0,v))/100*220;
-   g+=`<line x1="350" x2="620" y1="280" y2="280" stroke="var(--wire)"/><line x1="350" x2="350" y1="60" y2="280" stroke="var(--wire)"/><line x1="350" x2="620" y1="${Y(s.w)}" y2="${Y(s.w)}" stroke="var(--ok)" stroke-dasharray="6 4"/><line x1="${X(N/4)}" x2="${X(N/4)}" y1="70" y2="280" stroke="var(--mute)" stroke-dasharray="2 4"/>`+T(X(N/4)+5,96,'Waschanlage an','t2')
+   const X=i=>350+i/N*270,Y=v=>280-Math.min(100,Math.max(0,v))/100*200;
+   g+=`<line x1="350" x2="620" y1="280" y2="280" stroke="var(--wire)"/><line x1="350" x2="350" y1="80" y2="280" stroke="var(--wire)"/><line x1="350" x2="620" y1="${Y(s.w)}" y2="${Y(s.w)}" stroke="var(--ok)" stroke-dasharray="6 4"/><line x1="${X(N/4)}" x2="${X(N/4)}" y1="70" y2="280" stroke="var(--mute)" stroke-dasharray="2 4"/>`+T(X(N/4)+5,96,'Waschanlage an','t2')
     +`<polyline fill="none" stroke="var(--flow)" stroke-width="2" stroke-dasharray="3 3" points="${tn.map((v,i)=>i%4==0?X(i).toFixed(1)+','+Y(v).toFixed(1):'').filter(q=>q).join(' ')}"/><polyline fill="none" stroke="var(--red)" stroke-width="3" points="${tr.map((v,i)=>i%4==0?X(i).toFixed(1)+','+Y(v).toFixed(1):'').filter(q=>q).join(' ')}"/>`
-    +T(346,46,'rot: Feuchte φ · blau: Drehzahl n · grün: Soll','t2')+T(344,64,'100 %','t2','end')+T(344,284,'0','t2','end')+T(485,300,'Zeit 0 … 2 h','t2','middle');
+    +T(485,322,'rot: Feuchte φ · blau: Drehzahl n · grün: Soll','t2','middle')+T(356,92,'100 %','t2')+T(344,284,'0','t2','end')+T(485,300,'Zeit 0 … 2 h','t2','middle');
    res=[[nf(ph,3)+' %','Luftfeuchte nach 2 h'],[(e>0?'+':'−')+nf(Math.abs(e),2)+' %','Abweichung vom Sollwert'],[nf(P,3)+' W','Lüfterleistung']];
    rows=[['Betriebsart',reg?'Regelung (geschlossen)':'Steuerung (offen)'],['Störgröße z',s.z+' g/h ab 0,5 h'+(reg?', wird ausgeregelt':', wird nicht bemerkt')],['Luftstrom Q',nf(Q,3)+' m³/h'],['Raum','150 m³, 20 °C, Grundlast 800 g/h, Außenluft 6 g/m³']];
    st=[[reg?'n = n_0 + K_P · (φ_Ist − φ_Soll)':'n = n_0',reg?`${s.n0} + ${de(s.kp)} · (${nf(ph,3)} − ${s.w}) = ${nf(n,3)} %`:'feste Stufe, die Feuchte wird nicht zurückgemeldet'],['Q = Q_max · n / 100',`1200 · ${nf(n,3)} / 100 = ${nf(Q,3)} m³/h`],['P ~ n³',`750 W · (${nf(n,3)} / 100)³ = ${nf(P,3)} W`]];
@@ -1596,15 +1596,15 @@ fm(FP,SR,'Lüfterregelung (Feuchte & Luftstrom)','Ein Lüfter soll die Luftfeuch
     +(reg?wire('264,94 264,62 174,62','var(--flow)',0):wire('264,94 264,62 184,62','#94a3b8',1))+wire('142,82 142,112 213,112 213,140','#e3a21a',0);
    g+=LBL(62,218,'Filter')+LBL(172,218,'Lüfter')+LBL(232,84,'Strömungsfühler')+LBL(20,124,'Zuluft →');
    if(!reg)g+=LBL(166,100,'keine Rückmeldung');
-   const X=v=>350+v/100*270,Y=v=>280-Math.min(1200,v)/1200*220,cs=[0,1].map(m=>{const o={...s,m};let p='';for(let f=0;f<=100;f+=5){const[q]=LKQ(f,o);p+=X(f)+','+Y(q).toFixed(1)+' '}return p});
-   g+=`<line x1="350" x2="620" y1="280" y2="280" stroke="var(--wire)"/><line x1="350" x2="350" y1="60" y2="280" stroke="var(--wire)"/><line x1="350" x2="620" y1="${Y(s.wq)}" y2="${Y(s.wq)}" stroke="var(--ok)" stroke-dasharray="6 4"/>`
+   const X=v=>350+v/100*270,Y=v=>280-Math.min(1200,v)/1200*200,cs=[0,1].map(m=>{const o={...s,m};let p='';for(let f=0;f<=100;f+=5){const[q]=LKQ(f,o);p+=X(f)+','+Y(q).toFixed(1)+' '}return p});
+   g+=`<line x1="350" x2="620" y1="280" y2="280" stroke="var(--wire)"/><line x1="350" x2="350" y1="80" y2="280" stroke="var(--wire)"/><line x1="350" x2="620" y1="${Y(s.wq)}" y2="${Y(s.wq)}" stroke="var(--ok)" stroke-dasharray="6 4"/>`
     +`<polyline fill="none" stroke="var(--mute)" stroke-width="${reg?2:3.2}" points="${cs[0]}"/><polyline fill="none" stroke="var(--flow)" stroke-width="${reg?3.2:2}" points="${cs[1]}"/><circle cx="${X(s.f)}" cy="${Y(Q)}" r="6" fill="var(--red)"/>`
-    +T(346,46,'blau: Regelung · grau: Steuerung · grün: Soll','t2')+T(344,64,'1200','t2','end')+T(344,284,'0','t2','end')+T(485,300,'Filterverschmutzung 0 … 100 %','t2','middle')+T(354,78,'Q in m³/h','t2');
+    +T(485,322,'blau: Regelung · grau: Steuerung · grün: Soll','t2','middle')+T(356,92,'Q bis 1200 m³/h','t2')+T(344,284,'0','t2','end')+T(485,300,'Filterverschmutzung 0 … 100 %','t2','middle');
    res=[[nf(Q,3)+' m³/h','Luftstrom Q'],[(e>0?'−':'+')+nf(Math.abs(e),3)+' m³/h','Abweichung vom Sollwert'],[nf(P,3)+' W','Lüfterleistung']];
    rows=[['Betriebsart',reg?'Regelung (geschlossen)':'Steuerung (offen)'],['Störgröße','Filter '+s.f+' % verschmutzt'+(reg?', Lüfter dreht höher':', Luftstrom sinkt')],['Drehzahl n',nf(n,3)+' %'+(n>=100?' (am Anschlag)':'')]];
    st=[[reg?'n = n_0 + K_P · e  mit  e = (Q_Soll − Q_Ist) / Q_Soll':'n = n_0',reg?`${s.n0} + ${de(s.kp)} · ${nf(e/s.wq*100,3)} = ${nf(n,3)} %`:'feste Stufe, der Luftstrom wird nicht zurückgemeldet'],['P ~ n³',`750 W · (${nf(n,3)} / 100)³ = ${nf(P,3)} W`]];
   }
-  return{vb:'0 0 640 310',d:g,res,rows,st}},
+  return{vb:'0 0 640 332',d:g,res,rows,st}},
  'Probiere: Feuchte z oder Filterverschmutzung erhöhen. Mit fester Stufe (Steuerung) läuft der Istwert weg. Mit Fühler (Regelung) dreht der Lüfter höher und hält den Sollwert fast. Die Leistung steigt mit n³: 20 % mehr Drehzahl kostet rund 73 % mehr Leistung.',1);
 M[M.length-1].vis=s=>(s.a==0?['w','z']:['wq','f']).concat(s.m==1?['n0','kp']:['n0']);
 
