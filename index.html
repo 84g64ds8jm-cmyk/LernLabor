@@ -462,16 +462,31 @@ M.push({g:'Mechanik',name:'Rolle & Flaschenzug',anim:1,desc:'n tragende Seilstü
   return{vb:'0 0 640 320',svg:h,res:[[fmt(F,'N'),'Zugkraft F'],[nf(sw)+' m','Seilweg s'],['× '+nf(W/F),'Kraftersparnis']],th:['','Kraft','Weg','Arbeit'],rows:[['Last',fmt(W,'N'),nf(s.h)+' m',fmt(W*s.h,'J')],['Zug',fmt(F,'N'),nf(sw)+' m',fmt(F*sw,'J')]],
   st:[['F_G = m · g',fmt(W,'N')],['F = F_G / (n · η)',`${fmt(W,'N')} / (${s.n} · ${s.eta} %) = ${fmt(F,'N')}`],['s = n · h',`${s.n} · ${nf(s.h)} m = ${nf(sw)} m`],['W = F · s',`${fmt(F*sw,'J')} aufgewendet, ${fmt(W*s.h,'J')} nutzbar`]]}}});
 /* Reibung */
-M.push({g:'Mechanik',name:'Reibung (schiefe Ebene)',anim:1,desc:'Der Klotz haftet, solange die Hangabtriebskraft kleiner ist als die maximale Haftreibung μ₀ · F_N. Danach gleitet er mit der Gleitreibung μ · F_N.',leg:'Pfeile: Gewichtskraft F_G, Normalkraft F_N, Hangabtrieb F_H, Reibkraft F_R (Länge im Verhältnis zu G).',
+M.push({g:'Mechanik',name:'Reibung (schiefe Ebene)',anim:1,desc:'Der Klotz haftet, solange die Hangabtriebskraft kleiner ist als die maximale Haftreibung μ₀ · F_N. Danach gleitet er mit der Gleitreibung μ · F_N.',leg:'Links: Kräfte am Klotz (Gewichtskraft F_G, Normalkraft F_N, Hangabtrieb F_H, Reibkraft F_R). Rechts: F_G wird in F_H (parallel zur Ebene) und F_N (senkrecht zur Ebene) zerlegt. Der Winkel zwischen F_G und F_N ist derselbe Winkel α wie an der Ebene. Pfeile werden mit der Kraft länger.',
  p:[['m','m',1,100,1,'kg',20],['a','α',0,60,.5,'°',25],['mu0','μ₀',.05,1,.01,'',.5],['mu','μ',.05,1,.01,'',.35]],
  f(s,t){
   const al=rad(s.a),Gw=s.m*G,FH=Gw*Math.sin(al),FN=Gw*Math.cos(al),F0=s.mu0*FN,Fg=s.mu*FN,slide=FH>F0,a=slide?Math.max(0,(FH-Fg)/s.m):0,FR=slide?Fg:FH,ak=Math.atan(s.mu0)*180/PI;
-  const O=[70,250],L=Math.min(430,200/Math.max(Math.sin(al),.01)),co=Math.cos(al),si=Math.sin(al),tt=t%3.5,mv=slide?Math.min(.5*a*tt*tt*50,L-130):0,dd=L-60-mv;
-  const P=[O[0]+dd*co,O[1]-dd*si],C=[P[0]-18*si,P[1]-18*co],k=90/Gw;
-  let h=`<polygon points="${O[0]},250 ${O[0]+L*co},250 ${O[0]+L*co},${250-L*si}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${P[0]} ${P[1]}) rotate(${-s.a})"><rect class="box" x="-28" y="-36" width="56" height="36" rx="3"/></g>`;
+  /* Handy: Zerlegung unter der Ebene, sonst rechts daneben */
+  const nar=matchMedia('(max-width:599px)').matches,W=nar?400:640,co=Math.cos(al),si=Math.sin(al);
+  const L=Math.min(nar?330:300,(nar?150:185)/Math.max(si,.01)),k=FLIN(Gw,100*G,30,80)/Gw,O=[nar?20:24,(nar?220:292)-Math.max(0,k*Gw+14-(L-50)*si)],tt=t%3.5,dmin=Math.min(L-50,Math.max(60,(k*Gw+14)/Math.max(si,.01))),mv=slide?Math.min(.5*a*tt*tt*50,L-50-dmin):0,dd=L-50-mv;
+  /* Klotz rutscht nur so weit, dass der F_G-Pfeil über dem Boden bleibt */
+  const P=[O[0]+dd*co,O[1]-dd*si],C=[P[0]-18*si,P[1]-18*co],cx=nar?200:176;
+  let h=`<polygon points="${O[0]},${O[1]} ${O[0]+L*co},${O[1]} ${O[0]+L*co},${O[1]-L*si}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${P[0]} ${P[1]}) rotate(${-s.a})"><rect class="box" x="-28" y="-36" width="56" height="36" rx="3"/></g>`;
   h+=AR(C[0],C[1],0,Gw*k,'var(--ink)','F_G')+AR(C[0],C[1],-si*FN*k,-co*FN*k,'var(--ok)','F_N')+AR(C[0],C[1],-co*FH*k,si*FH*k,'var(--flow)','F_H')+AR(C[0],C[1],co*FR*k,-si*FR*k,'var(--red)','F_R');
-  h+=T(O[0]+50,244,'α = '+nf(s.a)+'°','t2')+T(320,28,slide?`Gleiten, a = ${nf(a)} m/s²`:'Haftung, Klotz bleibt liegen','t1','middle');
-  return{vb:'0 0 640 300',svg:h,res:[[fmt(FH,'N'),'Hangabtrieb F_H'],[fmt(FR,'N'),slide?'Gleitreibung':'Haftreibung'],[slide?nf(a)+' m/s²':'Ruhe','Beschleunigung']],th:['Kraft','Wert'],rows:[['F_G = m·g',fmt(Gw,'N')],['F_N',fmt(FN,'N')],['F_H',fmt(FH,'N')],['F_R,max (Haft)',fmt(F0,'N')],['F_R (Gleit)',fmt(Fg,'N')]],
+  h+=T(O[0]+8,O[1]+19,'α = '+nf(s.a)+'°','t2')+T(cx,24,slide?`Gleiten, a = ${nf(a)} m/s²`:'Haftung, Klotz bleibt liegen','t1','middle');
+  /* Kräftedreieck: F_G = F_N + F_H, rechter Winkel zwischen F_N und F_H, α zwischen F_G und F_N */
+  const x0=nar?12:352,y0=nar?244:0,Lg=FLIN(Gw,100*G,nar?60:70,nar?118:124),ax=x0+(nar?36:44),ay=y0+(nar?20:46),B=[ax+Lg*co*si,ay+Lg*co*co],Cc=[ax,ay+Lg];
+  const TC=(x,y,s,c,col,an='start')=>`<text class="${c}" x="${x}" y="${y}" text-anchor="${an}"${col?` style="fill:${col}"`:''}>${s}</text>`;
+  h+=`<rect x="${x0-6}" y="${y0+(nar?2:6)}" width="${W-x0-2}" height="${nar?168:306}" rx="10" fill="var(--bg)" stroke="var(--wire)" stroke-width="1.2"/>`;
+  if(!nar)h+=TC(x0+6,y0+30,'Zerlegung von F_G','t1');
+  if(FH*k>3&&FN>.5){const u1=[-si,-co],u2=[-co,si],q=9;h+=`<path d="M${B[0]+q*u1[0]} ${B[1]+q*u1[1]}L${B[0]+q*u1[0]+q*u2[0]} ${B[1]+q*u1[1]+q*u2[1]}L${B[0]+q*u2[0]} ${B[1]+q*u2[1]}" fill="none" stroke="var(--mute)" stroke-width="1.5"/>`}
+  if(s.a>=3){const r=30;h+=`<path d="M${ax} ${ay+r}A${r} ${r} 0 0 0 ${ax+r*si} ${ay+r*co}" fill="none" stroke="var(--amber)" stroke-width="2.5"/>`+(s.a>=12?TC(ax+(r+11)*Math.sin(al/2)-4,ay+(r+11)*Math.cos(al/2)+5,'α','t2','var(--ink)'):'')}
+  h+=AR(ax,ay,Cc[0]-ax,Cc[1]-ay,'var(--ink)','')+AR(ax,ay,B[0]-ax,B[1]-ay,'var(--ok)','')+AR(B[0],B[1],Cc[0]-B[0],Cc[1]-B[1],'var(--flow)','');
+  h+=TC(ax-8,ay+Lg*.55,'F_G','t2','var(--ink)','end')+TC((ax+B[0])/2+8,(ay+B[1])/2-2,'F_N','t2','var(--ok)')+(FH*k>3?TC((B[0]+Cc[0])/2+8,(B[1]+Cc[1])/2+12,'F_H','t2','var(--flow)'):'');
+  const fx=nar?x0+150:x0+6,fy=nar?y0+30:y0+190,dy=18,fl=[['F_G = m · g',`= ${nf(s.m)} kg · 9,81 m/s² = ${fmt(Gw,'N')}`,'var(--ink)'],['F_H = F_G · sin α',`= ${fmt(Gw,'N')} · sin ${nf(s.a)}° = ${fmt(FH,'N')}`,'var(--flow)'],['F_N = F_G · cos α',`= ${fmt(Gw,'N')} · cos ${nf(s.a)}° = ${fmt(FN,'N')}`,'var(--ok)']];
+  fl.forEach(([f1,f2,col],i)=>{h+=TC(fx,fy+i*42,f1,'t1',col)+TC(fx,fy+i*42+dy,f2,'t2')});
+  h+=nar?TC(x0+6,y0+160,'α zwischen F_G und F_N = Winkel der Ebene','t2'):TC(x0+150,y0+70,'α zwischen F_G','t2')+TC(x0+150,y0+87,'und F_N ist der','t2')+TC(x0+150,y0+104,'Winkel der Ebene','t2');
+  return{vb:nar?'0 0 400 420':'0 0 640 318',svg:h,res:[[fmt(FH,'N'),'Hangabtrieb F_H'],[fmt(FR,'N'),slide?'Gleitreibung':'Haftreibung'],[slide?nf(a)+' m/s²':'Ruhe','Beschleunigung']],th:['Kraft','Wert'],rows:[['F_G = m·g',fmt(Gw,'N')],['F_N',fmt(FN,'N')],['F_H',fmt(FH,'N')],['F_R,max (Haft)',fmt(F0,'N')],['F_R (Gleit)',fmt(Fg,'N')]],
   st:[['F_H = F_G · sin α, F_N = F_G · cos α',`${fmt(FH,'N')} und ${fmt(FN,'N')}`],['Haftung bis F_H ≤ μ₀ · F_N',`${fmt(FH,'N')} ${slide?'>':'≤'} ${fmt(F0,'N')}`],['kritischer Winkel α = arctan μ₀',nf(ak)+'°'],['a = g · (sin α − μ · cos α)',slide?nf(a)+' m/s²':'0, der Klotz haftet']]}}});
 /* Beschleunigung */
 M.push({g:'Bewegung',name:'Beschleunigung & Bremsen',anim:1,desc:'Gleichmäßig beschleunigte Bewegung: v = v₀ + a · t und s = v₀ · t + ½ · a · t². Ein negatives a ist Bremsen, das Fahrzeug steht dann bei v = 0.',leg:'Das Fahrzeug fährt in Echtzeit und startet nach der Dauer neu. Unten: v(t) und s(t) mit dem aktuellen Zeitpunkt. t_R ist die Reaktionszeit vor dem Bremsen.',
