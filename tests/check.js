@@ -80,6 +80,18 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
  // Service Worker: Datei vorhanden und Cache-Name passt zur Version
  {const fs=require('fs'),sw=fs.readFileSync(path.resolve(__dirname,'../sw.js'),'utf8'),ix=fs.readFileSync(path.resolve(__dirname,'../index.html'),'utf8'),v=(ix.match(/APPV=(\d+)/)||[])[1];
   if(!/addEventListener\('fetch'/.test(sw))errs.push('sw.js: leer oder ohne fetch-Handler');if(!sw.includes("'lernlabor-v"+v+"'"))errs.push('sw.js: Cache-Name passt nicht zu APPV '+v)}
+ // Bildausschnitt (VBC): bei allen Reglerstellungen bleibt die Zeichnung im engeren Ausschnitt (Handy und Laptop)
+ for(const vw of [390,1280]){const c5=await b.newContext({viewport:{width:vw,height:900}});const q=await c5.newPage();q.on('pageerror',e=>errs.push('Bildausschnitt: '+e.message));
+  await q.addInitScript(()=>{try{localStorage.setItem('ll_tour','1')}catch(e){}});await q.goto('file://'+path.resolve(__dirname,'../index.html'));await q.waitForTimeout(700);
+  errs.push(...await q.evaluate(vw=>{const bad=[],sv=document.getElementById('svg');let sd=11;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
+   const bb=()=>{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;const inv=sv.getScreenCTM().inverse();const walk=el=>{for(const c of el.children){const tg=c.tagName;if(/^(defs|style|title|clipPath|linearGradient|radialGradient|marker|pattern|filter)$/.test(tg))continue;if(tg==='g'||tg==='a'){walk(c);continue}
+    let b;try{b=c.getBBox()}catch(e){continue}if(!b.width&&!b.height)continue;const m=inv.multiply(c.getScreenCTM());for(const[x,y]of[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]]){const P=sv.createSVGPoint();P.x=x;P.y=y;const t=P.matrixTransform(m);x0=Math.min(x0,t.x);y0=Math.min(y0,t.y);x1=Math.max(x1,t.x);y1=Math.max(y1,t.y)}}};walk(sv);return[x0,y0,x1,y1]};
+   M.forEach((m,i)=>{if(!Object.keys(VBC).some(k=>k.startsWith(m.name+'|')))return;go(i);const def=JSON.parse(JSON.stringify(S[i]));
+    for(let k=0;k<40;k++){const s=JSON.parse(JSON.stringify(def));if(k>0)(m.p||[]).forEach(q=>{if(q[2]==='txt')return;if(q[2]==='sel'){s[q[0]]=Math.floor(rnd()*q[3].length);return}const v=k==1?q[2]:k==2?q[3]:k%3==0?(rnd()<.5?q[2]:q[3]):q[2]+(q[3]-q[2])*rnd();s[q[0]]=Math.min(q[3],Math.max(q[2],Math.round(v/q[4])*q[4]))});
+     S[i]=s;const o=m.f(s,m.anim?rnd()*30:0),cv=vbOf(m.name,o.vb);if(cv===o.vb)continue;const V=o.vb.split(/[ ,]+/).map(Number),C=cv.split(/[ ,]+/).map(Number);sv.setAttribute('viewBox',cv);sv.innerHTML=o.svg;const r=bb();
+     const L=Math.max(V[0],r[0]),T=Math.max(V[1],r[1]),R=Math.min(V[0]+V[2],r[2]),B=Math.min(V[1]+V[3],r[3]);
+     if(L<C[0]-3||T<C[1]-3||R>C[0]+C[2]+3||B>C[1]+C[3]+3){bad.push('Bildausschnitt „'+m.name+'“ ('+vw+' px): Zeichnung abgeschnitten bei '+JSON.stringify(s));break}}
+    S[i]=def});cur=-1;return bad},vw));await c5.close()}
  await b.close();const all=[...r.bad,...errs];
  console.log(`${r.n} Aufgaben erzeugt, ${r.topics} Themen geöffnet.`);
  if(r.hint.length)console.log(r.hint.length+' fachliche Hinweise (blockieren nicht):\n- '+r.hint.slice(0,30).join('\n- '));
