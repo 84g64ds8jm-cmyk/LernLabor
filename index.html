@@ -1074,9 +1074,9 @@ M.push({g:'Chemie',name:'Orbitalmodell & Mehrfachbindungen',test:1,anim:1,desc:'
  vis:s=>s.v==0||(s.v>5&&s.v<9)?[]:s.v==9?['k','db','me']:['n'],
  f(s,t){return ORB(s,t)}});
 /* Organische Grundreaktionen: Atome wandern von den Ausgangsstoffen zu den Produkten, alte Bindungswolken lösen sich, neue entstehen */
-const ORXM=['Verbrennung: Methan + Sauerstoff','Substitution: Methan + Chlor','Addition: Ethen + Brom','Polymerisation: Ethen → Polyethylen'];
+const ORXM=['Verbrennung: Methan + Sauerstoff','Substitution: Methan + Chlor','Addition: Ethen + Brom','Polymerisation: Ethen → Polyethylen','Nitrierung: Benzol + Salpetersäure'];
 function ORX(s,t){
- const v=s.v,p=s.m==1?s.r/100:Math.min(1,Math.max(0,((t%11)-1)/8)),psi=.35*Math.sin(t*.4),tau=.26,sc=v==3?.44:.62,cx=205,cy=196,SG='var(--flow)',PI_='var(--amber)';
+ const v=s.v,p=s.m==1?s.r/100:Math.min(1,Math.max(0,((t%11)-1)/8)),psi=.35*Math.sin(t*.4),tau=v==4?.7:.26,sc=v==3?.44:v==4?.5:.62,cx=205,cy=196,SG='var(--flow)',PI_='var(--amber)';
  const P=([x,y,z])=>{const x1=x*Math.cos(psi)+z*Math.sin(psi),z1=-x*Math.sin(psi)+z*Math.cos(psi);return[cx+sc*x1,cy-sc*(y*Math.cos(tau)-z1*Math.sin(tau)),y*Math.sin(tau)+z1*Math.cos(tau)]};
  const it=[],{add,nrm,ell,basis}=orbKit(P,it),sub=(a,b)=>add(a,b,-1),sm=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),ez=x=>x*x*(3-2*x),cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
  const TD=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(nrm),td=(a,u,g)=>{const w=cr(a,u),q=g*PI/180;return add(a.map(x=>-x/3),add(u.map(x=>x*Math.cos(q)),w,Math.sin(q)),.943)};
@@ -1103,6 +1103,17 @@ function ORX(s,t){
   B.push([c1,c2,1,'k'],[c1,c2,'pi','o'],...hs.map((h,i)=>[i<2?c1:c2,h,1,'k']),[b1,b2,1,'o'],[c1,b1,1,'n'],[c2,b2,1,'n']);
   LB=[[[c1,c2,...hs],'Ethen'],[[b1,b2],'Brom']];LB.p=[[[c1,c2,...hs,b1,b2],'1,2-Dibromethan']];
   info=['C₂H₄ + Br₂ → C₂H₄Br₂',[['Reaktionstyp','Addition: Br lagert sich an die Doppelbindung an'],['Bedingung','läuft schon bei Raumtemperatur'],['Nachweis','Bromwasser entfärbt sich: Doppelbindung vorhanden']],[['C',2,2],['H',4,4],['Br',2,2]]];
+ } else if(v==4){
+  /* Benzol (Ring in der x-z-Ebene) + HO–NO₂: H am Ring wird gegen –NO₂ getauscht, H und OH bilden Wasser */
+  const Cb=[-130,0,0],R=139,ring=k=>[Math.cos(k*PI/3),0,Math.sin(k*PI/3)],CC=[],HH=[];
+  for(let k=0;k<6;k++)CC.push(at('C',add(Cb,ring(k),R),add(Cb,ring(k),R)));
+  const h0=at('H',add(Cb,ring(0),R+109),[254,-319,0]);HH.push(h0);for(let k=1;k<6;k++){const q=add(Cb,ring(k),R+109);HH.push(at('H',q,q))}
+  const n=at('N',[230,0,0],[156,0,0]),o1=at('O',[291,0,106],[217,0,106]),o2=at('O',[291,0,-106],[217,0,-106]),o3=at('O',[230,140,0],[330,-260,0]),ha=at('H',[290,215,0],[406,-319,0]);
+  for(let k=0;k<6;k++)B.push([CC[k],CC[(k+1)%6],1,'k'],[CC[k],CC[(k+1)%6],'pi','k'],[CC[k],HH[k],1,k?'k':'o']);
+  B.push([n,o1,2,'k'],[n,o2,1,'k'],[n,o3,1,'o'],[o3,ha,1,'k'],[CC[0],n,1,'n'],[o3,h0,1,'n']);
+  LB=[[[...CC,...HH],'Benzol'],[[n,o1,o2,o3,ha],'Salpetersäure']];LB.p=[[[...CC,...HH.slice(1),n,o1,o2],'Nitrobenzol'],[[o3,h0,ha],'Wasser']];
+  info=['C₆H₆ + HNO₃ → C₆H₅NO₂ + H₂O',[['Reaktionstyp','Substitution: ein H am Ring wird durch –NO₂ ersetzt'],['Bedingung','Schwefelsäure als Katalysator, etwa 50\u00a0°C'],['Wichtig','Der π-Ring bleibt erhalten: keine Addition wie bei Ethen']],[['C',6,6],['H',7,7],['N',1,1],['O',3,3]]];
+  win=[.3,.45,.5,.66];
  } else {
   one=1;const CC=[],chain=i=>[(i-2.5)*125.8,(i%2)*88.9-44.5,0];
   for(let k=0;k<3;k++)for(let j=0;j<2;j++){const i=2*k+j;CC.push(at('C',[(k-1)*270+(j?67:-67),0,0],chain(i)))}
@@ -1124,7 +1135,7 @@ function ORX(s,t){
    it.push([(q1[2]+q2[2])/2,g])}});
  /* offene Kettenenden beim Polyethylen */
  if(LB.end){const f=sm(.66,.8,p);if(f>.02)LB.end.forEach((i,k)=>{const a=X[i],b=add(a,[k?1:-1,k?-.6:.6,0],80),q1=P(a),q2=P(b);it.push([q1[2],`<path d="M${q1[0]} ${q1[1]}L${q2[0]} ${q2[1]}" stroke="var(--ink)" stroke-width="4.5" stroke-dasharray="3 6" stroke-linecap="round" opacity="${f}"/>`])})}
- const RA={H:25,C:36,O:33,Cl:42,Br:46},CO={H:'#e5e7eb',C:'#4b5563',O:'#dc2626',Cl:'#16a34a',Br:'#9a3412'};
+ const RA={H:25,C:36,N:34,O:33,Cl:42,Br:46},CO={H:'#e5e7eb',C:'#4b5563',N:'#1e3a8a',O:'#dc2626',Cl:'#16a34a',Br:'#9a3412'};
  A.forEach(([e],i)=>{const q=P(X[i]),r=RA[e]*sc;it.push([q[2]+1,BALL(q[0],q[1],r,CO[e],1.3)+(e!='H'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:${e.length>1?11:13}px;font-weight:800;fill:#fff">${e}</text>`:'')])});
  it.sort((a,b)=>a[0]-b[0]);let h=it.map(q=>q[1]).join('');
  /* Licht bei der Substitution, Energie bei der Verbrennung */
@@ -1138,11 +1149,11 @@ function ORX(s,t){
  /* rechts: Reaktionstyp, Bedingung, Atombilanz, bei der Addition das Bromwasser */
  let y=88;info[1].forEach(([a,b])=>{h+=ORBT(424,y,a,15,'start','var(--mute)',600);WRAP(b,22).forEach((l,i)=>h+=ORBT(424,y+20+i*19,l,16,'start','var(--ink)',700));y+=30+WRAP(b,22).length*19});
  if(v==2){const c=`color-mix(in srgb,#c2410c ${Math.round(85*(1-sm(.45,.7,p)))}%,#dbeafe)`,G=GLAS(560,y-6,40,92,{tube:1,lv:62,c,op:.75});h+=G.b+G.f+ORBT(546,y+40,'Brom-',14,'end','var(--mute)',600)+ORBT(546,y+57,'wasser',14,'end','var(--mute)',600)}
- else{h+=ORBT(424,y+4,'Atome links = rechts',15,'start','var(--mute)',600);info[2].forEach(([e,a,b],i)=>h+=ORBT(424+i*68,y+28,`${e}: ${a}`,17,'start','var(--ink)',800));}
+ else{h+=ORBT(424,y+4,'Atome links = rechts',15,'start','var(--mute)',600);info[2].forEach(([e,a,b],i)=>h+=ORBT(424+i*(info[2].length>3?54:68),y+28,`${e}: ${a}`,17,'start','var(--ink)',800));}
  return{vb:'0 0 640 400',svg:h,res:[[info[1][0][1].split(':')[0],'Reaktionstyp'],[Math.round(p*100)+' %','Fortschritt'],[p<.66?LB.map(x=>x[1]).filter((x,i,a)=>a.indexOf(x)==i).join(' + '):LB.p.map(x=>x[1]).join(' + '),p<.66?'Ausgangsstoffe':'Produkte']],th:['Merkmal','Wert'],
   rows:[['Gleichung',info[0]],...info[1],['Atombilanz',info[2].map(([e,a,b])=>`${e}: ${a} → ${b}`).join(', ')]],
-  st:[['Was bei jeder Reaktion passiert','Bindungen (Elektronenwolken) lösen sich, die Atome ordnen sich neu, neue Bindungen entstehen. Atome gehen nicht verloren: Links und rechts stehen gleich viele.'],['Substitution','Ein Atom wird gegen ein anderes getauscht. Typisch für Alkane, braucht Licht oder Wärme.'],['Addition','Ein Molekül lagert sich an eine Doppel- oder Dreifachbindung an. Die π-Bindung öffnet sich, die σ-Bindung bleibt. Nachweis mit Bromwasser.'],['Polymerisation','Viele kleine Moleküle (Monomere) verbinden sich zu einer langen Kette (Polymer), z. B. Ethen zu Polyethylen.'],['Verbrennung','Kohlenwasserstoffe reagieren mit Sauerstoff zu CO₂ und Wasser, dabei wird Energie frei.'],['Vereinfachung','Die Bewegung der Atome ist schematisch. Echte Reaktionen laufen oft in mehreren Schritten (bei der Substitution über Chlor-Atome als Radikale).']]}}
-M.push({g:'Chemie',name:'Organische Grundreaktionen',anim:1,desc:'Vier Grundreaktionen der organischen Chemie im Kugel- und Wolkenmodell: Verbrennung, Substitution, Addition und Polymerisation. Man sieht, welche Bindungen sich lösen und welche neu entstehen.',leg:'Blau: σ-Wolken, orange: π-Wolken. Grau: C, weiß: H, rot: O, grün: Cl, braun: Br. Die Bewegung ist schematisch. Mit „Ablauf: mit Regler“ lässt sich jeder Schritt einzeln ansehen.',
+  st:[['Was bei jeder Reaktion passiert','Bindungen (Elektronenwolken) lösen sich, die Atome ordnen sich neu, neue Bindungen entstehen. Atome gehen nicht verloren: Links und rechts stehen gleich viele.'],['Substitution','Ein Atom wird gegen ein anderes getauscht. Typisch für Alkane, braucht Licht oder Wärme.'],['Addition','Ein Molekül lagert sich an eine Doppel- oder Dreifachbindung an. Die π-Bindung öffnet sich, die σ-Bindung bleibt. Nachweis mit Bromwasser.'],['Substitution am Benzolring','Benzol hat zwar π-Elektronen, der π-Ring ist aber besonders stabil. Statt einer Addition wird ein H-Atom ausgetauscht, z. B. gegen die Nitrogruppe –NO₂ (Nitrobenzol, Ausgangsstoff für Anilin und Farbstoffe). Benzol entfärbt Bromwasser deshalb nicht.'],['Polymerisation','Viele kleine Moleküle (Monomere) verbinden sich zu einer langen Kette (Polymer), z. B. Ethen zu Polyethylen.'],['Verbrennung','Kohlenwasserstoffe reagieren mit Sauerstoff zu CO₂ und Wasser, dabei wird Energie frei.'],['Vereinfachung','Die Bewegung der Atome ist schematisch. Echte Reaktionen laufen oft in mehreren Schritten (bei der Substitution über Chlor-Atome als Radikale).']]}}
+M.push({g:'Chemie',name:'Organische Grundreaktionen',anim:1,desc:'Grundreaktionen der organischen Chemie im Kugel- und Wolkenmodell: Verbrennung, Substitution, Addition und Polymerisation, dazu die Nitrierung von Benzol als Substitution am Ring. Man sieht, welche Bindungen sich lösen und welche neu entstehen.',leg:'Blau: σ-Wolken, orange: π-Wolken. Grau: C, weiß: H, rot: O, dunkelblau: N, grün: Cl, braun: Br. Die Bewegung ist schematisch. Mit „Ablauf: mit Regler“ lässt sich jeder Schritt einzeln ansehen.',
  p:[['v','Reaktion','sel',ORXM,0],['m','Ablauf','sel',['läuft von selbst','mit Regler'],0],['r','Fortschritt',0,100,5,'%',50]],
  vis:s=>s.m==1?['r']:[],
  f(s,t){return ORX(s,t)}});
