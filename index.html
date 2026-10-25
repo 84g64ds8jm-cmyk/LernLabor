@@ -1903,6 +1903,138 @@ M.push({g:'Physik',name:'Welle-Teilchen-Dualismus',test:1,anim:1,desc:'Zusammenf
  p:[['v','Ansicht','sel',['Überblick','Elektronen am Doppelspalt'],0],['U','Spannung U',50,1000,50,'V',100]],
  vis2:(o,UI)=>(UI.U||[]).forEach(e=>{const c=e.closest('.ctl');if(c)c.hidden=o.v!=1}),
  f(s,t){return WTD(s,t)}});
+/* Mikroskopie (Test): Aufbau und Strahlengang, Vergrößerung und Auflösung (Abbe), Größenordnungen vom Menschen bis zum Atom */
+const MKOB=[[4,.1],[10,.25],[40,.65],[100,1.25]],MKOK=[10,15],
+ MKL=m=>{const u=m>=1?[1,'m']:m>=.01?[.01,'cm']:m>=1e-3?[1e-3,'mm']:m>=1e-6?[1e-6,'µm']:m>=1e-9?[1e-9,'nm']:[1e-12,'pm'];return String(+(m/u[0]).toPrecision(2)).replace('.',',')+' '+u[1]},
+ MKN=v=>String(+v.toPrecision(3)).replace('.',',');
+/* Größenordnungen: Breite w und Höhe h in m, Zeichnung im Kasten (x links, y unten, Breite b, Höhe c in px) */
+const MKG=[
+ ['Atom',1e-10,1e-10,'C-Atom, 0,1 nm',(x,y,b,c)=>`<circle cx="${x+b/2}" cy="${y-c/2}" r="${b/2}" fill="url(#g-glow)"/>`+BALL(x+b/2,y-c/2,b*.32,'#94a3b8',1)],
+ ['DNA',2e-9,7e-9,'DNA-Strang, 2 nm breit',(x,y,b,c)=>{let p='',q='',r='';for(let i=0;i<=40;i++){const v=i/40,yy=y-v*c,a=v*Math.PI*4;p+=(i?'L':'M')+(x+b/2+b/2*Math.sin(a)).toFixed(1)+' '+yy.toFixed(1);q+=(i?'L':'M')+(x+b/2-b/2*Math.sin(a)).toFixed(1)+' '+yy.toFixed(1);if(i%3==1)r+=`M${(x+b/2+b/2*Math.sin(a)).toFixed(1)} ${yy.toFixed(1)}H${(x+b/2-b/2*Math.sin(a)).toFixed(1)}`}const w=Math.max(1,b*.12);return`<path d="${r}" stroke="#94a3b8" stroke-width="${w*.6}"/><path d="${p}" fill="none" stroke="#2563eb" stroke-width="${w}"/><path d="${q}" fill="none" stroke="#f97316" stroke-width="${w}"/>`}],
+ ['Virus',1e-7,1e-7,'Grippevirus, 100 nm',(x,y,b,c)=>{let s='';for(let i=0;i<14;i++){const a=i/14*2*Math.PI;s+=`M${(x+b/2+b*.38*Math.cos(a)).toFixed(1)} ${(y-c/2+b*.38*Math.sin(a)).toFixed(1)}L${(x+b/2+b*.5*Math.cos(a)).toFixed(1)} ${(y-c/2+b*.5*Math.sin(a)).toFixed(1)}`}return`<path d="${s}" stroke="#7c3aed" stroke-width="${Math.max(1,b*.05)}" stroke-linecap="round"/>`+BALL(x+b/2,y-c/2,b*.38,'#a855f7',1)}],
+ ['Bakterium',2e-6,8e-7,'Bakterium (E. coli), 2 µm',(x,y,b,c)=>{const g=`<path d="M${x+b} ${y-c/2}c${b*.15} ${-c*.6} ${b*.2} ${c*.6} ${b*.35} 0" fill="none" stroke="#15803d" stroke-width="${Math.max(1,c*.06)}"/>`;return g+`<rect x="${x}" y="${y-c}" width="${b}" height="${c}" rx="${c/2}" fill="#22c55e" stroke="var(--ink)" stroke-width="1.2"/><rect x="${x}" y="${y-c}" width="${b}" height="${c}" rx="${c/2}" fill="url(#g-cyl)"/>`}],
+ ['Blutkörperchen',7.5e-6,7.5e-6,'rotes Blutkörperchen, 7,5 µm',(x,y,b,c)=>`<circle cx="${x+b/2}" cy="${y-c/2}" r="${b/2}" fill="#dc2626" stroke="var(--ink)" stroke-width="1.2"/><circle cx="${x+b/2}" cy="${y-c/2}" r="${b/2}" fill="url(#g-ball)"/><circle cx="${x+b*.52}" cy="${y-c*.48}" r="${b*.2}" fill="#7f1d1d" opacity=".35"/>`],
+ ['Hautzelle',3e-5,2.4e-5,'Hautzelle, 30 µm',(x,y,b,c)=>`<path d="M${x+b*.1} ${y-c*.15}Q${x} ${y-c*.6} ${x+b*.25} ${y-c}L${x+b*.8} ${y-c*.92}Q${x+b} ${y-c*.5} ${x+b*.88} ${y-c*.1}Z" fill="#fbcfe8" stroke="var(--ink)" stroke-width="1.2"/>`+BALL(x+b*.5,y-c*.52,Math.min(b,c)*.16,'#7c3aed',1)],
+ ['Haar',7e-5,3.2e-4,'Haar, 70 µm dick',(x,y,b,c)=>{let s='';for(let k=1;k<12;k++){const yy=y-c*k/12;s+=`M${x} ${(yy+b*.12).toFixed(1)}Q${x+b/2} ${(yy-b*.12).toFixed(1)} ${x+b} ${(yy+b*.12).toFixed(1)}`}return ROD(x,y-c,b,c,'#92400e',1.2)+`<path d="${s}" fill="none" stroke="#451a03" stroke-width="${Math.max(.6,b*.02)}" opacity=".6"/>`}],
+ ['Ameise',6e-3,2.4e-3,'Ameise, 6 mm',(x,y,b,c)=>{let l='';const st=Math.max(1,b*.02);[.36,.48,.6].forEach((u,i)=>{l+=`M${x+b*u} ${y-c*.42}L${x+b*(u-.12+i*.08)} ${y}M${x+b*u} ${y-c*.42}L${x+b*(u+.06)} ${y-c*.05}`});l+=`M${x+b*.88} ${y-c*.6}Q${x+b*.95} ${y-c*1.05} ${x+b} ${y-c*.95}`;
+  return`<path d="${l}" fill="none" stroke="#431407" stroke-width="${st}" stroke-linecap="round"/>`+[[.2,.18,.3],[.5,.12,.22],[.82,.12,.2]].map(e=>`<ellipse cx="${x+b*e[0]}" cy="${y-c*.5}" rx="${b*e[1]}" ry="${c*e[2]}" fill="#7c2d12" stroke="var(--ink)" stroke-width="1"/><ellipse cx="${x+b*e[0]}" cy="${y-c*.5}" rx="${b*e[1]}" ry="${c*e[2]}" fill="url(#g-ball)"/>`).join('')}],
+ ['Münze',.02325,.02325,'1-Euro-Münze, 23 mm',(x,y,b,c)=>`<ellipse cx="${x+b/2}" cy="${y-c/2}" rx="${b/2}" ry="${c/2}" fill="#d4a017" stroke="var(--ink)" stroke-width="1.2"/><ellipse cx="${x+b/2}" cy="${y-c/2}" rx="${b*.34}" ry="${c*.34}" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/><ellipse cx="${x+b/2}" cy="${y-c/2}" rx="${b/2}" ry="${c/2}" fill="url(#g-ball)"/>`],
+ ['Smartphone',.072,.15,'Smartphone, 15 cm',(x,y,b,c)=>`<rect x="${x}" y="${y-c}" width="${b}" height="${c}" rx="${b*.14}" fill="#1e293b" stroke="var(--ink)" stroke-width="1.2"/><rect x="${x+b*.07}" y="${y-c*.95}" width="${b*.86}" height="${c*.9}" rx="${b*.08}" fill="#38bdf8" opacity=".85"/><rect x="${x+b*.07}" y="${y-c*.95}" width="${b*.3}" height="${c*.9}" fill="#fff" opacity=".18"/>`,.15],
+ ['Mensch',1.1,1.8,'Mensch, 1,8 m',(x,y,b,c)=>{const m=x+b/2,u=c/18,st=`stroke="var(--ink)" stroke-width="1.2"`;return`<rect x="${m-2.2*u}" y="${y-9*u}" width="${1.9*u}" height="${9*u}" rx="${.6*u}" fill="#1e3a8a" ${st}/><rect x="${m+.3*u}" y="${y-9*u}" width="${1.9*u}" height="${9*u}" rx="${.6*u}" fill="#1e3a8a" ${st}/>`+
+  `<rect x="${m-5.4*u}" y="${y-15*u}" width="${1.7*u}" height="${6.6*u}" rx="${.8*u}" fill="#f59e0b" ${st}/><rect x="${m+3.7*u}" y="${y-15*u}" width="${1.7*u}" height="${6.6*u}" rx="${.8*u}" fill="#f59e0b" ${st}/>`+
+  `<rect x="${m-3.6*u}" y="${y-15.4*u}" width="${7.2*u}" height="${7*u}" rx="${1.4*u}" fill="#f59e0b" ${st}/><rect x="${m-3.6*u}" y="${y-15.4*u}" width="${7.2*u}" height="${7*u}" rx="${1.4*u}" fill="url(#g-cyl)"/>`+BALL(m,y-16.9*u,1.4*u,'#fcd34d',1.2)+`<path d="M${m-1.6*u} ${y-17.2*u}h${3.2*u}" stroke="#78350f" stroke-width="${.5*u}"/>`},1.8]];
+MKG.forEach(o=>{if(o[5]==null)o[5]=o[1]});
+function MIK(s,t){
+ let h='';const ob=MKOB[s.ob],ok=MKOK[s.ok],V=ob[0]*ok,NA=ob[1];
+ if(s.v==0){
+  const CX=205;h+=ORBT(20,32,'Lichtmikroskop: Aufbau',20,'start','var(--ink)',800);
+  /* Fuß mit Lampe */
+  h+=`<ellipse cx="185" cy="378" rx="135" ry="8" fill="url(#g-shad)"/>`+BAR3(44,340,236,30,'#475569',12);
+  h+=`<circle cx="${CX}" cy="338" r="16" fill="url(#g-glow)"/><ellipse cx="${CX}" cy="338" rx="15" ry="4" fill="#fde68a" stroke="var(--ink)" stroke-width="1"/>`;
+  /* Stativ als Bogen, Triebe */
+  h+=`<path d="M92 340V170Q92 112 150 112H178" fill="none" stroke="var(--ink)" stroke-width="30" stroke-linecap="round"/><path d="M92 340V170Q92 112 150 112H178" fill="none" stroke="#64748b" stroke-width="26" stroke-linecap="round"/><path d="M84 336V170Q84 106 150 104" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="5"/>`;
+  h+=BALL(92,268,17,'#334155',1.5)+BALL(92,268,8,'#94a3b8',1.2);
+  /* Tisch mit Präparat, Kondensor */
+  h+=`<path d="M92 268H146" stroke="#475569" stroke-width="8"/>`+BAR3(140,262,128,12,'#334155',10)+`<rect x="${CX-38}" y="256" width="76" height="6" fill="#bae6fd" fill-opacity=".8" stroke="var(--ink)" stroke-width="1"/><rect x="${CX-6}" y="256" width="12" height="3" fill="#a855f7"/>`;
+  h+=`<path d="M${CX-16} 280H${CX+16}L${CX+10} 300H${CX-10}Z" fill="#94a3b8" stroke="var(--ink)" stroke-width="1.4"/><path d="M${CX-16} 280H${CX+16}L${CX+10} 300H${CX-10}Z" fill="url(#g-cyl)"/>`;
+  /* Revolver mit Objektiven, Tubus, Okular */
+  const L=[44,36,28,22][s.ob];
+  h+=`<g transform="rotate(-28 ${CX} 186)">`+ROD(CX-7,198,14,30,'#cbd5e1',1.2)+`</g><g transform="rotate(28 ${CX} 186)">`+ROD(CX-7,198,14,24,'#cbd5e1',1.2)+`</g>`;
+  h+=`<path d="M${CX-30} 180H${CX+30}L${CX+22} 198H${CX-22}Z" fill="#475569" stroke="var(--ink)" stroke-width="1.4"/><path d="M${CX-30} 180H${CX+30}L${CX+22} 198H${CX-22}Z" fill="url(#g-cyl)"/>`;
+  h+=ROD(CX-10,198,20,L,'#e2e8f0',1.4)+`<rect x="${CX-10}" y="${198+L*.45}" width="20" height="4" fill="${['#dc2626','#eab308','#38bdf8','#f8fafc'][s.ob]}"/>`+ROD(CX-6,198+L,12,6,'#94a3b8',1.2);
+  h+=ROD(CX-14,100,28,80,'#cbd5e1',1.5)+ROD(CX-11,70,22,30,'#334155',1.4)+`<ellipse cx="${CX}" cy="70" rx="11" ry="3.5" fill="#0f172a" stroke="var(--ink)" stroke-width="1"/>`;
+  /* Lichtweg von der Lampe bis ins Auge */
+  const off=(-t*40).toFixed(1);
+  h+=`<path d="M${CX} 334V64" stroke="#facc15" stroke-width="6" stroke-opacity=".55" stroke-dasharray="10 9" stroke-dashoffset="${off}"/>`+`<path d="M${CX} 60V48" stroke="#eab308" stroke-width="3"/><path d="M${CX-6} 50L${CX} 40L${CX+6} 50Z" fill="#eab308"/>`+ORBT(CX+12,52,'zum Auge',13,'start','var(--mute)',700);
+  /* Beschriftung */
+  const lab=(y,yy,s1)=>`<path d="M${CX+18} ${y}L282 ${yy}" stroke="var(--mute)" stroke-width="1"/>`+ORBT(286,yy+5,s1,15,'start','var(--ink)',700);
+  h+=lab(84,84,'Okular')+lab(140,126,'Tubus')+lab(190,168,'Revolver')+lab(198+L/2,210,'Objektiv')+lab(259,246,'Präparat')+lab(272,276,'Tisch')+lab(292,304,'Kondensor')+lab(336,330,'Lampe');
+  h+=ORBT(28,226,'Stativ',13,'start','var(--ink)',700)+ORBT(20,300,'Fokus-',13,'start','var(--ink)',700)+ORBT(20,316,'trieb',13,'start','var(--ink)',700);
+  /* rechts: Strahlengang als Schema */
+  const Y=200,xG=380,xO=412,fO=22,g=xO-xG,bO=1/(1/fO-1/g),xB=xO+bO,hG=10,hB=hG*bO/g,xK=xB+32,fK=60,xE=626;
+  h+=`<rect x="370" y="50" width="264" height="246" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>`+ORBT(382,72,'Strahlengang (Schema)',14,'start','var(--mute)',800);
+  h+=`<clipPath id="mksc"><rect x="371" y="51" width="262" height="244" rx="10"/></clipPath><g clip-path="url(#mksc)">`;h+=`<path d="M374 ${Y}H630" stroke="var(--mute)" stroke-width="1" stroke-dasharray="5 4"/>`;
+  const LN=(x,r)=>`<ellipse cx="${x}" cy="${Y}" rx="6" ry="${r}" fill="#bae6fd" fill-opacity=".7" stroke="var(--ink)" stroke-width="1.3"/>`;
+  const R='stroke="#eab308" stroke-width="1.8" fill="none"';
+  /* Objektiv: Parallelstrahl über F' und Mittelpunktstrahl zum Zwischenbild */
+  h+=`<path d="M${xG} ${Y-hG}H${xO}L${xB.toFixed(1)} ${(Y+hB).toFixed(1)}" ${R}/><path d="M${xG} ${Y-hG}L${xB.toFixed(1)} ${(Y+hB).toFixed(1)}" ${R}/>`;
+  /* Okular als Lupe: Strahlen laufen auseinander, rückwärts verlängert ergibt sich das virtuelle Bild */
+  const k1=(Y-(Y+hB))/fK,k2=(Y-(Y+hB))/(xK-xB),yE1=Y+hB+k1*(xE-xK),yE2=Y+(xE-xK)*k2;
+  h+=`<path d="M${xB.toFixed(1)} ${(Y+hB).toFixed(1)}H${xK}L${xE} ${yE1.toFixed(1)}" ${R}/><path d="M${xB.toFixed(1)} ${(Y+hB).toFixed(1)}L${xE} ${yE2.toFixed(1)}" ${R}/>`;
+  h+=`<path d="M${xK} ${Y+hB}L${xK-100} ${(Y+hB-k1*100).toFixed(1)}M${xB.toFixed(1)} ${(Y+hB).toFixed(1)}L${(xB-60).toFixed(1)} ${(Y+hB-60*k2).toFixed(1)}" stroke="#eab308" stroke-width="1.2" stroke-dasharray="3 4" opacity=".7"/>`;
+  h+=`</g>`+LN(xO,30)+LN(xK,46)+`<path d="M${xG} ${Y}V${Y-hG+5}" stroke="var(--red)" stroke-width="3"/><path d="M${xG-4} ${Y-hG+6}L${xG} ${Y-hG-1}L${xG+4} ${Y-hG+6}Z" fill="var(--red)"/><path d="M${xB.toFixed(1)} ${Y}V${(Y+hB).toFixed(1)}" stroke="var(--flow)" stroke-width="3"/>`;
+  h+=[[xO-fO,'F'],[xO+fO,'F′'],[xK-fK,'F'],[xK+fK,'F′']].map(([x,n])=>`<circle cx="${x}" cy="${Y}" r="2.5" fill="var(--ink)"/>`+ORBT(x,n=='F'?Y+15:Y-6,n,11,'middle','var(--mute)',700)).join('');
+  h+=ORBT(xO,Y-36,'Objektiv',12,'middle','var(--ink)',800)+ORBT(xK,Y-52,'Okular',12,'middle','var(--ink)',800)+ORBT(xG-6,Y+32,'Objekt',11,'start','var(--red)',700)+ORBT(xB-4,Y+hB+16,'Zwischenbild',11,'middle','var(--flow)',700)+ORBT(xE-4,Y-60,'Auge',12,'end','var(--ink)',800);
+  h+=ORBT(382,284,'Okular wirkt als Lupe',12,'start','var(--mute)',700);
+  h+=ORBT(370,330,'V = V_Obj · V_Ok',18,'start','var(--ink)',800)+ORBT(370,358,'= '+ob[0]+' · '+ok+' = '+V+'×',18,'start','var(--ink)',800)+ORBT(370,384,'Objektiv: reelles, umgekehrtes Zwischenbild',12,'start','var(--mute)',700);
+  return{vb:'0 0 640 400',svg:h,res:[[V+'×','Gesamtvergrößerung V'],[ob[0]+'×','Objektiv'],[ok+'×','Okular']],th:['Bauteil','Aufgabe'],
+   rows:[['Lampe und Kondensor','Leuchten das Präparat von unten gleichmäßig aus, der Kondensor bündelt das Licht'],['Objekttisch','Hält das Präparat (Objektträger mit Deckglas)'],['Objektiv','Erzeugt ein reelles, umgekehrtes, vergrößertes Zwischenbild, Vergrößerung V_Obj steht darauf'],['Okular','Wirkt als Lupe, vergrößert das Zwischenbild noch einmal, meist 10×'],['Revolver','Wechselt zwischen den Objektiven, zuerst mit dem kleinsten scharfstellen'],['Grob- und Feintrieb','Ändern den Abstand zwischen Objektiv und Präparat (Fokus)']],
+   st:[['V = V_Obj · V_Ok',`${ob[0]} · ${ok} = ${V}`],['Linsengleichung','1/f = 1/g + 1/b: Liegt das Objekt knapp außerhalb der Brennweite des Objektivs, entsteht weit dahinter ein großes reelles Bild.'],['Abbildungsmaßstab','β = B / G = b / g: Je weiter das Bild hinter der Linse, desto größer.'],['Okular','Das Zwischenbild liegt innerhalb der Brennweite des Okulars. Wie bei einer Lupe sieht das Auge ein vergrößertes, virtuelles Bild.']]}}
+ if(s.v==1){
+  /* Bildausschnitt: Präparat mit Haar, Blutkörperchen, Bakterien und Viren, Maßstab px je µm ~ V */
+  const l=s.l,dA=l/1000/(2*NA),dE=200/V,d=Math.max(dA,dE),sc=.012*V,cx=175,cy=218,R=148;
+  h+=ORBT(20,32,'Blick durchs Mikroskop: '+V+'×',20,'start','var(--ink)',800);
+  let w='';const rbc=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.75" fill="#ef4444"/><circle cx="${x+.2}" cy="${y+.2}" r="1.6" fill="#991b1b" opacity=".35"/>`;
+  w+=`<rect x="-400" y="-400" width="800" height="800" fill="#fef9ec"/>`;
+  /* Haar als breites Band rechts der Mitte */
+  w+=`<g transform="rotate(-12)"><rect x="8" y="-500" width="70" height="1000" fill="#a16207"/>`;for(let k=-500;k<500;k+=9)w+=`<path d="M8 ${k}Q43 ${k-6} 78 ${k}" fill="none" stroke="#713f12" stroke-width=".9" opacity=".7"/>`;w+=`<rect x="8" y="-500" width="12" height="1000" fill="#fff" opacity=".18"/></g>`;
+  for(let i=0;i<160;i++){const x=-380+760*DSR(i+11),y=-380+760*DSR(i+501);const xr=x*Math.cos(.21)-y*Math.sin(.21);if(xr>2&&xr<84)continue;if(Math.abs(x)<14&&Math.abs(y)<14)continue;w+=rbc(x.toFixed(1),y.toFixed(1))}
+  [[-9,-6],[-6,8],[5,-11],[-12,3],[10,9]].forEach(([x,y])=>w+=rbc(x,y));
+  for(let i=0;i<22;i++){const x=-8+10*DSR(i+71),y=-10+20*DSR(i+91),a=180*DSR(i+33),wg=.3*Math.sin(t*2+i);w+=`<rect x="${(x-1).toFixed(2)}" y="${(y-.35).toFixed(2)}" width="2" height=".7" rx=".35" fill="#16a34a" transform="rotate(${(a+wg*20).toFixed(1)} ${x.toFixed(2)} ${y.toFixed(2)})"/>`}
+  for(let i=0;i<14;i++){const x=1+3*DSR(i+201),y=-3+6*DSR(i+301);w+=`<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r=".05" fill="#7c3aed"/>`}
+  h+=`<defs><clipPath id="mkc"><circle cx="${cx}" cy="${cy}" r="${R}"/></clipPath><filter id="mkb" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="${(d/2).toFixed(3)}"/></filter></defs>`;
+  h+=`<circle cx="${cx}" cy="${cy}" r="${R+8}" fill="#0f172a"/><g clip-path="url(#mkc)"><g transform="translate(${cx} ${cy}) scale(${sc.toFixed(4)})" filter="url(#mkb)">${w}</g></g><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#0f172a" stroke-width="3"/>`;
+  /* Maßstab: runder Wert, der etwa 60-120 px lang ist */
+  const mu=NICE(90/sc),px=mu*sc;h+=`<rect x="${cx-px/2}" y="${cy+R-26}" width="${px}" height="5" fill="#0f172a" stroke="#fff" stroke-width="1"/>`+`<text x="${cx}" y="${cy+R-32}" text-anchor="middle" style="font-size:14px;font-weight:800;fill:#0f172a;paint-order:stroke;stroke:#fef9ec;stroke-width:4px;stroke-linejoin:round">${MKL(mu*1e-6)}</text>`;
+  /* Namen, wenn die Dinge groß genug sind */
+  const nm=(x,y,s1,c)=>{const X=cx+x*sc,Yy=cy+y*sc;return Math.hypot(X-cx,Yy-cy)<R-20?ORBT(X,Yy,s1,13,'middle',c,800):''};
+  if(sc*70>40)h+=nm(42,-9,'Haar','#451a03')||nm(16,-1,'Haar','#451a03');
+  if(sc*7.5>12)h+=nm(-9,-11,'Blutkörperchen','#7f1d1d');
+  if(sc*2>14)h+=nm(-3,14,'Bakterien','#166534');
+  if(sc*.1>6)h+=nm(2.5,-4,'Viren?','#5b21b6');
+  /* rechts: Werte und nützlicher Bereich */
+  const st0=V>1000*NA?['leere Vergrößerung','var(--red)']:V<500*NA?['Auge begrenzt','var(--amber)']:['nützliche Vergrößerung','var(--ok)'];
+  h+=ORBT(360,80,'V = '+ob[0]+' · '+ok+' = '+V+'×',20,'start','var(--ink)',800);
+  h+=ORBT(360,112,'Objektiv '+ob[0]+'× / NA '+MKN(NA)+(s.ob==3?' (Öl)':''),14,'start','var(--mute)',700);
+  h+=ORBT(360,146,'d = λ / (2 · NA)',16,'start','var(--ink)',800)+ORBT(360,170,'= '+l+' nm / '+MKN(2*NA)+' = '+MKN(dA)+' µm',16,'start','var(--ink)',800);
+  h+=ORBT(360,198,'Auge: 0,2 mm / V = '+MKN(dE)+' µm',14,'start','var(--mute)',700);
+  /* logarithmische Skala 10× bis 2000× */
+  const X0=372,X1=622,LX=v=>X0+(Math.log10(v)-1)/(Math.log10(2000)-1)*(X1-X0),yb=272;
+  h+=ORBT(360,222,'nützlich: 500 · NA bis 1000 · NA',13,'start','var(--mute)',700);
+  h+=`<rect x="${X0}" y="${yb-10}" width="${X1-X0}" height="20" rx="4" fill="var(--line)"/><rect x="${LX(500*NA).toFixed(1)}" y="${yb-10}" width="${(LX(1000*NA)-LX(500*NA)).toFixed(1)}" height="20" fill="var(--ok)" opacity=".55"/>`;
+  h+=[10,100,1000].map(v=>`<path d="M${LX(v).toFixed(1)} ${yb+10}v6" stroke="var(--ink)"/>`+ORBT(LX(v),yb+30,v+'×',12,'middle','var(--mute)',700)).join('');
+  h+=`<path d="M${LX(V).toFixed(1)} ${yb-18}l-7 -10h14z" fill="${st0[1]}" stroke="var(--ink)" stroke-width="1"/>`+ORBT(Math.min(560,Math.max(420,LX(V))),yb-26,st0[0],13,'middle',st0[1],800);
+  h+=ORBT(360,330,'kleinstes erkennbares Detail',14,'start','var(--mute)',700)+ORBT(360,358,MKN(d)+' µm'+(d===dA?' (Wellenlänge)':' (Auge)'),20,'start','var(--ink)',800);
+  h+=ORBT(360,384,'Viren (0,1 µm) bleiben unsichtbar',13,'start','var(--mute)',700);
+  return{vb:'0 0 640 400',svg:h,res:[[V+'×','Gesamtvergrößerung'],[MKN(dA)+' µm','Auflösung d (Abbe)'],[st0[0],'Bewertung']],th:['Objektiv','NA','d bei '+l+' nm','nützlich bis'],
+   rows:MKOB.map(o=>[o[0]+'×'+(o[0]==100?' (Öl)':''),MKN(o[1]),MKN(l/1000/(2*o[1]))+' µm',Math.round(1000*o[1])+'×']),
+   st:[['V = V_Obj · V_Ok',`${ob[0]} · ${ok} = ${V}`],['d = λ / (2 · NA)',`${l} nm / (2 · ${MKN(NA)}) = ${MKN(dA*1000)} nm = ${MKN(dA)} µm`],['Auge','Das Auge trennt aus 25 cm Abstand etwa 0,2 mm. Im Mikroskop also 0,2 mm / V = '+MKN(dE)+' µm.'],['Nützliche Vergrößerung','500 · NA bis 1000 · NA. Darüber wird das Bild nur größer, nicht schärfer (leere Vergrößerung). Grenze des Lichtmikroskops: etwa 0,2 µm.'],['Ölimmersion','Öl zwischen Deckglas und Objektiv (n ≈ 1,5) erhöht die numerische Apertur NA = n · sin α auf bis zu 1,4.']]}}
+ /* Größenordnungen: Bildbreite W = 2 · 10^(−z) m */
+ const z=s.z,W=2*10**(-z),WX=22,WY=52,WS=310,sc=WS/W,base=WY+WS-16;
+ h+=ORBT(20,32,'Größenordnungen: Bildbreite '+MKL(W),20,'start','var(--ink)',800);
+ h+=`<defs><clipPath id="mkg"><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="10"/></clipPath></defs><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>`;
+ let X=0,obs='',lab='',main=null;const x0=-.06*W;
+ MKG.forEach((o,i)=>{if(i)X+=MKG[i-1][1]*1.3;const b=o[1]*sc,c=o[2]*sc,px=WX+(X-x0)*sc;if(o[5]<=W*1.02)main=o;
+  if(b<1.2||px>WX+WS)return;const op=Math.max(0,Math.min(1,(3*W-o[1])/W));if(op<=0)return;
+  obs+=`<g opacity="${op.toFixed(2)}">`+o[4](px,base,b,c)+`</g>`;
+  if(b>=14&&op>.5){const ty=Math.max(WY+20,base-c-10),hw=3.9*o[0].length+4;lab+=ORBT(Math.max(WX+hw,Math.min(WX+WS-hw,px+b/2)),ty,o[0],13,'middle','var(--ink)',800)}});
+ h+=`<g clip-path="url(#mkg)"><path d="M${WX} ${base}H${WX+WS}" stroke="var(--line)" stroke-width="2"/>${obs}${lab}</g>`;
+ {const mu=NICE(W/4),px=mu*sc;h+=`<rect x="${WX+12}" y="${WY+WS+12}" width="${px}" height="6" fill="var(--ink)"/>`+ORBT(WX+20+px,WY+WS+20,MKL(mu),14,'start','var(--ink)',800)}
+ /* rechts: Leiter von 1 m bis 0,1 nm mit den Bereichen der Geräte */
+ const LY=m=>70+(-Math.log10(m))*30,AX=414;
+ h+=`<path d="M${AX} 62V378" stroke="var(--ink)" stroke-width="1.5"/>`;
+ ['1 m','10 cm','1 cm','1 mm','100 µm','10 µm','1 µm','100 nm','10 nm','1 nm','0,1 nm'].forEach((n,k)=>{h+=`<path d="M${AX-5} ${70+k*30}H${AX}" stroke="var(--ink)"/>`+ORBT(AX-8,75+k*30,n,13,'end','var(--mute)',700)});
+ [['Auge',1e-4,2,'#16a34a'],['Lichtmikroskop',2e-7,1e-3,'#2563eb'],['Elektronenmikroskop',1e-10,1e-3,'#7c3aed']].forEach(([n,a,b2,c],k)=>{const x=AX+8+k*19,y1=Math.max(62,LY(b2)),y2=LY(a);h+=`<rect x="${x}" y="${y1}" width="16" height="${y2-y1}" rx="4" fill="${c}" opacity=".85"/><text x="${x+8}" y="${(y1+y2)/2}" transform="rotate(-90 ${x+8} ${(y1+y2)/2})" text-anchor="middle" dominant-baseline="central" style="font-size:11px;font-weight:800;fill:#fff">${n}</text>`});
+ const wy=LY(W);h+=`<rect x="${AX-2}" y="${wy-3}" width="${222}" height="6" rx="3" fill="var(--amber)" opacity=".75"/>`;
+ let py=0;MKG.slice().reverse().forEach(o=>{const y0=Math.max(66,LY(o[5])),y=Math.max(y0,py+16);py=y;h+=`<circle cx="${AX+66}" cy="${y0.toFixed(1)}" r="3" fill="var(--ink)"/>`+(y-y0>2?`<path d="M${AX+68} ${y0.toFixed(1)}L${AX+74} ${y.toFixed(1)}" stroke="var(--ink)" stroke-width="1"/>`:'')+ORBT(AX+76,y+5,o[3].split(',')[0].replace(/ \(.*\)/,'').replace('rotes ','')+' '+MKL(o[5]),13,'start','var(--ink)',700)});
+ const dev=!main?'–':main[5]>=1e-4?'Auge':main[5]>=2e-7?'Lichtmikroskop':'Elektronenmikroskop';
+ return{vb:'0 0 640 400',svg:h,res:[[MKL(W),'Bildbreite'],[main?main[0]+' ('+MKL(main[5])+')':'–','größtes ganzes Objekt'],[dev,'sichtbar mit']],th:['Objekt','Größe','in m','sichtbar mit'],
+  rows:MKG.slice().reverse().map(o=>[o[3].split(',')[0],MKL(o[5]),SCI(o[5],2)+' m',o[5]>=1e-4?'Auge':o[5]>=2e-7?'Lichtmikroskop':'Elektronenmikroskop']),
+  st:[['Einheiten','1 mm = 10⁻³ m, 1 µm = 10⁻⁶ m, 1 nm = 10⁻⁹ m. Jede Zoomstufe macht das Bild 10-mal kleiner.'],['Auge','Trennt etwa 0,1 mm: Haare (70 µm) sieht man gerade noch als Linie, Zellen nicht.'],['Lichtmikroskop','Grenze etwa 0,2 µm, weil sichtbares Licht 400 bis 700 nm Wellenlänge hat: Zellen, Blutkörperchen und Bakterien, aber keine Viren.'],['Elektronenmikroskop','Elektronen bei 100 kV haben λ ≈ 3,7 pm. Praktisch erreicht man 0,1 nm (TEM) bis 1 nm (REM): Viren, Moleküle, beim TEM sogar Atomreihen.']]}}
+M.push({g:'Physik',name:'Mikroskopie',test:1,anim:1,desc:'Ein Lichtmikroskop vergrößert in zwei Stufen: Das Objektiv erzeugt ein vergrößertes Zwischenbild, das Okular vergrößert es wie eine Lupe. Gesamtvergrößerung V = V_Obj · V_Ok. Wie fein man sehen kann, begrenzt die Wellenlänge des Lichts: d = λ / (2 · NA), also etwa 0,2 µm.',leg:'Aufbau: Lichtweg von der Lampe bis zum Auge, rechts der Strahlengang als Schema (nicht maßstäblich). Vergrößerung: Ausschnitt aus der Mitte des Sehfelds mit Haar, Blutkörperchen, Bakterien und Viren, unscharf nach Auflösung d. Größenordnungen: Zoom in Zehnerstufen vom Menschen bis zum Atom, rechts die Bereiche von Auge, Licht- und Elektronenmikroskop.',
+ p:[['v','Ansicht','sel',['Aufbau & Strahlengang','Vergrößerung & Auflösung','Größenordnungen'],0],['ob','Objektiv','sel',MKOB.map(o=>o[0]+'× (NA '+MKN(o[1])+')'),1],['ok','Okular','sel',MKOK.map(o=>o+'×'),0],['l','Wellenlänge λ',400,700,10,'nm',550],['z','Zoomstufe',0,10,.1,'',0]],
+ vis2:(o,UI)=>{const on={ob:o.v!=2,ok:o.v!=2,l:o.v==1,z:o.v==2};for(const k in on)(UI[k]||[]).forEach(e=>{const c=e.closest('.ctl');if(c)c.hidden=!on[k]})},
+ f(s,t){return MIK(s,t)}});
 /* Neue Themen */
 const FP='Physik',FC='Chemie',FS='Statistik',FM='Mathematik',MF='Mechanik der Festkörper',HP='Hydraulik & Pneumatik',KD='Kinematik & Dynamik',AE='Arbeit, Leistung, Energie',WL='Wärmelehre',ET='Elektrotechnik',AP='Atombau & Periodensystem',CB='Chemische Bindungen',RS='Reaktionen & Stöchiometrie',SB='Säuren, Basen & Neutralisation',OR='Oxidation & Reduktion',EC='Elektrochemie',WH='Wasser & Härte',AN='Analytische Chemie',LQ='Licht & Quanten';
 const NICE=v=>{const p=10**Math.floor(Math.log10(v)),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p},TICKS=m=>{const st=NICE(m/4),a=[];for(let v=0;v<=m*1.0001;v+=st)a.push(+v.toPrecision(12));return a};
@@ -3319,7 +3451,7 @@ const BSK={
 'Histogramm':BSV(320,175,`${[10,26,50,36,18,30,56,42,16,6].map((h,i)=>`<rect x="${40+i*26}" y="${145-h*1.9}" width="24" height="${h*1.9}" fill="#8b5cf6" fill-opacity=".35"/>`).join('')}<path d="M34 30V145H310"/>${BTX(300,165,'Messwert',0,'end')}<text transform="rotate(-90 20 95)" x="20" y="95" fill="currentColor" stroke="none" text-anchor="middle">Häufigkeit</text>${BTX(92,22,'Schicht 1',0,'middle')}${BTX(222,22,'Schicht 2',0,'middle')}`)};
 BEW.forEach(r=>{if(r[1]==='s'&&!r[5]&&BSK[r[0]])r[5]=BSK[r[0]]});
 /* Zuordnung */
-const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];MAP['Orbitalmodell & Mehrfachbindungen']=[FC,CB];MAP['Chemische Grundreaktionen']=[FC,CB];MAP['Kunststoffe: Ketten und Netze']=[FC,CB];MAP['Tenside & Grenzflächen']=[FC,CB];MAP['Haber-Bosch-Verfahren']=[FC,RS];['Spektroskopie & Flammenfärbung','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Chromatographie'].forEach(n=>MAP[n]=[FC,AN]);['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Photoeffekt','Welle-Teilchen-Dualismus'].forEach(n=>MAP[n]=[FP,LQ]);
+const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];MAP['Orbitalmodell & Mehrfachbindungen']=[FC,CB];MAP['Chemische Grundreaktionen']=[FC,CB];MAP['Kunststoffe: Ketten und Netze']=[FC,CB];MAP['Tenside & Grenzflächen']=[FC,CB];MAP['Haber-Bosch-Verfahren']=[FC,RS];['Spektroskopie & Flammenfärbung','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Chromatographie'].forEach(n=>MAP[n]=[FC,AN]);['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Photoeffekt','Welle-Teilchen-Dualismus','Mikroskopie'].forEach(n=>MAP[n]=[FP,LQ]);
 M.forEach(m=>{const x=MAP[m.name];if(x){m.F=x[0];m.g=x[1]}});
 const DFN0='Ableitung: Steigung & Tangente',INN0='Integral: Fläche unter dem Graphen';
 const MR='Rechnen im Alltag',MFG='Formeln & Gleichungen',MGD='Geometrie & Diagramme',MDI='Differential- & Integralrechnung';
@@ -3332,7 +3464,7 @@ const FA=[FP,FC,FE,FS,FM,FSI,FU],ORD={[FSI]:[SXG1,SXG2,SXG3,SXG4],[FM]:[MR,MFG,M
 GORD[WL]=['Aggregatzustand','Wärmekapazität','Wärmeausdehnung','Schmelz- & Verdampfungswärme','Mischungstemperatur'];
 GORD[MF]=['Kräfteparallelogramm','Kräftezerlegung (Seilkräfte)','Gesetz von Hooke','Gleit-, Haft- & Rollreibung','Schiefe Ebene','Reibung (schiefe Ebene)','Drehmoment','Hebel','Rolle & Flaschenzug','Zug-/Druckspannung & Sicherheit','Scherung & Flächenpressung'];
 GORD[RS]=['Reaktionsgleichungen & Mol','Haber-Bosch-Verfahren'];
-GORD[LQ]=['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Photoeffekt','Welle-Teilchen-Dualismus'];
+GORD[LQ]=['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Photoeffekt','Welle-Teilchen-Dualismus','Mikroskopie'];
 GORD[AN]=['Spektroskopie & Flammenfärbung','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Neutralisation & Titration','Chromatographie'];
 GORD[AE]=['Arbeit, Energie & Leistung (Übersicht)','Arbeit & Leistung','Wirkungsgrad','Energieformen & Erhaltung'];
 GORD[HP]=['Druck','Hydraulik','Hydraulische Leistung & Volumenstrom','Auftrieb und Dichte','Pneumatik: Luftverbrauch','Gasgesetze','Gasdichte (Normzustand → Betrieb)'];
@@ -3507,6 +3639,7 @@ Object.assign(FX,{
 'Korrosion':['Oxidation (Anode): Me → Meⁿ⁺ + n e⁻','Reduktion (Kathode): z. B. O₂ + 2 H₂O + 4 e⁻ → 4 OH⁻','Rosten: 4 Fe + 3 O₂ + 2n H₂O → 2 Fe₂O₃ · n H₂O','Das unedlere Metall korrodiert (Spannungsreihe)'],
 'Atommodell':['Protonen = Elektronen = Z (Ordnungszahl)','A = Z + N  (Massenzahl)','max. Elektronen je Schale: 2 · n²','Valenzelektronen = Hauptgruppe'],
 'Bindungstypen':['ΔEN < 0,4: unpolar (Atombindung)','0,4 ≤ ΔEN < 1,7: polare Atombindung','ΔEN ≥ 1,7: Ionenbindung (Metall + Nichtmetall)','Metallbindung: Elektronengas'],
+'Mikroskopie':['V = V_Obj · V_Ok','d = λ / (2 · NA)  (Abbe)','NA = n · sin α','nützlich: 500 · NA ≤ V ≤ 1000 · NA','1/f = 1/g + 1/b,  β = b / g'],
 'Orbitalmodell & Mehrfachbindungen':['Einfachbindung: 1 σ','Doppelbindung: 1 σ + 1 π','Dreifachbindung: 1 σ + 2 π','Alkane CₙH₂ₙ₊₂, Alkene CₙH₂ₙ'],
 'Haber-Bosch-Verfahren':['N₂ + 3 H₂ ⇌ 2 NH₃  (ΔH = −92 kJ/mol)','M(N₂) = 28 g/mol, M(H₂) = 2 g/mol, M(NH₃) = 17 g/mol','n = m / M'],
 'Chemische Grundreaktionen':['Verbrennung: CH₄ + 2 O₂ → CO₂ + 2 H₂O','Substitution: CH₄ + Cl₂ → CH₃Cl + HCl','Addition: C₂H₄ + Br₂ → C₂H₄Br₂','Polymerisation: n C₂H₄ → (–CH₂–CH₂–)ₙ'],
@@ -5841,6 +5974,8 @@ BET['Kunststoffe: Ketten und Netze']='PE- und PP-Rohre werden verschweißt (Heiz
 ERK['Haber-Bosch-Verfahren']=['N₂ + 3 H₂ ⇌ 2 NH₃ ist ein Gleichgewicht und setzt Wärme frei. Hoher Druck verschiebt es zum NH₃, weil weniger Gasteilchen entstehen. Hohe Temperatur verschiebt es zurück, macht die Reaktion aber schneller. Der Eisen-Katalysator beschleunigt nur, das Gleichgewicht bleibt gleich.',['Glauben, der Katalysator erhöhe die Ausbeute. Er macht die Reaktion nur schneller.','Platin als Katalysator nennen. Platin gehört zum Ostwald-Verfahren, beim Haber-Bosch-Verfahren ist es Eisen.','Annehmen, höhere Temperatur bringe mehr NH₃. Sie bringt weniger, aber schneller.','Molverhältnis falsch: aus 1 mol N₂ entstehen 2 mol NH₃.']];
 ERK['Welle-Teilchen-Dualismus']=['Licht und Elektronen breiten sich wie Wellen aus: Am Doppelspalt entstehen Streifen. Abgegeben und nachgewiesen werden sie aber immer als ganze Portionen an einem Ort: Photoeffekt, einzelne Treffer auf dem Schirm. Welches Bild passt, hängt vom Versuch ab. Jedes Teilchen hat die Wellenlänge λ = h / (m · v).',['Glauben, Licht sei entweder Welle oder Teilchen. Es zeigt je nach Versuch beide Seiten.','Annehmen, nur Licht habe Wellencharakter. Auch Elektronen, Neutronen und Atome interferieren.','Die de-Broglie-Wellenlänge mit der Ruhemasse 0 des Photons ausrechnen. λ = h / (m · v) gilt für Teilchen mit Masse.','Erwarten, dass schnellere Elektronen breitere Streifen machen. Ihre Wellenlänge ist kürzer, die Streifen werden enger.']];
 BET['Welle-Teilchen-Dualismus']='Elektronenmikroskope nutzen die kurze Wellenlänge schneller Elektronen und zeigen Bruchflächen, Gefüge und Beschichtungen im Nanometerbereich (REM in der Werkstoffprüfung). Solarzellen und Fotodioden nutzen den Teilchencharakter des Lichts.';
+ERK['Mikroskopie']=['Das Objektiv erzeugt ein reelles, umgekehrtes, vergrößertes Zwischenbild, das Okular vergrößert es wie eine Lupe: V = V_Obj · V_Ok. Wie fein man sieht, hängt aber nicht von V ab, sondern von der Wellenlänge und der numerischen Apertur: d = λ / (2 · NA). Mit Licht sind das etwa 0,2 µm. Darüber hinaus bringt mehr Vergrößerung nichts mehr.',['Glauben, mehr Vergrößerung zeige immer mehr Einzelheiten. Über 1000 · NA wird das Bild nur größer, aber nicht schärfer (leere Vergrößerung).','Objektiv- und Okularvergrößerung addieren statt multiplizieren: 40× und 10× ergeben 400×, nicht 50×.','Die Einheiten verwechseln: 1 µm = 10⁻³ mm = 10⁻⁶ m, 1 nm = 10⁻⁹ m.','Erwarten, im Lichtmikroskop Viren oder Atome zu sehen. Dafür ist die Wellenlänge des Lichts zu groß, man braucht ein Elektronenmikroskop.','Mit dem 100er-Objektiv beginnen. Erst mit dem kleinsten Objektiv scharfstellen, dann hochdrehen.']];
+BET['Mikroskopie']='In der Werkstoffprüfung zeigt das Auflichtmikroskop Schliffbilder: Korngröße, Gefüge von Stahl (Ferrit, Perlit, Martensit), Härtetiefe und Schweißnähte. Das Rasterelektronenmikroskop (REM) zeigt Bruchflächen (Dauerbruch oder Gewaltbruch), Beschichtungen und Verschleiß. Messmikroskope prüfen kleine Bauteile und Gewinde berührungslos.';
 ERK['Temperatur ⇄']=['Die Kelvin-Skala beginnt am absoluten Nullpunkt: T in K = ϑ in °C + 273,15. Temperaturdifferenzen sind in K und °C gleich groß.',['K und °C bei Gasgesetzen mischen.','Bei Differenzen 273 addieren.','Fahrenheit mit einem einzigen Faktor umrechnen. Es gibt auch einen Versatz.']];
 ERK['Lineare Gleichungen lösen']=['Eine Gleichung ist eine Waage: Was links passiert, muss rechts genauso passieren. Zuerst alle x-Terme auf eine Seite, alle Zahlen auf die andere, dann durch die Zahl vor dem x teilen. Mit der Probe prüfst Du das Ergebnis.',['Nur auf einer Seite gerechnet.','Beim Verschieben das Vorzeichen vergessen (aus + wird −).','Durch die falsche Zahl geteilt oder das Minuszeichen des Faktors übersehen.','Keine Probe gemacht.']];
 ERK['Ausmultiplizieren & Ausklammern']=['Beim Ausmultiplizieren trifft jeder Summand der ersten Klammer auf jeden der zweiten (bei 2 × 2 Summanden also vier Produkte). Beim Ausklammern sucht man den größten gemeinsamen Faktor (Zahl und Variable) und zieht ihn vor die Klammer.',['Ein Produkt vergessen (meist das innere oder äußere).','x · x als 2x statt als x² geschrieben.','Beim Ausklammern nur die Zahl herausziehen und das gemeinsame x vergessen.','Keine Probe durch Wiederausmultiplizieren.']];
@@ -8172,6 +8307,11 @@ const GLB=[
 ['Emulsion','Fein verteilte Mischung zweier nicht mischbarer Flüssigkeiten, z. B. Öl in Wasser (Milch, Kühlschmierstoff). Ein Emulgator hält sie stabil.','C',['Tenside & Grenzflächen'],'Emulsion|Emulgator'],
 ['Kolloid','Verteilung von Teilchen mit 1 nm bis 1 µm Größe, die sich kaum absetzen, z. B. Milch, Nebel, Rauch.','C',['Tenside & Grenzflächen'],'Kolloid'],
 ['Oberflächenspannung','Zusammenhalt der Moleküle an einer Flüssigkeitsoberfläche. Wasser: etwa 72 mN/m bei 20 °C, mit Tensid etwa 30 mN/m.','C',['Tenside & Grenzflächen'],'Oberflächenspannung'],
+['Vergrößerung (Mikroskop)','Wie viel größer ein Gegenstand erscheint als mit bloßem Auge aus 25 cm. Beim Mikroskop: V = V_Obj · V_Ok, z. B. 40 · 10 = 400.','P',['Mikroskopie'],'Vergrößerung|Gesamtvergrößerung'],
+['Auflösung','Kleinster Abstand zweier Punkte, die man noch getrennt sieht. Lichtmikroskop nach Abbe: d = λ / (2 · NA), etwa 0,2 µm. Auge: etwa 0,1 mm.','P',['Mikroskopie'],'Auflösung|Auflösungsgrenze|Abbe'],
+['Numerische Apertur (NA)','Maß dafür, wie viel Licht ein Objektiv aufnimmt: NA = n · sin α. Je größer, desto feiner die Auflösung. Trocken bis etwa 0,95, mit Öl bis etwa 1,4.','P',['Mikroskopie'],'numerische Apertur|Apertur'],
+['Objektiv und Okular','Objektiv: Linse dicht über dem Präparat, erzeugt ein vergrößertes, umgekehrtes Zwischenbild. Okular: Linse am Auge, vergrößert das Zwischenbild wie eine Lupe.','P',['Mikroskopie'],'Okular'],
+['Elektronenmikroskop','Mikroskop, das Elektronen statt Licht nutzt. Ihre Wellenlänge ist viel kürzer, darum sieht man bis etwa 0,1 nm (TEM). Das Rasterelektronenmikroskop (REM) tastet Oberflächen ab, z. B. Bruchflächen.','P',['Mikroskopie','Welle-Teilchen-Dualismus'],'Elektronenmikroskop'],
 ['Passivierung','Dünne, dichte Oxidschicht auf einem Metall, die es vor weiterer Korrosion schützt, z. B. bei Aluminium, Chrom, Titan und nichtrostendem Stahl. Wird sie verletzt, bildet sie sich an der Luft neu.','C',['Periodensystem','Korrosion'],'Oxidschicht|Passivier'],
 ['Schutzgas / Inertgas','Gas, das kaum oder gar nicht reagiert und Luft fernhält, z. B. Argon und Helium beim WIG- und MIG-Schweißen oder Stickstoff zum Spülen von Tanks. In engen Räumen verdrängt es Sauerstoff: Erstickungsgefahr.','C',['Periodensystem'],'Schutzgas|Inertgas'],
 ['Formiergas','Gemisch aus Stickstoff und wenig Wasserstoff. Es schützt beim Schweißen von Edelstahlrohren die Wurzel innen vor Anlauffarben und Oxidation.','C',['Periodensystem'],'Formiergas'],
