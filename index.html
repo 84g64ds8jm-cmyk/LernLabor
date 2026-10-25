@@ -1538,10 +1538,19 @@ const SPFL=(cx,yb,col,t,k=1,lb)=>{const fl=(hg,wd,c,op,j)=>{const q=(Math.sin(t*
  let h=`<ellipse cx="${cx}" cy="${yb-60*k}" rx="${70*k}" ry="${90*k}" fill="${col}" opacity=".13"/>`;
  h+=`<ellipse cx="${cx+6}" cy="${yb+118*k}" rx="${58*k}" ry="${8*k}" fill="url(#g-shad)"/><path d="M${cx-48*k} ${yb+112*k}Q${cx-48*k} ${yb+96*k} ${cx} ${yb+96*k}Q${cx+48*k} ${yb+96*k} ${cx+48*k} ${yb+112*k}Z" fill="#6b7280" stroke="var(--ink)" stroke-width="1.5"/>`+ROD(cx-11*k,yb,22*k,100*k,'#9ca3af')+`<rect x="${cx-7*k}" y="${yb+70*k}" width="${14*k}" height="${8*k}" rx="2" fill="#1f2937"/>`;
  h+=fl(150*k,30*k,col,.75,0)+fl(105*k,19*k,'#fff',.22,1)+fl(42*k,10*k,'#3b82f6',.75,2);
- const x1=cx+125*k,y1=yb-136*k,x2=cx+10*k,y2=yb-62*k;
- h+=`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="var(--ink)" stroke-width="${6*k}" stroke-linecap="round"/><path d="M${x1} ${y1}L${x2} ${y2}" stroke="#f1f5f9" stroke-width="${3.4*k}" stroke-linecap="round"/>`+ROD(x1-6*k,y1-28*k,12*k,30*k,'#a16207',1.5)+BALL(x2,y2,6.5*k,'#f8fafc',1.2)+BALL(x2-4*k,y2+3*k,3.5*k,'#f8fafc',1)+BALL(x2+4*k,y2+4*k,3*k,'#f8fafc',1);
+ /* Magnesiastäbchen als runder Stab, Metallhülse, Holzgriff; Achse von der Spitze schräg nach rechts oben */
+ const x2=cx+10*k,y2=yb-62*k,an=-31,ca=Math.cos(an*Math.PI/180),sa=Math.sin(an*Math.PI/180),Lr=104*k,Lf=9*k,Lh=46*k,P=u=>[x2+u*ca,y2+u*sa],st='stroke="var(--ink)" stroke-width="1.2"';
+ h+=`<ellipse cx="${P(Lr+Lf+Lh/2)[0]+6}" cy="${P(Lr+Lf+Lh/2)[1]+16*k}" rx="${30*k}" ry="${3*k}" fill="url(#g-shad)"/><g transform="translate(${x2} ${y2}) rotate(${an})">`+
+  `<rect x="0" y="${-3*k}" width="${Lr}" height="${6*k}" fill="#f1f5f9"/><rect x="0" y="${-3*k}" width="${Lr}" height="${6*k}" fill="url(#g-rodh)" ${st}/>`+
+  `<rect x="${Lr}" y="${-5.5*k}" width="${Lf}" height="${11*k}" rx="1.5" fill="#9ca3af"/><rect x="${Lr}" y="${-5.5*k}" width="${Lf}" height="${11*k}" rx="1.5" fill="url(#g-rodh)" ${st}/><path d="M${Lr+3*k} ${-5.5*k}v${11*k}M${Lr+6*k} ${-5.5*k}v${11*k}" stroke="var(--ink)" stroke-width=".8" opacity=".5"/>`+
+  `<rect x="${Lr+Lf}" y="${-7.5*k}" width="${Lh}" height="${15*k}" rx="${4*k}" fill="#a16207"/><rect x="${Lr+Lf}" y="${-7.5*k}" width="${Lh}" height="${15*k}" rx="${4*k}" fill="url(#g-rodh)" ${st}/>`+
+  [.25,.5,.75].map(f=>`<path d="M${Lr+Lf+Lh*f} ${-6*k}q${3*k} ${6*k} 0 ${12*k}" fill="none" stroke="#713f12" stroke-width=".9" opacity=".6"/>`).join('')+
+  `<ellipse cx="${Lr+Lf+Lh}" cy="0" rx="${3*k}" ry="${7.5*k}" fill="#ca8a4a" stroke="var(--ink)" stroke-width="1.2"/><ellipse cx="0" cy="0" rx="${1.6*k}" ry="${3*k}" fill="#e2e8f0" stroke="var(--ink)" stroke-width="1"/></g>`;
+ /* Probe: kleine Salzkristalle an der Spitze, glühen in der Flammenfarbe */
+ h+=`<circle cx="${x2}" cy="${y2}" r="${11*k}" fill="${col}" opacity=".55"/>`+ZCUBE(x2-6*k,y2-3*k,6*k)+ZCUBE(x2+1*k,y2+1*k,5*k)+ZCUBE(x2-3*k,y2+4*k,4*k);
+ const [x1,y1]=P(Lr+Lf+Lh),[xm,ym]=P(Lr*.55);
  /* Beschriftung: Halter, Stäbchen, Salzprobe */
- if(lb)h+=ORBT(x1+12,y1-8,'Halter',14,'start','var(--mute)',700)+ORBT((x1+x2)/2+18,(y1+y2)/2-18,'Magnesiastäbchen',14,'start','var(--mute)',700)+`<path d="M${cx-58} ${yb-122}L${x2-8} ${y2-6}" stroke="var(--ink)" stroke-width="1.3"/>`+ORBT(cx-110,yb-128,'Probe: '+lb,16,'start','var(--ink)',800);
+ if(lb)h+=ORBT(x1+8,y1-8,'Halter',14,'start','var(--mute)',700)+`<path d="M${xm} ${ym+4}L${xm+22} ${ym+58}" stroke="var(--ink)" stroke-width="1.1"/>`+ORBT(xm+4,ym+76,'Magnesiastäbchen',14,'start','var(--mute)',700)+`<path d="M${cx-58} ${yb-122}L${x2-8} ${y2-8}" stroke="var(--ink)" stroke-width="1.3"/>`+ORBT(cx-110,yb-128,'Probe: '+lb,16,'start','var(--ink)',800);
  return h};
 /* Gasentladungsröhre mit Leuchtfarbe */
 const SPGT=(x0,x1,y,col,t)=>{const fl=.85+.15*Math.sin(t*20);let h=`<rect x="${x0}" y="${y-22}" width="${x1-x0}" height="44" rx="22" fill="${col}" opacity="${(.18*fl).toFixed(2)}"/>`;
@@ -1557,7 +1566,7 @@ function SPK(s,t){
  const st=[['Warum Linien?','Elektronen nehmen Energie auf und springen auf eine höhere Schale. Fallen sie zurück, geben sie genau die Energiedifferenz als Licht ab: ΔE = h · f = h · c / λ. Weil die Schalen feste Energien haben, entstehen nur einzelne Wellenlängen.'],['Nachweis','Man vergleicht die Linien der Probe mit den Linien bekannter Elemente. Stimmen alle Linien eines Elements überein, ist es enthalten.'],['Breite Streifen','Calcium, Strontium und Barium bilden in der Flamme Moleküle wie CaOH. Diese senden breite Banden statt scharfer Linien aus.']];
  if(v==0){
   const gas=E[5];h+=ORBT(20,34,(gas?'Leuchtröhre: ':'Flammenfärbung: ')+E[1]+' ('+E[0]+')',22,'start','var(--ink)',800);
-  let sx,sy;if(gas){h+=SPGT(40,260,190,E[2],t);sx=150;sy=190}else{h+=SPFL(130,250,E[2],t,1,['NaCl','KCl','LiCl','CaCl₂','SrCl₂','BaCl₂','CuCl₂'][s.e]+' (Salz)');sx=140;sy=170}
+  let sx,sy;if(gas){h+=SPGT(40,260,190,E[2],t);sx=150;sy=190}else{h+=SPFL(130,250,E[2],t,1,['NaCl','KCl','LiCl','CaCl₂','SrCl₂','BaCl₂','CuCl₂'][s.e]+' (Salz)');sx=130;sy=200}
   /* Lichtweg: Quelle → Prisma → Linien auf dem Schirm */
   const P=[[400,92],[358,170],[442,170]],bx=372,bw=256,by=262;
   h+=`<path d="M${sx+20} ${sy-10}L380 136" stroke="${E[2]}" stroke-width="7" opacity=".55" stroke-linecap="round"/>`;
@@ -1613,8 +1622,12 @@ const KZR=i=>{const v=Math.sin(i*127.1+311.7)*43758.5453;return v-Math.floor(v)}
 /* Teilchen in einem Rechteck, leichte Wimmelbewegung */
 const KZP=(n,x,y,w,h,t,c,r=6)=>{let s='';for(let i=0;i<n;i++){const px=x+r+(w-2*r)*KZR(i+1)+3*Math.sin(t*1.7+i),py=y+r+(h-2*r)*KZR(i+101)+3*Math.cos(t*1.3+i*2);s+=BALL(px.toFixed(1),py.toFixed(1),r,c,1)}return s};
 /* Messkolben: Bauch und Hals mit Eichstrich, Flüssigkeit bis zum Strich */
-const KZK=(cx,yb,rb,c,op)=>{const nk=14,yn=yb-2*rb,ytop=yn-80,body=`M${cx-nk} ${ytop}V${yn+rb*.25}C${cx-rb*1.1} ${yn+rb*.6} ${cx-rb} ${yb} ${cx} ${yb}C${cx+rb} ${yb} ${cx+rb*1.1} ${yn+rb*.6} ${cx+nk} ${yn+rb*.25}V${ytop}`;
- return`<ellipse cx="${cx+4}" cy="${yb+3}" rx="${rb*.9}" ry="7" fill="url(#g-shad)"/><path d="M${cx-nk+3} ${yn-34}V${yn+rb*.25}C${cx-rb*1.1+3} ${yn+rb*.6} ${cx-rb+3} ${yb-3} ${cx} ${yb-3}C${cx+rb-3} ${yb-3} ${cx+rb*1.1-3} ${yn+rb*.6} ${cx+nk-3} ${yn+rb*.25}V${yn-34}Z" fill="${c}" opacity="${op}"/><path d="${body}" fill="url(#g-glas)" stroke="var(--ink)" stroke-width="2"/><path d="M${cx-nk-4} ${yn-34}H${cx+nk+4}" stroke="var(--red)" stroke-width="2"/><ellipse cx="${cx}" cy="${ytop}" rx="${nk}" ry="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`};
+const KZK=(cx,yb,rb,c,op)=>{const nk=14,yn=yb-2*rb,ytop=yn-80,ym=yn-34,
+ out=(e)=>`M${cx-nk+e} ${ytop}V${yn+rb*.25}C${cx-rb*1.1+e} ${yn+rb*.6} ${cx-rb+e} ${yb-e*.6} ${cx} ${yb-e*.6}C${cx+rb-e} ${yb-e*.6} ${cx+rb*1.1-e} ${yn+rb*.6} ${cx+nk-e} ${yn+rb*.25}V${ytop}`,
+ liq=`M${cx-nk+3} ${ym}V${yn+rb*.25}C${cx-rb*1.1+3} ${yn+rb*.6} ${cx-rb+3} ${yb-3} ${cx} ${yb-3}C${cx+rb-3} ${yb-3} ${cx+rb*1.1-3} ${yn+rb*.6} ${cx+nk-3} ${yn+rb*.25}V${ym}Z`;
+ return`<ellipse cx="${cx+8}" cy="${yb+3}" rx="${rb*1.05}" ry="8" fill="url(#g-shad)"/><path d="${out(0)}" fill="url(#g-glas)"/><path d="${liq}" fill="${c}" opacity="${op}"/><path d="${liq}" fill="url(#g-liqh)"/><path d="${liq}" fill="url(#g-liqv)"/>`+
+  `<ellipse cx="${cx}" cy="${ym}" rx="${nk-3}" ry="3" fill="#fff" opacity=".55"/><path d="M${cx-rb*.72} ${yn+rb*.75}Q${cx-rb*.78} ${yb-rb*.55} ${cx-rb*.35} ${yb-rb*.2}" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/><path d="M${cx-nk+5} ${ytop+8}V${yn-4}" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".5"/><path d="M${cx+rb*.55} ${yb-rb*.3}Q${cx+rb*.8} ${yn+rb*.9} ${cx+rb*.7} ${yn+rb*.6}" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" opacity=".08"/>`+
+  `<path d="${out(0)}" fill="none" stroke="var(--ink)" stroke-width="2"/><path d="M${cx-nk-4} ${ym}H${cx+nk+4}" stroke="var(--red)" stroke-width="2"/><ellipse cx="${cx}" cy="${ytop}" rx="${nk}" ry="4" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><ellipse cx="${cx}" cy="${ytop}" rx="${nk-3}" ry="2.4" fill="none" stroke="var(--ink)" stroke-width="1" opacity=".35"/>`};
 /* Zuckerwürfel räumlich: Vorderseite, helle Oberseite, graue Seite, Kristallkörnung */
 const ZCUBE=(x,y,a)=>{if(a<2)return'';const d=a*.42,st='stroke="var(--ink)" stroke-width="1.3" stroke-linejoin="round"';let s=`<ellipse cx="${x+a/2+d/2}" cy="${y+a+2}" rx="${a*.75}" ry="${Math.max(2,a*.12)}" fill="url(#g-shad)"/><path d="M${x} ${y}L${x+d} ${y-d}H${x+a+d}L${x+a} ${y}Z" fill="#ffffff" ${st}/><path d="M${x+a} ${y}L${x+a+d} ${y-d}V${y+a-d}L${x+a} ${y+a}Z" fill="#d4d4d8" ${st}/><rect x="${x}" y="${y}" width="${a}" height="${a}" fill="#f4f4f5" ${st}/>`;
  if(a>14){const n=Math.round(a*a/22);for(let i=0;i<n;i++){const u=KZR(i+501),v=KZR(i+733),r=.6+1.1*KZR(i+977);s+=`<rect x="${(x+2+u*(a-5)).toFixed(1)}" y="${(y+2+v*(a-5)).toFixed(1)}" width="${(r*1.6).toFixed(1)}" height="${(r*1.6).toFixed(1)}" fill="${i%3?'#d4d4d8':'#fff'}" transform="rotate(${(KZR(i+11)*90).toFixed(0)} ${(x+2+u*(a-5)).toFixed(1)} ${(y+2+v*(a-5)).toFixed(1)})"/>`}
