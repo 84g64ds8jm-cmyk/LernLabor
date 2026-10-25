@@ -1226,7 +1226,9 @@ const KUM=[['Thermoplast, lineare Ketten (PE-HD)',80,130,0,'Rohre, Flaschenkäst
 const KUN=(()=>{const R=((x)=>()=>(x=(x*16807)%2147483647)/2147483647)(11),K=[],X0=114,X1=306,Y0=94,Y1=306;
  const clamp=p=>[Math.max(X0,Math.min(X1,p[0])),Math.max(Y0,Math.min(Y1,p[1]))];
  /* freie Kette: Zufallsweg, prallt am Rand ab; cu = Krümmung */
- const walk=(x,y,n,st,cu)=>{let a=R()*6.3;const p=[];for(let i=0;i<n;i++){a+=(R()-.5)*cu;x+=st*Math.cos(a);y+=st*Math.sin(a);if(x<X0||x>X1)a=PI-a;if(y<Y0||y>Y1)a=-a;[x,y]=clamp([x,y]);p.push([x,y])}return p};
+ const walk=(x,y,n,st,cu)=>{let a=R()*6.3,w=0;const p=[];for(let i=0;i<n;i++){w=.75*w+(R()-.5)*cu*.6;a+=w;
+  if(x<X0+14||x>X1-14||y<Y0+14||y>Y1-14){const g=Math.atan2(200-y,210-x),d=Math.atan2(Math.sin(g-a),Math.cos(g-a));a+=.35*d}
+  x+=st*Math.cos(a);y+=st*Math.sin(a);[x,y]=clamp([x,y]);p.push([x,y])}return p};
  /* Verbindung von A nach B mit leichtem Schwung */
  const tie=(A,B,n,w)=>{const ph=R()*6.3,d=[B[0]-A[0],B[1]-A[1]],L=Math.hypot(...d)||1,u=[-d[1]/L,d[0]/L],p=[];for(let i=1;i<n;i++){const f=i/n,o=w*Math.sin(PI*f)*Math.sin(f*5+ph);p.push(clamp([A[0]+d[0]*f+u[0]*o,A[1]+d[1]*f+u[1]*o]))}return p};
  /* gefaltete Kette (Lamelle): n Bahnen parallel im Abstand sp, an den Enden umgeklappt */
@@ -1254,7 +1256,29 @@ const KUN=(()=>{const R=((x)=>()=>(x=(x*16807)%2147483647)/2147483647)(11),K=[],
    cand.sort((x,y)=>x[4]-y[4]);for(const [a,i,b,j] of cand){if(BR.length>=need)break;if(!BR.some(q=>Math.hypot(C[q[0]][q[1]][0]-C[a][i][0],C[q[0]][q[1]][1]-C[a][i][1])<dmin))BR.push([a,i,b,j])}}
   /* Unordnung beim Erwärmen: je Punkt ein glatter Zufallsversatz */
   const OF=C.map(p=>{let ox=0,oy=0;return p.map(()=>{ox+=(R()-.5)*9;oy+=(R()-.5)*9;ox*=.9;oy*=.9;return[ox,oy]})});
-  K.push({C,BR,BX,HL,AS,OF})}return K})();
+  const MW=ty==0?C.map(p=>walk(p[0][0],p[0][1],p.length,6.5,1.2)):null;
+  K.push({C,BR,BX,HL,AS,OF,MW})}return K})();
+/* kleine Skizze: Monomer → Ausschnitt des Polymers, als Strichformel */
+function KSKZ(ty){
+ const I='var(--ink)',col=['#0e7490','#0369a1','#15803d','#6d28d9'][ty],y0=244,
+  zz=(x,y,n,dx,a)=>Array.from({length:n+1},(_,i)=>[x+i*dx,y+(i%2?a:-a)]),pl=(P,c=I,w=1.8)=>`<polyline points="${P.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`,
+  br=(x1,x2,y,hh)=>`<path d="M${x1+4} ${y-hh}H${x1}V${y+hh}H${x1+4}M${x2-4} ${y-hh}H${x2}V${y+hh}H${x2-4}" fill="none" stroke="${I}" stroke-width="1.5"/>`+ORBT(x2+3,y+hh+2,'n',12,'start',I,700),
+  hex=(cx,cy,r)=>{const P=[0,1,2,3,4,5,6].map(k=>[cx+r*Math.cos(k*PI/3+PI/6),cy+r*Math.sin(k*PI/3+PI/6)]);return pl(P)+`<circle cx="${cx}" cy="${cy}" r="${r*.55}" fill="none" stroke="${I}" stroke-width="1.3"/>`};
+ let g=`<rect x="420" y="${y0-22}" width="214" height="${396-y0+22}" rx="10" fill="${col}" fill-opacity=".07" stroke="${col}" stroke-opacity=".5"/>`+ORBT(430,y0-4,'Baustein → Kette',13,'start',col,800);
+ const M=['Ethen','Ethen','Isopren','Phenol + Methanal'][ty],Mf=['H₂C=CH₂','H₂C=CH₂','C₅H₈','C₆H₅OH + HCHO'][ty];
+ g+=ORBT(430,y0+20,Mf,15,'start',I,800)+ORBT(430,y0+38,'Monomer: '+M,12,'start','var(--mute)',600);
+ if(ty<2){const P=zz(446,y0+76,8,20,9);g+=pl(P,col,2.2)+br(438,612,y0+76,18);
+  if(ty==1)[[2,1],[5,-1]].forEach(([i,s])=>g+=pl([P[i],[P[i][0]-6,P[i][1]+s*16],[P[i][0]+6,P[i][1]+s*30]],col,2.2));
+  g+=ORBT(430,y0+(ty?126:112),ty?'Polyethylen mit Ästen (PE-LD)':'Polyethylen, unverzweigt (PE-HD)',12,'start','var(--mute)',600)}
+ else if(ty==2){const A=zz(446,y0+62,8,20,7),B=zz(446,y0+112,8,20,7);g+=pl(A,col,2.2)+pl(B,col,2.2);
+  /* Doppelbindungen im Kautschuk und eine Schwefelbrücke */
+  [[A,1],[A,5],[B,3],[B,7]].forEach(([P,i])=>{const a=P[i],b=P[i+1],l=Math.hypot(b[0]-a[0],b[1]-a[1]),ox=-(b[1]-a[1])/l*4,oy=(b[0]-a[0])/l*4;g+=`<path d="M${a[0]+ox} ${a[1]+oy}L${b[0]+ox} ${b[1]+oy}" stroke="${col}" stroke-width="1.6"/>`});
+  const a=A[4],b=B[4];g+=`<path d="M${a[0]} ${a[1]}V${b[1]}" stroke="var(--red)" stroke-width="2.2"/>`+[a[1]+16,b[1]-16].map(y=>`<circle cx="${a[0]}" cy="${y}" r="7" fill="var(--card)" stroke="var(--red)" stroke-width="1.5"/>`+ORBT(a[0],y+4,'S',11,'middle','var(--red)',800)).join('')+ORBT(a[0]+12,(a[1]+b[1])/2+4,'Schwefelbrücke',11,'start','var(--red)',700)}
+ else{const H=[[470,y0+78],[548,y0+78],[509,y0+132]];H.forEach(([x,y])=>g+=hex(x,y,13));
+  [[0,1],[0,2],[1,2]].forEach(([i,j])=>{const a=H[i],b=H[j],d=Math.hypot(b[0]-a[0],b[1]-a[1]),u=[(b[0]-a[0])/d,(b[1]-a[1])/d],p=[a[0]+u[0]*14,a[1]+u[1]*14],q=[b[0]-u[0]*14,b[1]-u[1]*14];g+=`<path d="M${p[0]} ${p[1]}L${q[0]} ${q[1]}" stroke="var(--red)" stroke-width="2.2"/>`+ORBT((p[0]+q[0])/2+(i==0&&j==1?0:i==0?-14:14),(p[1]+q[1])/2+(i==0&&j==1?-5:4),'CH₂',11,'middle','var(--red)',800)});
+  H.forEach(([x,y],k)=>g+=pl([[x+(k==2?13:k?11:-11),y+(k==2?8:-7)],[x+(k==2?24:k?22:-22),y+(k==2?14:-13)]],col,1.8)+ORBT(x+(k==2?27:k?25:-25),y+(k==2?18:-14),'…',12,k?'start':'end',col,800));
+  g+=ORBT(590,y0+132,'Phenolharz',12,'middle','var(--mute)',600)}
+ return g}
 function KUNS(s,t){
  const ty=s.ty,[nm,Te,Tm,Tz,use]=KUM[ty],T=s.T,z=s.z/100,K=KUN[ty],tp=ty<2,
   zer=tp?T>=300:T>=Tz,melt=tp&&T>=Tm&&!zer,soft=tp&&T>=Te&&!melt&&!zer,bruch=ty==3&&z>.05&&!zer;
@@ -1263,7 +1287,7 @@ function KUNS(s,t){
  /* Dehnung: Duroplast kaum, Elastomer viel, Thermoplast je nach Temperatur */
  const lam=1+(ty==3?Math.min(z,.05):z*(ty==2?.6:soft||melt?.7:.3)),cxk=210,cyk=200,amp=.3+1.6*(T-20)/300+(melt?2:0),dark=zer?Math.min(1,(T-(tp?300:Tz))/30+.4):0;
  const aff=([x,y])=>{x=cxk+(x-cxk)*lam;y=cyk+(y-cyk)/Math.sqrt(lam);if(bruch)x+=x>cxk?14:-14;return[x,y]};
- const tf=(p,c,i)=>{const o=K.OF[c][i];let x=p[0]+dis*2.6*o[0]+amp*Math.sin(t*3.1+i*1.9+c*2.3),y=p[1]+dis*2.6*o[1]+amp*Math.cos(t*2.7+i*1.3+c*1.1);
+ const tf=(p,c,i)=>{const o=K.OF[c][i];if(K.MW){const m=K.MW[c][i];p=[p[0]+(m[0]-p[0])*dis,p[1]+(m[1]-p[1])*dis]}let x=p[0]+(K.MW?.6:2.6)*dis*o[0]+amp*Math.sin(t*3.1+i*1.9+c*2.3),y=p[1]+(K.MW?.6:2.6)*dis*o[1]+amp*Math.cos(t*2.7+i*1.3+c*1.1);
   if(melt){x+=6*Math.sin(t*.5+c*1.7);y+=5*Math.cos(t*.4+c*2.1)}return aff([x,y])};
  const col=['#0e7490','#0369a1','#15803d','#6d28d9'][ty],mix=(c,k)=>dark?`color-mix(in srgb,${c} ${Math.round(100-80*dark)}%,#1c1917)`:c,ccol=mix(col),hcol=mix(`color-mix(in srgb,${col} 55%,var(--ink))`);
  let h='';
@@ -1275,27 +1299,28 @@ function KUNS(s,t){
   h+=`<path d="M${q.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L')}Z" fill="${col}" fill-opacity="${(.07*ord).toFixed(3)}" stroke="${col}" stroke-dasharray="5 4" stroke-width="1.4" opacity="${ord.toFixed(2)}"/>`;
   if(k==0)h+=`<g opacity="${ord.toFixed(2)}">`+ORBT(q[0][0],q[0][1]-6,'geordnet (kristallin)',13,'start',col,800)+'</g>'});
  /* Ketten als feine Fäden: Hintergrund-Saum für Überkreuzungen, dann Farbe; eine Kette hervorgehoben */
- const line=(g,w,c)=>{const d='M'+g.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');return`<path d="${d}" fill="none" stroke="var(--card)" stroke-width="${w+2.6}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`};
+ const spl=g=>{const f=q=>q[0].toFixed(1)+' '+q[1].toFixed(1),n=g.length;let d='M'+f(g[0]);for(let i=0;i<n-1;i++){const a=g[Math.max(0,i-1)],b=g[i],c=g[i+1],e=g[Math.min(n-1,i+2)];d+='C'+f([b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6])+' '+f([c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6])+' '+f(c)}return d};
+ const line=(g,w,c)=>{const d=spl(g);return`<path d="${d}" fill="none" stroke="var(--card)" stroke-width="${w+2.6}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`+g.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${(w*.8).toFixed(2)}" fill="${c}" stroke="var(--card)" stroke-width=".7"/>`).join('')};
  let top='';
  K.C.forEach((pts,c)=>{const q=pts.map((p,i)=>tf(p,c,i)),hl=K.HL.includes(c),br=K.AS.includes(c);let segs=[q];
   if(zer||bruch){segs=[];let cur=[];q.forEach((p,i)=>{cur.push(p);const cut=zer?(i%6==5&&dark>.3):(bruch&&i<q.length-1&&(q[i][0]-cxk)*(q[i+1][0]-cxk)<0);if(cut){segs.push(cur);cur=[]}});segs.push(cur)}
   segs.filter(g=>g.length>1).forEach(g=>{const s2=line(g,hl?3.2:br?1.8:2.2,hl?hcol:ccol);if(hl)top+=s2;else h+=s2})});
  h+=top;
- K.BR.forEach(([a,i,b,j])=>{const p=tf(K.C[a][i],a,i),q=tf(K.C[b][j],b,j);if(bruch&&(p[0]-cxk)*(q[0]-cxk)<0)return;h+=`<path d="M${p[0].toFixed(1)} ${p[1].toFixed(1)}L${q[0].toFixed(1)} ${q[1].toFixed(1)}" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round"/><circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.8" fill="var(--red)"/><circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="2.8" fill="var(--red)"/>`});
+ K.BR.forEach(([a,i,b,j])=>{const p=tf(K.C[a][i],a,i),q=tf(K.C[b][j],b,j);if(bruch&&(p[0]-cxk)*(q[0]-cxk)<0)return;h+=`<path d="M${p[0].toFixed(1)} ${p[1].toFixed(1)}L${q[0].toFixed(1)} ${q[1].toFixed(1)}" stroke="var(--card)" stroke-width="4.4" stroke-linecap="round"/><path d="M${p[0].toFixed(1)} ${p[1].toFixed(1)}L${q[0].toFixed(1)} ${q[1].toFixed(1)}" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/>`+[p,q].map(r=>`<circle cx="${r[0].toFixed(1)}" cy="${r[1].toFixed(1)}" r="3.3" fill="var(--red)" stroke="var(--card)" stroke-width="1"/>`).join('')});
  if(bruch)h+=ORBT(cxk,98,'Bruch!',22,'middle','var(--red)',800);
  const zs=zer?'zersetzt (verkohlt)':melt?'schmelzflüssig':soft?'erweicht, warm formbar':tp?'fest, zäh':ty==2?'gummielastisch':'hart, spröde',
   rest=zer?'–':z==0?'kein Zug':bruch?'Bruch':ty==2?'geht ganz zurück':ty==3?'geht zurück':melt?'fließt weg':soft?'bleibt (Umformen)':z>.3?'bleibt teilweise':'geht fast zurück';
  h+=ORBT(205,32,['Thermoplast','Thermoplast','Elastomer','Duroplast'][ty],21,'middle','var(--ink)',800)+ORBT(205,56,['lineare Ketten (PE-HD)','verzweigte Ketten (PE-LD)','weitmaschig vernetzt','engmaschig vernetzt'][ty],17,'middle','var(--mute)',700);
  h+=ORBT(205,346,'Zustand: '+zs,18,'middle','var(--ink)',800)+ORBT(205,372,'nach dem Loslassen: '+rest,17,'middle','var(--mute)',700);
  /* rechts: Steifigkeit über der Temperatur (schematisch) */
- {const x0=440,x1=626,y0=96,y1=250,X=T=>x0+(T-20)/300*(x1-x0),Y=k=>y1-k*(y1-y0),CV=[[[20,.85],[80,.85],[125,.3],[135,.02]],[[20,.65],[60,.65],[105,.15],[112,.02]],[[20,.25],[200,.25]],[[20,.95],[260,.95]]];
-  h+=ORBT(424,36,'Steifigkeit',17,'start','var(--ink)',700)+ORBT(424,58,'schematisch',14,'start','var(--mute)',600);
-  h+=`<path d="M${x0} ${y0-8}V${y1}H${x1}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`+[20,100,200,300].map(v=>ORBT(X(v),y1+18,v,13,'middle','var(--mute)',600)).join('')+ORBT((x0+x1)/2,y1+36,'Temperatur in °C',14,'middle','var(--mute)',600)+ORBT(x0-6,y0+6,'hoch',13,'end','var(--mute)',600)+ORBT(x0-6,y1,'0',13,'end','var(--mute)',600);
+ {const x0=440,x1=626,y0=78,y1=180,X=T=>x0+(T-20)/300*(x1-x0),Y=k=>y1-k*(y1-y0),CV=[[[20,.85],[80,.85],[125,.3],[135,.02]],[[20,.65],[60,.65],[105,.15],[112,.02]],[[20,.25],[200,.25]],[[20,.95],[260,.95]]];
+  h+=ORBT(424,30,'Steifigkeit',16,'start','var(--ink)',700);
+  h+=`<path d="M${x0} ${y0-8}V${y1}H${x1}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`+[20,100,200,300].map(v=>ORBT(X(v),y1+18,v,13,'middle','var(--mute)',600)).join('')+ORBT((x0+x1)/2,y1+32,'Temperatur in °C (schematisch)',13,'middle','var(--mute)',600)+ORBT(x0-6,y0+6,'hoch',13,'end','var(--mute)',600)+ORBT(x0-6,y1,'0',13,'end','var(--mute)',600);
   CV.forEach((c,k)=>{const on=k==ty,cc=['#0e7490','#0369a1','#15803d','#6d28d9'][k],d=c.map(([a,b])=>X(a).toFixed(1)+','+Y(b).toFixed(1)).join(' '),e=c[c.length-1];
    h+=`<polyline points="${d}" fill="none" stroke="${cc}" stroke-width="${on?3.5:2}" opacity="${on?1:.35}"/>`+(k>1?ORBT(X(e[0]),Y(e[1])+6,'✕',16,'middle',cc,800):'')});
   const c=CV[ty];let kk=0;if(T<=c[c.length-1][0]){for(let i=1;i<c.length;i++)if(T<=c[i][0]){const [a,b]=c[i-1],[a2,b2]=c[i];kk=b+(b2-b)*(T-a)/(a2-a);break}}
   h+=`<path d="M${X(T)} ${y0-6}V${y1}" stroke="var(--red)" stroke-dasharray="4 4"/>`+(T<=c[c.length-1][0]?`<circle cx="${X(T)}" cy="${Y(kk)}" r="7" fill="var(--red)" stroke="var(--ink)" stroke-width="2"/>`:'');
-  [['Beispiel',use.split(',')[0]],['Schweißen, Umschmelzen',tp?'ja':'nein']].forEach(([a,b],i)=>h+=ORBT(424,320+i*42,a,15,'start','var(--mute)',600)+ORBT(424,340+i*42,b,17,'start','var(--ink)',800))}
+  h+=KSKZ(ty)}
  return{vb:'0 0 640 400',svg:h,res:[[zs,'Zustand'],[rest,'nach Entlasten'],[tp?'ja':'nein','schmelzbar']],th:['Merkmal','Wert'],
   rows:[['Aufbau',['lange, kaum verzweigte Ketten, teils geordnet (kristallin)','Ketten mit vielen Ästen, locker gepackt','Ketten mit wenigen Brücken (weitmaschig)','dichtes Netz aus Brücken (engmaschig)'][ty]],['Zusammenhalt',tp?'nur Anziehung zwischen den Ketten (Van-der-Waals), keine Brücken':'feste Atombindungen zwischen den Ketten'],['Beim Erwärmen',tp?`erweicht ab etwa ${Te} °C, schmilzt bei etwa ${Tm} °C`:`schmilzt nicht, zersetzt sich ab etwa ${Tz} °C`],['Verformung',tp?'warm umformbar, schweißbar, recycelbar durch Einschmelzen':ty==2?'stark dehnbar, federt zurück':'hart und formstabil, bricht bei Überlast'],['Beispiele',use]],
   st:[['Thermoplast','Lange Ketten, nur durch schwache Kräfte zusammengehalten. Wärme lässt die Ketten aneinander vorbeigleiten: erst weich, dann flüssig. Abkühlen macht sie wieder fest. Darum schweiß- und recycelbar.'],['Linear oder verzweigt','Lineare Ketten liegen dicht und teils geordnet: PE-HD ist fester und schmilzt höher. Äste halten die Ketten auf Abstand: PE-LD ist weicher.'],['Elastomer','Wenige Brücken verbinden die Ketten. Bei Zug strecken sich die Knäuel, die Brücken ziehen sie zurück. Nicht schmelzbar.'],['Duroplast','Viele Brücken bilden ein festes Netz. Hart, wärmebeständig, aber spröde. Beim Erhitzen zersetzt er sich, statt zu schmelzen.'],['Werte','Temperaturen sind typische Richtwerte, je nach Sorte verschieden.']]}}
