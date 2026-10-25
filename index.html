@@ -3600,6 +3600,600 @@ const KMW=[
  STP('Mit welcher waagerechten Kraft drückt der Ausleger gegen das Wandgelenk?',FH,'N',[`Die waagerechte Seilkomponente zieht den Ausleger zur Wand.`,`F_H = F_S · cos α = ${nf6(FS)} N · cos ${al}° = ${nf6(FH)} N`],'Waagerecht wirken nur Seilkomponente und Gelenkkraft. Sie sind gleich groß.')]}}]
 ];
 EXW.push(...KMW);KMW.forEach(t=>EXC[t[0]]='P');
+/* ===== Praxisaufgaben aus dem Alltag (Werkstatt, Straße, Freizeit), Entwurf 25.10.2026 =====
+   PXW: Rechenaufgaben im EXW-Format [Name, r=>{intro,fig?,steps}]
+   PXI: Einordnung je Aufgabe {lv: 1 Grundlagen | 2 Anwenden | 3 Prüfungsniveau, t: Thema}
+   PXB: Begründen-/Beurteilen-Aufgaben im BEW-Format [Thema, Art, Frage, Musterlösung, Prüfpunkte] */
+
+/* --- Skizzen (feste Geometrie, nur die Maßzahlen ändern sich) --- */
+const pxRot=(x,y,d)=>{const c=Math.cos(kmR(d)),s=Math.sin(kmR(d));return[x*c-y*s,x*s+y*c]};
+const pxS=(x,y)=>`<circle cx="${kmF(x)}" cy="${kmF(y)}" r="6" class="kmc"/><path d="M${kmP(x-6,y)}H${kmF(x+6)}M${kmP(x,y-6)}V${kmF(y+6)}" class="kma"/>`;
+
+/* Flaschenwagenheber: Hebel, Pumpe, Rückschlagventil, Hubzylinder */
+const pxJack=({lH,lK,d1,d2})=>kmSvg(360,262,`${kmHatch(8,244,352,244)}
+ <rect x="105" y="200" width="220" height="44" class="kmw"/>
+ <rect x="240" y="110" width="70" height="105" class="kmc"/><rect x="255" y="58" width="40" height="64" class="kmb"/><rect x="248" y="50" width="54" height="8" class="kmb"/>
+ <rect x="120" y="128" width="30" height="87" class="kmc"/><rect x="122" y="132" width="26" height="14" class="kmb"/>
+ <line x1="150" y1="208" x2="240" y2="208" class="kmbelt"/><circle cx="195" cy="208" r="6" class="kmc"/><path d="M191 204L199 208L191 212Z" class="kmk"/>
+ <line x1="165" y1="100" x2="165" y2="200" class="kmg"/><line x1="135" y1="100" x2="135" y2="132" class="kmrod"/>
+ <line x1="22" y1="100" x2="178" y2="100" class="kml"/>${kmPiv(165,100)}${kmPiv(135,100)}
+ ${kmA(30,108,30,152)}${kmT(38,146,'F_H','class="kmf"')}
+ ${kmA(275,6,275,48,'var(--red)')}${kmT(284,30,'F_L','class="kmf kmr"')}
+ ${kmD(135,100,165,100,`l_K = ${lK} mm`,-22)}${kmD(30,100,165,100,`l_H = ${lH} mm`,-48)}
+ ${kmD(120,176,150,176,`d₁ = ${d1} mm`,0)}${kmD(240,170,310,170,`d₂ = ${d2} mm`,0)}
+ ${kmT(195,226,'Rückschlag-','class="kms" text-anchor="middle"')}${kmT(195,239,'ventil','class="kms" text-anchor="middle"')}${kmT(135,236,'Pumpe','class="kms" text-anchor="middle"')}${kmT(275,236,'Hubzylinder','class="kms" text-anchor="middle"')}`);
+
+/* Kompaktlader mit Palettengabel, Kippkante an der Vorderachse */
+const pxLoader=({a,b})=>kmSvg(360,262,`${kmHatch(8,200,352,200)}
+ <rect x="78" y="112" width="150" height="56" rx="6" class="kmw"/><rect x="96" y="60" width="92" height="52" rx="4" class="kmc"/><rect x="108" y="70" width="44" height="34" class="kmd2"/>
+ <circle cx="110" cy="178" r="22" class="kmtw"/><circle cx="210" cy="178" r="22" class="kmtw"/>
+ <line x1="92" y1="84" x2="250" y2="140" class="kml"/><line x1="256" y1="118" x2="256" y2="188" class="kmg"/><line x1="256" y1="188" x2="322" y2="188" class="kmg"/>
+ <rect x="262" y="140" width="56" height="44" class="kmw"/>${kmT(290,166,'Last','text-anchor="middle" class="kms kmsb"')}
+ ${pxS(165,132)}${pxS(290,150)}
+ <line x1="165" y1="140" x2="165" y2="200" class="kmh"/><line x1="290" y1="184" x2="290" y2="200" class="kmh"/>
+ ${kmA(165,30,165,62)}${kmT(173,52,'F_G','class="kmf"')}${kmA(290,98,290,134,'var(--red)')}${kmT(298,122,'F_L','class="kmf kmr"')}
+ <path d="M210 200L203 212H217Z" class="kmk"/>${kmT(210,248,'Kippkante','text-anchor="middle" class="kms"')}
+ ${kmD(165,200,210,200,`a = ${de(a)} m`,22)}${kmD(210,200,290,200,`b = ${de(b)} m`,22)}`);
+
+/* Minibagger hebt seitlich über die Kette: Ansicht von hinten */
+const pxDigger=({e,xA,r})=>kmSvg(380,300,`${kmHatch(8,214,372,214)}
+ <rect x="96" y="186" width="34" height="28" rx="8" class="kmtw"/><rect x="186" y="186" width="34" height="28" rx="8" class="kmtw"/><rect x="118" y="174" width="80" height="14" class="kmb"/>
+ <rect x="108" y="112" width="100" height="62" rx="6" class="kmw"/><rect x="118" y="70" width="52" height="42" rx="4" class="kmc"/>
+ <line x1="196" y1="124" x2="262" y2="62" class="kml"/><line x1="262" y1="62" x2="322" y2="96" class="kml"/>
+ <line x1="322" y1="100" x2="322" y2="132" class="kmrope"/><circle cx="322" cy="152" r="20" class="kmw"/><circle cx="322" cy="152" r="11" class="kmd2"/>
+ ${pxS(158,146)}${pxS(250,74)}
+ <line x1="158" y1="40" x2="158" y2="270" class="kmwl"/>${kmT(150,36,'Drehmitte','text-anchor="end" class="kms"')}
+ <line x1="250" y1="80" x2="250" y2="214" class="kmh"/><line x1="322" y1="172" x2="322" y2="214" class="kmh"/>
+ ${kmA(158,150,158,196)}${kmT(150,184,'F_G','class="kmf" text-anchor="end"')}${kmA(250,82,250,120)}${kmT(256,112,'F_A','class="kmf"')}${kmA(322,176,322,208,'var(--red)')}${kmT(330,200,'F_L','class="kmf kmr"')}
+ <path d="M220 214L213 226H227Z" class="kmk"/>${kmT(232,230,'Kippkante','class="kms"')}
+ ${kmD(158,214,220,214,`e = ${de(e)} m`,40)}${kmD(158,214,250,214,`x_A = ${de(xA)} m`,60)}${kmD(158,214,322,214,`r = ${de(r)} m`,80)}`);
+
+/* Radmutter mit Schlüssel, Kraft unter dem Winkel α */
+const pxWrench=({l,al})=>{const N=[96,132],E=[296,132],ar=kmR(al),F=[E[0]+Math.cos(ar)*0,E[1]],d=[-Math.cos(ar),Math.sin(ar)];let nuts='';for(let k=0;k<5;k++){const a=kmR(90+72*k);nuts+=`<circle cx="${kmF(N[0]-38+38*Math.cos(a)+38)}" cy="${kmF(N[1]-38*Math.sin(a))}" r="7" class="kmb"/>`}
+ return kmSvg(360,230,`<circle cx="${N[0]}" cy="${N[1]}" r="70" class="kmw"/><circle cx="${N[0]}" cy="${N[1]}" r="20" class="kmd2"/>${nuts}
+ <line x1="${N[0]}" y1="${N[1]-38}" x2="${E[0]}" y2="${N[1]-38}" class="kml"/>${kmPiv(N[0],N[1]-38)}
+ <line x1="${E[0]}" y1="${N[1]-38}" x2="${E[0]+40}" y2="${N[1]-38}" class="kmwl"/>
+ ${kmA(E[0],N[1]-38,E[0]+d[0]*-0+Math.cos(ar)*62*-1+0,N[1]-38+Math.sin(ar)*62)}
+ ${kmArc(E[0],N[1]-38,30,0,-al,'α',44)}${kmT(E[0]-Math.cos(ar)*62-8,N[1]-38+Math.sin(ar)*62+16,'F','class="kmf" text-anchor="middle"')}
+ ${kmD(N[0],N[1]-38,E[0],N[1]-38,`l = ${de(l)} m`,-22)}${kmT(N[0],N[1]+92,'Rad mit fünf Radmuttern','class="kms" text-anchor="middle"')}`)};
+
+/* Schiefe Ebene mit Fahrzeug, Skifahrer oder Traktor; arr: [Richtung, Name, Länge, rot?] */
+const pxSlope=({obj,arr,txt})=>{const A=[30,222],w=20,c=Math.cos(kmR(w)),s=Math.sin(kmR(w)),L=330,T=[A[0]+L*c,A[1]-L*s],P0=[A[0]+175*c,A[1]-175*s],cl=obj==='trac'?[-20,-28]:[0,-25],q=pxRot(cl[0],cl[1],-w),C=[P0[0]+q[0],P0[1]+q[1]],u=[c,-s],n=[-s,-c];
+ const O={car:`<rect x="-46" y="-34" width="92" height="22" rx="7" class="kmw"/><path d="M-26 -34L-18 -50H16L26 -34Z" class="kmc"/><circle cx="-28" cy="-9" r="9" class="kmtw"/><circle cx="28" cy="-9" r="9" class="kmtw"/>`,
+  ski:`<line x1="-38" y1="-2" x2="38" y2="-2" class="kmrod"/><path d="M-6 -3L2 -24L-4 -42" class="kml2"/><circle cx="-5" cy="-50" r="7" class="kmc"/><path d="M-3 -36L14 -24M14 -24L22 -4" class="kml2"/>`,
+  trac:`<rect x="-100" y="-42" width="80" height="30" rx="3" class="kmw"/><circle cx="-60" cy="-9" r="9" class="kmtw"/><line x1="-20" y1="-18" x2="2" y2="-18" class="kmg"/><rect x="0" y="-32" width="58" height="18" rx="3" class="kmw"/><rect x="6" y="-58" width="26" height="26" rx="3" class="kmc"/><circle cx="16" cy="-16" r="16" class="kmtw"/><circle cx="50" cy="-9" r="9" class="kmtw"/>`}[obj];
+ let a='';arr.forEach(([d,t,l,red])=>{const v=d==='g'?[0,1]:d==='up'?u:d==='down'?[-u[0],-u[1]]:n,E=[C[0]+v[0]*l,C[1]+v[1]*l],cc=red?'var(--red)':'var(--flow)',o=d==='g'?[10,-6]:d==='up'?[6,-10]:d==='down'?[-10,-8]:[-10,-4];a+=kmA(C[0],C[1],E[0],E[1],cc)+kmT(E[0]+o[0],E[1]+o[1],t,`class="kmf${red?' kmr':''}" text-anchor="${d==='down'||d==='n'?'end':'start'}"`)});
+ return kmSvg(370,252,`<path d="M${kmP(...A)}L${kmP(T[0],A[1])}L${kmP(...T)}Z" class="kmw"/><g transform="translate(${kmP(...P0)}) rotate(${-w})">${O}</g>${pxS(C[0],C[1])}${a}${kmArc(A[0],A[1],52,0,w,'α',66)}${kmT(A[0]+4,A[1]+24,txt,'class="kms"')}`)};
+
+/* Raum von oben: Diagonale (Grundlagen) oder Bahnen (Anwenden) */
+const pxRoom=({L,B,mode,b})=>{const x0=40,y0=30,W=260,H=160;let in_='';
+ if(mode==='diag')in_=`<line x1="${x0+14}" y1="${y0+H-14}" x2="${x0+W-14}" y2="${y0+14}" class="kmh"/>${kmA(x0+40,y0+H-30,x0+W-40,y0+30)}${kmArc(x0+14,y0+H-14,44,0,Math.atan(H/W)*180/PI,'α',58)}<circle cx="${x0+14}" cy="${y0+H-14}" r="11" class="kmc"/>${kmT(x0+14,y0+H+30,'Start','text-anchor="middle" class="kms"')}<rect x="${x0+W-26}" y="${y0+2}" width="22" height="12" class="kmb"/>${kmT(x0+W-4,y0-6,'Ladestation','text-anchor="end" class="kms"')}`;
+ else{let p=`M${x0+12} ${y0+12}`;const st=20;for(let k=0,y=y0+12;y<=y0+H-12;k++,y+=st){p+=`H${k%2?x0+12:x0+W-12}`;if(y+st<=y0+H-12)p+=`V${y+st}`}in_=`<path d="${p}" class="kmh"/><circle cx="${x0+12}" cy="${y0+12}" r="9" class="kmc"/>${kmD(x0+W-12,y0+12,x0+W-12,y0+32,`b = ${de(b)} m`,-20)}`}
+ return kmSvg(360,240,`<rect x="${x0}" y="${y0}" width="${W}" height="${H}" class="kmw"/>${in_}${kmD(x0,y0+H,x0+W,y0+H,`L = ${de(L)} m`,mode==='diag'?40:22)}${kmD(x0,y0,x0,y0+H,`B = ${de(B)} m`,22)}`)};
+
+/* Drohne mit schrägem Gegenwind: Geschwindigkeitsdreieck */
+const pxDrone=()=>{const O=[150,236],vG=150,b=kmR(45),w=60,W=[-Math.sin(b)*w,Math.cos(b)*w],G=[O[0],O[1]-vG],V=[G[0]-W[0],G[1]-W[1]];
+ return kmSvg(340,262,`<line x1="${O[0]}" y1="${O[1]+10}" x2="${O[0]}" y2="18" class="kmwl"/>${kmT(O[0]-6,26,'Kurs zum Ziel','class="kms" text-anchor="end"')}
+ ${kmA(O[0],O[1],G[0],G[1]+2,'var(--ink)')}${kmT(G[0]-10,(O[1]+G[1])/2+50,'v_G','class="kmf" text-anchor="end" style="fill:var(--ink)"')}
+ ${kmA(O[0],O[1],V[0],V[1])}${kmT((O[0]+V[0])/2+14,(O[1]+V[1])/2+18,'v','class="kmf"')}
+ ${kmA(V[0],V[1],G[0],G[1],'var(--red)')}${kmT((V[0]+G[0])/2+10,(V[1]+G[1])/2-8,'w','class="kmf kmr"')}
+ <line x1="${kmF(G[0])}" y1="${kmF(G[1])}" x2="${kmF(G[0]-W[0]*1.6)}" y2="${kmF(G[1]-W[1]*1.6)}" class="kmh"/>${kmT(334,44,'Wind kommt von hier','class="kms" text-anchor="end"')}
+ ${kmArc(G[0],G[1],30,90,45,'β',44)}${kmArc(O[0],O[1],46,90,90-Math.atan((V[0]-O[0])/(O[1]-V[1]))*180/PI,'γ',60)}`)};
+
+/* Motorrad in Schräglage, Blick von hinten */
+const pxBike=()=>{const B=[170,214],ph=30,L=150,T=[B[0]-Math.sin(kmR(ph))*L,B[1]-Math.cos(kmR(ph))*L],S=[B[0]-Math.sin(kmR(ph))*80,B[1]-Math.cos(kmR(ph))*80];
+ return kmSvg(340,262,`${kmHatch(20,214,330,214)}<line x1="${B[0]}" y1="${B[1]}" x2="${B[0]}" y2="56" class="kmwl"/>
+ <line x1="${B[0]}" y1="${B[1]}" x2="${kmF(T[0])}" y2="${kmF(T[1])}" class="kml"/><circle cx="${kmF(T[0]-Math.sin(kmR(ph))*16)}" cy="${kmF(T[1]-Math.cos(kmR(ph))*16)}" r="13" class="kmc"/>
+ ${pxS(S[0],S[1])}${kmA(S[0],S[1],S[0],S[1]+62)}${kmT(S[0]+8,S[1]+56,'F_G','class="kmf"')}${kmA(S[0],S[1],S[0]-66,S[1],'var(--red)')}${kmT(S[0]-66,S[1]-10,'F_Z','class="kmf kmr"')}
+ ${kmArc(B[0],B[1],70,90,90+ph,'φ',86)}${kmT(28,250,'← zum Kurvenmittelpunkt','class="kms"')}`)};
+
+/* Überholen im Bezugssystem des Pkw */
+const pxPass=({d1,d2,LP,LM})=>{const y1=122,y2=80,sc=4.4,x0=30,xm1=x0,xp=x0+LM*sc+d1*sc,xpe=xp+LP*sc,xm2=xpe+d2*sc;
+ return kmSvg(360,236,`<rect x="10" y="58" width="340" height="86" class="kmw"/><line x1="10" y1="101" x2="350" y2="101" class="kmh"/>
+ <rect x="${kmF(xp)}" y="${y1-12}" width="${kmF(LP*sc)}" height="24" rx="5" class="kmc"/>${kmT(xp+LP*sc/2,y1+5,'Pkw','text-anchor="middle" class="kms kmsb"')}
+ <rect x="${kmF(xm1)}" y="${y1-6}" width="${kmF(LM*sc)}" height="12" rx="4" class="kmb"/><rect x="${kmF(xm2)}" y="${y2-6}" width="${kmF(LM*sc)}" height="12" rx="4" class="kmb"/>
+ ${kmT(xm1,48,'Motorrad Start','class="kms"')}${kmT(xm2+LM*sc,48,'Motorrad Ende','class="kms" text-anchor="end"')}<line x1="${kmF(xm1+LM*sc/2)}" y1="52" x2="${kmF(xm1+LM*sc/2)}" y2="${y1-8}" class="kmh"/><line x1="${kmF(xm2+LM*sc/2)}" y1="52" x2="${kmF(xm2+LM*sc/2)}" y2="${y2-8}" class="kmh"/>
+ ${kmA(xm1+LM*sc+8,y1-2,xm2-8,y2+4,'var(--flow)')}
+ ${kmD(xm1+LM*sc,144,xp,144,`d₁ = ${d1} m`,26)}${kmD(xp,144,xpe,144,`${de(LP)} m`,26)}${kmD(xpe,144,xm2,144,`d₂ = ${d2} m`,26)}
+ ${kmT(180,206,'Im Bezugssystem des Pkw (Pkw steht still)','text-anchor="middle" class="kms"')}`)};
+
+/* Werkstattkran: Ausleger waagerecht, Zylinder unter dem Winkel β */
+const pxCrane=({lZ,lL,be})=>{const A=[80,86],B=[176,86],H=[320,86],bv=55,C=[A[0],B[1]+(B[0]-A[0])*Math.tan(kmR(bv))],M=[(B[0]+C[0])/2,(B[1]+C[1])/2];
+ return kmSvg(360,262,`${kmHatch(20,246,340,246)}<line x1="56" y1="232" x2="330" y2="232" class="kmrod"/><circle cx="64" cy="239" r="7" class="kmtw"/><circle cx="318" cy="239" r="7" class="kmtw"/>
+ <line x1="${A[0]}" y1="232" x2="${A[0]}" y2="${A[1]}" class="kml"/><line x1="${A[0]}" y1="${A[1]}" x2="${H[0]}" y2="${H[1]}" class="kml"/>
+ <line x1="${kmF(C[0])}" y1="${kmF(C[1])}" x2="${kmF(M[0])}" y2="${kmF(M[1])}" stroke="var(--ink)" stroke-width="13"/><line x1="${kmF(C[0])}" y1="${kmF(C[1])}" x2="${kmF(M[0])}" y2="${kmF(M[1])}" stroke="var(--card)" stroke-width="9"/><line x1="${kmF(M[0])}" y1="${kmF(M[1])}" x2="${B[0]}" y2="${B[1]}" class="kmrod"/>
+ ${kmPiv(...A)}${kmPiv(...B)}${kmPiv(C[0],C[1])}
+ <line x1="${H[0]}" y1="${H[1]}" x2="${H[0]}" y2="134" class="kmrope"/><rect x="292" y="134" width="56" height="42" rx="4" class="kmw"/>${kmT(320,160,'Motor','text-anchor="middle" class="kms kmsb"')}
+ ${kmA(H[0],180,H[0],222,'var(--red)')}${kmT(H[0]+8,212,'F_G','class="kmf kmr"')}
+ ${kmA(M[0]+22,M[1]-6,B[0]+18,B[1]+22)}${kmT(M[0]+30,M[1]+14,'F_Z','class="kmf"')}
+ ${kmArc(B[0],B[1],34,180,180+bv,'β',48)}
+ ${kmD(A[0],A[1],B[0],B[1],`l_Z = ${de(lZ)} m`,-20)}${kmD(A[0],A[1],H[0],H[1],`l_L = ${de(lL)} m`,-44)}${kmT(70,74,'A','class="kmal" text-anchor="end"')}`)};
+
+/* Seiltrommel leer und voll */
+const pxDrum=({r1,r4})=>{const dr=(cx,R,lab,rr)=>`<circle cx="${cx}" cy="120" r="${R}" class="kmd2"/><circle cx="${cx}" cy="120" r="28" class="kmw"/>${R>40?`<circle cx="${cx}" cy="120" r="${R-8}" class="kmh"/><circle cx="${cx}" cy="120" r="${R-16}" class="kmh"/><circle cx="${cx}" cy="120" r="${R-24}" class="kmh"/>`:''}<circle cx="${cx}" cy="120" r="4" class="kmp"/>
+ <line x1="${cx}" y1="${120+R}" x2="${cx+110}" y2="${120+R}" class="kmrope"/>${kmA(cx+46,120+R,cx+104,120+R,'var(--red)')}${kmT(cx+104,120+R+18,'F','class="kmf kmr" text-anchor="end"')}
+ <line x1="${cx}" y1="120" x2="${cx}" y2="${120+R}" class="kmg"/>${kmT(cx-6,120+R/2+12,rr,'class="kmal" text-anchor="end"')}${kmT(cx,36,lab,'text-anchor="middle" class="kms"')}`;
+ return kmSvg(360,230,`${dr(60,34,'1. Lage (fast leer)','r₁')}${dr(205,58,'4. Lage (voll)','r₄')}${kmT(180,222,`r₁ = ${de(r1*1000)} mm · r₄ = ${de(r4*1000)} mm (bis Seilmitte)`,'text-anchor="middle" class="kms"')}`)};
+
+/* Taucher in der Tiefe h */
+const pxDive=({h})=>{let tk='';for(let k=0;k<=4;k++){const y=40+k*42;tk+=`<line x1="40" y1="${y}" x2="50" y2="${y}" class="kmg"/>${kmT(36,y+4,`${k*10} m`,'class="kms" text-anchor="end"')}`}
+ return kmSvg(340,250,`<rect x="50" y="40" width="270" height="190" class="kmd2"/><path d="M50 40H320" class="kmg"/>${tk}
+ ${kmT(200,32,'Wasseroberfläche: p = 1 bar','text-anchor="middle" class="kms"')}
+ <g transform="translate(200 150) rotate(-12)"><rect x="-34" y="-8" width="62" height="16" rx="8" class="kmc"/><circle cx="-44" cy="-2" r="9" class="kmc"/><rect x="-26" y="-20" width="38" height="11" rx="5" class="kmb"/><path d="M28 0L52 -6M28 4L52 10" class="kml2"/></g>
+ <line x1="250" y1="40" x2="250" y2="148" class="kmh"/>${kmD(250,40,250,148,`h = ${h} m`,-26)}${kmT(200,190,'Pressluftflasche auf dem Rücken','text-anchor="middle" class="kms"')}`)};
+
+/* --- Aufgaben --- */
+const PXW=[
+/* 1 Hydraulische Hebebühne */
+['Einstempel-Hebebühne: Öldruck unter dem Pkw',r=>{const m=pk(r,[1250,1400,1600,1850,2100]),mT=pk(r,[200,250,300]),d=pk(r,[100,110,125]),F=(m+mT)*9.81,A=PI*d*d/4,p=F/A*10;return{intro:`Eine Einstempel-Hebebühne in einer Kfz-Werkstatt hebt einen Pkw mit ${m} kg. Tragarme und Kolbenstange wiegen zusammen ${mT} kg. Der Hubkolben hat einen Durchmesser von ${d} mm. g = 9,81 m/s².`,steps:[
+ STP('Welche Gewichtskraft muss der Hubkolben tragen?',F/1000,'kN',[`F_G = (m_Pkw + m_T) · g = (${m} + ${mT}) kg · 9,81 m/s² = ${nf(F,5)} N = ${nf(F/1000)} kN`],'Pkw und bewegte Teile der Hebebühne zusammenzählen.'),
+ STP('Wie groß ist die Kolbenfläche?',A/100,'cm²',[`A = π · d² / 4 = π · (${d} mm)² / 4 = ${nf(A,5)} mm² = ${nf(A/100)} cm²`],'100 mm² = 1 cm².'),
+ STP('Welcher Öldruck herrscht im Zylinder (in bar)?',p,'bar',[`p = F / A = ${nf(F,5)} N / ${nf(A,5)} mm² = ${nf(p/10)} N/mm²`,`1 N/mm² = 10 bar ⇒ p = ${nf(p)} bar`],'p = F / A, dann 1 N/mm² = 10 bar.')]}}],
+['Flaschenwagenheber am Transporter: Kräfte und Pumpenhübe',r=>{const FL=pk(r,[15,18,20]),d1=pk(r,[10,12]),d2=pk(r,[36,40]),lH=pk(r,[400,450,500]),lK=pk(r,[40,50]),s1=pk(r,[20,25]),h=pk(r,[60,80,100]),A1=PI*d1*d1/4,A2=PI*d2*d2/4,p=FL*1000/A2,F1=p*A1,FH=F1*lK/lH,s2=s1*A1/A2,n=Math.ceil(h/s2-1e-9);return{intro:`Mit einem hydraulischen Flaschenwagenheber wird ein Transporter an der Hinterachse angehoben. Auf den Hubkolben (d₂ = ${d2} mm) drückt eine Last von F_L = ${FL} kN. Der Pumpenkolben hat d₁ = ${d1} mm und bewegt sich je Pumpenhub um s₁ = ${s1} mm. Der Pumpenhebel ist l_H = ${lH} mm lang (Drehpunkt bis Hand), der Pumpenkolben greift im Abstand l_K = ${lK} mm vom Drehpunkt an. Die Last soll um h = ${h} mm angehoben werden. Reibung und Leckage bleiben unberücksichtigt.`,fig:pxJack({lH,lK,d1,d2}),steps:[
+ STP('Welcher Öldruck entsteht im Hubzylinder (in bar)?',p*10,'bar',[`A₂ = π · ${d2}² / 4 = ${nf(A2,5)} mm²`,`p = F_L / A₂ = ${FL*1000} N / ${nf(A2,5)} mm² = ${nf(p)} N/mm² = ${nf(p*10)} bar`],'Der Druck ist überall im Öl gleich groß (Pascal).'),
+ STP('Welche Kraft muss auf den Pumpenkolben wirken?',F1,'N',[`A₁ = π · ${d1}² / 4 = ${nf(A1,5)} mm²`,`F₁ = p · A₁ = ${nf(p)} N/mm² · ${nf(A1,5)} mm² = ${nf(F1)} N`],'Oder direkt: F₁ = F_L · A₁ / A₂.'),
+ STP('Welche Handkraft ist am Pumpenhebel nötig?',FH,'N',[`F_H · l_H = F₁ · l_K`,`F_H = ${nf(F1)} N · ${lK} mm / ${lH} mm = ${nf(FH)} N`],'Hebelgesetz am Pumpenhebel.'),
+ STP('Um wie viel mm hebt sich die Last bei einem Pumpenhub?',s2,'mm',[`Das verdrängte Ölvolumen bleibt gleich: A₁ · s₁ = A₂ · s₂`,`s₂ = s₁ · A₁ / A₂ = ${s1} mm · ${nf(A1,5)} / ${nf(A2,5)} = ${nf(s2)} mm`],'Kleine Kraft, langer Weg am Pumpenkolben; große Kraft, kurzer Weg am Hubkolben.'),
+ STP(`Wie viele Pumpenhübe sind für ${h} mm Hubhöhe mindestens nötig?`,n,'',[`n = h / s₂ = ${h} mm / ${nf(s2)} mm = ${nf(h/s2)}`,`aufgerundet: ${n} Hübe`],'Eine angefangene Bewegung ist ein ganzer Hub, also aufrunden.',{abs:.01})]}}],
+['Lkw-Stempelhebebühne: Druck, Hubzeit und Motorleistung',r=>{const m=pk(r,[10000,12000,14000,16000,18000]),d=pk(r,[180,200,220]),h=pk(r,[1.6,1.75,1.8]),Q=pk(r,[60,80,100]),eta=pk(r,[.7,.75,.8]),F=m*9.81/2,A=PI*d*d/4,p=F/A,V=2*A/1e6*h*1000,t=V/Q*60,Ph=p*1e6*Q/60000,Pe=Ph/eta;return{intro:`Eine Unterflur-Hebebühne für Lkw hat zwei Hubstempel mit je ${d} mm Kolbendurchmesser. Ein Lkw mit ${nf(m,6)} kg wird ${de(h)} m hoch gehoben; die Last verteilt sich gleichmäßig auf beide Stempel. Die Pumpe fördert ${Q} l/min, der Gesamtwirkungsgrad von Pumpe und Motor beträgt ${nf(eta*100,3)} %. Das Eigengewicht der Stempel bleibt unberücksichtigt.`,steps:[
+ STP('Welcher Öldruck ist zum Heben nötig (in bar)?',p*10,'bar',[`F je Stempel = m · g / 2 = ${nf(m,6)} · 9,81 / 2 = ${nf(F,5)} N`,`A = π · ${d}² / 4 = ${nf(A,5)} mm²`,`p = F / A = ${nf(p)} N/mm² = ${nf(p*10)} bar`],'Erst die Kraft je Stempel, dann p = F / A.'),
+ STP('Wie viel Öl muss die Pumpe in beide Zylinder fördern?',V,'l',[`V = 2 · A · h = 2 · ${nf(A/1e6,4)} m² · ${de(h)} m = ${nf(V/1000,4)} m³ = ${nf(V)} l`],'1 m³ = 1000 l. Beide Stempel zählen.'),
+ STP('Wie lange dauert das Anheben?',t,'s',[`t = V / Q = ${nf(V)} l / ${Q} l/min = ${nf(t/60)} min = ${nf(t)} s`],'Zeit = Volumen / Volumenstrom.'),
+ STP('Welche hydraulische Leistung gibt die Pumpe ab?',Ph/1000,'kW',[`P = p · Q = ${nf(p*1e6,5)} Pa · ${nf(Q/60000,4)} m³/s = ${nf(Ph)} W = ${nf(Ph/1000)} kW`],'Druck in Pa (1 bar = 10⁵ Pa) und Volumenstrom in m³/s einsetzen.'),
+ STP('Welche elektrische Leistung nimmt der Motor auf?',Pe/1000,'kW',[`P_el = P_hyd / η = ${nf(Ph/1000)} kW / ${de(eta)} = ${nf(Pe/1000)} kW`],'Aufgenommen wird mehr, als abgegeben wird.')]}}],
+
+/* 2 Kippen Kompaktlader / Bagger */
+['Kompaktlader mit Palettengabel: Kipplast und Nennlast',r=>{const m=pk(r,[2800,3200,3600,4000]),a=pk(r,[.5,.55,.6,.65]),b=pk(r,[1,1.1,1.2]),mL=pk(r,[500,600,700,800,900]),MS=m*9.81*a,mK=m*a/b,mN=mK/2;return{intro:`Ein Kompaktlader (${m} kg) hebt mit der Palettengabel eine Palette an. Die Vorderachse ist die Kippkante. Der Schwerpunkt der Maschine liegt a = ${de(a)} m hinter der Vorderachse, der Schwerpunkt der Last b = ${de(b)} m davor. Die Nennlast (zulässige Betriebslast) beträgt bei Kompaktladern die Hälfte der Kipplast. g = 9,81 m/s².`,fig:pxLoader({a,b}),steps:[
+ STP('Wie groß ist das Standmoment der Maschine um die Kippkante?',MS/1000,'kN·m',[`M_S = m · g · a = ${m} kg · 9,81 m/s² · ${de(a)} m = ${nf(MS,5)} N·m = ${nf(MS/1000)} kN·m`],'Drehmoment = Kraft · Hebelarm zur Kippkante.'),
+ STP('Bei welcher Lastmasse kippt der Lader gerade nach vorn (Kipplast)?',mK,'kg',[`Kippgrenze: m_K · g · b = m · g · a`,`m_K = m · a / b = ${m} · ${de(a)} / ${de(b)} = ${nf(mK)} kg`],'Kippmoment der Last = Standmoment; g kürzt sich.'),
+ STP('Wie groß ist die Nennlast?',mN,'kg',[`m_N = m_K / 2 = ${nf(mN)} kg`],'Die Hälfte der Kipplast, also zweifache Sicherheit gegen Kippen.'),
+ STP(`Die Palette wiegt ${mL} kg. Um wie viel kg liegt sie unter der Nennlast? (negativ: zu schwer)`,mN-mL,'kg',[`Reserve = m_N − m_Last = ${nf(mN)} − ${mL} = ${nf(mN-mL)} kg`,mN>=mL?'Die Palette darf gehoben werden.':'Die Palette ist zu schwer: Lader kippgefährdet, nicht heben.'],'Nennlast minus tatsächliche Last.',{abs:2})]}}],
+['Minibagger hebt ein Betonrohr seitlich: zulässige Last',r=>{const mO=pk(r,[4200,4600,5000]),e=pk(r,[.9,.95,1]),mA=pk(r,[350,400,450]),xA=pk(r,[1.6,1.8,2]),R=pk(r,[3,3.5,4]),mR=pk(r,[700,800,900,1000]),g=9.81,MS=mO*g*e,MA=mA*g*(xA-e),mK=(MS-MA)/(g*(R-e)),mZ=.75*mK;return{intro:`Ein Minibagger soll ein Betonrohr (${mR} kg) quer zur Fahrtrichtung über die Kette heben. Kippkante ist die Außenkante der Kette, e = ${de(e)} m neben der Drehmitte. Das Grundgerät ohne Ausleger hat ${mO} kg, sein Schwerpunkt liegt in der Drehmitte. Ausleger und Stiel wiegen zusammen ${mA} kg, ihr Schwerpunkt liegt x_A = ${de(xA)} m neben der Drehmitte. Die Last hängt in r = ${de(R)} m Abstand zur Drehmitte. Im Hebezeugbetrieb sind höchstens 75 % der Kipplast zulässig. g = 9,81 m/s².`,fig:pxDigger({e,xA,r:R}),steps:[
+ STP('Wie groß ist der Hebelarm der Last zur Kippkante?',R-e,'m',[`l_L = r − e = ${de(R)} − ${de(e)} = ${de(+(R-e).toFixed(3))} m`],'Hebelarme werden immer von der Kippkante aus gemessen.'),
+ STP('Wie groß ist das Standmoment des Grundgeräts?',MS/1000,'kN·m',[`M_S = m_G · g · e = ${mO} · 9,81 · ${de(e)} = ${nf(MS,5)} N·m = ${nf(MS/1000)} kN·m`],'Der Schwerpunkt liegt auf der sicheren Seite der Kippkante.'),
+ STP('Welches Kippmoment erzeugen Ausleger und Stiel?',MA/1000,'kN·m',[`M_A = m_A · g · (x_A − e) = ${mA} · 9,81 · ${de(+(xA-e).toFixed(3))} = ${nf(MA)} N·m = ${nf(MA/1000)} kN·m`],'Der Ausleger liegt jenseits der Kippkante und kippt mit.'),
+ STP('Wie groß ist die Kipplast?',mK,'kg',[`m_K · g · (r − e) = M_S − M_A`,`m_K = (${nf(MS,5)} − ${nf(MA)}) N·m / (9,81 · ${de(+(R-e).toFixed(3))}) = ${nf(mK)} kg`],'Momentengleichgewicht um die Kippkante.'),
+ STP('Welche Last darf höchstens gehoben werden?',mZ,'kg',[`m_zul = 0,75 · m_K = 0,75 · ${nf(mK)} = ${nf(mZ)} kg`],'75 % der Kipplast.'),
+ STP('Wie groß ist die Reserve bis zur zulässigen Last? (negativ: Rohr zu schwer)',mZ-mR,'kg',[`Reserve = ${nf(mZ)} − ${mR} = ${nf(mZ-mR)} kg`,mZ>=mR?'Das Rohr darf so gehoben werden.':'Zu schwer: Rohr näher an die Maschine holen oder über das Planierschild heben.'],'Zulässige Last minus Rohrmasse.',{abs:3})]}}],
+
+/* 3 Drehmoment Reifenwechsel */
+['Radwechsel am Pkw: Drehmomentschlüssel richtig ansetzen',r=>{const M=pk(r,[110,120,130,140]),l=pk(r,[.3,.35,.4,.45]),al=pk(r,[50,60,70]),F=M/l,Fa=M/(l*Math.sin(kmR(al)));return{intro:`Beim Reifenwechsel sollen die Radmuttern eines Pkw mit M = ${M} N·m angezogen werden. Die Hand greift am Drehmomentschlüssel l = ${de(l)} m von der Mutter entfernt an.`,fig:pxWrench({l,al}),steps:[
+ STP('Welche Handkraft ist nötig, wenn senkrecht zum Schlüssel gedrückt wird?',F,'N',[`M = F · l ⇒ F = M / l = ${M} N·m / ${de(l)} m = ${nf(F)} N`],'Drehmoment = Kraft · Hebelarm.'),
+ STP(`Welche Handkraft ist nötig, wenn die Kraft unter α = ${al}° zum Schlüssel angreift?`,Fa,'N',[`Nur der senkrechte Anteil dreht: M = F · l · sin α`,`F = M / (l · sin α) = ${M} / (${de(l)} · sin ${al}°) = ${nf(Fa)} N`],'Schräg angreifen kostet Kraft: Der wirksame Hebelarm wird kürzer.')]}}],
+['Lkw-Radmuttern: Drehmoment mit dem Kraftvervielfältiger',r=>{const M=pk(r,[550,600,650]),FH=pk(r,[300,350,400]),i=pk(r,[4,5]),eta=pk(r,[.85,.9]),l=pk(r,[.4,.5]),lm=M/FH,Ma=M/(i*eta),F=Ma/l;return{intro:`Die Radmuttern eines Lkw werden mit M = ${M} N·m angezogen. Ein Mechaniker kann dauerhaft etwa ${FH} N Handkraft aufbringen. Er nutzt einen Kraftvervielfältiger (Planetengetriebe) mit der Übersetzung i = ${i} und dem Wirkungsgrad η = ${de(eta)}, angetrieben mit einem Drehmomentschlüssel von l = ${de(l)} m wirksamer Länge.`,steps:[
+ STP('Wie lang müsste ein Schlüssel ohne Hilfsmittel mindestens sein?',lm,'m',[`l = M / F = ${M} N·m / ${FH} N = ${nf(lm)} m`],'Hebelarm aus M = F · l.'),
+ STP('Welches Drehmoment muss am Eingang des Vervielfältigers aufgebracht werden?',Ma,'N·m',[`M_ab = M_an · i · η ⇒ M_an = M_ab / (i · η)`,`M_an = ${M} / (${i} · ${de(eta)}) = ${nf(Ma)} N·m`],'Das Getriebe vervielfacht das Moment, die Reibung kostet einen Teil.'),
+ STP('Welche Handkraft ist jetzt am Drehmomentschlüssel nötig?',F,'N',[`F = M_an / l = ${nf(Ma)} N·m / ${de(l)} m = ${nf(F)} N`],'Wieder M = F · l.')]}}],
+
+/* 4 Verschneite Passstraße */
+['Passstraße: Steigung in Prozent und Winkel',r=>{const p=pk(r,[8,10,12,14]),m=pk(r,[1300,1500,1700,1900]),al=Math.atan(p/100)*180/PI,FH=m*9.81*Math.sin(kmR(al)),FN=m*9.81*Math.cos(kmR(al));return{intro:`Ein Schild an einer Passstraße zeigt ${p} % Steigung. Ein Pkw mit ${m} kg steht auf der Straße. g = 9,81 m/s².`,steps:[
+ STP('Wie groß ist der Steigungswinkel?',al,'°',[`${p} % heißt ${p} m Höhe auf 100 m waagerechte Strecke`,`tan α = ${p} / 100 ⇒ α = ${nf(al)}°`],'Prozent-Steigung = tan α · 100.',{abs:.05}),
+ STP('Wie groß ist die Hangabtriebskraft?',FH,'N',[`F_H = m · g · sin α = ${m} · 9,81 · sin ${nf(al)}° = ${nf(FH)} N`],'Der Anteil der Gewichtskraft entlang der Straße.'),
+ STP('Wie groß ist die Normalkraft?',FN,'N',[`F_N = m · g · cos α = ${m} · 9,81 · cos ${nf(al)}° = ${nf(FN)} N`],'Der Anteil senkrecht zur Straße.')]}}],
+['Verschneite Passstraße: Rutschen mit Sommerreifen, Halt mit Winterreifen',r=>{const p=pk(r,[10,12,14]),m=pk(r,[1400,1600,1800]),mS=pk(r,[.06,.07,.08]),mG=+(mS-.02).toFixed(2),mW=pk(r,[.2,.25,.3]),s=pk(r,[10,15,20]),al=Math.atan(p/100),FG=m*9.81,FH=FG*Math.sin(al),FR=mS*FG*Math.cos(al),a=9.81*(Math.sin(al)-mG*Math.cos(al)),v=Math.sqrt(2*a*s)*3.6,FW=mW*FG*Math.cos(al),S=FW/FH;return{intro:`Ein Pkw (${m} kg) mit Sommerreifen hält auf einer festgefahrenen Schneedecke an einer Passstraße mit ${p} % Steigung. Alle vier Räder sind gebremst. Haftreibungszahl Sommerreifen auf Schnee μ₀ = ${de(mS)}, Gleitreibungszahl μ = ${de(mG)}. Mit Winterreifen beträgt die Haftreibungszahl μ₀ = ${de(mW)}. g = 9,81 m/s².`,fig:pxSlope({obj:'car',arr:[['g','F_G',62],['down','F_H',58],['up','F_R',46,1]],txt:`Steigung ${p} %`}),steps:[
+ STP('Wie groß ist die Hangabtriebskraft?',FH,'N',[`α = arctan(${p} / 100) = ${nf(al*180/PI)}°`,`F_H = m · g · sin α = ${m} · 9,81 · sin ${nf(al*180/PI)}° = ${nf(FH)} N`],'Erst den Winkel aus der Prozentangabe, dann F_H.'),
+ STP('Welche Haftreibungskraft können die Sommerreifen höchstens aufbringen?',FR,'N',[`F_R = μ₀ · m · g · cos α = ${de(mS)} · ${m} · 9,81 · cos ${nf(al*180/PI)}° = ${nf(FR)} N`,`F_R < F_H ⇒ der Pkw rutscht trotz gebremster Räder.`],'Haftreibung hängt von der Normalkraft ab.'),
+ STP('Mit welcher Beschleunigung rutscht der Pkw bergab?',a,'m/s²',[`a = g · (sin α − μ · cos α) = 9,81 · (${nf(Math.sin(al))} − ${de(mG)} · ${nf(Math.cos(al))}) = ${nf(a)} m/s²`],'Beim Rutschen wirkt die kleinere Gleitreibung.'),
+ STP(`Welche Geschwindigkeit hat er nach ${s} m Rutschen (in km/h)?`,v,'km/h',[`v = √(2 · a · s) = √(2 · ${nf(a)} · ${s}) = ${nf(v/3.6)} m/s = ${nf(v)} km/h`],'Aus dem Stand gleichmäßig beschleunigt.'),
+ STP('Welche Sicherheit gegen Rutschen ergibt sich mit Winterreifen? (S = F_R / F_H)',S,'',[`F_R,W = ${de(mW)} · ${m} · 9,81 · cos ${nf(al*180/PI)}° = ${nf(FW)} N`,`S = F_R,W / F_H = ${nf(FW)} / ${nf(FH)} = ${nf(S)}`],'S > 1: Der Pkw bleibt stehen.'),
+ STP('Bis zu welcher Steigung (in %) bleibt der Pkw mit Winterreifen gerade noch stehen?',mW*100,'%',[`Grenzfall F_H = F_R ⇒ tan α = μ₀ = ${de(mW)}`,`Steigung = tan α · 100 = ${nf(mW*100)} %`],'Die Masse kürzt sich: Grenzsteigung = μ₀ · 100 %.')]}}],
+
+/* 5 Kompressor */
+['Werkstattkompressor: Kessel füllen',r=>{const V=pk(r,[50,90,100,150]),pe=pk(r,[8,10,11]),Q=pk(r,[180,250,320,400]),Va=V*(pe+1),dV=V*pe,t=dV/Q*60;return{intro:`Ein Kolbenkompressor füllt einen Druckluftkessel mit ${V} l Inhalt von 0 bar auf ${pe} bar Überdruck. Seine effektive Liefermenge (angesaugte Luft bei 1 bar) beträgt ${Q} l/min. Luftdruck 1 bar, die Temperatur bleibt gleich.`,steps:[
+ STP('Wie groß ist der absolute Druck im vollen Kessel?',pe+1,'bar',[`p_abs = p_e + p_amb = ${pe} + 1 = ${pe+1} bar`],'Manometer zeigen den Überdruck.'),
+ STP('Wie viel Luft (bei 1 bar gemessen) steckt im vollen Kessel?',Va,'l',[`Boyle-Mariotte: p₁ · V₁ = p₂ · V₂`,`V_1bar = V · p_abs / 1 bar = ${V} l · ${pe+1} = ${nf(Va)} l`],'Bei gleicher Temperatur ist p · V konstant.'),
+ STP('Wie viel Luft muss der Kompressor dafür ansaugen?',dV,'l',[`Im Kessel waren schon ${V} l Luft bei 1 bar.`,`V_an = ${nf(Va)} − ${V} = ${nf(dV)} l`],'Der Kessel ist am Anfang nicht leer, sondern voll Luft mit Umgebungsdruck.'),
+ STP('Wie lange dauert das Füllen?',t,'s',[`t = V_an / Q = ${nf(dV)} l / ${Q} l/min = ${nf(dV/Q)} min = ${nf(t)} s`],'Zeit = angesaugte Luftmenge / Liefermenge.')]}}],
+['Druckluft-Schlagschrauber: Abkühlen des Kessels und Arbeitszeit',r=>{const V=pk(r,[90,100,150,200]),pe=pk(r,[10,11]),T1=pk(r,[50,60,70]),T2=20,pm=pk(r,[6,6.3]),Qv=pk(r,[300,350,400]),Ql=pk(r,[150,200,250]),p1=pe+1,p2=p1*(T2+273.15)/(T1+273.15),p2e=p2-1,Vn=V*(p2e-pm),Qn=Qv-Ql,t=Vn/Qn;return{intro:`Ein Kompressor hat seinen ${V}-l-Kessel auf ${pe} bar Überdruck gefüllt und schaltet ab. Die Luft im Kessel ist dabei ${T1} °C warm und kühlt danach auf ${T2} °C ab. Ein Schlagschrauber braucht mindestens ${de(pm)} bar Überdruck und verbraucht ${Qv} l/min (bei 1 bar). Läuft der Kompressor wieder, liefert er ${Ql} l/min. Luftdruck 1 bar.`,steps:[
+ STP('Welcher Überdruck stellt sich nach dem Abkühlen ein?',p2e,'bar',[`Gleiches Volumen: p₁ / T₁ = p₂ / T₂ (absolute Werte)`,`p₂ = ${p1} bar · ${nf(T2+273.15)} K / ${nf(T1+273.15)} K = ${nf(p2)} bar (absolut)`,`Überdruck = ${nf(p2)} − 1 = ${nf(p2e)} bar`],'Gesetz von Gay-Lussac. Temperatur in K, Druck absolut.'),
+ STP(`Wie viel Luft (bei 1 bar) kann bis ${de(pm)} bar Überdruck entnommen werden?`,Vn,'l',[`V = V_K · (p_e,2 − p_e,min) / 1 bar = ${V} · (${nf(p2e)} − ${de(pm)}) = ${nf(Vn)} l`],'Nur der Druck über dem Mindestdruck ist nutzbar.'),
+ STP('Wie groß ist der Luftmangel pro Minute, wenn Kompressor und Schlagschrauber gleichzeitig laufen?',Qn,'l/min',[`ΔQ = ${Qv} − ${Ql} = ${Qn} l/min`],'Verbrauch minus Liefermenge.'),
+ STP('Wie lange kann ohne Pause geschraubt werden?',t,'min',[`t = ${nf(Vn)} l / ${Qn} l/min = ${nf(t)} min`],'Vorrat durch Fehlmenge pro Minute.')]}}],
+
+/* 6 Anfahren am Berg */
+['Anfahren am Berg: Beschleunigung und Antriebskraft',r=>{const m=pk(r,[1300,1500,1700]),p=pk(r,[6,8,10,12]),v=pk(r,[20,30]),t=pk(r,[4,5,6]),a=v/3.6/t,al=Math.atan(p/100),Fa=m*a,FH=m*9.81*Math.sin(al),F=Fa+FH;return{intro:`Ein Pkw (${m} kg) fährt an einer Steigung von ${p} % an und erreicht nach ${t} s gleichmäßig ${v} km/h. Rollwiderstand und Luftwiderstand bleiben unberücksichtigt. g = 9,81 m/s².`,steps:[
+ STP('Wie groß ist die Beschleunigung?',a,'m/s²',[`v = ${v} km/h / 3,6 = ${nf(v/3.6)} m/s`,`a = v / t = ${nf(v/3.6)} / ${t} = ${nf(a)} m/s²`],'Erst km/h in m/s umrechnen.'),
+ STP('Welche Kraft ist nur für die Beschleunigung nötig?',Fa,'N',[`F_a = m · a = ${m} · ${nf(a)} = ${nf(Fa)} N`],'Grundgesetz F = m · a.'),
+ STP('Wie groß ist die Hangabtriebskraft?',FH,'N',[`α = arctan(${p} / 100) = ${nf(al*180/PI)}°`,`F_H = m · g · sin α = ${nf(FH)} N`],'Am Berg kommt der Hangabtrieb dazu.'),
+ STP('Welche Antriebskraft müssen die Räder insgesamt übertragen?',F,'N',[`F = F_a + F_H = ${nf(Fa)} + ${nf(FH)} = ${nf(F)} N`],'Beide Kräfte addieren.')]}}],
+['Anfahren auf Schnee: Frontantrieb oder Allrad',r=>{const m=pk(r,[1400,1600,1800]),p=pk(r,[6,8,10]),mR=.03,m0=pk(r,[.25,.3]),k=pk(r,[.55,.6]),aS=pk(r,[.8,1,1.2]),al=Math.atan(p/100),FG=m*9.81,FH=FG*Math.sin(al),FN=FG*Math.cos(al),FR=mR*FN,F=m*aS+FH+FR,Fv=m0*k*FN,av=(Fv-FH-FR)/m,a4=(m0*FN-FH-FR)/m;return{intro:`Ein Pkw (${m} kg) mit Winterreifen will auf einer verschneiten Straße mit ${p} % Steigung mit a = ${de(aS)} m/s² anfahren. Haftreibungszahl Reifen/Schnee μ₀ = ${de(m0)}, Rollwiderstandszahl auf Schnee μ_R = 0,03. Auf der Vorderachse liegen ${nf(k*100,3)} % der Normalkraft. Luftwiderstand und Achslastverlagerung bleiben unberücksichtigt. g = 9,81 m/s².`,fig:pxSlope({obj:'car',arr:[['g','F_G',62],['down','F_H + F_Roll',58,1],['up','F_Antrieb',70]],txt:`Steigung ${p} %`}),steps:[
+ STP('Wie groß ist die Hangabtriebskraft?',FH,'N',[`α = arctan(${p} / 100) = ${nf(al*180/PI)}°`,`F_H = m · g · sin α = ${nf(FH)} N`],'Winkel aus der Prozentangabe.'),
+ STP('Wie groß ist der Rollwiderstand?',FR,'N',[`F_Roll = μ_R · m · g · cos α = 0,03 · ${nf(FN)} N = ${nf(FR)} N`],'Rollwiderstand = μ_R · Normalkraft.'),
+ STP('Welche Antriebskraft ist für die gewünschte Beschleunigung nötig?',F,'N',[`F = m · a + F_H + F_Roll = ${nf(m*aS)} + ${nf(FH)} + ${nf(FR)} = ${nf(F)} N`],'Beschleunigen, Hangabtrieb und Rollwiderstand überwinden.'),
+ STP('Welche Antriebskraft kann der Frontantrieb höchstens übertragen?',Fv,'N',[`Nur die Vorderräder treiben: F_N,v = ${nf(k,3)} · ${nf(FN)} N = ${nf(k*FN)} N`,`F_max = μ₀ · F_N,v = ${de(m0)} · ${nf(k*FN)} = ${nf(Fv)} N`,Fv<F?'Das reicht nicht: Die Räder drehen durch.':'Das reicht.'],'Übertragbar ist nur die Haftreibung an den angetriebenen Rädern.'),
+ STP('Welche Beschleunigung ist mit Frontantrieb höchstens möglich?',av,'m/s²',[`a_max = (F_max − F_H − F_Roll) / m = (${nf(Fv)} − ${nf(FH)} − ${nf(FR)}) / ${m} = ${nf(av)} m/s²`],'Was nach Hangabtrieb und Rollwiderstand übrig bleibt, beschleunigt.'),
+ STP('Welche Beschleunigung ist mit Allradantrieb höchstens möglich?',a4,'m/s²',[`Alle Räder treiben: F_max = μ₀ · F_N = ${de(m0)} · ${nf(FN)} = ${nf(m0*FN)} N`,`a_max = (${nf(m0*FN)} − ${nf(FH)} − ${nf(FR)}) / ${m} = ${nf(a4)} m/s²`],'Jetzt zählt die ganze Normalkraft.')]}}],
+
+/* 7 Traktor mit Anhänger */
+['Traktor zieht einen Anhänger an: Kraft an der Kupplung',r=>{const mA=pk(r,[8000,10000,12000,14000]),v=pk(r,[15,20,25]),t=pk(r,[8,10,12]),mR=pk(r,[.02,.03]),a=v/3.6/t,Fa=mA*a,FR=mR*mA*9.81,F=Fa+FR;return{intro:`Ein Traktor zieht einen beladenen Anhänger (${nf(mA,6)} kg) auf ebener Straße an und erreicht nach ${t} s gleichmäßig ${v} km/h. Die Rollwiderstandszahl des Anhängers beträgt μ_R = ${de(mR)}. g = 9,81 m/s².`,steps:[
+ STP('Wie groß ist die Beschleunigung?',a,'m/s²',[`a = (${v} / 3,6) m/s / ${t} s = ${nf(a)} m/s²`],'km/h durch 3,6, dann durch die Zeit.'),
+ STP('Welche Kraft braucht der Anhänger zum Beschleunigen?',Fa,'N',[`F_a = m_A · a = ${nf(mA,6)} · ${nf(a)} = ${nf(Fa)} N`],'Nur die Masse des Anhängers zählt für die Kupplung.'),
+ STP('Welche Kraft wirkt insgesamt an der Anhängerkupplung?',F,'N',[`F_Roll = μ_R · m_A · g = ${de(mR)} · ${nf(mA,6)} · 9,81 = ${nf(FR)} N`,`F_K = F_a + F_Roll = ${nf(Fa)} + ${nf(FR)} = ${nf(F)} N`],'Beschleunigen plus Rollwiderstand.')]}}],
+['Traktor mit Anhänger am Feldweg: Zugkraft und Motorleistung',r=>{const mT=pk(r,[5000,6000,7000]),mA=pk(r,[10000,12000,14000]),p=pk(r,[4,6,8]),mR=pk(r,[.03,.04,.05]),v=pk(r,[12,15,18]),eta=pk(r,[.8,.85]),al=Math.atan(p/100),m=mT+mA,FG=m*9.81,FR=mR*FG*Math.cos(al),FH=FG*Math.sin(al),FK=mA*9.81*(mR*Math.cos(al)+Math.sin(al)),P=(FR+FH)*v/3.6,Pm=P/eta;return{intro:`Ein Traktor (${nf(mT,6)} kg) zieht einen beladenen Anhänger (${nf(mA,6)} kg) mit gleichbleibend ${v} km/h einen Feldweg mit ${p} % Steigung hinauf. Rollwiderstandszahl auf dem Feldweg μ_R = ${de(mR)}. Der Wirkungsgrad vom Motor bis zu den Rädern beträgt ${nf(eta*100,3)} %. Luftwiderstand bleibt unberücksichtigt. g = 9,81 m/s².`,fig:pxSlope({obj:'trac',arr:[['g','F_G',58],['down','F_H + F_Roll',62,1],['up','F_Zug',70]],txt:`Steigung ${p} %`}),steps:[
+ STP('Wie groß ist die Gewichtskraft des ganzen Zuges?',FG/1000,'kN',[`F_G = (${nf(mT,6)} + ${nf(mA,6)}) kg · 9,81 m/s² = ${nf(FG,6)} N = ${nf(FG/1000)} kN`],'Traktor und Anhänger zusammen.'),
+ STP('Wie groß ist der Rollwiderstand des Zuges?',FR/1000,'kN',[`α = arctan(${p} / 100) = ${nf(al*180/PI)}°`,`F_Roll = μ_R · F_G · cos α = ${de(mR)} · ${nf(FG/1000)} kN · ${nf(Math.cos(al))} = ${nf(FR/1000)} kN`],'Rollwiderstand = μ_R · Normalkraft.'),
+ STP('Wie groß ist die Hangabtriebskraft des Zuges?',FH/1000,'kN',[`F_H = F_G · sin α = ${nf(FG/1000)} kN · ${nf(Math.sin(al))} = ${nf(FH/1000)} kN`],'Anteil der Gewichtskraft entlang des Wegs.'),
+ STP('Welche Kraft überträgt die Anhängerkupplung?',FK/1000,'kN',[`Nur der Anhänger: F_K = m_A · g · (μ_R · cos α + sin α)`,`= ${nf(mA,6)} · 9,81 · (${de(mR)} · ${nf(Math.cos(al))} + ${nf(Math.sin(al))}) = ${nf(FK/1000)} kN`],'Freischneiden: An der Kupplung zieht nur, was der Anhänger braucht.'),
+ STP('Welche Leistung müssen die Antriebsräder abgeben?',P/1000,'kW',[`P = F · v = (${nf(FR/1000)} + ${nf(FH/1000)}) kN · ${nf(v/3.6)} m/s = ${nf(P/1000)} kW`],'Leistung = Kraft · Geschwindigkeit (in m/s).'),
+ STP('Welche Leistung muss der Motor mindestens haben?',Pm/1000,'kW',[`P_Motor = P / η = ${nf(P/1000)} kW / ${de(eta)} = ${nf(Pm/1000)} kW (≈ ${nf(Pm/735.5,3)} PS)`],'Getriebe und Reifen kosten Leistung.')]}}],
+
+/* 8 Staubsaugerroboter */
+['Staubsaugerroboter: diagonal zur Ladestation',r=>{const L=pk(r,[4,4.5,5,5.5,6]),B=pk(r,[3,3.5,4]),v=pk(r,[.2,.25,.3]),d=Math.hypot(L,B),t=d/v,al=Math.atan(B/L)*180/PI;return{intro:`Ein Staubsaugerroboter steht in einer Ecke eines rechteckigen Zimmers (${de(L)} m × ${de(B)} m). Die Ladestation steht in der gegenüberliegenden Ecke. Der Roboter fährt mit ${de(v)} m/s. Seine Größe bleibt unberücksichtigt.`,fig:pxRoom({L,B,mode:'diag'}),steps:[
+ STP('Wie lang ist der direkte Weg (Diagonale) zur Ladestation?',d,'m',[`d = √(L² + B²) = √(${de(L)}² + ${de(B)}²) = √${nf(L*L+B*B)} = ${nf(d)} m`],'Satz des Pythagoras: Die Diagonale ist die Hypotenuse.'),
+ STP('Wie lange braucht der Roboter für die Diagonale?',t,'s',[`t = d / v = ${nf(d)} m / ${de(v)} m/s = ${nf(t)} s`],'Gleichförmige Bewegung: t = s / v.'),
+ STP('Unter welchem Winkel zur langen Wand muss der Roboter losfahren?',al,'°',[`tan α = B / L = ${de(B)} / ${de(L)} ⇒ α = ${nf(al)}°`],'Gegenkathete durch Ankathete.',{abs:.2})]}}],
+['Staubsaugerroboter: Reinigung in Bahnen und Akkulaufzeit',r=>{const L=pk(r,[5,6,7,8]),B=pk(r,[4,4.5,5]),b=pk(r,[.2,.25]),v=pk(r,[.25,.3]),C=pk(r,[2.6,3.2,5.2]),P=pk(r,[30,35,40]),n=Math.ceil(B/b-1e-9),s=n*L+(n-1)*b,t=s/v/60,E=14.4*C,tA=E/P*60,q=t/tA*100;return{intro:`Ein Staubsaugerroboter reinigt ein leeres Zimmer (L = ${de(L)} m, B = ${de(B)} m) in geraden Bahnen entlang der langen Wand. Jede Bahn ist b = ${de(b)} m breit (mit Überlappung). Am Ende jeder Bahn versetzt er um eine Bahnbreite. Er fährt mit ${de(v)} m/s. Sein Akku hat 14,4 V und ${de(C)} Ah, beim Saugen nimmt er ${P} W auf.`,fig:pxRoom({L,B,mode:'bahn',b}),steps:[
+ STP('Wie viele Bahnen braucht der Roboter?',n,'',[`n = B / b = ${de(B)} / ${de(b)} = ${nf(B/b)} → ${n} Bahnen`],'Eine angefangene Bahn zählt ganz.',{abs:.01}),
+ STP('Wie lang ist der gesamte Fahrweg?',s,'m',[`s = n · L + (n − 1) · b = ${n} · ${de(L)} + ${n-1} · ${de(b)} = ${nf(s)} m`],'Längsbahnen plus die kurzen Versatzwege dazwischen.'),
+ STP('Wie lange dauert die Reinigung?',t,'min',[`t = s / v = ${nf(s)} m / ${de(v)} m/s = ${nf(t*60)} s = ${nf(t)} min`],'Sekunden durch 60.'),
+ STP('Wie lange reicht eine Akkuladung?',tA,'min',[`E = U · Q = 14,4 V · ${de(C)} Ah = ${nf(E)} Wh`,`t = E / P = ${nf(E)} Wh / ${P} W = ${nf(E/P)} h = ${nf(tA)} min`],'Energie im Akku = Spannung · Ladung.'),
+ STP('Wie viel Prozent der Akkuladung verbraucht das Zimmer?',q,'%',[`${nf(t)} min / ${nf(tA)} min · 100 % = ${nf(q)} %`],'Anteil = Teil / Ganzes · 100 %.')]}}],
+
+/* 9 Drohne mit Gegenwind */
+['Lieferdrohne: Hinflug gegen den Wind, Rückflug mit dem Wind',r=>{const s=pk(r,[2,2.4,3,3.6]),v=pk(r,[12,15,18]),w=pk(r,[3,4,5,6]),t1=s*1000/(v-w),t2=s*1000/(v+w),T=(t1+t2)/60,t0=2*s*1000/v,dt=t1+t2-t0;return{intro:`Eine Lieferdrohne fliegt mit ${v} m/s Eigengeschwindigkeit (gegenüber der Luft) zu einem ${de(s)} km entfernten Ziel und auf derselben Strecke zurück. Auf dem Hinflug hat sie ${w} m/s Gegenwind, auf dem Rückflug entsprechend Rückenwind.`,steps:[
+ STP('Wie schnell ist die Drohne auf dem Hinflug über Grund?',v-w,'m/s',[`v_hin = v − w = ${v} − ${w} = ${v-w} m/s`],'Gegenwind wird abgezogen.'),
+ STP('Wie lange dauert der Hinflug?',t1,'s',[`t_hin = s / v_hin = ${nf(s*1000)} m / ${v-w} m/s = ${nf(t1)} s`],'Kilometer in Meter umrechnen.'),
+ STP('Wie lange dauert der Rückflug?',t2,'s',[`v_zurück = ${v} + ${w} = ${v+w} m/s`,`t_zurück = ${nf(s*1000)} / ${v+w} = ${nf(t2)} s`],'Rückenwind wird addiert.'),
+ STP('Wie lange dauert der ganze Flug (in min)?',T,'min',[`t = (${nf(t1)} + ${nf(t2)}) s = ${nf(t1+t2)} s = ${nf(T)} min`],'Beide Zeiten addieren.'),
+ STP('Wie viele Sekunden länger dauert der Flug als bei Windstille?',dt,'s',[`Windstill: t₀ = 2 · ${nf(s*1000)} / ${v} = ${nf(t0)} s`,`Δt = ${nf(t1+t2)} − ${nf(t0)} = ${nf(dt)} s`],'Gegenwind kostet mehr Zeit, als Rückenwind zurückbringt.')]}}],
+['Drohne mit schrägem Gegenwind: Vorhaltewinkel und Flugzeit',r=>{const v=pk(r,[14,16,18]),w=pk(r,[5,6,8]),be=pk(r,[30,40,50,60]),s=pk(r,[2,3,4]),wl=w*Math.cos(kmR(be)),wq=w*Math.sin(kmR(be)),ga=Math.asin(wq/v)*180/PI,vh=v*Math.cos(kmR(ga))-wl,t=s*1000/vh,vz=v*Math.cos(kmR(ga))+wl,T=(t+s*1000/vz)/60;return{intro:`Eine Vermessungsdrohne fliegt mit ${v} m/s Eigengeschwindigkeit genau geradeaus zu einem ${s} km entfernten Messpunkt. Der Wind (${w} m/s) kommt schräg von vorn, unter β = ${be}° zur Kurslinie. Damit die Drohne auf Kurs bleibt, dreht sie ihre Nase um den Vorhaltewinkel γ in den Wind.`,fig:pxDrone(),steps:[
+ STP('Welcher Windanteil wirkt genau gegen die Flugrichtung?',wl,'m/s',[`w_längs = w · cos β = ${w} · cos ${be}° = ${nf(wl)} m/s`],'Wind in Anteile längs und quer zum Kurs zerlegen.'),
+ STP('Welcher Windanteil wirkt quer zum Kurs?',wq,'m/s',[`w_quer = w · sin β = ${w} · sin ${be}° = ${nf(wq)} m/s`],'Der Queranteil würde die Drohne abtreiben.'),
+ STP('Wie groß ist der Vorhaltewinkel γ?',ga,'°',[`Quer muss die Drohne den Wind ausgleichen: v · sin γ = w_quer`,`sin γ = ${nf(wq)} / ${v} = ${nf(wq/v)} ⇒ γ = ${nf(ga)}°`],'Der Queranteil der Eigengeschwindigkeit hebt den Queranteil des Windes auf.',{abs:.2}),
+ STP('Wie schnell kommt die Drohne über Grund voran?',vh,'m/s',[`v_G = v · cos γ − w_längs = ${v} · cos ${nf(ga)}° − ${nf(wl)} = ${nf(vh)} m/s`],'Längs bleibt der Anteil der Eigengeschwindigkeit minus Gegenwind.'),
+ STP('Wie lange dauert der Hinflug?',t,'s',[`t = s / v_G = ${s*1000} m / ${nf(vh)} m/s = ${nf(t)} s`],'Strecke durch Geschwindigkeit über Grund.'),
+ STP('Wie lange dauert Hin- und Rückflug zusammen (in min)?',T,'min',[`Rückflug: gleicher Vorhaltewinkel, Wind jetzt von hinten: v_G = ${v} · cos ${nf(ga)}° + ${nf(wl)} = ${nf(vz)} m/s`,`t_zurück = ${s*1000} / ${nf(vz)} = ${nf(s*1000/vz)} s`,`t_ges = (${nf(t)} + ${nf(s*1000/vz)}) s = ${nf(T)} min`],'Auf dem Rückflug kommt der Längsanteil des Windes dazu.')]}}],
+
+/* 10 Ski und Snowboard */
+['Skifahrer im Steilhang: gewachst oder ungewachst',r=>{const m=pk(r,[70,80,90]),al=pk(r,[12,15,18,20]),mw=pk(r,[.04,.05]),mu=pk(r,[.1,.12]),s=pk(r,[30,40,50]),sa=Math.sin(kmR(al)),ca=Math.cos(kmR(al)),FH=m*9.81*sa,FR=mw*m*9.81*ca,aw=9.81*(sa-mw*ca),au=9.81*(sa-mu*ca),vw=Math.sqrt(2*aw*s)*3.6,vu=Math.sqrt(2*au*s)*3.6;return{intro:`Ein Skifahrer (${m} kg mit Ausrüstung) fährt aus dem Stand einen ${al}° steilen Hang ${s} m weit gerade hinunter. Gleitreibungszahl mit frisch gewachsten Ski μ = ${de(mw)}, mit ungewachsten Ski μ = ${de(mu)}. Luftwiderstand bleibt unberücksichtigt. g = 9,81 m/s².`,fig:pxSlope({obj:'ski',arr:[['g','F_G',62],['down','F_H',62],['up','F_R',36,1]],txt:`Hangneigung ${al}°`}),steps:[
+ STP('Wie groß ist die Hangabtriebskraft?',FH,'N',[`F_H = m · g · sin α = ${m} · 9,81 · sin ${al}° = ${nf(FH)} N`],'Anteil der Gewichtskraft entlang des Hangs.'),
+ STP('Wie groß ist die Reibungskraft mit gewachsten Ski?',FR,'N',[`F_R = μ · m · g · cos α = ${de(mw)} · ${m} · 9,81 · cos ${al}° = ${nf(FR)} N`],'Reibung = μ · Normalkraft.'),
+ STP('Wie groß ist die Beschleunigung mit gewachsten Ski?',aw,'m/s²',[`a = (F_H − F_R) / m = (${nf(FH)} − ${nf(FR)}) / ${m} = ${nf(aw)} m/s²`],'Resultierende Kraft durch Masse.'),
+ STP('Welche Geschwindigkeit erreicht er gewachst am Ende (in km/h)?',vw,'km/h',[`v = √(2 · a · s) = √(2 · ${nf(aw)} · ${s}) = ${nf(vw/3.6)} m/s = ${nf(vw)} km/h`],'Aus dem Stand: v² = 2 · a · s.'),
+ STP('Welche Geschwindigkeit erreicht er ungewachst (in km/h)?',vu,'km/h',[`a = g · (sin α − μ · cos α) = 9,81 · (${nf(sa)} − ${de(mu)} · ${nf(ca)}) = ${nf(au)} m/s²`,`v = √(2 · ${nf(au)} · ${s}) = ${nf(vu/3.6)} m/s = ${nf(vu)} km/h`],'Gleicher Weg, größere Reibung.')]}}],
+['Snowboarder auf dem flachen Ziehweg',r=>{const m=pk(r,[65,75,85]),al=pk(r,[2,3]),mu=pk(r,[.08,.1]),mw=.03,v0=pk(r,[8,10,12]),sa=Math.sin(kmR(al)),ca=Math.cos(kmR(al)),ag=Math.atan(mu)*180/PI,au=9.81*(mu*ca-sa),s=v0*v0/(2*au),E=m*v0*v0/2,aw=9.81*(sa-mw*ca);return{intro:`Ein Snowboarder (${m} kg) erreicht mit ${v0} m/s einen Ziehweg mit nur ${al}° Gefälle und lässt das Board laufen. Gleitreibungszahl ungewachst μ = ${de(mu)}, frisch gewachst μ = 0,03. Luftwiderstand bleibt unberücksichtigt. g = 9,81 m/s².`,steps:[
+ STP('Ab welchem Gefälle (in Grad) würde er ungewachst gerade gleichmäßig weitergleiten?',ag,'°',[`Gleichförmig, wenn F_H = F_R: sin α = μ · cos α ⇒ tan α = μ`,`α = arctan ${de(mu)} = ${nf(ag)}°`],'Die Masse kürzt sich heraus.',{abs:.05}),
+ STP('Wie stark wird er ungewachst auf dem Ziehweg abgebremst?',au,'m/s²',[`a = g · (μ · cos α − sin α) = 9,81 · (${de(mu)} · ${nf(ca)} − ${nf(sa)}) = ${nf(au)} m/s²`],'Die Reibung ist größer als der Hangabtrieb.'),
+ STP('Nach welcher Strecke bleibt er ungewachst stehen?',s,'m',[`s = v₀² / (2 · a) = ${v0}² / (2 · ${nf(au)}) = ${nf(s)} m`],'Bremsweg bei gleichmäßiger Verzögerung.'),
+ STP('Wie viel Bewegungsenergie hat er am Anfang des Ziehwegs?',E/1000,'kJ',[`E = ½ · m · v² = 0,5 · ${m} · ${v0}² = ${nf(E)} J = ${nf(E/1000)} kJ`,'Diese Energie wird auf dem Weg in Reibungswärme umgesetzt (abzüglich der Lageenergie, die er dabei verliert).'],'E_kin = ½ · m · v².'),
+ STP('Wie groß ist die Beschleunigung mit frisch gewachstem Board? (positiv: er wird schneller)',aw,'m/s²',[`a = g · (sin α − μ · cos α) = 9,81 · (${nf(sa)} − 0,03 · ${nf(ca)}) = ${nf(aw)} m/s²`,'Positiv: Gewachst rollt er den Ziehweg sogar schneller hinunter.'],'Gleiche Formel, kleinere Reibungszahl.',{abs:.005})]}}],
+
+/* 11 Kurve */
+['Autobahnausfahrt: Querbeschleunigung in der Kurve',r=>{const R=pk(r,[50,60,80,100]),v=pk(r,[40,50,60]),m=pk(r,[70,80,90]),vs=v/3.6,a=vs*vs/R,F=m*a;return{intro:`Ein Pkw fährt mit ${v} km/h durch eine Autobahnausfahrt mit dem Radius r = ${R} m. Der Fahrer wiegt ${m} kg.`,steps:[
+ STP('Wie groß ist die Geschwindigkeit in m/s?',vs,'m/s',[`v = ${v} / 3,6 = ${nf(vs)} m/s`],'km/h durch 3,6.'),
+ STP('Wie groß ist die Zentripetalbeschleunigung?',a,'m/s²',[`a_Z = v² / r = ${nf(vs)}² / ${R} = ${nf(a)} m/s² (${nf(a/9.81,3)} · g)`],'a_Z = v² / r.'),
+ STP('Welche Kraft muss der Sitz auf den Fahrer seitlich ausüben?',F,'N',[`F_Z = m · a_Z = ${m} · ${nf(a)} = ${nf(F)} N`],'Zentripetalkraft = m · v² / r.')]}}],
+['Motorrad in der Kurve: Schräglage und Grenzgeschwindigkeit',r=>{let R,v,a,i=0;do{R=pk(r,[40,50,60,80]);v=pk(r,[45,50,60,70]);a=(v/3.6)**2/R}while(a>.55*9.81&&++i<50);const m=pk(r,[250,280,320]),mu=pk(r,[.8,.9]),mn=pk(r,[.5,.6]),F=m*a,ph=Math.atan(a/9.81)*180/PI,vt=Math.sqrt(mu*9.81*R)*3.6,pm=Math.atan(mu)*180/PI,vn=Math.sqrt(mn*9.81*R)*3.6;return{intro:`Ein Motorrad (${m} kg mit Fahrer) fährt mit ${v} km/h durch eine Kurve mit r = ${R} m. Haftreibungszahl Reifen/Straße trocken μ₀ = ${de(mu)}, nass μ₀ = ${de(mn)}. g = 9,81 m/s².`,fig:pxBike(),steps:[
+ STP('Wie groß ist die Zentripetalbeschleunigung?',a,'m/s²',[`a_Z = v² / r = (${v} / 3,6)² / ${R} = ${nf(a)} m/s²`],'Erst in m/s umrechnen.'),
+ STP('Welche Seitenführungskraft müssen die Reifen übertragen?',F,'N',[`F_Z = m · a_Z = ${m} · ${nf(a)} = ${nf(F)} N`],'Die Reifen liefern die Zentripetalkraft.'),
+ STP('In welcher Schräglage fährt das Motorrad?',ph,'°',[`Die Resultierende aus F_G und F_Z zeigt durch den Reifenaufstandspunkt`,`tan φ = F_Z / F_G = a_Z / g = ${nf(a)} / 9,81 ⇒ φ = ${nf(ph)}°`],'Kräfteparallelogramm aus Gewichtskraft und Zentripetalkraft.',{abs:.2}),
+ STP('Wie schnell darf es trocken höchstens fahren (in km/h)?',vt,'km/h',[`m · v² / r = μ₀ · m · g ⇒ v = √(μ₀ · g · r) = √(${de(mu)} · 9,81 · ${R}) = ${nf(vt/3.6)} m/s = ${nf(vt)} km/h`],'Zentripetalkraft = größte Haftreibungskraft.'),
+ STP('Welche Schräglage ist trocken höchstens möglich?',pm,'°',[`tan φ_max = μ₀ = ${de(mu)} ⇒ φ_max = ${nf(pm)}°`],'An der Grenze ist F_Z = μ₀ · F_G.',{abs:.2}),
+ STP('Wie schnell darf es nass höchstens fahren (in km/h)?',vn,'km/h',[`v = √(${de(mn)} · 9,81 · ${R}) = ${nf(vn/3.6)} m/s = ${nf(vn)} km/h`],'Gleiche Formel, kleinere Haftreibungszahl.')]}}],
+
+/* 12 Überholen Motorrad-Pkw */
+['Motorrad beschleunigt zum Überholen',r=>{const v1=pk(r,[60,70,80]),dv=pk(r,[30,40]),t=pk(r,[3,4,5]),v2=v1+dv,a=dv/3.6/t,s=(v1+v2)/2/3.6*t;return{intro:`Ein Motorrad beschleunigt zum Überholen in ${t} s gleichmäßig von ${v1} km/h auf ${v2} km/h.`,steps:[
+ STP('Wie groß ist die Beschleunigung?',a,'m/s²',[`a = Δv / t = (${dv} / 3,6) m/s / ${t} s = ${nf(a)} m/s²`],'Geschwindigkeitsänderung durch Zeit.'),
+ STP('Welche Strecke legt es dabei zurück?',s,'m',[`s = (v₁ + v₂) / 2 · t = (${nf(v1/3.6)} + ${nf(v2/3.6)}) / 2 · ${t} = ${nf(s)} m`],'Mittlere Geschwindigkeit mal Zeit.')]}}],
+['Motorrad überholt Pkw: Überholweg und freie Sichtweite',r=>{const vP=pk(r,[70,80,90]),dv=pk(r,[20,30]),a=pk(r,[2.5,3,3.5]),LM=2.2,LP=pk(r,[4.5,4.8]),d1=pk(r,[20,25]),d2=pk(r,[20,25]),vG=pk(r,[80,100]),sr=d1+LP+d2+LM,t1=dv/3.6/a,s1=a*t1*t1/2,t2=(sr-s1)/(dv/3.6),t=t1+t2,sM=vP/3.6*t+sr,sG=vG/3.6*t,sF=sM+sG;return{intro:`Ein Motorrad (${de(LM)} m lang) fährt mit ${vP} km/h im Abstand d₁ = ${d1} m hinter einem Pkw (${de(LP)} m lang), der gleich schnell fährt. Zum Überholen beschleunigt es mit ${de(a)} m/s² auf ${vP+dv} km/h und fährt dann gleichmäßig weiter, bis es d₂ = ${d2} m vor dem Pkw wieder einschert. Der Gegenverkehr fährt ${vG} km/h.`,fig:pxPass({d1,d2,LP,LM}),steps:[
+ STP('Welche Strecke muss das Motorrad gegenüber dem Pkw gutmachen?',sr,'m',[`s_rel = d₁ + L_Pkw + d₂ + L_Motorrad = ${d1} + ${de(LP)} + ${d2} + ${de(LM)} = ${nf(sr)} m`],'Vom Abstand dahinter bis zum Abstand davor, mit beiden Fahrzeuglängen.'),
+ STP('Wie lange dauert das Beschleunigen?',t1,'s',[`t₁ = Δv / a = (${dv} / 3,6) / ${de(a)} = ${nf(t1)} s`],'Δv in m/s.'),
+ STP('Wie viel holt es beim Beschleunigen gegenüber dem Pkw auf?',s1,'m',[`s₁ = ½ · a · t₁² = 0,5 · ${de(a)} · ${nf(t1)}² = ${nf(s1)} m`],'Relativ zum Pkw startet es aus dem Stand.'),
+ STP('Wie lange dauert der ganze Überholvorgang?',t,'s',[`Rest mit Δv: t₂ = (${nf(sr)} − ${nf(s1)}) / ${nf(dv/3.6)} = ${nf(t2)} s`,`t = t₁ + t₂ = ${nf(t)} s`],'Beschleunigungsphase plus Phase mit gleichbleibendem Vorsprungstempo.'),
+ STP('Welche Strecke legt das Motorrad auf der Straße zurück?',sM,'m',[`s_M = v_Pkw · t + s_rel = ${nf(vP/3.6)} · ${nf(t)} + ${nf(sr)} = ${nf(sM)} m`],'Was der Pkw fährt, plus der Vorsprung.'),
+ STP('Wie weit muss die Straße mindestens frei einsehbar sein?',sF,'m',[`Gegenverkehr in dieser Zeit: s_G = ${nf(vG/3.6)} · ${nf(t)} = ${nf(sG)} m`,`s_frei = ${nf(sM)} + ${nf(sG)} = ${nf(sF)} m`],'Eigener Überholweg plus Weg des Gegenverkehrs.')]}}],
+
+/* 13 Stadtverkehr */
+['Arbeitsweg in der Stadt: Auto, Fahrrad, E-Scooter oder zu Fuß',r=>{const s=pk(r,[3,3.5,4,4.5,5]),vP=pk(r,[18,20,22]),tP=pk(r,[6,8,10]),vF=pk(r,[14,15,16]),vE=pk(r,[13,15]),vZ=pk(r,[4.5,5]),TP=s/vP*60+tP,TF=s/vF*60+2,TE=s/vE*60+3,TZ=s/vZ*60;return{intro:`Der Weg zur Arbeit ist ${de(s)} km lang. Durchschnittsgeschwindigkeiten mit Ampeln: Pkw ${vP} km/h, Fahrrad ${vF} km/h, E-Scooter ${vE} km/h, zu Fuß ${de(vZ)} km/h. Zusatzzeiten: Pkw ${tP} min (Parkplatz suchen, Fußweg), Fahrrad 2 min (Abschließen), E-Scooter 3 min (Ausleihen, Abstellen).`,steps:[
+ STP('Wie lange braucht man mit dem Pkw (in min)?',TP,'min',[`t = s / v + t_Zusatz = ${de(s)} / ${vP} h · 60 + ${tP} = ${nf(s/vP*60)} + ${tP} = ${nf(TP)} min`],'Stunden mal 60 ergibt Minuten.'),
+ STP('Wie lange braucht man mit dem Fahrrad?',TF,'min',[`t = ${de(s)} / ${vF} · 60 + 2 = ${nf(TF)} min`],'Gleicher Weg, andere Geschwindigkeit.'),
+ STP('Wie lange braucht man mit dem E-Scooter?',TE,'min',[`t = ${de(s)} / ${vE} · 60 + 3 = ${nf(TE)} min`],'Zusatzzeit nicht vergessen.'),
+ STP('Wie lange braucht man zu Fuß?',TZ,'min',[`t = ${de(s)} / ${de(vZ)} · 60 = ${nf(TZ)} min`,`Am schnellsten: ${[['Pkw',TP],['Fahrrad',TF],['E-Scooter',TE],['zu Fuß',TZ]].sort((x,y)=>x[1]-y[1])[0][0]}`],'Zu Fuß ohne Zusatzzeit.')]}}],
+['Ab welcher Strecke ist das Auto schneller als das Fahrrad?',r=>{const vP=pk(r,[24,27,30]),tP=pk(r,[8,10,12]),vF=pk(r,[15,16,18]),tF=pk(r,[1,2]),s0=pk(r,[3,4]),T1=s0/vP*60+tP,T2=s0/vF*60+tF,sx=(tP-tF)/60/(1/vF-1/vP),d20=(20/vF*60+tF)-(20/vP*60+tP);return{intro:`In einer Stadt fährt ein Pkw im Mittel ${vP} km/h, braucht aber zusätzlich ${tP} min für Parkplatzsuche und Fußweg. Ein Fahrrad fährt im Mittel ${vF} km/h und braucht ${tF} min zusätzlich.`,steps:[
+ STP(`Wie lange braucht der Pkw für ${s0} km (in min)?`,T1,'min',[`t = ${s0} / ${vP} · 60 + ${tP} = ${nf(T1)} min`],'Fahrzeit plus Zusatzzeit.'),
+ STP(`Wie lange braucht das Fahrrad für ${s0} km?`,T2,'min',[`t = ${s0} / ${vF} · 60 + ${tF} = ${nf(T2)} min`],'Fahrzeit plus Zusatzzeit.'),
+ STP('Bei welcher Strecke sind beide gleich schnell?',sx,'km',[`s / ${vP} + ${tP}/60 = s / ${vF} + ${tF}/60`,`s · (1/${vF} − 1/${vP}) = (${tP} − ${tF}) / 60`,`s = ${nf((tP-tF)/60)} / ${nf(1/vF-1/vP)} = ${nf(sx)} km`],'Beide Zeiten gleichsetzen und nach s auflösen (lineare Gleichung).'),
+ STP('Wie viele Minuten spart der Pkw auf 20 km?',d20,'min',[`Fahrrad: 20 / ${vF} · 60 + ${tF} = ${nf(20/vF*60+tF)} min`,`Pkw: 20 / ${vP} · 60 + ${tP} = ${nf(20/vP*60+tP)} min`,`Ersparnis = ${nf(d20)} min`],'Oberhalb des Gleichstands gewinnt das schnellere Fahrzeug.')]}}],
+
+/* 14 Seilzug für den Motor */
+['Motor aus dem Pkw heben: Flaschenzug',r=>{const m=pk(r,[150,180,220,260]),n=pk(r,[2,4,6]),h=pk(r,[.6,.8,1]),FG=m*9.81,F=FG/n,s=n*h;return{intro:`In einer Garage wird ein Pkw-Motor (${m} kg) mit einem Flaschenzug um ${de(h)} m angehoben. Die lose Rolle hängt an ${n} tragenden Seilsträngen. Reibung bleibt unberücksichtigt. g = 9,81 m/s².`,steps:[
+ STP('Wie groß ist die Gewichtskraft des Motors?',FG,'N',[`F_G = m · g = ${m} · 9,81 = ${nf(FG)} N`],'F_G = m · g.'),
+ STP('Mit welcher Kraft muss am Seil gezogen werden?',F,'N',[`F = F_G / n = ${nf(FG)} / ${n} = ${nf(F)} N`],'Die Last verteilt sich auf alle tragenden Stränge.'),
+ STP('Wie viel Seil muss gezogen werden?',s,'m',[`s = n · h = ${n} · ${de(h)} = ${nf(s)} m`],'Kraft gespart, Weg verlängert: Die Arbeit bleibt gleich.')]}}],
+['Flaschenzug in der Garage: Wirkungsgrad und nötige Seilstränge',r=>{const m=pk(r,[200,250,300]),eta=pk(r,[.85,.9]),Fm=pk(r,[250,300]),h=pk(r,[.7,.9]),FG=m*9.81,n=Math.ceil(FG/(Fm*eta)-1e-9),F=FG/(n*eta),s=n*h,W=F*s;return{intro:`Ein Motor mit Getriebe (${m} kg) soll mit einem Flaschenzug ${de(h)} m angehoben werden. Eine Person kann höchstens ${Fm} N am Seil ziehen. Der Wirkungsgrad des Flaschenzugs beträgt η = ${de(eta)}. g = 9,81 m/s².`,steps:[
+ STP('Wie groß ist die Gewichtskraft?',FG,'N',[`F_G = ${m} · 9,81 = ${nf(FG)} N`],'F_G = m · g.'),
+ STP('Wie viele tragende Seilstränge sind mindestens nötig?',n,'',[`F = F_G / (n · η) ≤ ${Fm} N ⇒ n ≥ F_G / (F_max · η)`,`n ≥ ${nf(FG)} / (${Fm} · ${de(eta)}) = ${nf(FG/(Fm*eta))} → ${n} Stränge`],'Reibung erhöht die Zugkraft, also durch η teilen. Aufrunden.',{abs:.01}),
+ STP('Wie groß ist dann die Zugkraft?',F,'N',[`F = F_G / (n · η) = ${nf(FG)} / (${n} · ${de(eta)}) = ${nf(F)} N`],'Mit der aufgerundeten Strangzahl.'),
+ STP('Wie viel Seil muss gezogen werden?',s,'m',[`s = n · h = ${n} · ${de(h)} = ${nf(s)} m`],'Jeder Strang verkürzt sich um h.'),
+ STP('Welche Arbeit verrichtet die Person?',W,'J',[`W = F · s = ${nf(F)} · ${nf(s)} = ${nf(W)} J`,`Hubarbeit nur ${nf(FG*h)} J: Der Rest geht in Reibung.`],'Arbeit = Kraft · Weg.')]}}],
+['Werkstattkran: Zylinderkraft und Öldruck',r=>{const m=pk(r,[200,250,300]),mA=pk(r,[35,40]),lL=pk(r,[1.2,1.4,1.6]),lZ=pk(r,[.5,.6]),be=pk(r,[55,60,65]),d=pk(r,[40,45,50]),ML=m*9.81*lL,MA=mA*9.81*lL/2,FZ=(ML+MA)/(lZ*Math.sin(kmR(be))),p=FZ/(PI*d*d/4)*10;return{intro:`Mit einem hydraulischen Werkstattkran wird ein Motor (${m} kg) aus dem Motorraum gehoben. Der Ausleger steht waagerecht und ist im Gelenk A drehbar gelagert. Der Motor hängt l_L = ${de(lL)} m vom Gelenk entfernt. Der Ausleger wiegt ${mA} kg, sein Schwerpunkt liegt in der Mitte von l_L. Der Hydraulikzylinder (Kolben d = ${d} mm) greift l_Z = ${de(lZ)} m vom Gelenk an, unter β = ${be}° zum Ausleger. g = 9,81 m/s².`,fig:pxCrane({lZ,lL,be}),steps:[
+ STP('Welches Drehmoment erzeugt der Motor um das Gelenk A?',ML,'N·m',[`M_L = m · g · l_L = ${m} · 9,81 · ${de(lL)} = ${nf(ML)} N·m`],'Kraft mal Hebelarm.'),
+ STP('Welches Drehmoment erzeugt der Ausleger selbst?',MA,'N·m',[`M_A = m_A · g · l_L / 2 = ${mA} · 9,81 · ${de(lL/2)} = ${nf(MA)} N·m`],'Die Gewichtskraft des Auslegers greift im Schwerpunkt an.'),
+ STP('Welche Kraft muss der Zylinder aufbringen?',FZ/1000,'kN',[`Momentengleichgewicht um A: F_Z · l_Z · sin β = M_L + M_A`,`F_Z = (${nf(ML)} + ${nf(MA)}) / (${de(lZ)} · sin ${be}°) = ${nf(FZ)} N = ${nf(FZ/1000)} kN`],'Nur der Anteil senkrecht zum Ausleger erzeugt ein Moment.'),
+ STP('Welcher Öldruck herrscht im Zylinder (in bar)?',p,'bar',[`A = π · ${d}² / 4 = ${nf(PI*d*d/4)} mm²`,`p = F_Z / A = ${nf(FZ)} / ${nf(PI*d*d/4)} = ${nf(p/10)} N/mm² = ${nf(p)} bar`],'p = F / A, 1 N/mm² = 10 bar.')]}}],
+
+/* 15 Automatische Seilwinde */
+['Elektroseilzug in der Garage: Hubleistung und Wirkungsgrad',r=>{const m=pk(r,[400,450,500]),v=pk(r,[5,6]),P=pk(r,[900,1000,1050]),h=pk(r,[1.5,2,2.5]),vs=v/60,Pn=m*9.81*vs,eta=Pn/P*100,t=h/vs,I=P/230;return{intro:`Ein Elektroseilzug (230 V) hebt mit Umlenkrolle eine Last von ${m} kg mit ${v} m/min. Er nimmt dabei ${P} W elektrische Leistung auf. Die Last soll ${de(h)} m hoch gehoben werden. g = 9,81 m/s².`,steps:[
+ STP('Wie groß ist die Hubgeschwindigkeit in m/s?',vs,'m/s',[`v = ${v} m/min / 60 = ${nf(vs)} m/s`],'Durch 60 teilen.',{rel:.01}),
+ STP('Welche Hubleistung wird an der Last abgegeben?',Pn,'W',[`P_Hub = F_G · v = ${m} · 9,81 · ${nf(vs)} = ${nf(Pn)} W`],'Leistung = Kraft · Geschwindigkeit.'),
+ STP('Wie groß ist der Wirkungsgrad?',eta,'%',[`η = P_Hub / P_el = ${nf(Pn)} / ${P} = ${nf(eta)} %`],'Nutzen durch Aufwand.'),
+ STP('Wie lange dauert das Heben?',t,'s',[`t = h / v = ${de(h)} / ${nf(vs)} = ${nf(t)} s`],'Gleichförmige Bewegung.'),
+ STP('Welcher Strom fließt?',I,'A',[`I = P / U = ${P} / 230 = ${nf(I)} A`],'P = U · I (Wechselstrom, cos φ hier vereinfacht 1).')]}}],
+['Seilwinde am Geländewagen: Bergen aus dem Graben',r=>{const m=pk(r,[1800,2000,2200,2500]),al=pk(r,[15,20,25]),mR=pk(r,[.15,.2,.25]),F1=pk(r,[20,25,30,35]),r1=pk(r,[.04,.045]),ds=pk(r,[.01,.011]),r4=r1+3*ds,sa=Math.sin(kmR(al)),ca=Math.cos(kmR(al)),FH=m*9.81*sa/1000,FR=mR*m*9.81*ca/1000,FS=FH+FR,M=F1*r1,F4=M/r4;return{intro:`Ein Geländewagen (${m} kg) steckt in einem Graben und soll eine ${al}° steile, schlammige Böschung hinaufgezogen werden (Rollwiderstandszahl im Schlamm μ_R = ${de(mR)}). Die elektrische Seilwinde ist am Fahrzeug montiert, das Seil läuft zu einem Baum. Nennzugkraft der Winde: ${F1} kN in der 1. Seillage (Wickelradius r₁ = ${de(r1*1000)} mm). Das Seil hat ${de(ds*1000)} mm Durchmesser, jede Lage vergrößert den Radius um diesen Wert. g = 9,81 m/s².`,fig:pxDrum({r1,r4}),steps:[
+ STP('Wie groß ist die Hangabtriebskraft?',FH,'kN',[`F_H = m · g · sin α = ${m} · 9,81 · sin ${al}° = ${nf(FH*1000)} N = ${nf(FH)} kN`],'Anteil der Gewichtskraft entlang der Böschung.'),
+ STP('Wie groß ist der Rollwiderstand im Schlamm?',FR,'kN',[`F_Roll = μ_R · m · g · cos α = ${de(mR)} · ${m} · 9,81 · cos ${al}° = ${nf(FR)} kN`],'Rollwiderstand = μ_R · Normalkraft.'),
+ STP('Welche Seilkraft ist mindestens nötig?',FS,'kN',[`F_S = F_H + F_Roll = ${nf(FH)} + ${nf(FR)} = ${nf(FS)} kN`],'Beide Widerstände überwinden.'),
+ STP('Welches Drehmoment liefert die Trommel bei Nennzugkraft?',M,'kN·m',[`M = F₁ · r₁ = ${F1} kN · ${de(r1)} m = ${nf(M)} kN·m`],'Das Moment von Motor und Getriebe bleibt gleich, egal wie voll die Trommel ist.'),
+ STP('Welche Zugkraft hat die Winde in der 4. Seillage?',F4,'kN',[`r₄ = r₁ + 3 · d = ${de(r1*1000)} + 3 · ${de(ds*1000)} = ${de(r4*1000)} mm`,`F₄ = M / r₄ = ${nf(M)} kN·m / ${de(r4)} m = ${nf(F4)} kN`,F4>=FS?'Reicht auch mit voller Trommel.':'Zu wenig: Seil weiter abwickeln oder Umlenkrolle verwenden.'],'Größerer Radius, kleinere Kraft: F = M / r.'),
+ STP('Welche Seilkraft braucht die Winde, wenn das Seil über eine Umlenkrolle am Baum zurück zum Fahrzeug läuft?',FS/2,'kN',[`Zwei Seilstränge ziehen am Fahrzeug: F_Winde = F_S / 2 = ${nf(FS/2)} kN`],'Wie bei der losen Rolle: halbe Kraft, doppelter Seilweg.')]}}],
+
+/* 16 Tauchen */
+['Tauchen im Baggersee: Wasserdruck in der Tiefe',r=>{const h=pk(r,[5,10,15,20,25]),A=pk(r,[60,80,100]),ph=1000*9.81*h/1e5,F=ph*1e5*A/1e4;return{intro:`Ein Taucher nimmt eine Unterwasserkamera mit in ${h} m Tiefe in einen Baggersee (Süßwasser, ρ = 1000 kg/m³). Das Glasfenster des Kameragehäuses hat ${A} cm² Fläche, innen herrscht Luftdruck. Luftdruck an der Oberfläche 1 bar. g = 9,81 m/s².`,fig:pxDive({h}),steps:[
+ STP('Wie groß ist der Wasserdruck (Schweredruck) in dieser Tiefe?',ph,'bar',[`p = ρ · g · h = 1000 · 9,81 · ${h} = ${nf(ph*1e5)} Pa = ${nf(ph)} bar`],'1 bar = 100 000 Pa. Faustregel: etwa 1 bar je 10 m.'),
+ STP('Wie groß ist der absolute Druck?',ph+1,'bar',[`p_abs = p_Luft + p_Wasser = 1 + ${nf(ph)} = ${nf(ph+1)} bar`],'Auf das Wasser drückt zusätzlich die Luft.'),
+ STP('Welche Kraft drückt auf das Glasfenster?',F,'N',[`Innen und außen wirkt der Luftdruck, er hebt sich auf.`,`F = p_Wasser · A = ${nf(ph*1e5)} Pa · ${nf(A/1e4)} m² = ${nf(F)} N`],'cm² in m² umrechnen: durch 10 000.')]}}],
+['Tauchgang im Meer: Luftvorrat der Pressluftflasche',r=>{const h=pk(r,[15,20,25,30]),Vf=pk(r,[10,12,15]),pF=pk(r,[200,230]),AMV=pk(r,[15,20,25]),pa=1+1025*9.81*h/1e5,Q=AMV*pa,Vn=Vf*(pF-50),t=Vn/Q,VL=5*pa;return{intro:`Eine Taucherin taucht im Meer (ρ = 1025 kg/m³) auf ${h} m Tiefe. Ihre Pressluftflasche hat ${Vf} l Inhalt und ist mit ${pF} bar gefüllt; 50 bar bleiben als Reserve. An der Oberfläche atmet sie ${AMV} l Luft pro Minute. Luftdruck an der Oberfläche 1 bar, die Temperatur bleibt gleich. g = 9,81 m/s².`,fig:pxDive({h}),steps:[
+ STP('Wie groß ist der absolute Druck in dieser Tiefe?',pa,'bar',[`p_abs = 1 bar + ρ · g · h = 1 + 1025 · 9,81 · ${h} / 100 000 = ${nf(pa)} bar`],'Luftdruck plus Wasserdruck.'),
+ STP('Wie viel Luft (bei 1 bar gemessen) verbraucht sie in der Tiefe pro Minute?',Q,'l/min',[`Die Lunge füllt sich mit Luft vom Umgebungsdruck: Q = ${AMV} l/min · ${nf(pa)} = ${nf(Q)} l/min`],'Boyle-Mariotte: Bei höherem Druck steckt mehr Luft im gleichen Atemzug.'),
+ STP('Wie viel Luft (bei 1 bar) ist bis zur Reserve nutzbar?',Vn,'l',[`V = V_F · (p_F − p_Reserve) = ${Vf} l · (${pF} − 50) bar = ${nf(Vn)} l`],'Flaschenvolumen mal nutzbarer Druckunterschied.'),
+ STP('Wie lange kann sie in dieser Tiefe bleiben?',t,'min',[`t = ${nf(Vn)} l / ${nf(Q)} l/min = ${nf(t)} min`],'Vorrat durch Verbrauch.'),
+ STP('Sie hält beim Auftauchen 5 l Luft in der Lunge an. Welches Volumen hätte diese Luft an der Oberfläche?',VL,'l',[`p₁ · V₁ = p₂ · V₂ ⇒ V₂ = ${nf(pa)} bar · 5 l / 1 bar = ${nf(VL)} l`,'So viel passt nicht in die Lunge: Lungenüberdehnung. Beim Auftauchen immer ausatmen.'],'Druck sinkt, Volumen steigt.')]}}]
+];
+
+/* Einordnung: Stufe (1 Grundlagen, 2 Anwenden, 3 Prüfungsniveau), Thema im Lernlabor, Themengruppe aus Markus' Liste */
+const PXI={
+'Einstempel-Hebebühne: Öldruck unter dem Pkw':{lv:1,t:'Hydraulik',g:1},
+'Flaschenwagenheber am Transporter: Kräfte und Pumpenhübe':{lv:2,t:'Hydraulik',g:1},
+'Lkw-Stempelhebebühne: Druck, Hubzeit und Motorleistung':{lv:3,t:'Hydraulische Leistung & Volumenstrom',g:1},
+'Kompaktlader mit Palettengabel: Kipplast und Nennlast':{lv:2,t:'Drehmoment',g:2},
+'Minibagger hebt ein Betonrohr seitlich: zulässige Last':{lv:3,t:'Drehmoment',g:2},
+'Radwechsel am Pkw: Drehmomentschlüssel richtig ansetzen':{lv:1,t:'Drehmoment',g:3},
+'Lkw-Radmuttern: Drehmoment mit dem Kraftvervielfältiger':{lv:2,t:'Drehmoment',g:3},
+'Passstraße: Steigung in Prozent und Winkel':{lv:1,t:'Schiefe Ebene',g:4},
+'Verschneite Passstraße: Rutschen mit Sommerreifen, Halt mit Winterreifen':{lv:3,t:'Reibung (schiefe Ebene)',g:4},
+'Werkstattkompressor: Kessel füllen':{lv:2,t:'Gasgesetze',g:5},
+'Druckluft-Schlagschrauber: Abkühlen des Kessels und Arbeitszeit':{lv:3,t:'Gasgesetze',g:5},
+'Anfahren am Berg: Beschleunigung und Antriebskraft':{lv:2,t:'Kraftgesetz F = m · a',g:6},
+'Anfahren auf Schnee: Frontantrieb oder Allrad':{lv:3,t:'Reibung (schiefe Ebene)',g:6},
+'Traktor zieht einen Anhänger an: Kraft an der Kupplung':{lv:1,t:'Kraftgesetz F = m · a',g:7},
+'Traktor mit Anhänger am Feldweg: Zugkraft und Motorleistung':{lv:3,t:'Arbeit & Leistung',g:7},
+'Staubsaugerroboter: diagonal zur Ladestation':{lv:1,t:'Pythagoras & rechtwinkliges Dreieck',g:8},
+'Staubsaugerroboter: Reinigung in Bahnen und Akkulaufzeit':{lv:2,t:'Gleichförmige Bewegung',g:8},
+'Lieferdrohne: Hinflug gegen den Wind, Rückflug mit dem Wind':{lv:2,t:'Gleichförmige Bewegung',g:9},
+'Drohne mit schrägem Gegenwind: Vorhaltewinkel und Flugzeit':{lv:3,t:'Kräfteparallelogramm',g:9},
+'Skifahrer im Steilhang: gewachst oder ungewachst':{lv:2,t:'Reibung (schiefe Ebene)',g:10},
+'Snowboarder auf dem flachen Ziehweg':{lv:3,t:'Reibung (schiefe Ebene)',g:10},
+'Autobahnausfahrt: Querbeschleunigung in der Kurve':{lv:1,t:'Kreisbewegung',g:11},
+'Motorrad in der Kurve: Schräglage und Grenzgeschwindigkeit':{lv:3,t:'Kreisbewegung',g:11},
+'Motorrad beschleunigt zum Überholen':{lv:1,t:'Beschleunigung & Bremsen',g:12},
+'Motorrad überholt Pkw: Überholweg und freie Sichtweite':{lv:3,t:'Beschleunigung & Bremsen',g:12},
+'Arbeitsweg in der Stadt: Auto, Fahrrad, E-Scooter oder zu Fuß':{lv:1,t:'Gleichförmige Bewegung',g:13},
+'Ab welcher Strecke ist das Auto schneller als das Fahrrad?':{lv:2,t:'Gleichförmige Bewegung',g:13},
+'Motor aus dem Pkw heben: Flaschenzug':{lv:1,t:'Rolle & Flaschenzug',g:14},
+'Flaschenzug in der Garage: Wirkungsgrad und nötige Seilstränge':{lv:2,t:'Rolle & Flaschenzug',g:14},
+'Werkstattkran: Zylinderkraft und Öldruck':{lv:3,t:'Drehmoment',g:14},
+'Elektroseilzug in der Garage: Hubleistung und Wirkungsgrad':{lv:2,t:'Wirkungsgrad',g:15},
+'Seilwinde am Geländewagen: Bergen aus dem Graben':{lv:3,t:'Rolle & Flaschenzug',g:15},
+'Tauchen im Baggersee: Wasserdruck in der Tiefe':{lv:1,t:'Druck',g:16},
+'Tauchgang im Meer: Luftvorrat der Pressluftflasche':{lv:3,t:'Gasgesetze',g:16}};
+
+/* Begründen (b) und Beurteilen (u) zum Transfer */
+const PXB=[
+['Hydraulik','b','Erkläre, wie ein hydraulischer Wagenheber mit Handpumpe eine schwere Last mit kleiner Handkraft anhebt. Verwende die Begriffe Pumpenkolben, Hubkolben, Rückschlagventil und Ablassventil.',
+ 'Beim Hochdrücken des Pumpenhebels saugt der kleine Pumpenkolben Öl aus dem Vorratsraum an. Beim Herunterdrücken presst er das Öl über ein Rückschlagventil unter den großen Hubkolben. Der Druck ist im ganzen Öl gleich (Pascal), deshalb ist die Kraft am Hubkolben um das Flächenverhältnis A₂ / A₁ größer, der Hebel vervielfacht die Handkraft zusätzlich. Dafür hebt sich die Last je Hub nur um einen kleinen Weg, es sind viele Hübe nötig. Das zweite Rückschlagventil verhindert, dass das Öl zurückfließt, die Last bleibt oben stehen. Erst wenn man das Ablassventil öffnet, fließt das Öl in den Vorrat zurück und die Last senkt sich.',
+ ['Druck ist überall gleich (Pascal)','Kraftverstärkung durch Flächenverhältnis (und Hebel)','Weg je Hub klein, daher viele Hübe','Rückschlagventil hält die Last','Ablassventil zum Absenken']],
+['Hydraulik','u','Ein Kollege sagt: „Die Lkw-Hebebühne hält die Last allein durch den Öldruck. Die mechanische Sicherheitsraste kann man sich sparen.“ Beurteile diese Aussage.',
+ 'Die Aussage ist falsch und gefährlich. Solange das System dicht ist, hält das Rückschlagventil das Öl im Zylinder und die Last oben. Dichtungen und Ventile können aber undicht werden, ein Schlauch kann platzen. Dann sinkt die Last ab, im schlimmsten Fall schlagartig. Unter der angehobenen Last arbeiten Menschen, deshalb muss eine mechanische Sicherung (Raste, Sperrklinke, Fangvorrichtung) die Last auch ohne Öldruck halten. Hebebühnen werden außerdem regelmäßig geprüft.',
+ ['Rückschlagventil hält nur bei dichtem System','Leckage oder Schlauchbruch lässt die Last absinken','Personen arbeiten unter der Last','Mechanische Sicherung hält ohne Öldruck','Klares Urteil: Aussage falsch']],
+['Drehmoment','b','Ein Minibagger darf über das abgesenkte Planierschild in Längsrichtung deutlich mehr heben als seitlich über die Kette. Begründe das.',
+ 'Ob die Maschine kippt, entscheidet das Gleichgewicht der Momente um die Kippkante. In Längsrichtung liegt die Kippkante (Planierschild, Kettenende) weit vom Schwerpunkt der Maschine entfernt, das Standmoment ist groß. Seitlich ist die Kippkante die Kettenaußenkante, nur die halbe Spurbreite vom Schwerpunkt entfernt, das Standmoment ist klein. Gleichzeitig wird der Hebelarm der Last zur seitlichen Kippkante größer. Deshalb ist die zulässige Last seitlich kleiner. Die Hubtabelle der Maschine gibt die Werte je Richtung und Ausladung an.',
+ ['Momentengleichgewicht um die Kippkante','Längs großer Abstand Schwerpunkt–Kippkante, großes Standmoment','Seitlich nur halbe Spurbreite','Lasthebelarm seitlich größer','Hubtabelle beachten']],
+['Drehmoment','b','Begründe, warum Radmuttern mit dem Drehmomentschlüssel über Kreuz angezogen und nach etwa 50 bis 100 km nachgezogen werden.',
+ 'Das vorgeschriebene Drehmoment erzeugt die richtige Vorspannkraft in den Radbolzen. Ist es zu klein, kann sich das Rad lösen; ist es zu groß, werden Bolzen oder Gewinde überdehnt und die Felge kann Schaden nehmen. Über Kreuz anziehen zieht die Felge gleichmäßig an die Radnabe, sie verkantet nicht. In den ersten Kilometern setzen sich die Anlageflächen (Farbe, Schmutz, Rauheit), dadurch sinkt die Vorspannkraft. Beim Nachziehen wird sie wiederhergestellt.',
+ ['Drehmoment bestimmt die Vorspannkraft','Zu locker: Rad löst sich; zu fest: Bolzen überdehnt','Über Kreuz: Felge liegt gleichmäßig an','Setzen der Flächen in den ersten Kilometern','Nachziehen stellt die Vorspannung wieder her']],
+['Gleit-, Haft- & Rollreibung','b','Begründe, warum Winterreifen auf Schnee besser haften als Sommerreifen und warum Schneeketten noch mehr Halt geben.',
+ 'Die übertragbare Kraft ist die Haftreibungskraft F_R = μ₀ · F_N. Winterreifen haben eine weiche Gummimischung, die auch bei Kälte elastisch bleibt, und ein tiefes Profil mit vielen Lamellen. Die Lamellen verzahnen sich mit dem Schnee, Schnee im Profil haftet an Schnee auf der Straße. Dadurch ist die Haftreibungszahl deutlich größer als beim harten Sommerreifen. Schneeketten greifen formschlüssig in Schnee und Eis, deshalb steigt die übertragbare Kraft noch weiter.',
+ ['F_R = μ₀ · F_N','Weiche Gummimischung bei Kälte','Profil und Lamellen verzahnen mit dem Schnee','Größere Haftreibungszahl','Ketten greifen formschlüssig']],
+['Gasgesetze','b','Erkläre, warum sich im Druckluftkessel Kondenswasser sammelt und warum es regelmäßig abgelassen werden muss.',
+ 'Die angesaugte Luft enthält Wasserdampf. Beim Verdichten wird sie heiß und kann den Dampf noch halten. Im Kessel kühlt die verdichtete Luft ab. Kalte, verdichtete Luft kann weniger Wasserdampf aufnehmen, der Taupunkt wird unterschritten und Wasser kondensiert. Es sammelt sich unten im Kessel. Das Wasser lässt den Stahlkessel von innen rosten, das schwächt den Druckbehälter. Außerdem gelangt es in Werkzeuge und Lackierpistolen. Deshalb wird das Kondensat regelmäßig (meist täglich) abgelassen.',
+ ['Ansaugluft enthält Wasserdampf','Abkühlen im Kessel, Taupunkt unterschritten','Wasser sammelt sich unten','Korrosion schwächt den Druckbehälter','Regelmäßig ablassen']],
+['Kraftgesetz F = m · a','b','Beim Anfahren an einer verschneiten Steigung drehen die Räder durch. Erkläre, warum es hilft, im zweiten Gang mit wenig Gas anzufahren, und warum ein Allradfahrzeug im Vorteil ist.',
+ 'Die Räder können höchstens die Haftreibungskraft μ₀ · F_N auf die Straße übertragen. Ist die Antriebskraft größer, drehen sie durch, und es wirkt nur noch die kleinere Gleitreibung. Im zweiten Gang mit wenig Gas ist das Moment am Rad kleiner, die Antriebskraft bleibt unter der Haftgrenze. Beim Allradantrieb treiben alle Räder, die ganze Normalkraft steht für die Haftreibung zur Verfügung statt nur die Achslast einer Achse. Deshalb kann er eine größere Kraft übertragen.',
+ ['Übertragbar ist nur die Haftreibung','Durchdrehen: nur noch Gleitreibung','Zweiter Gang: kleineres Radmoment','Allrad nutzt die ganze Normalkraft']],
+['Kraftgesetz F = m · a','b','Begründe, warum ein schwerer landwirtschaftlicher Anhänger eine eigene Bremse braucht und warum man bergab nicht im hohen Gang rollen lassen sollte.',
+ 'Ohne eigene Bremse müsste der Traktor den ganzen Zug abbremsen. Seine Bremskraft ist durch die Haftreibung seiner Räder begrenzt, also durch seine eigene Gewichtskraft. Der viel schwerere Anhänger schiebt dann nach, der Bremsweg wird lang und der Zug kann einknicken. Bergab kommt der Hangabtrieb des Anhängers dazu. In einem kleinen Gang bremst der Motor mit, die Geschwindigkeit bleibt klein und die Betriebsbremse wird nicht überhitzt.',
+ ['Bremskraft des Traktors durch seine Haftreibung begrenzt','Anhänger schiebt nach, Einknicken','Bergab zusätzlicher Hangabtrieb','Kleiner Gang: Motorbremse, kleine Geschwindigkeit']],
+['Gleit-, Haft- & Rollreibung','b','Erkläre, warum ein frisch gewachster Ski schneller gleitet als ein ungewachster.',
+ 'Zwischen Belag und Schnee wirkt Gleitreibung F_R = μ · F_N. Beim Gleiten entsteht durch Reibungswärme ein sehr dünner Wasserfilm, der wie ein Schmiermittel wirkt. Wachs ist wasserabweisend und glatt, der Wasserfilm bildet sich gleichmäßig, ohne dass der Belag am Schnee „klebt“. Ein ausgetrockneter, ungewachster Belag ist rau. Die Gleitreibungszahl ist deshalb mit Wachs kleiner, bei gleicher Normalkraft auch die Reibungskraft, und der Fahrer wird schneller.',
+ ['F_R = μ · F_N','Dünner Wasserfilm als Schmierung','Wachs glatt und wasserabweisend','Kleinere Gleitreibungszahl, kleinere Reibungskraft']],
+['Beschleunigung & Bremsen','u','Ein Autofahrer überholt auf der Landstraße einen Lkw mit nur 10 km/h mehr. Beurteile dieses Vorgehen.',
+ 'Das Vorgehen ist gefährlich. Mit nur 10 km/h (2,8 m/s) Unterschied dauert es sehr lange, bis die Strecke aus Abständen und Fahrzeuglängen gutgemacht ist, oft über 20 Sekunden. In dieser Zeit legt das überholende Fahrzeug mehrere hundert Meter zurück, der Gegenverkehr ebenfalls. Die nötige freie Sichtweite wird dadurch sehr groß und ist auf Landstraßen selten gegeben. Überholt werden sollte nur mit deutlich höherer Geschwindigkeit und bei ausreichend freier Sicht, sonst nicht.',
+ ['Kleine Relativgeschwindigkeit, lange Überholzeit','Langer Überholweg','Gegenverkehr nähert sich in dieser Zeit','Sehr große nötige Sichtweite','Klares Urteil']],
+['Rolle & Flaschenzug','b','Eine Seilwinde zieht mit voller Trommel deutlich weniger als mit fast leerer Trommel. Erkläre das.',
+ 'Motor und Getriebe liefern an der Trommel ein bestimmtes Drehmoment M. Die Zugkraft im Seil ist F = M / r, wobei r der Wickelradius bis zur Seilmitte ist. Jede weitere Seillage vergrößert diesen Radius um einen Seildurchmesser, die Zugkraft sinkt. Die Nennzugkraft gilt deshalb nur für die erste Lage. Für schwere Lasten wickelt man viel Seil ab oder nutzt eine Umlenkrolle, die die nötige Seilkraft halbiert. Einige Windungen müssen aber immer auf der Trommel bleiben, damit das Seil nicht ausreißt.',
+ ['Konstantes Drehmoment an der Trommel','F = M / r','Jede Lage vergrößert den Radius','Nennzugkraft gilt für die erste Lage','Abhilfe: Seil abwickeln oder Umlenkrolle']],
+['Druck','b','Erkläre, warum ein Taucher beim Auftauchen niemals die Luft anhalten darf.',
+ 'Unter Wasser atmet der Taucher Luft mit dem Umgebungsdruck, in 30 m Tiefe etwa 4 bar. Beim Auftauchen sinkt der Druck. Nach Boyle-Mariotte (p · V = konstant) dehnt sich die Luft in der Lunge entsprechend aus, von 4 bar auf 1 bar auf das Vierfache. Am stärksten ist die Änderung in den letzten 10 m, dort verdoppelt sich das Volumen. Hält der Taucher die Luft an, kann sie nicht entweichen und die Lunge wird überdehnt oder reißt. Deshalb langsam auftauchen und normal weiteratmen beziehungsweise ausatmen.',
+ ['Druck sinkt beim Auftauchen','p · V = konstant: Luft dehnt sich aus','Größte relative Änderung nahe der Oberfläche','Gefahr Lungenüberdehnung','Ausatmen, langsam auftauchen']]];
+
+/* ===== Nachgereicht 25.10.2026: Wasserrutsche, Wagenheber bei Panne, Sackkarre, Fallschirm, Feuerwehreinsatz ===== */
+const pxSlide=({h})=>kmSvg(360,240,`${kmHatch(8,214,352,214)}<rect x="30" y="40" width="40" height="8" class="kmb"/><line x1="36" y1="48" x2="36" y2="214" class="kmg"/><line x1="64" y1="48" x2="64" y2="214" class="kmg"/>
+ <path d="M70 44C150 44 140 150 220 168S300 186 312 188" class="kml"/><rect x="290" y="186" width="62" height="28" class="kmd2"/>${kmT(321,206,'Becken','text-anchor="middle" class="kms"')}
+ ${pxS(76,34)}${kmT(84,28,'Start: v = 0','class="kms"')}${kmA(300,170,334,176)}${kmT(300,160,'v_Ende','class="kmf"')}
+ ${kmD(20,44,20,188,`h = ${de(h)} m`,0)}<line x1="20" y1="188" x2="300" y2="188" class="kmh"/><line x1="14" y1="44" x2="70" y2="44" class="kmh"/>`);
+const pxCart=({a,l})=>{const A=[90,182],c=Math.cos(kmR(45)),s=Math.sin(kmR(45)),H=[A[0]+200*s,A[1]-200*c],S=[118.3,100];
+ return kmSvg(320,250,`${kmHatch(8,200,312,200)}<g transform="translate(${kmP(...A)}) rotate(45)"><rect x="-76" y="-152" width="72" height="146" rx="4" class="kmw"/><circle cx="-40" cy="-62" r="22" class="kmd2"/><line x1="0" y1="0" x2="0" y2="-200" class="kml2" stroke-width="5"/><line x1="0" y1="-4" x2="-80" y2="-4" class="kmrod"/></g>
+ <circle cx="${A[0]}" cy="${A[1]}" r="18" class="kmtw"/>${kmPiv(...A)}${pxS(...S)}
+ ${kmA(S[0],S[1]+8,S[0],S[1]+54,'var(--red)')}${kmT(S[0]+8,S[1]+46,'F_G','class="kmf kmr"')}${kmA(H[0],H[1]+44,H[0],H[1]+4)}${kmT(H[0]+8,H[1]+30,'F','class="kmf"')}
+ <line x1="${S[0]}" y1="${S[1]}" x2="${S[0]}" y2="200" class="kmh"/><line x1="${kmF(H[0])}" y1="${kmF(H[1])}" x2="${kmF(H[0])}" y2="200" class="kmh"/>
+ ${kmD(A[0],200,S[0],200,`a = ${de(a)} m`,20)}${kmD(A[0],200,H[0],200,`l = ${de(l)} m`,40)}${kmT(70,150,'Achse','class="kms" text-anchor="end"')}`)};
+const pxLadder=({L,al})=>{const W=270,G=214,P=200,ar=kmR(70),F=[W-P*Math.cos(ar),G],T=[W,G-P*Math.sin(ar)];
+ return kmSvg(340,250,`${kmHatch(8,G,332,G)}<rect x="${W}" y="10" width="40" height="${G-10}" class="kmw"/><rect x="${W+6}" y="${kmF(T[1]-34)}" width="28" height="30" class="kmd2"/>
+ <line x1="${kmF(F[0])}" y1="${G}" x2="${kmF(T[0])}" y2="${kmF(T[1])}" class="kml"/>${kmArc(F[0],G,40,0,70,'α',56)}
+ ${kmD(F[0],G,T[0],T[1],`L = ${de(L)} m`,-26)}${kmD(F[0],G,W,G,'a',22)}${kmD(W,G,W,T[1],'h',30)}`)};
+
+PXW.push(
+/* 17 Wasserrutsche */
+['Wasserrutsche: Endgeschwindigkeit ohne Reibung',r=>{const h=pk(r,[6,8,10,12]),m=pk(r,[40,60,80]),E=m*9.81*h,v=Math.sqrt(2*9.81*h);return{intro:`Ein Badegast (${m} kg) startet aus dem Stand oben auf einer Wasserrutsche, ${h} m über dem Auslauf. Reibung und Luftwiderstand werden zunächst vernachlässigt. g = 9,81 m/s².`,fig:pxSlide({h}),steps:[
+ STP('Wie viel Lageenergie hat er oben (bezogen auf den Auslauf)?',E/1000,'kJ',[`E_pot = m · g · h = ${m} · 9,81 · ${h} = ${nf(E)} J = ${nf(E/1000)} kJ`],'E_pot = m · g · h.'),
+ STP('Wie schnell wäre er unten ohne Reibung (in km/h)?',v*3.6,'km/h',[`E_pot = E_kin ⇒ m · g · h = ½ · m · v²`,`v = √(2 · g · h) = √(2 · 9,81 · ${h}) = ${nf(v)} m/s = ${nf(v*3.6)} km/h`],'Die Masse kürzt sich: Schwere und leichte Badegäste wären gleich schnell.')]}}],
+['Riesenrutsche: Reibungsverlust und Abbremsen im Becken',r=>{const h=pk(r,[8,10,12]),L=pk(r,[60,80,100]),m=pk(r,[50,70,90]),q=pk(r,[.7,.75,.8]),vi=Math.sqrt(2*9.81*h),v=Math.round(vi*q*10)/10,sb=pk(r,[8,10,12]),Ep=m*9.81*h,Ek=m*v*v/2,WR=Ep-Ek,FR=WR/L,ca=Math.sqrt(1-(h/L)**2),mu=FR/(m*9.81*ca),a=v*v/(2*sb);return{intro:`Eine Riesenrutsche überwindet ${h} m Höhe auf ${L} m Rutschlänge. Ein Badegast (${m} kg) startet aus dem Stand und kommt unten mit gemessenen ${de(v)} m/s an. Danach bremst ihn das Wasser im Becken auf ${sb} m Strecke bis zum Stillstand ab. g = 9,81 m/s².`,fig:pxSlide({h}),steps:[
+ STP('Wie viel Lageenergie hat er oben?',Ep/1000,'kJ',[`E_pot = ${m} · 9,81 · ${h} = ${nf(Ep)} J = ${nf(Ep/1000)} kJ`],'E_pot = m · g · h.'),
+ STP('Wie viel Bewegungsenergie hat er unten?',Ek/1000,'kJ',[`E_kin = ½ · ${m} · ${de(v)}² = ${nf(Ek)} J = ${nf(Ek/1000)} kJ`],'E_kin = ½ · m · v².'),
+ STP('Wie viel Energie wurde durch Reibung in Wärme umgesetzt?',WR/1000,'kJ',[`W_R = E_pot − E_kin = ${nf(Ep)} − ${nf(Ek)} = ${nf(WR)} J = ${nf(WR/1000)} kJ (${nf(WR/Ep*100,3)} %)`],'Energieerhaltung: Was fehlt, ging in Reibung.'),
+ STP('Wie groß ist die mittlere Reibungskraft auf der Rutsche?',FR,'N',[`W_R = F_R · L ⇒ F_R = ${nf(WR)} J / ${L} m = ${nf(FR)} N`],'Reibungsarbeit = Reibungskraft · Weg.'),
+ STP('Welche mittlere Reibungszahl ergibt sich daraus? (Rutsche als gerade Schräge gerechnet)',mu,'',[`sin α = h / L = ${nf(h/L)} ⇒ cos α = ${nf(ca)}`,`μ = F_R / (m · g · cos α) = ${nf(FR)} / (${m} · 9,81 · ${nf(ca)}) = ${nf(mu)}`],'F_R = μ · F_N mit F_N = m · g · cos α.'),
+ STP('Wie stark wird er im Becken im Mittel abgebremst?',a,'m/s²',[`a = v² / (2 · s) = ${de(v)}² / (2 · ${sb}) = ${nf(a)} m/s² (${nf(a/9.81,3)} · g)`],'Bremsweg-Formel nach a umgestellt.')]}}],
+
+/* 18 Wagenheber bei Panne */
+['Scherenwagenheber bei der Reifenpanne: Kurbelkraft',r=>{const m=pk(r,[1200,1400,1600]),k=pk(r,[.3,.35]),rk=pk(r,[.12,.15,.18]),P=pk(r,[2,3]),eta=pk(r,[.25,.3,.35]),h=pk(r,[80,100,120]),FL=k*m*9.81,W=FL*P/1000,s=2*PI*rk,F=W/(s*eta),n=h/P;return{intro:`Bei einer Reifenpanne hebt ein Fahrer seinen Pkw (${m} kg) mit dem Scherenwagenheber aus dem Bordwerkzeug an. Am Hebepunkt drücken ${nf(k*100,3)} % der Gewichtskraft. Die Kurbel hat den Radius r = ${de(rk*100)} cm. Vereinfacht hebt eine Kurbelumdrehung die Last um ${P} mm. Der Wirkungsgrad des Spindeltriebs beträgt η = ${de(eta)}. Das Rad muss ${h} mm angehoben werden. g = 9,81 m/s².`,steps:[
+ STP('Welche Kraft drückt auf den Wagenheber?',FL,'N',[`F_L = ${de(k)} · m · g = ${de(k)} · ${m} · 9,81 = ${nf(FL)} N`],'Nur ein Teil des Pkw-Gewichts liegt auf diesem Hebepunkt.'),
+ STP('Welche Hubarbeit wird je Kurbelumdrehung an der Last verrichtet?',W,'J',[`W = F_L · s = ${nf(FL)} N · ${nf(P/1000)} m = ${nf(W)} J`],'Arbeit = Kraft · Weg (mm in m).'),
+ STP('Welchen Weg legt die Hand bei einer Umdrehung zurück?',s,'m',[`s = 2 · π · r = 2 · π · ${de(rk)} m = ${nf(s)} m`],'Umfang des Kurbelkreises.'),
+ STP('Welche Kraft ist an der Kurbel nötig?',F,'N',[`F · s · η = F_L · Hub ⇒ F = ${nf(W)} J / (${nf(s)} m · ${de(eta)}) = ${nf(F)} N`],'Goldene Regel der Mechanik mit Wirkungsgrad: Aufwand = Nutzen / η.'),
+ STP(`Wie viele Kurbelumdrehungen sind für ${h} mm nötig?`,n,'',[`n = ${h} / ${P} = ${nf(n)} Umdrehungen`],'Hubhöhe durch Hub je Umdrehung.',{abs:.05})]}}],
+
+/* 19 Sackkarre */
+['Sackkarre mit Waschmaschine: Handkraft am Griff',r=>{const m=pk(r,[65,70,75,80,85]),a=pk(r,[.12,.15,.18,.2]),l=pk(r,[1,1.1,1.2]),FG=m*9.81,M=FG*a,F=M/l,FA=FG-F;return{intro:`Eine Waschmaschine (${m} kg) wird mit einer Sackkarre transportiert. Die Karre ist gekippt, der Schwerpunkt der Maschine liegt waagerecht gemessen a = ${de(a)} m hinter der Radachse, der Griff l = ${de(l)} m. Die Hand hält senkrecht nach oben. Das Gewicht der Karre bleibt unberücksichtigt. g = 9,81 m/s².`,fig:pxCart({a,l}),steps:[
+ STP('Wie groß ist die Gewichtskraft der Waschmaschine?',FG,'N',[`F_G = ${m} · 9,81 = ${nf(FG)} N`],'F_G = m · g.'),
+ STP('Welches Drehmoment erzeugt sie um die Radachse?',M,'N·m',[`M = F_G · a = ${nf(FG)} · ${de(a)} = ${nf(M)} N·m`],'Hebelarm ist der waagerechte Abstand zur Achse.'),
+ STP('Welche Kraft muss die Hand am Griff aufbringen?',F,'N',[`F · l = F_G · a ⇒ F = ${nf(M)} / ${de(l)} = ${nf(F)} N (entspricht ${nf(F/9.81,3)} kg)`],'Einseitiger Hebel um die Radachse.'),
+ STP('Welche Kraft tragen die Räder?',FA,'N',[`F_Rad = F_G − F = ${nf(FG)} − ${nf(F)} = ${nf(FA)} N`],'Senkrechtes Kräftegleichgewicht.')]}}],
+
+/* 20 Fallschirm */
+['Fallschirmsprung: die ersten Sekunden',r=>{const t=pk(r,[2,3,4]),v=9.81*t,s=9.81*t*t/2;return{intro:`Eine Fallschirmspringerin springt aus dem Flugzeug. In den ersten Sekunden ist ihre Geschwindigkeit noch klein, der Luftwiderstand wird deshalb vernachlässigt (freier Fall). g = 9,81 m/s².`,steps:[
+ STP(`Wie schnell ist sie nach ${t} s (in km/h)?`,v*3.6,'km/h',[`v = g · t = 9,81 · ${t} = ${nf(v)} m/s = ${nf(v*3.6)} km/h`],'Freier Fall: v = g · t.'),
+ STP(`Wie tief ist sie nach ${t} s gefallen?`,s,'m',[`s = ½ · g · t² = 0,5 · 9,81 · ${t}² = ${nf(s)} m`],'s = ½ · g · t².')]}}],
+['Fallschirmspringen: Höchstgeschwindigkeit und Öffnungsstoß',r=>{const m=pk(r,[80,90,100]),cA=pk(r,[.4,.5,.6]),cS=pk(r,[28,32,36]),to=pk(r,[2.5,3,3.5]),rho=1.2,v1=Math.sqrt(2*m*9.81/(rho*cA)),v2=Math.sqrt(2*m*9.81/(rho*cS)),a=(v1-v2)/to,F=m*(a+9.81);return{intro:`Ein Fallschirmspringer (${m} kg mit Ausrüstung) fällt in Bauchlage. Sein Luftwiderstand ist F_L = ½ · ρ · c_w · A · v² mit c_w · A = ${de(cA)} m², ρ = 1,2 kg/m³ (vereinfacht für die ganze Höhe). Mit offenem Schirm beträgt c_w · A = ${cS} m². Der Schirm bremst ihn in ${de(to)} s auf die neue Sinkgeschwindigkeit ab. g = 9,81 m/s².`,steps:[
+ STP('Welche Höchstgeschwindigkeit erreicht er im freien Fall (in m/s)?',v1,'m/s',[`Höchstgeschwindigkeit, wenn F_L = F_G: ½ · ρ · c_w · A · v² = m · g`,`v = √(2 · m · g / (ρ · c_w · A)) = √(2 · ${m} · 9,81 / (1,2 · ${de(cA)})) = ${nf(v1)} m/s`],'Dann ist die resultierende Kraft null, er wird nicht mehr schneller.'),
+ STP('Wie viel ist das in km/h?',v1*3.6,'km/h',[`${nf(v1)} · 3,6 = ${nf(v1*3.6)} km/h`],'Mal 3,6.'),
+ STP('Mit welcher Geschwindigkeit sinkt er am offenen Schirm?',v2,'m/s',[`v = √(2 · ${m} · 9,81 / (1,2 · ${cS})) = ${nf(v2)} m/s`],'Gleiche Formel, viel größere Fläche.'),
+ STP('Wie groß ist die mittlere Verzögerung beim Öffnen?',a,'m/s²',[`a = Δv / t = (${nf(v1)} − ${nf(v2)}) / ${de(to)} = ${nf(a)} m/s² (${nf(a/9.81,3)} · g)`],'Geschwindigkeitsänderung durch Zeit.'),
+ STP('Welche mittlere Kraft wirkt dabei im Gurtzeug?',F/1000,'kN',[`Der Schirm muss abbremsen und zugleich das Gewicht tragen: F = m · (a + g)`,`F = ${m} · (${nf(a)} + 9,81) = ${nf(F)} N = ${nf(F/1000)} kN`],'Kräftebilanz nach oben: F − m · g = m · a.')]}}],
+
+/* 21 Feuerwehreinsatz in drei Teilen */
+['Feuerwehreinsatz, Teil 1: Hydrant öffnen',r=>{const M=pk(r,[80,100,120,150]),rr=pk(r,[.3,.35,.4]),n=pk(r,[10,12,14]),F2=M/(2*rr),F1=M/rr,W=M*2*PI*n;return{intro:`Bei einem Brand schließt die Feuerwehr einen Unterflurhydranten an. Zum Öffnen der Spindel ist ein Drehmoment von ${M} N·m nötig. Der T-Griff des Hydrantenschlüssels hat auf jeder Seite einen Hebelarm von r = ${de(rr)} m zur Spindelachse. Bis der Hydrant ganz offen ist, sind ${n} Umdrehungen nötig.`,steps:[
+ STP('Welche Kraft muss jede Hand aufbringen, wenn zwei Hände an beiden Griffenden gegensinnig drehen?',F2,'N',[`Kräftepaar: M = F · 2r ⇒ F = ${M} / (2 · ${de(rr)}) = ${nf(F2)} N`],'Zwei gleich große, entgegengesetzte Kräfte bilden ein Kräftepaar.'),
+ STP('Welche Kraft wäre mit nur einer Hand an einem Griffende nötig?',F1,'N',[`M = F · r ⇒ F = ${M} / ${de(rr)} = ${nf(F1)} N`],'Halber Hebelarm, doppelte Kraft.'),
+ STP('Welche Arbeit ist für das vollständige Öffnen nötig (konstantes Moment angenommen)?',W/1000,'kJ',[`W = M · φ = M · 2 · π · n = ${M} · 2 · π · ${n} = ${nf(W)} J = ${nf(W/1000)} kJ`],'Bei Drehbewegungen: Arbeit = Drehmoment · Drehwinkel (im Bogenmaß).')]}}],
+['Feuerwehreinsatz, Teil 2: Pumpe und Löschwasser',r=>{const Q=pk(r,[1000,1600,2000]),p=pk(r,[8,10]),h=pk(r,[9,12,15]),dR=pk(r,[1,1.5,2]),eta=pk(r,[.55,.6,.65]),QS=pk(r,[200,400]),VT=pk(r,[1200,1600,2000]),dH=1000*9.81*h/1e5,pS=p-dH-dR,P=p*1e5*Q/60000,Pa=P/eta,V20=Q*20/1000,tT=VT/QS;return{intro:`Die Feuerwehrpumpe (Ausgangsdruck ${p} bar, Förderstrom ${Q} l/min) versorgt die Schlauchleitung zu einem Brand im Obergeschoss. Das Strahlrohr liegt ${h} m über der Pumpe. In den Schläuchen gehen durch Reibung ${de(dR)} bar verloren. Der Wirkungsgrad der Pumpe beträgt ${nf(eta*100,3)} %. Bis der Hydrant angeschlossen ist, löscht ein Trupp mit ${QS} l/min aus dem Fahrzeugtank (${VT} l). g = 9,81 m/s².`,steps:[
+ STP('Wie viel Druck geht durch den Höhenunterschied verloren?',dH,'bar',[`Δp = ρ · g · h = 1000 · 9,81 · ${h} = ${nf(dH*1e5)} Pa = ${nf(dH)} bar`],'Faustregel der Feuerwehr: etwa 1 bar je 10 m Höhe.'),
+ STP('Welcher Druck kommt am Strahlrohr an?',pS,'bar',[`p_S = ${p} − ${nf(dH)} − ${de(dR)} = ${nf(pS)} bar`],'Ausgangsdruck minus Höhen- und Reibungsverlust.'),
+ STP('Welche hydraulische Leistung gibt die Pumpe ab?',P/1000,'kW',[`P = p · Q = ${p} · 10⁵ Pa · ${Q} / 60 000 m³/s = ${nf(P)} W = ${nf(P/1000)} kW`],'Druck in Pa, Förderstrom in m³/s.'),
+ STP('Welche Antriebsleistung braucht die Pumpe?',Pa/1000,'kW',[`P_an = ${nf(P/1000)} kW / ${de(eta)} = ${nf(Pa/1000)} kW`],'Aufwand = Nutzen / η.'),
+ STP('Wie viel Löschwasser fördert die Pumpe in 20 Minuten?',V20,'m³',[`V = Q · t = ${Q} l/min · 20 min = ${nf(Q*20)} l = ${nf(V20)} m³`],'1000 l = 1 m³.'),
+ STP('Wie lange reicht der Fahrzeugtank für den ersten Trupp?',tT,'min',[`t = ${VT} l / ${QS} l/min = ${nf(tT)} min`],'Deshalb muss die Wasserversorgung vom Hydranten schnell stehen.')]}}],
+['Feuerwehreinsatz, Teil 3: Steckleiter ans Fenster',r=>{const L=pk(r,[6.8,8.4]),al=pk(r,[68,70,72,75]),H=pk(r,[5,5.5,6]),h=L*Math.sin(kmR(al)),a=L*Math.cos(kmR(al)),Ln=(H+1)/Math.sin(kmR(al));return{intro:`Ein Trupp stellt eine Steckleiter (L = ${de(L)} m) an eine Hauswand. Die Leiter soll unter α = ${al}° zum Boden stehen (vorgeschrieben sind etwa 65° bis 75°).`,fig:pxLadder({L,al}),steps:[
+ STP('In welcher Höhe liegt die Leiter an der Wand an?',h,'m',[`h = L · sin α = ${de(L)} · sin ${al}° = ${nf(h)} m`],'Die Leiter ist die Hypotenuse, h die Gegenkathete.'),
+ STP('Wie weit steht der Leiterfuß von der Wand entfernt?',a,'m',[`a = L · cos α = ${de(L)} · cos ${al}° = ${nf(a)} m`,`Kontrolle mit Pythagoras: √(${nf(a)}² + ${nf(h)}²) = ${nf(Math.hypot(a,h))} m`],'Ankathete: a = L · cos α.'),
+ STP(`Die Fensterbrüstung liegt ${de(H)} m hoch, die Leiter soll 1 m darüber hinausragen. Wie lang muss sie bei gleichem Winkel mindestens sein?`,Ln,'m',[`L = (${de(H)} + 1) / sin ${al}° = ${nf(Ln)} m`,Ln<=L?`Die ${de(L)}-m-Leiter reicht.`:`Die ${de(L)}-m-Leiter reicht nicht.`],'Höhe durch sin α ergibt die Hypotenuse.')]}}]
+);
+Object.assign(PXI,{
+'Wasserrutsche: Endgeschwindigkeit ohne Reibung':{lv:1,t:'Energieformen & Erhaltung',g:17},
+'Riesenrutsche: Reibungsverlust und Abbremsen im Becken':{lv:3,t:'Energieformen & Erhaltung',g:17},
+'Scherenwagenheber bei der Reifenpanne: Kurbelkraft':{lv:2,t:'Wirkungsgrad',g:18},
+'Sackkarre mit Waschmaschine: Handkraft am Griff':{lv:2,t:'Hebel',g:19},
+'Fallschirmsprung: die ersten Sekunden':{lv:1,t:'Freier Fall (mit Luftwiderstand)',g:20},
+'Fallschirmspringen: Höchstgeschwindigkeit und Öffnungsstoß':{lv:3,t:'Freier Fall (mit Luftwiderstand)',g:20},
+'Feuerwehreinsatz, Teil 1: Hydrant öffnen':{lv:2,t:'Drehmoment',g:21},
+'Feuerwehreinsatz, Teil 2: Pumpe und Löschwasser':{lv:3,t:'Hydraulische Leistung & Volumenstrom',g:21},
+'Feuerwehreinsatz, Teil 3: Steckleiter ans Fenster':{lv:2,t:'Sinus & Kosinus',g:21}});
+PXB.push(
+['Wirkungsgrad','b','Erkläre, warum der Spindeltrieb eines Wagenhebers einen schlechten Wirkungsgrad haben darf, ja sogar haben muss, und was beim Radwechsel an der Straße zur Sicherheit gehört.',
+ 'Ein Spindeltrieb mit kleinem Wirkungsgrad (unter 50 %) ist selbsthemmend: Die Reibung im Gewinde ist so groß, dass die Last die Spindel nicht von selbst zurückdrehen kann. Lässt man die Kurbel los, bleibt der Pkw oben stehen. Der Preis ist eine größere Kurbelkraft. Zur Sicherheit gehören: Warnblinker und Warnweste, Warndreieck in ausreichendem Abstand, Feststellbremse und Gang einlegen, Unterlegkeil am gegenüberliegenden Rad, fester ebener Untergrund, Wagenheber nur am vorgesehenen Hebepunkt ansetzen und niemals mit dem Körper unter das angehobene Fahrzeug.',
+ ['Kleiner Wirkungsgrad bedeutet Selbsthemmung','Last dreht die Spindel nicht zurück','Absichern: Warnblinker, Warnweste, Warndreieck','Fahrzeug gegen Wegrollen sichern, fester Untergrund','Nie unter das angehobene Fahrzeug']],
+['Brandklassen & Löschmittel','b','Erkläre das Verbrennungsdreieck (Branddreieck) und leite daraus ab, auf welche Arten man ein Feuer löschen kann.',
+ 'Eine Verbrennung ist eine schnelle Oxidation. Sie braucht gleichzeitig drei Dinge: einen brennbaren Stoff, Sauerstoff (Luft) und genügend Wärme (Zündtemperatur), dazu das richtige Mengenverhältnis. Fehlt eine Seite des Dreiecks, erlischt das Feuer. Daraus folgen die Löschmethoden: Kühlen (Wasser entzieht Wärme, die Temperatur fällt unter die Zündtemperatur), Ersticken (Schaum, CO₂, Löschdecke, Deckel trennen den Sauerstoff ab) und den Brennstoff entfernen (Gaszufuhr absperren, brennbares Material wegräumen). Löschpulver unterbricht zusätzlich die chemische Kettenreaktion.',
+ ['Brennstoff, Sauerstoff, Zündtemperatur','Fehlt eine Seite, erlischt das Feuer','Kühlen entzieht Wärme','Ersticken trennt den Sauerstoff ab','Brennstoff entfernen']],
+['Brandklassen & Löschmittel','b','Nenne Regeln für das Löschen mit dem Feuerlöscher und begründe sie.',
+ 'Feuer in Windrichtung angreifen, damit Rauch, Hitze und Löschmittel nicht ins Gesicht kommen. Flächenbrände von vorn und unten ablöschen, die Glut am Brandherd zuerst treffen, nicht in die Flammen. Tropf- und Fließbrände von oben nach unten löschen, weil sonst von oben immer wieder brennender Stoff nachfließt. Wandbrände von unten nach oben löschen. Mehrere Feuerlöscher gleichzeitig einsetzen, nicht nacheinander, damit der Brand schnell erstickt. Den Rückzug sichern und auf Rückzündung achten. Eigene Sicherheit geht vor: Menschen retten, Feuerwehr alarmieren, bei Rauch und Hitze zurückziehen.',
+ ['In Windrichtung angreifen','Flächenbrand von vorn, Glut zuerst','Tropfbrand von oben nach unten','Mehrere Löscher gleichzeitig','Rückzug sichern, Rückzündung beachten']]);
+
+/* ===== Nachgereicht: Fabrikauftrag Stanzen und Verzinken ===== */
+const pxPlate=({a,b,d})=>kmSvg(340,230,`<rect x="60" y="40" width="220" height="140" rx="2" class="kmw"/>${[[86,66],[254,66],[86,154],[254,154]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="12" class="kmd2"/>`).join('')}
+ ${kmD(60,180,280,180,`a = ${a} mm`,22)}${kmD(280,40,280,180,`b = ${b} mm`,-22)}${kmD(242,66,266,66,`d = ${d} mm`,-22)}${kmT(170,116,'Montageplatte','text-anchor="middle" class="kms kmsb"')}`);
+PXW.push(
+['Fabrikauftrag, Teil 1: Montageplatten stanzen',r=>{const a=pk(r,[120,140,160]),b=pk(r,[80,90,100]),d=pk(r,[9,11,13]),t=pk(r,[2,2.5,3]),tau=pk(r,[320,360,400]),Ua=2*(a+b),Ul=4*PI*d,F=(Ua+Ul)*t*tau/1000,Fp=F/.8,A=a*b-4*PI*d*d/4,m=A*t/1000*7.85;return{intro:`Eine Metallfabrik stanzt rechteckige Montageplatten (a = ${a} mm, b = ${b} mm) mit vier Bohrungen (d = ${d} mm) aus Stahlblech (t = ${de(t)} mm, Scherfestigkeit τ_aB = ${tau} N/mm², Dichte 7,85 g/cm³). Ein Folgeverbundwerkzeug schneidet Außenkontur und Löcher im selben Pressenhub. Die Presse soll mit 20 % Kraftreserve betrieben werden.`,fig:pxPlate({a,b,d}),steps:[
+ STP('Wie lang ist die Schnittlinie der Außenkontur?',Ua,'mm',[`U_a = 2 · (a + b) = 2 · (${a} + ${b}) = ${Ua} mm`],'Umfang eines Rechtecks.'),
+ STP('Wie lang ist die Schnittlinie der vier Löcher zusammen?',Ul,'mm',[`U_L = 4 · π · d = 4 · π · ${d} = ${nf(Ul)} mm`],'Kreisumfang π · d, viermal.'),
+ STP('Welche Schneidkraft ist insgesamt nötig?',F,'kN',[`S = (U_a + U_L) · t = (${Ua} + ${nf(Ul)}) · ${de(t)} = ${nf((Ua+Ul)*t)} mm²`,`F = S · τ_aB = ${nf((Ua+Ul)*t)} mm² · ${tau} N/mm² = ${nf(F*1000)} N = ${nf(F)} kN`],'Scherfläche = Schnittlänge · Blechdicke.'),
+ STP('Welche Nennkraft muss die Presse mindestens haben?',Fp,'kN',[`Mit 20 % Reserve darf die Presse nur zu 80 % ausgelastet sein: F_P = F / 0,8 = ${nf(Fp)} kN`],'Reserve auf die Nennkraft der Presse bezogen.'),
+ STP('Welche Masse hat eine fertige Platte?',m,'g',[`A = a · b − 4 · π · d² / 4 = ${a * b} − ${nf(PI*d*d)} = ${nf(A)} mm²`,`V = A · t = ${nf(A*t)} mm³ = ${nf(A*t/1000)} cm³`,`m = ρ · V = 7,85 · ${nf(A*t/1000)} = ${nf(m)} g`],'Fläche ohne Löcher mal Dicke, dann mal Dichte.')]}}],
+['Fabrikauftrag, Teil 3: Montageplatten galvanisch verzinken',r=>{const a=pk(r,[120,140,160]),b=pk(r,[80,90,100]),d=pk(r,[9,11,13]),N=pk(r,[20,30,40]),s=pk(r,[8,10,12]),j=pk(r,[1.5,2,2.5]),A1=2*(a*b-4*PI*d*d/4)/1e4,A=A1*N,m=A*100*s*1e-4*7.14,Q=m*2*96485/65.38,I=j*A,t=Q/I/60;return{intro:`Die gestanzten Montageplatten (${a} mm × ${b} mm, vier Löcher d = ${d} mm) werden gegen Korrosion galvanisch verzinkt. Ein Gestell trägt ${N} Platten. Beide Seiten erhalten eine Zinkschicht von ${s} µm, die Kanten bleiben unberücksichtigt. Zink: ρ = 7,14 g/cm³, M = 65,38 g/mol, z = 2. Faraday-Konstante F = 96 485 C/mol. Die Stromdichte beträgt ${de(j)} A/dm², die Stromausbeute 100 %.`,fig:pxPlate({a,b,d}),steps:[
+ STP('Wie groß ist die zu verzinkende Fläche eines Gestells?',A,'dm²',[`Eine Platte, beide Seiten: A₁ = 2 · (${a} · ${b} − 4 · π · ${d}² / 4) mm² = ${nf(A1*1e4)} mm² = ${nf(A1)} dm²`,`Gestell: A = ${N} · ${nf(A1)} = ${nf(A)} dm²`],'1 dm² = 10 000 mm².'),
+ STP('Wie viel Zink wird abgeschieden?',m,'g',[`V = A · s = ${nf(A*100)} cm² · ${nf(s*1e-4)} cm = ${nf(A*100*s*1e-4)} cm³`,`m = ρ · V = 7,14 · ${nf(A*100*s*1e-4)} = ${nf(m)} g`],'Schichtdicke in cm umrechnen: 1 µm = 0,0001 cm.'),
+ STP('Welche elektrische Ladung ist dafür nötig?',Q/1000,'kC',[`Faraday: Q = m · z · F / M = ${nf(m)} · 2 · 96 485 / 65,38 = ${nf(Q)} C = ${nf(Q/1000)} kC`],'Je Zinkion werden zwei Elektronen gebraucht.'),
+ STP('Welcher Strom fließt?',I,'A',[`I = j · A = ${de(j)} A/dm² · ${nf(A)} dm² = ${nf(I)} A`],'Strom = Stromdichte · Fläche.'),
+ STP('Wie lange muss das Gestell im Bad bleiben?',t,'min',[`t = Q / I = ${nf(Q)} C / ${nf(I)} A = ${nf(Q/I)} s = ${nf(t)} min`],'Q = I · t.')]}}]);
+Object.assign(PXI,{'Fabrikauftrag, Teil 1: Montageplatten stanzen':{lv:3,t:'Scherung & Flächenpressung',g:22},'Fabrikauftrag, Teil 3: Montageplatten galvanisch verzinken':{lv:3,t:'Elektrolyse',g:22}});
+PXB.push(['Korrosion','b','Fabrikauftrag, Teil 4: Erkläre, warum eine Zinkschicht den Stahl auch an einem Kratzer noch schützt, eine Nickelschicht dagegen nicht. Nutze die Spannungsreihe.',
+ 'Wird die Schicht verletzt, bilden Schicht, Stahl und Feuchtigkeit ein galvanisches Element. Das unedlere Metall wird zur Anode und löst sich auf. Zink (E° = −0,76 V) ist unedler als Eisen (E° = −0,44 V): Zink opfert sich, das Eisen bleibt geschützt (kathodischer Schutz). Nickel (E° = −0,25 V) ist edler als Eisen. Am Kratzer wird deshalb das Eisen zur Anode und rostet, und zwar besonders schnell, weil eine große Kathode einer kleinen Anode gegenübersteht (Lochfraß, Unterrosten). Edlere Schichten schützen nur, solange sie dicht sind.',
+ ['Verletzte Schicht bildet ein galvanisches Element','Unedleres Metall wird Anode und löst sich','Zink unedler als Eisen: Opferanode, kathodischer Schutz','Nickel edler: Eisen rostet am Kratzer','Werte aus der Spannungsreihe genannt']]);
+
+/* ===== Nachgereicht: Auftrieb in Schwimmbad, Meer und Totem Meer ===== */
+const pxFloat=()=>{const T=[['Schwimmbad','1000',34],['Meer','1025',31],['Totes Meer','1240',18]];return kmSvg(360,214,T.map(([n,r,d],i)=>{const x=14+i*116,y=70;return `<rect x="${x}" y="${y}" width="104" height="96" class="kmd2"/><line x1="${x}" y1="${y}" x2="${x+104}" y2="${y}" class="kmg"/><rect x="${x+27}" y="${y-44+d}" width="50" height="44" class="kmw"/>${kmD(x+82,y,x+82,y-44+d+44,'t',-0)}${kmT(x+52,y+120,n,'text-anchor="middle" class="kms kmsb"')}${kmT(x+52,y+86,`ρ = ${r} kg/m³`,'text-anchor="middle" class="kms"')}`}).join('')+kmT(180,22,'Gleicher Körper, verschiedene Eintauchtiefe t','text-anchor="middle" class="kms"'))};
+PXW.push(
+['Schwimmen im Freibad, im Meer und im Toten Meer',r=>{const m=pk(r,[70,80,90]),rK=pk(r,[980,985,990]),V=m/rK*1000,FA=m*9.81,u=x=>(1-rK/x)*100;return{intro:`Ein Schwimmer (${m} kg) hat mit eingeatmeter Luft eine mittlere Dichte von ${rK} kg/m³. Er lässt sich ruhig treiben, im Freibad (ρ = 1000 kg/m³), im Meer (ρ = 1025 kg/m³) und im Toten Meer (ρ = 1240 kg/m³). g = 9,81 m/s².`,fig:pxFloat(),steps:[
+ STP('Wie groß ist sein Körpervolumen?',V,'l',[`V = m / ρ = ${m} kg / ${rK} kg/m³ = ${nf(V/1000)} m³ = ${nf(V)} l`],'Volumen = Masse / Dichte.'),
+ STP('Wie groß ist die Auftriebskraft, während er schwimmt?',FA,'N',[`Schwimmen heißt: F_A = F_G = m · g = ${m} · 9,81 = ${nf(FA)} N`,'Sie ist in allen drei Gewässern gleich groß.'],'Ein schwimmender Körper verdrängt genau so viel Flüssigkeit, wie er selbst wiegt.'),
+ STP('Wie viel Prozent seines Volumens ragen im Freibad aus dem Wasser?',u(1000),'%',[`Eingetaucht: V_ein / V = ρ_K / ρ_Fl = ${rK} / 1000`,`Über Wasser: (1 − ${rK} / 1000) · 100 % = ${nf(u(1000))} %`],'Der eingetauchte Anteil ist das Dichteverhältnis.'),
+ STP('Wie viel Prozent ragen im Meer heraus?',u(1025),'%',[`(1 − ${rK} / 1025) · 100 % = ${nf(u(1025))} %`],'Salzwasser ist dichter, er muss weniger verdrängen.'),
+ STP('Wie viel Prozent ragen im Toten Meer heraus?',u(1240),'%',[`(1 − ${rK} / 1240) · 100 % = ${nf(u(1240))} %`,`Das sind ${nf(V*u(1240)/100)} l seines Körpers über der Wasserlinie: Man liegt fast wie auf einer Matratze.`],'Je dichter die Flüssigkeit, desto weiter taucht der Körper auf.')]}}],
+['Badeinsel im Freibad, im Meer und im Toten Meer: Eintauchtiefe und Tragfähigkeit',r=>{const L=pk(r,[2,2.2]),B=pk(r,[2,2.2]),H=pk(r,[.2,.25]),mE=pk(r,[120,150,180]),n=pk(r,[3,4,5]),mP=80,A=L*B,m=mE+n*mP,t=x=>m/(x*A)*100,nm=Math.floor(((H-.05)*1000*A-mE)/mP+1e-9);return{intro:`Eine schwimmende Badeinsel ist ein Kunststoffquader mit ${de(L)} m × ${de(B)} m Grundfläche und ${nf(H*100)} cm Höhe. Sie wiegt ${mE} kg. Auf ihr sitzen ${n} Personen mit je ${mP} kg. Dichten: Freibad 1000 kg/m³, Meer 1025 kg/m³, Totes Meer 1240 kg/m³.`,fig:pxFloat(),steps:[
+ STP('Welche Masse muss das Wasser tragen?',m,'kg',[`m = ${mE} + ${n} · ${mP} = ${m} kg`],'Insel und Personen zusammen.'),
+ STP('Wie tief taucht die Insel im Freibad ein?',t(1000),'cm',[`Schwimmen: ρ_W · A · t = m ⇒ t = m / (ρ_W · A)`,`t = ${m} / (1000 · ${nf(A)}) = ${nf(t(1000)/100)} m = ${nf(t(1000))} cm`],'Verdrängtes Wasser wiegt so viel wie Insel und Personen.'),
+ STP('Wie tief taucht sie im Meer ein?',t(1025),'cm',[`t = ${m} / (1025 · ${nf(A)}) = ${nf(t(1025))} cm`],'Gleiche Formel, größere Dichte.'),
+ STP('Wie tief taucht sie im Toten Meer ein?',t(1240),'cm',[`t = ${m} / (1240 · ${nf(A)}) = ${nf(t(1240))} cm`],'Im sehr salzigen Wasser schwimmt sie deutlich höher.'),
+ STP('Wie viele Personen dürfen im Freibad höchstens auf der Insel sitzen, wenn mindestens 5 cm über Wasser bleiben sollen?',nm,'',[`Größte Eintauchtiefe: ${nf(H*100)} − 5 = ${nf(H*100-5)} cm`,`Tragfähigkeit: 1000 · ${nf(A)} · ${nf(H-.05)} = ${nf((H-.05)*1000*A)} kg, minus Insel ${mE} kg = ${nf((H-.05)*1000*A-mE)} kg`,`${nf((H-.05)*1000*A-mE)} / ${mP} = ${nf(((H-.05)*1000*A-mE)/mP)} → höchstens ${nm} Personen`],'Abrunden: Eine angefangene Person passt nicht mehr.',{abs:.01})]}}]);
+Object.assign(PXI,{'Schwimmen im Freibad, im Meer und im Toten Meer':{lv:2,t:'Auftrieb und Dichte',g:23},'Badeinsel im Freibad, im Meer und im Toten Meer: Eintauchtiefe und Tragfähigkeit':{lv:3,t:'Auftrieb und Dichte',g:23}});
+PXB.push(['Auftrieb und Dichte','b','Ein voll beladenes Frachtschiff fährt vom Meer in einen Fluss hinein. Erkläre, ob es dort tiefer oder weniger tief eintaucht, und warum Schiffe deshalb mehrere Lademarken haben.',
+ 'Ein schwimmendes Schiff verdrängt so viel Wasser, wie es selbst wiegt (F_A = F_G). Die Gewichtskraft bleibt gleich. Süßwasser im Fluss hat eine kleinere Dichte (1000 kg/m³) als Meerwasser (etwa 1025 kg/m³). Für die gleiche Auftriebskraft F_A = ρ · g · V muss das Schiff im Fluss also ein größeres Volumen verdrängen und taucht tiefer ein. Damit es nicht überladen ist, hat es Lademarken (Freibordmarke, Plimsoll-Marke) für Süßwasser, Seewasser, Sommer, Winter und tropische Gewässer. Die Süßwassermarke liegt höher.',
+ ['Schwimmen: Auftriebskraft = Gewichtskraft','Süßwasser hat kleinere Dichte','F_A = ρ · g · V: größeres verdrängtes Volumen','Schiff taucht im Fluss tiefer ein','Lademarken je Wasserart']]);
+
+/* ===== Nachgereicht: Offshore-Einsatz Öl und Wind ===== */
+PXW.push(
+['Offshore-Ölplattform: Förderung und Pipeline an Land',r=>{const Q=pk(r,[600,800,1000]),d=pk(r,[.5,.6]),h=pk(r,[100,130,160]),L=pk(r,[120,180,240]),dp=pk(r,[.3,.4,.5]),pm=80,A=PI*d*d/4,v=Q/3600/A,pH=850*9.81*h/1e5,pL=dp*L,n=Math.ceil(pL/pm-1e-9),P=pL*1e5*Q/3600/1e6,bbl=Q*24/.159;return{intro:`Eine Ölplattform in der Nordsee fördert Rohöl (ρ = 850 kg/m³) vom Meeresboden ${h} m hinauf bis aufs Deck und pumpt es dann durch eine ${L} km lange Pipeline (Innendurchmesser ${nf(d*1000)} mm) an Land. Der Förderstrom beträgt ${Q} m³/h. In der Pipeline gehen durch Reibung ${de(dp)} bar je Kilometer verloren. Eine Pumpstation darf den Druck um höchstens ${pm} bar erhöhen. g = 9,81 m/s².`,steps:[
+ STP('Wie schnell strömt das Öl in der Pipeline?',v,'m/s',[`A = π · d² / 4 = π · ${de(d)}² / 4 = ${nf(A)} m²`,`v = Q / A = (${Q} / 3600) m³/s / ${nf(A)} m² = ${nf(v)} m/s`],'Volumenstrom in m³/s umrechnen, dann Q = A · v.'),
+ STP('Welcher Druck ist nötig, nur um das Öl vom Meeresboden aufs Deck zu heben?',pH,'bar',[`p = ρ · g · h = 850 · 9,81 · ${h} = ${nf(pH*1e5)} Pa = ${nf(pH)} bar`],'Schweredruck der Ölsäule.'),
+ STP('Wie groß ist der Druckverlust in der ganzen Pipeline?',pL,'bar',[`Δp = ${de(dp)} bar/km · ${L} km = ${nf(pL)} bar`],'Verlust je Kilometer mal Länge.'),
+ STP('Wie viele Pumpstationen sind mindestens nötig?',n,'',[`n = ${nf(pL)} / ${pm} = ${nf(pL/pm)} → ${n} Stationen`],'Aufrunden.',{abs:.01}),
+ STP('Welche hydraulische Leistung brauchen alle Pumpstationen zusammen?',P,'MW',[`P = Δp · Q = ${nf(pL)} · 10⁵ Pa · ${nf(Q/3600)} m³/s = ${nf(P*1e6)} W = ${nf(P)} MW`],'P = p · Q mit Pa und m³/s.'),
+ STP('Wie viele Barrel Öl werden am Tag gefördert? (1 Barrel = 159 l)',bbl,'bbl',[`V = ${Q} m³/h · 24 h = ${nf(Q*24)} m³`,`${nf(Q*24)} m³ / 0,159 m³ = ${nf(bbl)} Barrel`],'1 m³ = 1000 l.')]}}],
+['Offshore-Windpark, Teil 1: Leistung und Jahresertrag einer Turbine',r=>{const D=pk(r,[150,164,200]),v=pk(r,[10,11,12]),cp=pk(r,[.42,.45,.48]),eta=pk(r,[.93,.95]),h=pk(r,[3800,4200,4500]),A=PI*D*D/4,Pw=.5*1.225*A*v**3/1e6,Pm=cp*Pw,Pe=Pm*eta,Pn=Math.round(Pe),E=Pn*h/1000,HH=E*1e6/3500;return{intro:`Ein Ingenieur betreut einen Offshore-Windpark. Eine Turbine hat einen Rotordurchmesser von ${D} m. Bei der Nennwindgeschwindigkeit ${v} m/s (Luftdichte 1,225 kg/m³) hat der Rotor den Leistungsbeiwert c_P = ${de(cp)}, Getriebe, Generator und Umrichter zusammen den Wirkungsgrad ${nf(eta*100,3)} %. Offshore erreicht die Turbine ${h} Volllaststunden pro Jahr. Ein Haushalt verbraucht 3500 kWh im Jahr.`,steps:[
+ STP('Wie groß ist die überstrichene Rotorfläche?',A,'m²',[`A = π · D² / 4 = π · ${D}² / 4 = ${nf(A)} m²`],'Kreisfläche.'),
+ STP('Welche Leistung steckt im Wind, der durch diese Fläche strömt?',Pw,'MW',[`P_Wind = ½ · ρ · A · v³ = 0,5 · 1,225 · ${nf(A)} · ${v}³ = ${nf(Pw*1e6)} W = ${nf(Pw)} MW`],'Die Windleistung wächst mit v³.'),
+ STP('Welche mechanische Leistung gibt der Rotor ab?',Pm,'MW',[`P_mech = c_P · P_Wind = ${de(cp)} · ${nf(Pw)} = ${nf(Pm)} MW`,`Zum Vergleich: Nach Betz sind höchstens 59,3 % nutzbar.`],'Der Leistungsbeiwert ist der Wirkungsgrad des Rotors.'),
+ STP('Welche elektrische Leistung wird ins Netz eingespeist?',Pe,'MW',[`P_el = η · P_mech = ${de(eta)} · ${nf(Pm)} = ${nf(Pe)} MW`],'Verluste im Triebstrang abziehen.'),
+ STP(`Wie viel Energie liefert die Turbine im Jahr? (Nennleistung gerundet ${Pn} MW)`,E,'GWh',[`E = P_N · t_Volllast = ${Pn} MW · ${h} h = ${nf(Pn*h)} MWh = ${nf(E)} GWh`],'Volllaststunden: so viele Stunden müsste sie mit Nennleistung laufen, um den Jahresertrag zu erreichen.'),
+ STP("Wie viele Haushalte kann sie rechnerisch versorgen? (abrunden)",Math.floor(HH),'',[`${nf(E*1e6)} kWh / 3500 kWh = ${nf(HH)} → ${Math.floor(HH)} Haushalte`],'1 GWh = 1 000 000 kWh. Abrunden: Ein angefangener Haushalt ist nicht versorgt.',{abs:.01})]}}],
+['Offshore-Windpark, Teil 2: Opferanoden gegen Meerwasser-Korrosion',r=>{const D=pk(r,[6,7,8]),L=pk(r,[25,30,35]),j=pk(r,[.08,.1,.12]),y=pk(r,[20,25]),ea=pk(r,[.65,.7]),A=PI*D*L,I=j*A,Q=I*y*8760,Ct=3*96485/26.98/3.6,Ce=Ct*ea,m=Q/Ce;return{intro:`Das Fundament einer Windturbine ist ein Stahlrohr (Monopile) mit ${D} m Durchmesser, das ${L} m tief im Meerwasser und im Meeresboden steht. Gegen Korrosion wird es kathodisch mit Opferanoden aus Aluminium geschützt. Die nötige Schutzstromdichte beträgt ${de(j)} A/m², die Schutzdauer soll ${y} Jahre betragen. Aluminium: M = 26,98 g/mol, z = 3, F = 96 485 C/mol. Die Anoden liefern nur ${nf(ea*100,3)} % ihrer theoretischen Ladung als Schutzstrom.`,steps:[
+ STP('Wie groß ist die zu schützende Mantelfläche?',A,'m²',[`A = π · D · L = π · ${D} · ${L} = ${nf(A)} m²`],'Mantelfläche eines Zylinders (Innenseite vernachlässigt).'),
+ STP('Welcher Schutzstrom ist nötig?',I,'A',[`I = j · A = ${de(j)} A/m² · ${nf(A)} m² = ${nf(I)} A`],'Strom = Stromdichte · Fläche.'),
+ STP(`Welche Ladung muss in ${y} Jahren fließen (in Ah)?`,Q,'Ah',[`t = ${y} · 8760 h = ${nf(y*8760)} h`,`Q = I · t = ${nf(I)} A · ${nf(y*8760)} h = ${nf(Q)} Ah`],'Ein Jahr hat 8760 Stunden.'),
+ STP('Welche Ladung liefert 1 kg Aluminium theoretisch (in Ah/kg)?',Ct,'Ah/kg',[`Faraday: Q = m · z · F / M = 1000 g · 3 · 96 485 / 26,98 = ${nf(Ct*3600,5)} C`,`1 Ah = 3600 C ⇒ ${nf(Ct)} Ah/kg`],'Jedes Aluminiumatom gibt drei Elektronen ab.'),
+ STP('Wie viel Aluminium müssen die Anoden mindestens wiegen?',m/1000,'t',[`Nutzbar: ${nf(Ct)} · ${de(ea)} = ${nf(Ce)} Ah/kg`,`m = ${nf(Q)} Ah / ${nf(Ce)} Ah/kg = ${nf(m)} kg = ${nf(m/1000)} t`],'Benötigte Ladung durch nutzbare Ladung je kg.')]}}]);
+Object.assign(PXI,{'Offshore-Ölplattform: Förderung und Pipeline an Land':{lv:3,t:'Hydraulische Leistung & Volumenstrom',g:24},'Offshore-Windpark, Teil 1: Leistung und Jahresertrag einer Turbine':{lv:3,t:'Windkraftanlage',g:25},'Offshore-Windpark, Teil 2: Opferanoden gegen Meerwasser-Korrosion':{lv:3,t:'Korrosion',g:25}});
+PXB.push(['Korrosion','b','Offshore-Windpark, Teil 3: Erkläre, warum Stahlbauwerke im Meer in der Spritzwasserzone am stärksten rosten und wie man jede Zone schützt.',
+ 'Meerwasser ist durch das gelöste Salz ein sehr guter Elektrolyt, Chlorid-Ionen zerstören zudem schützende Deckschichten. Unter Wasser fehlt Sauerstoff eher, dort helfen Opferanoden oder Fremdstrom (kathodischer Schutz), weil der Schutzstrom durch das Wasser fließen kann. In der Spritzwasserzone über der Wasserlinie wechseln nass und trocken: Es gibt reichlich Sauerstoff und immer wieder frisches Salzwasser, die Korrosion läuft am schnellsten. Dort wirkt kein kathodischer Schutz, weil der Elektrolyt fehlt, wenn die Fläche abtrocknet. Man schützt sie mit dicken Beschichtungen und einem Korrosionszuschlag auf die Wanddicke. Darüber in der Atmosphäre genügen Beschichtungen gegen salzhaltige Luft.',
+ ['Salzwasser als guter Elektrolyt, Chlorid','Spritzwasserzone: viel Sauerstoff und Salz, nass-trocken','Kathodischer Schutz nur unter Wasser wirksam','Beschichtung und Korrosionszuschlag oben','Zonen unterschieden']]);
+
+/* ===== Nachgereicht: Fabrikauftrag Beizen und Chemikalien der Oberflächentechnik ===== */
+PXW.push(['Fabrikauftrag, Teil 2: Beizen mit Salzsäure und Abwasser neutralisieren',r=>{const mR=pk(r,[1.2,1.5,1.8,2.4]),w=pk(r,[15,18,20]),rho=w===15?1.07:w===18?1.09:1.10,VA=pk(r,[500,800,1000]),c=pk(r,[.2,.3,.5]),n1=mR*1000/159.69,n2=6*n1,mH=n2*36.46/1000,V=mH/(w/100)/rho,nC=c*VA/2,mC=nC*74.09/1000;return{intro:`Vor dem Verzinken werden angerostete Stahlteile in Salzsäure gebeizt. In einer Charge lösen sich ${de(mR)} kg Rost, gerechnet als Eisen(III)-oxid: Fe₂O₃ + 6 HCl → 2 FeCl₃ + 3 H₂O. Die Beize ist ${w}-prozentige Salzsäure (Massenanteil, ρ = ${de(rho)} kg/l). Das Spülwasser (${VA} l) enthält danach noch Salzsäure mit c = ${de(c)} mol/l und wird mit Kalkhydrat neutralisiert: Ca(OH)₂ + 2 HCl → CaCl₂ + 2 H₂O. Molare Massen: Fe₂O₃ 159,69 g/mol, HCl 36,46 g/mol, Ca(OH)₂ 74,09 g/mol.`,steps:[
+ STP('Welche Stoffmenge Eisen(III)-oxid wird gelöst?',n1,'mol',[`n = m / M = ${nf(mR*1000)} g / 159,69 g/mol = ${nf(n1)} mol`],'n = m / M, kg in g umrechnen.'),
+ STP('Wie viel Mol HCl werden dabei verbraucht?',n2,'mol',[`Laut Gleichung 1 : 6 ⇒ n(HCl) = 6 · ${nf(n1)} = ${nf(n2)} mol`],'Stoffmengenverhältnis aus den Koeffizienten.'),
+ STP('Welche Masse reines HCl ist das?',mH,'kg',[`m = n · M = ${nf(n2)} mol · 36,46 g/mol = ${nf(mH*1000)} g = ${nf(mH)} kg`],'m = n · M.'),
+ STP(`Wie viele Liter ${w}-prozentige Salzsäure werden verbraucht?`,V,'l',[`m_Lösung = ${nf(mH)} kg / ${de(w/100)} = ${nf(mH/(w/100))} kg`,`V = m / ρ = ${nf(mH/(w/100))} kg / ${de(rho)} kg/l = ${nf(V)} l`],'Erst die Masse der Lösung über den Massenanteil, dann das Volumen über die Dichte.'),
+ STP('Wie viel Kalkhydrat wird zum Neutralisieren des Spülwassers gebraucht?',mC,'kg',[`n(HCl) = c · V = ${de(c)} mol/l · ${VA} l = ${nf(c*VA)} mol`,`n(Ca(OH)₂) = n(HCl) / 2 = ${nf(nC)} mol`,`m = ${nf(nC)} mol · 74,09 g/mol = ${nf(mC*1000)} g = ${nf(mC)} kg`],'Ein Ca(OH)₂ neutralisiert zwei HCl.')]}}]);
+PXI['Fabrikauftrag, Teil 2: Beizen mit Salzsäure und Abwasser neutralisieren']={lv:3,t:'Reaktionsgleichungen & Mol',g:22};
+PXB.push(['Korrosion','b','Fabrikauftrag, Teil 5: Die Montageplatten durchlaufen Entfetten, Beizen, Spülen, Verzinken und Passivieren. Nenne für jeden Schritt typische Chemikalien und begründe, warum sie eingesetzt werden.',
+ 'Entfetten: alkalische Reiniger (Natronlauge, Soda, Phosphate, Tenside), oft elektrolytisch. Laugen verseifen Fette, Tenside lösen Öle, denn Zink haftet nur auf metallisch blanker Oberfläche. Beizen: Salzsäure oder Schwefelsäure lösen Rost und Zunder (Metalloxide reagieren mit Säure zu löslichen Salzen und Wasser). Ein Sparbeizzusatz (Inhibitor) bremst den Angriff auf den blanken Stahl und die Wasserstoffbildung. Spülen mit Wasser zwischen den Bädern, damit keine Säure oder Lauge verschleppt wird. Verzinken: Elektrolyt mit Zinksalzen (z. B. Zinkchlorid oder Zinksulfat, schwach sauer oder alkalisch-cyanidfrei), dazu Leitsalze und Glanzbildner; die Zinkionen werden an der Werkstück-Kathode zu Zink reduziert. Passivieren: Chrom(III)-haltige Lösungen bilden eine dünne Konversionsschicht, die den Weißrost des Zinks verzögert; Chrom(VI) ist wegen Giftigkeit und Krebsgefahr verboten bzw. stark beschränkt. Abwasser wird neutralisiert (Kalkmilch, Natronlauge) und die Metalle werden als Hydroxid ausgefällt. Schutz: Säuren und Laugen sind ätzend, deshalb Schutzbrille, Handschuhe, Absaugung, Gefahrstoffkennzeichnung.',
+ ['Entfetten mit Lauge/Tensiden: Haftung braucht blanke Oberfläche','Beizen mit Salz- oder Schwefelsäure löst Oxide, Inhibitor schützt den Stahl','Spülen gegen Verschleppen','Zinksalz-Elektrolyt, Zinkionen werden an der Kathode reduziert','Passivieren mit Chrom(III), Chrom(VI) verboten','Abwasser neutralisieren, Arbeitsschutz genannt']]);
+
+/* Einbau: Prüfungsniveau zu den Prüfungsaufgaben, Grundlagen/Anwenden als Praxisaufgaben im Üben, Begründen zu BEW */
+const PXC=['Fabrikauftrag, Teil 2: Beizen mit Salzsäure und Abwasser neutralisieren','Fabrikauftrag, Teil 3: Montageplatten galvanisch verzinken','Offshore-Windpark, Teil 2: Opferanoden gegen Meerwasser-Korrosion'];
+PXW.forEach(t=>{if(PXI[t[0]].lv===3){EXW.push(t);EXC[t[0]]=PXC.includes(t[0])?'C':'P'}});
+const PXT={};PXW.forEach(t=>{const x=PXI[t[0]];if(x.lv<3)(PXT[x.t]=PXT[x.t]||[]).push(t)});
+BEW.push(...PXB);
 /* ===== Verstehen und typische Fehler je Thema ===== */
 const ERK={
 'Grundlagen: Stromkreis':['Strom ist die geordnete Bewegung von Ladungsträgern, im Metall von freien Elektronen. Die Leitung ist immer schon voll Elektronen. Beim Einschalten breitet sich das elektrische Feld fast mit Lichtgeschwindigkeit aus und setzt alle gleichzeitig in Bewegung, deshalb leuchtet die Lampe sofort. Im Verbraucher stoßen die Elektronen an die Atomrümpfe und geben Energie ab.',['Glauben, dass im Verbraucher Elektronen verbraucht werden. Im Verbraucher wird elektrische Energie in Licht und Wärme umgewandelt, die Elektronen fließen zur Quelle zurück.','Technische Stromrichtung (+ → −) und Elektronenrichtung (− → +) verwechseln.','Spannung und Strom gleichsetzen. Die Spannung ist der Antrieb, der Strom die Ladung pro Sekunde.']],
@@ -4571,6 +5165,7 @@ const dshow=k=>{const a=k.split('-');return a[2]+'.'+a[1]+'.'};
 const OFFT=['Photosynthese'];
 function memGet(){return MEMC||(MEMC=(()=>{const m=store.get('ll_mem',null);if(m&&m.t)OFFT.forEach(n=>{if(m.t[n]){(m.off=m.off||{})[n]=m.t[n];delete m.t[n]}});return m&&m.t?m:{t:{},d:{},e:{u:0,r:0,o:0}}})())}
 function memSave(){store.set('ll_mem',memGet())}
+PXW.forEach(t=>{if(PXI[t[0]].lv===3)EXTOP[t[0]]=PXI[t[0]].t});
 function topicOf(n){return EXTOP[n]||n}
 function errKind(u,a){if(!isFinite(u)||!isFinite(a)||a===0||u===0)return 'o';const lg=Math.log10(Math.abs(u/a));if(isFinite(lg)&&Math.abs(lg-Math.round(lg))<.03&&Math.round(lg)!==0)return 'u';if(Math.abs(u-a)/Math.abs(a)<.1)return 'r';return 'o'}
 function memRec(name,ok,err,kind){if(!name)return;const k=topicOf(name),M_=memGet(),T0=mToday();
@@ -5450,15 +6045,15 @@ function search(){const q=nz($('#q').value).trim().split(/\s+/).filter(Boolean),
 $('#q').oninput=search;$('#q').onkeydown=e=>{if(e.key==='Enter'){const b=$('#sr').querySelector('.chip');if(b&&b.click)b.click()}else if(e.key==='Escape'){$('#q').value='';search()}};
 /* Übungsmodus */
 const gfach=n=>n==='Einheiten umrechnen'?FU:(M.find(m=>m.name===n)||{}).F,unitMod=()=>M.findIndex(m=>m.F===FU);
-const hasPr=m=>m.F===FU||!!GEN[m.name]||!!STEPS[m.name]||MCQ.some(x=>x[0]===m.name)||FEH.some(x=>x[0]===m.name);
+const hasPr=m=>m.F===FU||!!GEN[m.name]||!!STEPS[m.name]||!!PXT[m.name]||MCQ.some(x=>x[0]===m.name)||FEH.some(x=>x[0]===m.name);
 let KIND='all';
 /* Stufen 1 Grundlagen, 2 Anwenden, 3 Prüfungsniveau. Die Stufe folgt aus dem Aufgabentyp; bei Rechnen und Mehrschritt aus dem Thema
    (LVT, per Prüfskript: Formel umstellen, Einheit umrechnen oder drei Rechenzeilen = 2, ab vier Schritten = 3, Mathematik höchstens 2). */
 const LVN=['Alle Stufen','Grundlagen','Anwenden','Prüfungsniveau'],LVI=['','🟢','🟡','🔴'],LVT={"num":{"Grundlagen: Stromkreis":2,"Ohmsches Gesetz":2,"Reihe":1,"Parallel":2,"Hebel":2,"Drehmoment":1,"Gesetz von Hooke":2,"Druck":1,"Hydraulik":2,"Gasgesetze":2,"Auftrieb und Dichte":1,"Gleichförmige Bewegung":2,"Beschleunigung & Bremsen":2,"Kraftgesetz F = m · a":2,"Arbeit & Leistung":1,"Energieformen & Erhaltung":2,"Wirkungsgrad":1,"Wärmekapazität":1,"Mischungstemperatur":2,"Wärmeausdehnung":2,"Elektrische Arbeit & Leistung":2,"Schiefe Ebene":1,"Rolle & Flaschenzug":1,"Gleit-, Haft- & Rollreibung":2,"Kreisbewegung":2,"Sinus & Kosinus":1,"Säuren & Basen":2,"Neutralisation & Titration":2,"Reaktionsgleichungen & Mol":2,"Wasserhärte":2,"Oxidationszahlen":2,"Galvanische Zelle & Spannungsreihe":2,"Elektrolyse":2,"Periodensystem":2,"Mittelwert, Median & Modalwert":1,"Spannweite, Varianz & Standardabweichung":2,"Normalverteilung":1,"σ-Bereiche":2,"Prozess- & Maschinenfähigkeit":2,"Qualitätsregelkarte (x̄-Karte)":2,"Histogramm":2,"Einheiten umrechnen":1,"Zug-/Druckspannung & Sicherheit":2,"Scherung & Flächenpressung":2,"Kräfteparallelogramm":2,"Kräftezerlegung (Seilkräfte)":2,"Hydraulische Leistung & Volumenstrom":2,"Pneumatik: Luftverbrauch":2,"Gasdichte (Normzustand → Betrieb)":2,"Drehstrom (Stern & Dreieck)":2,"Blei-Batterie (Akkumulator)":2,"Kraftwerke im Überblick":1,"Dampfkraftwerk (Wärmekraftwerk)":2,"Kernkraftwerk (Druckwasserreaktor)":2,"Wasserkraftwerke":2,"Windkraftanlage":1,"Photovoltaik":1,"Solarthermie":2,"Geothermie":2,"Brennstoffzelle (Wasserstoff)":1,"Biogasanlage mit BHKW":2,"Verbrennungsmotor (Viertakt)":2,"Freier Fall (mit Luftwiderstand)":2,"Gleich- & Wechselstrom (Übersicht)":1,"Prozentrechnung":2,"Dreisatz (proportional & umgekehrt)":2,"Pythagoras & rechtwinkliges Dreieck":2,"Formeln umstellen (Formeldreieck)":2,"Lineare Gleichungen lösen":2,"Ausmultiplizieren & Ausklammern":2,"Diagramme lesen":2,"Grundrechenregeln":2,"Bruchrechnung":2,"Funktionen: Gerade & Parabel":2,"Negative Zahlen":2,"Runden und Überschlag":2,"Flächen und Körper":2,"Messreihe auswerten":2,"Schmelz- & Verdampfungswärme":1,"Aggregatzustand":2,"Schwingung":1,"Atommodell":2,"Bindungstypen":2,"Steuerung oder Regelung (Heizung)":2,"Gefährdungsbeurteilung":1,"Strom durch den Körper":2,"Schutzleiter & RCD":1,"Branddreieck":2},"steps":{"Gemischt R₁+(R₂∥R₃)":3,"Reibung (schiefe Ebene)":3,"Energieformen & Erhaltung":2,"Hydraulik":2,"Beschleunigung & Bremsen":3,"Wärmekapazität":2,"Neutralisation & Titration":2,"Reaktionsgleichungen & Mol":2,"Prozess- & Maschinenfähigkeit":2,"Elektrische Arbeit & Leistung":2,"Wasserhärte":2,"Zug-/Druckspannung & Sicherheit":3,"Hydraulische Leistung & Volumenstrom":3,"Kräfteparallelogramm":3,"Dampfkraftwerk (Wärmekraftwerk)":3,"Wasserkraftwerke":3,"Solarthermie":2,"Biogasanlage mit BHKW":3,"Gemischt (R₁+R₂)∥R₃":3,"Gemischt R₁+(R₂∥R₃)+R₄":3,"Gemischt (R₁+R₂)∥(R₃+R₄)":3,"Wahrscheinlichkeitsnetz":3,"Von der Glocke zum Netz":3,"Freier Fall (mit Luftwiderstand)":3,"Gleich- & Wechselstrom (Übersicht)":3,"Prozentrechnung":2,"Dreisatz (proportional & umgekehrt)":2,"Pythagoras & rechtwinkliges Dreieck":2,"Formeln umstellen (Formeldreieck)":2,"Grundrechenregeln":2,"Bruchrechnung":2,"Funktionen: Gerade & Parabel":2,"Negative Zahlen":2,"Flächen und Körper":2,"Messreihe auswerten":2}};
 let LVSEL=0,LVRUN=0,LVSUG=null,LVMSG='';
 const lvBew=x=>x[1]==='u'?3:2;
-function lvOf(c){if(!c||c.exam||c.k==='oral')return 0;const k=c.k;if(k==='xp')return 3;if(k==='und'||k==='mc')return 1;if(k==='fehl')return 2;if(k==='num')return LVT.num[c.n]||2;if(k==='steps')return c.xp?3:LVT.steps[c.n]||2;if(k==='bew')return c.art==='u'?3:2;return 0}
-const lvPool=(k,n)=>k==='xp'?[3]:k==='und'||k==='mc'?[1]:k==='fehl'?[2]:k==='num'?[LVT.num[n]||2]:k==='steps'?[LVT.steps[n]||2]:k==='bew'?[...new Set(BEW.filter(x=>x[0]===n).map(lvBew))]:[2];
+function lvOf(c){if(!c||c.exam||c.k==='oral')return 0;const k=c.k;if(k==='xp')return 3;if(k==='und'||k==='mc')return 1;if(k==='fehl')return 2;if(k==='num')return LVT.num[c.n]||2;if(k==='steps')return c.xp?3:c.px?PXI[c.px].lv:LVT.steps[c.n]||2;if(k==='bew')return c.art==='u'?3:2;return 0}
+const lvPool=(k,n)=>k==='xp'?[3]:k==='und'||k==='mc'?[1]:k==='fehl'?[2]:k==='num'?[LVT.num[n]||2]:k==='steps'?[LVT.steps[n]||2]:k==='px'?[...new Set((PXT[n]||[]).map(t=>PXI[t[0]].lv))]:k==='bew'?[...new Set(BEW.filter(x=>x[0]===n).map(lvBew))]:[2];
 /* je Thema und Stufe die letzten fünf Ergebnisse; geschafft = 2 der letzten 3 richtig */
 const lvOk=a=>!!a&&a.length>=2&&a.slice(-3).filter(Boolean).length>=2;
 function lvRec(c,ok){const l=lvOf(c);if(!l||!c.n)return;lvAdd(c.n,l,ok);
@@ -5479,16 +6074,17 @@ function openPractice(sel,kind,lv){LVSEL=lv||0;LVSUG=null;LVRUN=0;prac=true;cur=
 function openOral(){prac=true;cur=-1;PS.exam=true;PS.oral=true;PS.sel='O:*';PS.cat='Alle';$('#ph2').textContent='🗣️ Mündliche Prüfung';buildSel();nav();newQ()}
 function openExam(){prac=true;cur=-1;PS.exam=true;PS.oral=false;PS.sel='W:*';PS.cat='Alle';$('#ph2').textContent='🎓 Prüfungsaufgaben';buildSel();nav();newQ()}
 function match(n){const s=PS.sel;if(s==='Alle')return true;if(s==='D:')return(PS.due||[]).includes(n);if(s.startsWith('F:'))return gfach(n)===s.slice(2);const t=s.slice(2),mm=M.find(m=>m.name===t);return n===t||(n==='Einheiten umrechnen'&&!!mm&&mm.F===FU)}
-function poolQ(){const p=[],add=(k,n)=>{if((KIND==='all'||KIND==='eq'||KIND===k)&&match(n))p.push([k,n])};Object.keys(GEN).forEach(n=>{add('num',n);add('mc',n)});Object.keys(STEPS).forEach(n=>add('steps',n));[...new Set(MCQ.map(x=>x[0]))].forEach(n=>add('und',n));[...new Set(FEH.map(x=>x[0]))].forEach(n=>add('fehl',n));[...new Set(BEW.map(x=>x[0]))].forEach(n=>add('bew',n));if(LVSEL===3&&(KIND==='all'||KIND==='eq'||KIND==='steps'))[...new Set(Object.values(EXTOP))].forEach(n=>{if(match(n))p.push(['xp',n])});return LVSEL?p.filter(([k,n])=>lvPool(k,n).includes(LVSEL)):p}
+function poolQ(){const p=[],add=(k,n)=>{if((KIND==='all'||KIND==='eq'||KIND===k)&&match(n))p.push([k,n])};Object.keys(GEN).forEach(n=>{add('num',n);add('mc',n)});Object.keys(STEPS).forEach(n=>add('steps',n));[...new Set(MCQ.map(x=>x[0]))].forEach(n=>add('und',n));[...new Set(FEH.map(x=>x[0]))].forEach(n=>add('fehl',n));[...new Set(BEW.map(x=>x[0]))].forEach(n=>add('bew',n));if(KIND==='all'||KIND==='eq'||KIND==='steps')Object.keys(PXT).forEach(n=>{if(match(n))p.push(['px',n])});if(LVSEL===3&&(KIND==='all'||KIND==='eq'||KIND==='steps'))[...new Set(Object.values(EXTOP))].forEach(n=>{if(match(n))p.push(['xp',n])});return LVSEL?p.filter(([k,n])=>lvPool(k,n).includes(LVSEL)):p}
 function newExamQ(){const s=PS.sel,r=mk(Math.floor(Math.random()*1e9)+1);let c;if(s.startsWith('O:')&&(PS.om==='fall'||PS.om==='duo')){let L=ORALF.filter(x=>PS.cat==='Alle'||x[0]===PS.cat);if(!L.length)L=ORALF;const x=L[Math.floor(Math.random()*L.length)];PS.dt=(PS.dt||0)+1;c={k:'oral',fall:1,duo:PS.om==='duo',turn:PS.dt,n:x[0],sit:x[1],q:x[2],chk:x[3],a:x[4],nach:x[5]}}
  else if(s.startsWith('O:')){const L=ORAL.filter(x=>PS.cat==='Alle'||x[0]===PS.cat),x=L[Math.floor(Math.random()*L.length)];c={k:'oral',n:x[0],q:x[1],a:x[2]}}else{const i=s==='W:*'?Math.floor(Math.random()*EXW.length):+s.slice(2),t=EXW[i][1](r);c={k:'steps',n:EXW[i][0],intro:t.intro,fig:t.fig,steps:t.steps,i:0,log:[],exam:true}}c.tried=false;PS.cur=c;renderQ()}
 /* Mischung „vor allem Rechnen“: erst den Aufgabentyp nach Gewicht ziehen, dann ein Thema dieses Typs */
-const KW={num:40,steps:15,mc:10,und:12,fehl:13,bew:10,xp:15};
+const KW={num:40,steps:15,mc:10,und:12,fehl:13,bew:10,xp:15,px:12};
 function pickQ(p){if(KIND!=='all'||!p.length)return p[Math.floor(Math.random()*p.length)];const ty=[...new Set(p.map(x=>x[0]))],tot=ty.reduce((a,t)=>a+(KW[t]||10),0);let z=Math.random()*tot,t=ty[ty.length-1];for(const x of ty){z-=KW[x]||10;if(z<0){t=x;break}}const q=p.filter(x=>x[0]===t);return q[Math.floor(Math.random()*q.length)]}
 function newQ(){if(PS.exam)return newExamQ();if(LVSEL&&!poolQ().length){LVMSG='Auf dieser Stufe gibt es hier keine Aufgaben. Du siehst wieder alle Stufen.';LVSEL=0;buildSel()}const p=poolQ(),[k,n]=p.length?pickQ(p):['num','Ohmsches Gesetz'],r=mk(Math.floor(Math.random()*1e9)+1);let c;
  if(k==='num')c={k,n,q:GEN[n](r)};
  else if(k==='steps'){const d=STEPS[n](r);c={k,n,intro:d.intro,steps:d.steps,i:0,log:[]}}
  else if(k==='mc')c={k,n,...numMC(GEN[n](r),r)};
+else if(k==='px'){const L=PXT[n].filter(t=>!LVSEL||PXI[t[0]].lv===LVSEL),x=L[Math.floor(r()*L.length)],d=x[1](r);c={k:'steps',n,px:x[0],intro:d.intro,fig:d.fig,steps:d.steps,i:0,log:[]}}
  else if(k==='xp'){const L=EXW.filter(x=>EXTOP[x[0]]===n),x=L[Math.floor(r()*L.length)],d=x[1](r);c={k:'steps',n,xp:x[0],intro:d.intro,fig:d.fig,steps:d.steps,i:0,log:[]}}
  else if(k==='bew'){const L=BEW.filter(x=>x[0]===n&&(!LVSEL||lvBew(x)===LVSEL)),x=L[Math.floor(r()*L.length)];c={k,n,art:x[1],q:x[2],a:x[3],chk:x[4],fig:x[5]||''}}
  else{const L=(k==='fehl'?FEH:MCQ).filter(x=>x[0]===n),x=L[Math.floor(r()*L.length)];c={k,n,...shuf(x[1],x[2],x[3],r)}}
@@ -5497,7 +6093,7 @@ function item(){const c=PS.cur;if(c.k==='num')return{a:c.q[1],u:c.q[2],t:tolOf(c
 function score(ok,err){const c=PS.cur;memRec(c&&c.n,ok,err,c?(c.k==='steps'&&(c.xp||c.exam)?'xp':c.k):null);lvRec(PS.cur,ok);const sc=store.get('ll_score',{ok:0,n:0});sc.n++;if(ok)sc.ok++;store.set('ll_score',sc);$('#sc').textContent=`Richtig: ${sc.ok} von ${sc.n}`}
 function fb(t,ok){$('#pfb').textContent=t;$('#pfb').className=ok?'ok':'bad'}
 function renderQ(){{const pf=$('#pfig'),fg=PS.cur&&PS.cur.k==='steps'&&PS.cur.fig||'';if(pf.dataset.f!==fg){pf.innerHTML=fg;pf.dataset.f=fg}pf.hidden=!fg}const c=PS.cur,sc=store.get('ll_score',{ok:0,n:0}),mcq=c.k==='mc'||c.k==='und'||c.k==='fehl',orl=c.k==='oral',bew=c.k==='bew',i=c.n==='Einheiten umrechnen'?unitMod():byName(c.n);
- if(c.exam||orl){$('#pt').innerHTML=orl?`<p class="sub ptn">Thema: ${c.n}${c.duo?` · 👥 Runde ${c.turn} · Prüfer: Person ${c.turn%2?'A':'B'}, Prüfling: Person ${c.turn%2?'B':'A'}`:''}</p>`:PS.sel==='W:*'?`<p class="sub ptn">Aufgabe: ${c.n}</p>`:''}else{{const l=lvOf(c);$('#pt').innerHTML=(l?`<span class="lvb lv${l}" title="Stufe ${l} von 3">${LVI[l]} ${LVN[l]}</span>`:'')+`<button type="button" class="chip" id="pgo">Thema: ${c.n}${c.xp?' · Prüfungsaufgabe':''} →</button>`}$('#pgo').onclick=()=>go(i)}
+ if(c.exam||orl){$('#pt').innerHTML=orl?`<p class="sub ptn">Thema: ${c.n}${c.duo?` · 👥 Runde ${c.turn} · Prüfer: Person ${c.turn%2?'A':'B'}, Prüfling: Person ${c.turn%2?'B':'A'}`:''}</p>`:PS.sel==='W:*'?`<p class="sub ptn">Aufgabe: ${c.n}</p>`:''}else{{const l=lvOf(c);$('#pt').innerHTML=(l?`<span class="lvb lv${l}" title="Stufe ${l} von 3">${LVI[l]} ${LVN[l]}</span>`:'')+`<button type="button" class="chip" id="pgo">Thema: ${c.n}${c.xp?' · Prüfungsaufgabe':c.px?' · Praxisaufgabe':''} →</button>`}$('#pgo').onclick=()=>go(i)}
  if(orl){const o=store.get('ll_oral',{k:0,n:0});$('#sc').textContent=`Mündlich gewusst: ${o.k} von ${o.n}`}else $('#sc').textContent=`Richtig: ${sc.ok} von ${sc.n}`;
  $('#psol').hidden=true;$('#pag').hidden=true;$('#pag').className='sbtn2';{const w=$('#pfw');if(w)w.remove()}$('#plvs').hidden=!LVMSG;$('#plvs').textContent=LVMSG;LVMSG='';$('#pfb').textContent='';$('#pfb').className='';$('#ptipt').textContent='';$('#pck').textContent='Antwort prüfen';$('#pck').hidden=orl||bew;$('#psh').textContent=orl?(c.fall?(c.duo?'📋 Prüferbogen':'Erwartungshorizont'):'Musterantwort'):bew?'Musterlösung':'Lösungsweg';c.done=false;c.sel=-1;$('#pin').hidden=$('#pu').hidden=mcq||orl||bew;{const pm=$('#pin').nextElementSibling;if(pm&&pm.classList.contains('pm'))pm.hidden=mcq||orl||bew}$('#ptip').hidden=true;
  if(bew){$('#pq').textContent=({b:'Begründen: ',u:'Beurteilen: ',s:'Skizzieren: '}[c.art]||'')+c.q;$('#popts').innerHTML='<textarea id="pbt" class="hwta" rows="5" aria-label="Deine Antwort" placeholder="Deine Antwort in Sätzen oder Stichworten …"></textarea>';$('#ptol').textContent=c.art==='s'?'Zeichne die Skizze auf Papier und beschrifte sie. Dann mit der Musterskizze vergleichen und abhaken, was Du hattest.':'Schreib Deine Antwort wie in der Prüfung. Dann mit der Musterlösung vergleichen und abhaken, was Du hattest.';return}
@@ -5533,7 +6129,7 @@ function agOk(c){return!!c&&(c.k==='num'||c.k==='steps')}
 function agShow(){if(agOk(PS.cur))$('#pag').hidden=false}
 function sameQ(){const c=PS.cur;if(!agOk(c))return newQ();const r=mk(Math.floor(Math.random()*1e9)+1);let d;
  if(c.k==='num')d={k:'num',n:c.n,q:GEN[c.n](r)};
- else{const x=c.xp||c.exam?EXW.find(e=>e[0]===(c.xp||c.n)):null,s=x?x[1](r):STEPS[c.n](r);d={k:'steps',n:c.n,xp:c.xp,exam:c.exam,intro:s.intro,fig:s.fig,steps:s.steps,i:0,log:[]}}
+ else{const x=c.xp||c.exam?EXW.find(e=>e[0]===(c.xp||c.n)):c.px?PXW.find(e=>e[0]===c.px):null,s=x?x[1](r):STEPS[c.n](r);d={k:'steps',n:c.n,xp:c.xp,px:c.px,exam:c.exam,intro:s.intro,fig:s.fig,steps:s.steps,i:0,log:[]}}
  d.again=true;d.tried=false;PS.cur=d;renderQ();seeMid($('#pq'))}
 /* untypischer Fehler: typische Fehler des Themas (ERK) zur Auswahl, gemerkt in ll_fw für Lernstand und Kursübersicht */
 function fwShow(c){const tp=topicOf(c.n),E=ERK[tp];if(!E||!E[1]||!E[1].length||$('#pfw'))return;const w=document.createElement('div');w.id='pfw';w.className='lvsug';
@@ -5622,7 +6218,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=146,NEWS='Simulationen größer: Hebel, Reibung, Schiefe Ebene und 22 weitere Themen nutzen den Bildkasten besser aus, ohne dass er höher wird.';
+const APPV=147,NEWS='Neue Praxisaufgaben aus dem Alltag: 51 Rechenaufgaben in drei Stufen (Hebebühne, Bagger, Winterreifen, Tauchen, Feuerwehreinsatz, Offshore-Windpark und mehr) und 19 Begründen-Aufgaben.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['24.10.2026',142,['Prüfungssimulation: 8 Rechenaufgaben und 2 Erläuterungsaufgaben (vorher 10 Rechenaufgaben). Gewichtung unverändert: Physik 60, Chemie 20, Statistik und Mathematik 20 Punkte. Erläuterungen bewerten die Teilnehmenden selbst mit dem Erwartungshorizont.','Lernstand: „sicher geübt“ verlangt zusätzlich zwei verschiedene Aufgabenarten (vorher nur 80 % richtig und Stufe Anwenden). Ältere Lernstände ohne Arten-Zählung behalten die alte Regel.']],
