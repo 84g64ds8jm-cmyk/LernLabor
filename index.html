@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Lernlabor">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>/* Darstellung vor dem ersten Zeichnen setzen, sonst kurz dunkel auf Geräten im Dunkelmodus */try{var v=JSON.parse(localStorage.getItem('ll_view')),m=v&&typeof v.mode==='string'?v.mode:'white',r=document.documentElement;if(m){r.setAttribute('data-theme',m==='dark'?'dark':'light');if(m==='white'||m==='plain')r.classList.add(m)}}catch(e){document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.add('white')}</script>
 <style>
 @font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/schibsted-grotesk-latin-400-normal.woff2) format("woff2")}
 @font-face{font-family:"Schibsted Grotesk";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/schibsted-grotesk-latin-600-normal.woff2) format("woff2")}
@@ -5626,7 +5627,8 @@ function memPlan(){const T0=mToday(),cfg=memPlanCfg(),M_=memGet(),B=cfg&&cfg.min
 function memGo(n){if(n.startsWith('Mündlich · ')){openOral();PS.cat=n.slice(11);buildSel();newQ();return}
  if(memUniv().includes(n))openPractice('M:'+n);else{const i=byName(n);if(i>=0)go(i)}}
 function memDueCount(){try{return memDue().length}catch(e){return 0}}
-function viewApply(){const m=store.get('ll_view',{}).mode||'',r=document.documentElement;r.classList.toggle('white',m==='white');r.classList.toggle('plain',m==='plain');if(m)r.setAttribute('data-theme',m==='dark'?'dark':'light');else r.removeAttribute('data-theme');const e=$('#dbg');if(e)e.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===m)))}
+/* Ohne gespeicherte Wahl: Weiß mit Karo; „Wie am Gerät“ (mode '') folgt dem Gerät */
+function viewApply(){const v=store.get('ll_view',{}),m=v&&typeof v.mode==='string'?v.mode:'white',r=document.documentElement;r.classList.toggle('white',m==='white');r.classList.toggle('plain',m==='plain');if(m)r.setAttribute('data-theme',m==='dark'?'dark':'light');else r.removeAttribute('data-theme');const e=$('#dbg');if(e)e.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===m)))}
 /* Kursplan: Hausaufgabe zum zuletzt unterrichteten Kapitel, sonst die älteste offene; undefined = kein Kursplan */
 function hwPlanUnit(){const k=store.get('ll_kurs',null)||{},E=k.e||{},T0=mToday(),t=(k.d||[]).filter(x=>x<T0&&E[x]&&HW.some(u=>u.id===E[x].k)).map(x=>E[x].k);if(!t.length)return undefined;const last=HW.find(u=>u.id===t[t.length-1]);if(hwUnitState(last).d<last.tasks.length)return last;return HW.filter(u=>t.includes(u.id)).find(x=>hwUnitState(x).d<x.tasks.length)||null}
 function hwNext(){if(typeof HW==='undefined')return null;{const p=hwPlanUnit();if(p!==undefined)return p}const s=hwGet();let u=null,l='';HW.forEach(x=>x.tasks.forEach(t=>{const d=s[t.id]&&s[t.id].d;if(d&&d>=l){l=d;u=x}}));if(!u||hwUnitState(u).d===u.tasks.length)u=HW.find(x=>hwUnitState(x).d<x.tasks.length);return u||null}
