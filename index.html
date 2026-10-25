@@ -2200,7 +2200,7 @@ GORD[MF]=['Kräfteparallelogramm','Kräftezerlegung (Seilkräfte)','Gesetz von H
 GORD[AE]=['Arbeit, Energie & Leistung (Übersicht)','Arbeit & Leistung','Wirkungsgrad','Energieformen & Erhaltung'];
 GORD[HP]=['Druck','Hydraulik','Hydraulische Leistung & Volumenstrom','Auftrieb und Dichte','Pneumatik: Luftverbrauch','Gasgesetze','Gasdichte (Normzustand → Betrieb)'];
 GORD[ET]=['Grundlagen: Stromkreis','Ohmsches Gesetz','Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)','Elektrische Arbeit & Leistung','Gleich- & Wechselstrom (Übersicht)','Drehstrom (Stern & Dreieck)'];
-GORD[KD]=['Gleichförmige Bewegung','Beschleunigung & Bremsen','Freier Fall (mit Luftwiderstand)','Kraftgesetz F = m · a','Kreisbewegung','Sinus & Kosinus','Schwingung'];
+GORD[KD]=['Gleichförmige Bewegung','Beschleunigung & Bremsen','Freier Fall (mit Luftwiderstand)','Kraftgesetz F = m · a','Kreisbewegung','Eiskunstlauf: Drehen & Gleiten','Sinus & Kosinus','Schwingung'];
 GORD[OR]=['Oxidationszahlen','Korrosion'];
 GORD[QM]=['Histogramm','Prozess- & Maschinenfähigkeit','Qualitätsregelkarte (x̄-Karte)'];
 GORD[MR]=['Grundrechenregeln','Negative Zahlen','Bruchrechnung','Runden und Überschlag','Dreisatz (proportional & umgekehrt)','Prozentrechnung'];
@@ -4282,6 +4282,71 @@ const UZB=[
  'An der festen Rolle hängt nicht nur die Last, sondern auch das Zugseil der Packer: F_E = F_G + F_Z. Der Ausleger ist ein Hebel mit Drehpunkt an der Dachkante. Ragt er weit hinaus (großer Hebelarm a) und ist er kurz verankert (kleines b), wird die Ankerkraft groß, und die Dachkante trägt die Summe aller Kräfte. Ruckartiges Anziehen, Pendeln oder Anstoßen der Last erzeugen zusätzliche Kräfte. Deshalb rechnet man mit einer Sicherheit. Regeln: Bereich unter der Last absperren, niemand unter der schwebenden Last, nur geprüftes Hebezeug mit angegebener Tragfähigkeit verwenden, Last gleichmäßig und ohne Ruck heben, mit einem Führungsseil gegen Pendeln und Anschlagen an der Fassade sichern, klare Kommandos.',
  ['F_E = F_G + F_Z','Hebel: Ankerkraft wächst mit a / b','Zusatzkräfte durch Ruck und Pendeln, Sicherheit','Niemand unter der Last, Bereich absperren','Geprüftes Hebezeug, Führungsseil, gleichmäßig heben']]];
 PXW.push(...UZW);Object.assign(PXI,UZI);PXB.push(...UZB);
+/* ===== Eiskunstläuferin: Pirouette, Reibung auf dem Eis, Ausgleiten, Bogen (Entwurf 25.10.2026) ===== */
+/* Läuferin von vorn bei der Pirouette (Figur aus der Simulation): mode 'aus' oder 'an', Drehachse, Drehpfeil ω, optional r und n */
+const pxSpin=figs=>{const W=figs.length>1?380:300,X=figs.length>1?[100,285]:[150],k=figs.length>1?82:95;
+ return kmSvg(W,276,`<line x1="10" y1="226" x2="${W-10}" y2="226" class="kmg"/>${figs.map((f,i)=>{const S=X[i],a=f.mode==='aus',rr=a?.85:.2,hy=a?1.36:1.24,yh=226-k*hy,L=k*rr;
+  const R=a?(f.r!=null?kmD(S,yh,S+L,yh,`r = ${de(f.r)} m`,30,.62):''):(f.r!=null?`<path d="M${S+L} ${kmF(yh)}L${S+50} ${kmF(yh+44)}" class="kmh"/>${kmT(W-6,yh+60,`r = ${de(f.r)} m`,'class="kmdl" text-anchor="end"')}`:'');
+  return `<line x1="${S}" y1="16" x2="${S}" y2="236" class="kmwl"/>
+  <ellipse cx="${S}" cy="28" rx="34" ry="7" class="kma"/>${kmHead(S+12,35,0,9,.4,'fill="var(--ink)"')}${kmT(S-40,32,'ω','class="kmal" text-anchor="end"')}${f.n!=null?kmT(S+40,32,`n = ${de(f.n)} 1/s`,'class="kmf" style="font-size:13px"'):''}
+  ${ekSpin(S,226,k,0,rr,a?.1:.8)}${R}${kmT(S,252,a?'Arme ausgestreckt':'Arme angezogen','class="kms" text-anchor="middle"')}`}).join('')}`)};
+/* Läuferin gleitet nach rechts: Schwerpunkt, F_G, Reibungskraft an der Kufe, Geschwindigkeit */
+const pxGlide=({mu,lab})=>kmSvg(370,262,`${kmHatch(10,212,360,212)}${ekGlide(196,206,92,0)}
+ ${pxS(186,128)}${kmA(186,128,186,196,'var(--red)')}${kmT(176,190,'F_G','class="kmf kmr" text-anchor="end" style="paint-order:stroke;stroke:var(--card);stroke-width:4px"')}
+ ${kmA(184,216,116,216,'var(--red)')}${kmT(112,238,'F_R','class="kmf kmr" text-anchor="end"')}
+ ${kmA(236,30,312,30,'var(--ok)')}${kmT(318,35,'v','class="kmf" style="fill:var(--ok)"')}
+ ${kmT(250,238,lab||`Eis: μ = ${de(mu)}`,'class="kms"')}`);
+/* Bogen von oben (links) und Läuferin von hinten mit Schräglage α (rechts) */
+const pxCurve=({r,v})=>{const M=[106,150],R=70,ph=kmR(50),P=[M[0]+R*Math.cos(ph),M[1]-R*Math.sin(ph)],t=[Math.sin(ph),Math.cos(ph)],al=22,ca=Math.cos(kmR(al)),sa=Math.sin(kmR(al)),B=[318,214],k=80,Sx=[B[0]-.95*k*sa,B[1]-.95*k*ca];
+ return kmSvg(380,276,`<rect x="10" y="10" width="200" height="222" rx="28" class="kmd2"/>${kmT(22,30,'Eisfläche von oben','class="kms"')}
+ <path d="M${M[0]-R} ${M[1]}A${R} ${R} 0 0 1 ${kmP(P[0],P[1])}" class="kmh"/><path d="M${M[0]-R} 222V${M[1]}" class="kmh"/>
+ ${pxS(...M)}${kmD(...M,...P,`r = ${de(r)} m`,0,.45)}
+ <circle cx="${kmF(P[0])}" cy="${kmF(P[1])}" r="6" class="kmb"/>${kmA(P[0],P[1],P[0]+42*t[0],P[1]+42*t[1],'var(--ok)')}${kmT(200,152,`v = ${de(v)} m/s`,'class="kmf" style="fill:var(--ok);font-size:13px" text-anchor="end"')}
+ <line x1="236" y1="214" x2="372" y2="214" class="kmg"/>${kmT(236,30,'von hinten','class="kms"')}<line x1="${B[0]}" y1="${B[1]}" x2="${B[0]}" y2="56" class="kmwl"/>
+ ${ekBack(B[0],B[1],k,al)}${kmArc(...B,46,90,90+al,'')}${kmT(B[0]+10,B[1]-26,'α','class="kmal"')}
+ ${pxS(...Sx)}${kmA(Sx[0],Sx[1],Sx[0],Sx[1]+58,'var(--red)')}${kmT(Sx[0]-8,Sx[1]+56,'F_G','class="kmf kmr" text-anchor="end" style="paint-order:stroke;stroke:var(--card);stroke-width:4px"')}${kmA(Sx[0],Sx[1],Sx[0]-44,Sx[1],'var(--flow)')}${kmT(Sx[0]-40,Sx[1]-10,'F_Z','class="kmf" text-anchor="end" style="paint-order:stroke;stroke:var(--card);stroke-width:4px"')}
+ ${kmT(244,252,'← Kreismitte','class="kms"')}`)};
+const EKW=[
+['Eiskunstläuferin, Teil 1: Pirouette mit ausgestreckten Armen',r=>{const n=pk(r,[1.5,2,2.5]),R=pk(r,[.7,.75,.8,.85]),w=2*PI*n,v=w*R;return{intro:`Eine Eiskunstläuferin dreht eine Pirouette auf der Stelle. Mit ausgestreckten Armen schafft sie n = ${de(n)} Umdrehungen pro Sekunde. Ihre Fingerspitzen sind r = ${de(R)} m von der Drehachse entfernt.`,fig:pxSpin([{mode:'aus',r:R,n}]),steps:[
+ STP('Wie groß ist die Winkelgeschwindigkeit ω?',w,'1/s',[`ω = 2 · π · n = 2 · π · ${de(n)} 1/s = ${nf(w)} 1/s`],'Eine Umdrehung entspricht dem Winkel 2 · π.'),
+ STP('Wie schnell bewegen sich ihre Fingerspitzen auf der Kreisbahn?',v,'m/s',[`v = ω · r = ${nf(w)} 1/s · ${de(R)} m = ${nf(v)} m/s`],'Bahngeschwindigkeit = Winkelgeschwindigkeit mal Radius.'),
+ STP('Wie groß ist die Drehzahl in Umdrehungen pro Minute?',n*60,'1/min',[`n = ${de(n)} 1/s · 60 s/min = ${nf(n*60)} 1/min`],'1 min = 60 s.')]}}],
+['Eiskunstläuferin, Teil 2: Arme angezogen, schneller drehen',r=>{const n=pk(r,[4,4.5,5,5.5]),R=pk(r,[.15,.2,.25]),t=pk(r,[2,3,4]),w=2*PI*n,v=w*R,a=w*w*R;return{intro:`Die Läuferin zieht die Arme eng an den Körper. Dadurch dreht sie sich schneller: jetzt n = ${de(n)} Umdrehungen pro Sekunde. Ihre Hände sind nur noch r = ${de(R)} m von der Drehachse entfernt. Die schnelle Drehung hält sie t = ${t} s lang.`,fig:pxSpin([{mode:'aus'},{mode:'an',r:R,n}]),steps:[
+ STP('Wie groß ist jetzt die Winkelgeschwindigkeit ω?',w,'1/s',[`ω = 2 · π · n = 2 · π · ${de(n)} 1/s = ${nf(w)} 1/s`],'Gleiche Formel wie in Teil 1, nur mit der neuen Drehzahl.'),
+ STP('Wie schnell bewegen sich die Hände auf der Kreisbahn?',v,'m/s',[`v = ω · r = ${nf(w)} 1/s · ${de(R)} m = ${nf(v)} m/s`],'Kleiner Radius: Trotz schnellerer Drehung bewegen sich die Hände nicht unbedingt schneller.'),
+ STP('Wie viele Umdrehungen schafft sie in dieser Zeit?',n*t,'',[`z = n · t = ${de(n)} 1/s · ${t} s = ${nf(n*t)}`],'Drehzahl mal Zeit ergibt die Anzahl der Umdrehungen.'),
+ STP('Wie groß ist die Zentripetalbeschleunigung an den Händen? Das Wievielfache von g ist das?',a,'m/s²',[`a_Z = ω² · r = (${nf(w)} 1/s)² · ${de(R)} m = ${nf(a)} m/s²`,`a_Z / g = ${nf(a)} / 9,81 = ${nf(a/9.81,3)}`],'Gleichwertig: a_Z = v² / r. Das Blut wird in die Hände gedrückt, deshalb werden sie bei langen Pirouetten rot.')]}}],
+['Eiskunstläuferin, Teil 3: Gleiten, Rollen, Rutschen',r=>{const m=pk(r,[48,52,55,60]),mG=pk(r,[.012,.015,.018]),mR=pk(r,[.006,.008]),mS=pk(r,[.1,.12,.15]),FN=m*9.81,FG=mG*FN,FR=mR*FN,FS=mS*FN;return{intro:`Die Läuferin (${m} kg) vergleicht drei Arten, sich fortzubewegen, jeweils auf ebenem Boden: Auf Schlittschuhen gleitet Stahl auf Eis mit der Gleitreibungszahl μ = ${de(mG)}. Auf Inlinern rollt sie in der Halle mit der Rollwiderstandszahl μ_R = ${de(mR)}. Mit Straßenschuhen rutscht sie auf dem Eis mit μ = ${de(mS)}. g = 9,81 m/s².`,fig:pxGlide({mu:mG}),steps:[
+ STP('Wie groß ist die Reibungskraft beim Gleiten auf Schlittschuhen?',FG,'N',[`F_N = m · g = ${m} kg · 9,81 m/s² = ${nf(FN)} N`,`F_R = μ · F_N = ${de(mG)} · ${nf(FN)} N = ${nf(FG)} N`],'Auf ebenem Boden ist die Normalkraft gleich der Gewichtskraft.'),
+ STP('Wie groß ist der Rollwiderstand auf Inlinern?',FR,'N',[`F_R = μ_R · F_N = ${de(mR)} · ${nf(FN)} N = ${nf(FR)} N`],'Gleiche Formel, nur mit der Rollwiderstandszahl.'),
+ STP('Wie groß ist die Reibungskraft beim Rutschen mit Straßenschuhen?',FS,'N',[`F_R = μ · F_N = ${de(mS)} · ${nf(FN)} N = ${nf(FS)} N`],'Gummi auf Eis hat eine viel größere Reibungszahl als Stahl auf Eis.'),
+ STP('Um welchen Faktor ist die Reibung beim Rutschen größer als beim Gleiten auf Schlittschuhen?',FS/FG,'',[`${nf(FS)} N / ${nf(FG)} N = ${de(mS)} / ${de(mG)} = ${nf(FS/FG,3)}`],'Die Masse kürzt sich, es zählt nur das Verhältnis der Reibungszahlen.')]}}],
+['Eiskunstläuferin, Teil 4: Ausgleiten nach dem Anlauf',r=>{const m=pk(r,[48,52,55,60]),v=pk(r,[5,6,7]),mu=pk(r,[.012,.015,.018]),E=m*v*v/2,F=mu*m*9.81,s=E/F,a=mu*9.81,t=v/a;return{intro:`Die Läuferin (${m} kg) nimmt Anlauf und lässt sich dann mit v = ${de(v)} m/s auf beiden Kufen geradeaus ausgleiten, ohne sich weiter abzustoßen. Die Gleitreibungszahl Stahl auf Eis beträgt μ = ${de(mu)}. Der Luftwiderstand wird vernachlässigt. g = 9,81 m/s².`,fig:pxGlide({mu}),steps:[
+ STP('Welche Bewegungsenergie hat sie zu Beginn (in J)?',E,'J',[`E_kin = m · v² / 2 = ${m} kg · (${de(v)} m/s)² / 2 = ${nf(E)} J`],'Bewegungsenergie hängt vom Quadrat der Geschwindigkeit ab.'),
+ STP('Wie groß ist die bremsende Reibungskraft?',F,'N',[`F_R = μ · m · g = ${de(mu)} · ${m} kg · 9,81 m/s² = ${nf(F)} N`],'Ebene Fläche: F_N = F_G.'),
+ STP('Wie weit gleitet sie, bis sie steht?',s,'m',[`Die gesamte Bewegungsenergie wird in Reibungsarbeit umgesetzt: F_R · s = E_kin`,`s = E_kin / F_R = ${nf(E)} J / ${nf(F)} N = ${nf(s)} m`,`Probe: s = v² / (2 · μ · g) = ${nf(v*v)} / (2 · ${de(mu)} · 9,81) = ${nf(v*v/(2*mu*9.81))} m`],'Energieerhaltung: Bewegungsenergie = Reibungsarbeit. Die Masse kürzt sich heraus.'),
+ STP('Wie lange dauert das Ausgleiten?',t,'s',[`Verzögerung: a = F_R / m = μ · g = ${de(mu)} · 9,81 = ${nf(a)} m/s²`,`t = v / a = ${de(v)} m/s / ${nf(a)} m/s² = ${nf(t)} s`],'Gleichmäßig verzögerte Bewegung bis zum Stillstand.')]}}],
+['Eiskunstläuferin, Teil 5: Im Bogen über das Eis',r=>{const m=pk(r,[48,52,55,60]),v=pk(r,[4,5,6]),R=pk(r,[6,8,10]),T=2*PI*R/v,w=v/R,FZ=m*v*v/R,FG=m*9.81,al=Math.atan(v*v/(R*9.81))*180/PI,F=Math.hypot(FG,FZ);return{intro:`Die Läuferin (${m} kg) fährt mit gleichbleibender Geschwindigkeit v = ${de(v)} m/s einen Bogen mit dem Radius r = ${de(R)} m. Damit sie nicht nach außen kippt, legt sie sich nach innen in die Kurve. g = 9,81 m/s².`,fig:pxCurve({r:R,v}),steps:[
+ STP('Wie lange bräuchte sie für einen ganzen Kreis?',T,'s',[`T = 2 · π · r / v = 2 · π · ${de(R)} m / ${de(v)} m/s = ${nf(T)} s`],'Umfang des Kreises geteilt durch die Geschwindigkeit.'),
+ STP('Wie groß ist ihre Winkelgeschwindigkeit auf dem Bogen?',w,'1/s',[`ω = v / r = ${de(v)} m/s / ${de(R)} m = ${nf(w)} 1/s`,`Probe: ω = 2 · π / T = ${nf(2*PI/T)} 1/s`],'v = ω · r nach ω umgestellt.'),
+ STP('Welche Zentripetalkraft ist nötig, damit sie auf der Kreisbahn bleibt?',FZ,'N',[`F_Z = m · v² / r = ${m} kg · (${de(v)} m/s)² / ${de(R)} m = ${nf(FZ)} N`],'Die Kraft zeigt zum Kreismittelpunkt. Sie wird vom Eis über die Kufenkante aufgebracht.'),
+ STP('Um welchen Winkel α gegen die Senkrechte muss sie sich nach innen neigen?',al,'°',[`tan α = F_Z / F_G = v² / (r · g) = ${nf(v*v)} / (${de(R)} · 9,81) = ${nf(v*v/(R*9.81))}`,`α = ${nf(al)}°`],'Die Kraft vom Eis muss genau durch den Schwerpunkt zeigen, sonst kippt sie.'),
+ STP('Mit welcher Gesamtkraft drückt das Eis schräg gegen die Kufe?',F,'N',[`F_G = ${m} · 9,81 = ${nf(FG)} N`,`F = √(F_G² + F_Z²) = √(${nf(FG)}² + ${nf(FZ)}²) = ${nf(F)} N`],'Senkrechter Anteil trägt das Gewicht, waagerechter Anteil ist die Zentripetalkraft. Beide stehen rechtwinklig zueinander.')]}}]];
+const EKI={'Eiskunstläuferin, Teil 1: Pirouette mit ausgestreckten Armen':{lv:1,t:'Kreisbewegung',g:28},'Eiskunstläuferin, Teil 2: Arme angezogen, schneller drehen':{lv:2,t:'Kreisbewegung',g:28},'Eiskunstläuferin, Teil 3: Gleiten, Rollen, Rutschen':{lv:1,t:'Gleit-, Haft- & Rollreibung',g:28},'Eiskunstläuferin, Teil 4: Ausgleiten nach dem Anlauf':{lv:2,t:'Gleit-, Haft- & Rollreibung',g:28},'Eiskunstläuferin, Teil 5: Im Bogen über das Eis':{lv:3,t:'Kreisbewegung',g:28}};
+const EKB=[
+['Kreisbewegung','b','Eiskunstläuferin, Teil 6a: Warum dreht sich die Läuferin schneller, wenn sie die Arme an den Körper zieht? Woher kommt die zusätzliche Drehenergie?',
+ 'Während der Pirouette wirkt von außen fast kein Drehmoment auf sie, weil die Reibung zwischen Kufe und Eis sehr klein ist. Dann bleibt ihr Drehschwung (Drehimpuls) erhalten. Zieht sie die Arme an, liegt ein Teil ihrer Masse näher an der Drehachse. Je näher die Masse an der Achse liegt, desto leichter lässt sich der Körper drehen, und bei gleichem Drehschwung steigt die Drehzahl. Breitet sie die Arme wieder aus, wird sie langsamer: So beendet sie die Pirouette. Die Drehenergie wird dabei größer. Sie stammt aus der Muskelarbeit: Beim Heranziehen muss sie die Arme gegen die Fliehwirkung nach innen ziehen. Gleiches Prinzip: Drehstuhl mit Hanteln in den Händen, Turmspringer beim Salto.',
+ ['Kaum äußeres Drehmoment, Drehschwung (Drehimpuls) bleibt erhalten','Masse näher an der Achse → schnellere Drehung','Arme ausbreiten bremst','Zusätzliche Drehenergie aus Muskelarbeit beim Heranziehen','Beispiel aus dem Alltag (Drehstuhl, Salto)']],
+['Gleit-, Haft- & Rollreibung','b','Eiskunstläuferin, Teil 6b: Stahl auf Eis hat mit μ ≈ 0,015 eine sehr kleine Gleitreibungszahl. Erkläre, warum die Kufe so leicht gleitet, und warum die oft gehörte Erklärung „Der Druck der Kufe schmilzt das Eis“ nicht ausreicht.',
+ 'Auf der Eisoberfläche liegt schon eine hauchdünne, wasserähnliche Schicht. Beim Gleiten entsteht zusätzlich Reibungswärme, die einen sehr dünnen Wasserfilm unter der Kufe schmilzt. Dieser Film wirkt wie ein Schmiermittel, deshalb ist die Gleitreibung sehr klein. Druck senkt den Schmelzpunkt von Eis zwar, aber nur wenig: Selbst unter der schmalen Kufe sinkt er um weniger als 1 °C. Bei −5 °C oder kälter würde das Eis durch Druck allein also gar nicht schmelzen, und trotzdem gleitet man gut. Bei sehr kaltem Eis (etwa unter −20 °C) wird die Gleitschicht dünner, das Eis wird „stumpf“. Eine glatt geschliffene Kufe mit kleiner Auflagefläche verbessert das Gleiten.',
+ ['Dünne wasserähnliche Schicht auf der Eisoberfläche','Reibungswärme schmilzt Wasserfilm, wirkt als Schmiermittel','Druckschmelzen: nur weniger als 1 °C, reicht nicht','Sehr kaltes Eis gleitet schlechter','Glatte, scharf geschliffene Kufe']],
+['Gleit-, Haft- & Rollreibung','b','Eiskunstläuferin, Teil 6c: Wenn die Reibung auf Eis so klein ist, wie kann sich die Läuferin dann überhaupt abstoßen? Begründe, warum sie sich mit der Kufe schräg nach hinten zur Seite abdrückt und nicht nach hinten.',
+ 'In Längsrichtung der Kufe ist nur die kleine Gleitreibung wirksam, ein Abstoßen nach hinten würde wegrutschen. Quer zur Laufrichtung gräbt sich die scharfe Kante der Kufe ins Eis. Dort hält nicht die Reibung, sondern die Kante greift formschlüssig in die Rille, der Widerstand ist sehr groß. Deshalb dreht sie die Kufe schräg und drückt quer zur Kufe gegen das Eis. Die Gegenkraft vom Eis schiebt sie nach vorne zur Seite. Darum laufen Eisläufer im Bogen von Schritt zu Schritt. Beim Bremsen stellt sie die Kufe quer und schabt Eis ab.',
+ ['Längs: nur kleine Gleitreibung, Fuß rutscht weg','Quer: Kante greift ins Eis (Formschluss), großer Widerstand','Kufe schräg stellen, quer abdrücken','Gegenkraft vom Eis schiebt sie vorwärts','Bremsen: Kufe quer stellen']],
+['Kreisbewegung','u','Eiskunstläuferin, Teil 6d (Transfer Betrieb): Ein Kollege sagt beim Plandrehen einer Stirnfläche an der Drehmaschine: „Die Drehzahl bleibt gleich, also bleibt auch die Schnittgeschwindigkeit überall gleich.“ Beurteile die Aussage und ziehe den Vergleich zur Pirouette.',
+ 'Die Aussage ist falsch. Die Schnittgeschwindigkeit ist die Bahngeschwindigkeit an der Schneide: v_c = ω · r = π · d · n. Bei gleicher Drehzahl ist sie außen am großen Durchmesser am größten und wird zur Mitte hin immer kleiner, in der Mitte ist sie null. Das verschlechtert dort die Oberfläche und belastet das Werkzeug. Moderne Drehmaschinen regeln deshalb auf konstante Schnittgeschwindigkeit: Die Drehzahl steigt, je weiter das Werkzeug zur Mitte kommt (mit einer Drehzahlgrenze). Vergleich Pirouette: Fingerspitzen und Schulter drehen sich mit derselben Drehzahl, die Fingerspitzen sind wegen des größeren Radius aber viel schneller.',
+ ['Falsch: v = ω · r hängt vom Radius ab','Außen schnell, in der Mitte v = 0','Folgen: Oberfläche, Werkzeugverschleiß','Konstante Schnittgeschwindigkeit: Drehzahl steigt zur Mitte','Vergleich: Fingerspitze schneller als Schulter']]];
+PXW.push(...EKW);Object.assign(PXI,EKI);PXB.push(...EKB);
 const PXC=['Fabrikauftrag, Teil 2: Beizen mit Salzsäure und Abwasser neutralisieren','Fabrikauftrag, Teil 3: Montageplatten galvanisch verzinken','Offshore-Windpark, Teil 2: Opferanoden gegen Meerwasser-Korrosion'];
 PXW.forEach(t=>{if(PXI[t[0]].lv===3){EXW.push(t);EXC[t[0]]=PXC.includes(t[0])?'C':'P'}});
 const PXT={};PXW.forEach(t=>{const x=PXI[t[0]];if(x.lv<3)(PXT[x.t]=PXT[x.t]||[]).push(t)});
@@ -4892,6 +4957,146 @@ Object.assign(BET,{
 'Brandklassen & Löschmittel':'Neben der CNC-Maschine für Magnesiumteile hängt ein D-Löscher mit Metallbrandpulver, in der Werkstattküche ein Fettbrandlöscher und im Serverraum ein CO₂-Löscher.',
 'Brand löschen':'Bei der jährlichen Brandschutzübung löschen Mitarbeiter eine brennende Wanne im Freien: mit dem Wind im Rücken, von vorn beginnend und mit zwei Löschern gleichzeitig.'
 });
+/* ===== Eiskunstlauf: Pirouette, Ausgleiten, Bogen (Simulation, Entwurf 25.10.2026) ===== */
+const EKL='Eiskunstlauf: Drehen & Gleiten';
+const EKC={sk:'#f1c27d',hr:'#4b3621',dr:'#7c3aed',dk:'#5b21b6',ti:'#e7b9a0',bo:'#f8fafc',bl:'#94a3b8',I:'var(--ink)'};
+const ekF=v=>(+v).toFixed(1),ekP=(p)=>ekF(p[0])+' '+ekF(p[1]);
+/* Figur der Läuferin: 3D-Gelenkmodell (Meter, y nach oben, z = Blickrichtung der Läuferin), Projektion je Ansicht, weiche Glieder mit durchgehender Kontur */
+const ekV={add:(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sub:(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],mul:(a,s)=>[a[0]*s,a[1]*s,a[2]*s],dot:(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],len:a=>Math.hypot(a[0],a[1],a[2]),nrm:a=>{const l=Math.hypot(a[0],a[1],a[2])||1;return[a[0]/l,a[1]/l,a[2]/l]},cr:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]};
+/* Ellbogen/Knie: Gelenk zwischen A und B mit Längen l1, l2, Beugerichtung h */
+const ekIK3=(A,B,l1,l2,h)=>{const V=ekV,d=V.sub(B,A),L=Math.min(V.len(d),l1+l2-1e-3),u=V.nrm(d),a=(l1*l1-l2*l2+L*L)/(2*L),hh=Math.sqrt(Math.max(0,l1*l1-a*a));let n=V.sub(h,V.mul(u,V.dot(h,u)));n=V.nrm(n);return V.add(V.add(A,V.mul(u,a)),V.mul(n,hh))};
+const ekHull=P=>{const p=P.map(q=>[q[0],q[1]]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);if(p.length<3)return p;const c=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];for(const q of p){while(lo.length>1&&c(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q)}for(const q of p.slice().reverse()){while(up.length>1&&c(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q)}return lo.slice(0,-1).concat(up.slice(0,-1))};
+const ekPoly=P=>'M'+P.map(ekP).join('L')+'Z';
+/* Gliederkette: Punkte (Bildschirm) und Radien (px) -> Kreise und Trapeze */
+const ekCap=(P,R)=>{let d='';for(let i=0;i<P.length;i++){const[x,y]=P[i],r=R[i];d+=`M${ekF(x-r)} ${ekF(y)}a${ekF(r)} ${ekF(r)} 0 1 0 ${ekF(2*r)} 0a${ekF(r)} ${ekF(r)} 0 1 0 ${ekF(-2*r)} 0Z`}
+ for(let i=0;i<P.length-1;i++){const A=P[i],B=P[i+1],dx=B[0]-A[0],dy=B[1]-A[1],l=Math.hypot(dx,dy)||1,nx=-dy/l,ny=dx/l;d+=ekPoly([[A[0]+nx*R[i],A[1]+ny*R[i]],[B[0]+nx*R[i+1],B[1]+ny*R[i+1]],[B[0]-nx*R[i+1],B[1]-ny*R[i+1]],[A[0]-nx*R[i],A[1]-ny*R[i]]])}return d};
+/* Ein Teil = Liste [Pfad, Farbe]; erst Kontur aller Formen, dann Füllung: keine Kanten innerhalb des Teils */
+const ekPart=sh=>sh.map(([d])=>`<path d="${d}" fill="${EKC.I}" stroke="${EKC.I}" stroke-width="2.8" stroke-linejoin="round"/>`).join('')+sh.map(([d,c,x])=>`<path d="${d}" fill="${c}"${x||''}/>`).join('');
+/* Figur zeichnen: J = Gelenke (3D), pr = Projektion [X, Y, Tiefe], k = px/m, o = Optionen */
+const ekFig=(J,pr,k,o={})=>{const V=ekV,p=q=>pr(q),parts=[],R=m=>m*k,u=o.u||0;
+ const cap=(Q,r,c)=>[ekCap(Q.map(p),r.map(R)),c];
+ const depth=Q=>Q.reduce((s,q)=>s+p(q)[2],0)/Q.length;
+ /* Schuh am Knöchel A: Schaft entlang uu (nach oben), Fuß in Richtung f */
+ const boot=(A,uu,f)=>{uu=V.nrm(uu);f=V.nrm(V.sub(f,V.mul(uu,V.dot(f,uu))));const at=(a,b)=>V.add(V.add(A,V.mul(f,a)),V.mul(uu,b)),sh=[];
+  if(u==2){sh.push(cap([at(-.04,-.04),at(.15,-.05)],[.045,.04],'#1f2937'));return sh}
+  sh.push(cap([at(-.01,.1),at(-.02,0)],[.052,.05],u==1?'#e2e8f0':EKC.bo),cap([at(-.04,-.045),at(.07,-.05),at(.15,-.055)],[.05,.045,.035],u==1?'#e2e8f0':EKC.bo));
+  if(u==1){sh.push(cap([at(-.06,-.1),at(.16,-.1)],[.012,.012],'#64748b'));[-.05,.02,.09,.16].forEach(a=>sh.push(cap([at(a,-.125)],[.028],'#334155')))}
+  else{sh.push(cap([at(-.03,-.085),at(-.03,-.125)],[.009,.009],EKC.bl),cap([at(.12,-.08),at(.12,-.125)],[.009,.009],EKC.bl),cap([at(-.08,-.135),at(.16,-.135),at(.2,-.115)],[.007,.007,.007],EKC.bl))}
+  return sh};
+ /* Beine (immer hinter Rock und Rumpf) */
+ for(const L of [J.lL,J.lR]){const sh=[cap([L.h,L.k,L.a],[.068,.05,.036],EKC.ti),...boot(L.a,V.sub(L.k,L.a),L.f)];parts.push({z:depth([L.k,L.a])-9,sh})}
+ /* Rumpf: Hülle aus Querschnitten (Schulter, Brust, Taille), Breite nach Blickwinkel */
+ const ring=(C,ax,az,ry,n=18)=>[...Array(n)].map((_,i)=>{const t=2*PI*i/n;return V.add(C,V.add(V.mul(J.X,Math.cos(t)*ax),V.mul(J.Z,Math.sin(t)*az)))});
+ const at=(y)=>V.add(J.pel,V.mul(J.Y,y-.95));
+ const chest=[...ring(at(1.45),.1,.07),...ring(at(1.41),.15,.085),...ring(at(1.36),.172,.09),...ring(at(1.27),.16,.11),...ring(at(1.02),.115,.085)].map(p);
+ const skirt=[...ring(at(1.0),.125,.095,0,24),...ring(at(o.hem||.74),o.rs||.22,(o.rs||.22)*.9,0,28)].map(p);
+ const hemF=ring(at(o.hem||.74),o.rs||.22,(o.rs||.22)*.9,0,28),waF=ring(at(1.0),.125,.095,0,28);
+ const pleats=hemF.map((q,i)=>[p(waF[i]),p(q)]).filter(([a,b])=>b[2]>p(at(o.hem||.74))[2]+.02*Math.abs(1)).filter((_,i)=>i%2==0).map(([a,b])=>`M${ekP(a)}L${ekP(b)}`).join('');
+ parts.push({z:-1,sh:[[ekPoly(ekHull(skirt)),EKC.dk],...(pleats?[[pleats,'none',` stroke="#fff" stroke-opacity=".25" stroke-width="1.2"`]]:[])]});
+ const nk=V.add(at(1.38),V.mul(J.Y,.09));
+ parts.push({z:0,sh:[cap([at(1.42),nk],[.038,.036],EKC.sk),[ekPoly(ekHull(chest)),EKC.dr]]});
+ /* Arme */
+ for(const A of [J.aL,J.aR]){const sh=[cap([A.s,A.e,A.w],[.05,.04,.032],EKC.dr),cap([A.w,A.t],[.032,.028],EKC.sk)];parts.push({z:depth([A.e,A.w])-depth([J.pel]),sh})}
+ parts.sort((a,b)=>a.z-b.z);
+ /* Kopf mit Haar, Knoten und Gesicht nach Blickrichtung */
+ const hc=V.add(nk,V.mul(J.Y,.11)),hC=p(hc),hr=R(.1),pts=[];
+ for(let i=0;i<14;i++)for(let j=0;j<28;j++){const th=PI*i/13,ph=2*PI*j/28,dir=V.add(V.add(V.mul(J.Y,Math.cos(th)),V.mul(J.X,Math.sin(th)*Math.cos(ph))),V.mul(J.Z,Math.sin(th)*Math.sin(ph))),q=p(V.add(hc,V.mul(dir,.1)));
+  const dz=V.dot(dir,J.Z),dy=V.dot(dir,J.Y),hair=dy>.45||(dz<-.15&&dy>-.6)||(dz<.1&&dy>.2);if(hair&&q[2]>=hC[2]-1e-3)pts.push(q)}
+ const bunP=V.add(hc,V.add(V.mul(J.Y,.07),V.mul(J.Z,-.07))),bq=p(bunP),bun=[[`M${ekF(bq[0]-R(.045))} ${ekF(bq[1])}a${ekF(R(.045))} ${ekF(R(.045))} 0 1 0 ${ekF(R(.09))} 0a${ekF(R(.045))} ${ekF(R(.045))} 0 1 0 ${ekF(-R(.09))} 0Z`,EKC.hr]];
+ const face=[];[[-.035,.015],[.035,.015]].forEach(([ex,ey])=>{const e=p(V.add(hc,V.add(V.add(V.mul(J.X,ex),V.mul(J.Y,ey)),V.mul(J.Z,.088))));if(e[2]>hC[2]+.03)face.push(`<circle cx="${ekF(e[0])}" cy="${ekF(e[1])}" r="${ekF(Math.max(1.1,R(.011)))}" fill="${EKC.I}"/>`)});
+ {const m=[-.025,0,.025].map(x=>p(V.add(hc,V.add(V.add(V.mul(J.X,x),V.mul(J.Y,-.04+(x?0:-.008))),V.mul(J.Z,.088)))));if(m[1][2]>hC[2]+.04)face.push(`<path d="M${ekP(m[0])}Q${ekP(m[1])} ${ekP(m[2])}" fill="none" stroke="#b45309" stroke-width="1.2" stroke-linecap="round"/>`)}
+ const head=[[`M${ekF(hC[0]-hr)} ${ekF(hC[1])}a${ekF(hr)} ${ekF(hr)} 0 1 0 ${ekF(2*hr)} 0a${ekF(hr)} ${ekF(hr)} 0 1 0 ${ekF(-2*hr)} 0Z`,EKC.sk]];
+ const hairS=pts.length>2?`<path d="${ekPoly(ekHull(pts))}" fill="${EKC.hr}" stroke="${EKC.hr}" stroke-width="3" stroke-linejoin="round"/>`:'';
+ const bunBack=bq[2]<hC[2];
+ const sh0=p([J.lL.a[0]*0+(J.c||[0,0,0])[0],0,(J.c||[0,0,0])[2]]);
+ return`<ellipse cx="${ekF(o.sx??sh0[0])}" cy="${ekF((o.sy??sh0[1])+4)}" rx="${ekF(R(.36))}" ry="${ekF(R(.06))}" fill="url(#g-shad)"/>`+parts.map(q=>ekPart(q.sh)).join('')+(bunBack?ekPart(bun):'')+`<g>${ekPart(head)}</g>`+
+  `<clipPath id="ekc${o.id||0}"><circle cx="${ekF(hC[0])}" cy="${ekF(hC[1])}" r="${ekF(hr-.6)}"/></clipPath><g clip-path="url(#ekc${o.id||0})">${hairS}</g>`+face.join('')+(bunBack?'':ekPart(bun))};
+/* Grundhaltung: Becken in der Mitte, Achsen X (rechts), Y (oben), Z (vorn) */
+const ekBase=()=>({X:[1,0,0],Y:[0,1,0],Z:[0,0,1],pel:[0,.95,0]});
+const ekArm=(sd,T,hint)=>{const s=[sd*.18,1.37,0],d=ekV.nrm(ekV.sub(T,s)),w=ekV.sub(T,ekV.mul(d,.08));return{s,e:ekIK3(s,w,.29,.27,hint),w,t:T}};
+const ekLeg=(sd,a,f,hint)=>{const h=[sd*.085,.93,0];return{h,k:ekIK3(h,a,.43,.4,hint),a,f}};
+let ekId=0;
+/* Pirouette von vorn, leicht von oben: Drehwinkel ph, Handabstand r (m), Rockschwung q (0 … 1) */
+const ekSpin=(cx,base,k,ph,r,q)=>{const c=Math.cos(ph),s=Math.sin(ph),pr=([x,y,z])=>{const X=x*c-z*s,Z=x*s+z*c;return[cx+k*X,base-k*y+k*.18*Z,Z]};
+ const t=Math.min(1,Math.max(0,(.85-r)/.7)),be=t*1.2,hy=1.36-.12*t,J=ekBase();
+ J.aL=ekArm(-1,[-r*Math.cos(be),hy,r*Math.sin(be)],[-1,-.6+.4*t,-.2*t]);J.aR=ekArm(1,[r*Math.cos(be),hy,r*Math.sin(be)],[1,-.6+.4*t,-.2*t]);
+ J.lL=ekLeg(-1,[-.06,.15,0],[0,0,1],[0,0,1]);J.lR=ekLeg(1,[-.02,.56,.09],[-.35,-.85,.25],[.6,0,1]);
+ return ekFig(J,pr,k,{hem:.74+.06*q,rs:.2+.17*q,id:++ekId,sx:cx,sy:base})};
+/* Läuferin von der Seite beim Gleiten nach rechts; Kufe bei (x, y), Untergrund u: 0 Kufe, 1 Inliner, 2 Straßenschuh */
+const ekGlide=(x,y,k,u,sw=0)=>{const lift=u==2?.09:u==1?.17:.15,J=ekBase(),pitch=u==2?.05:.22,cp=Math.cos(pitch),sp=Math.sin(pitch);
+ /* Oberkörper nach vorn geneigt: Drehung um die X-Achse im Becken */
+ J.Y=[0,cp,sp];J.Z=[0,-sp,cp];const tor=q=>{const d=ekV.sub(q,J.pel);return ekV.add(J.pel,[d[0],d[1]*cp-d[2]*sp,d[1]*sp+d[2]*cp])};
+ const wob=u==2?Math.sin(sw)*.08:0;
+ J.aL=ekArm(-1,[-.62,1.24+wob,-.42],[0,-1,0]);J.aR=ekArm(1,[.62,1.3-wob,.4],[0,-1,0]);['aL','aR'].forEach(n=>{for(const kk of ['s','e','w','t'])J[n][kk]=tor(J[n][kk])});
+ J.lR=ekLeg(1,[.08,lift,.06],[0,0,1],[0,0,1]);
+ J.lL=u==2?ekLeg(-1,[-.08,lift+.02,-.3],[0,0,1],[0,0,1]):ekLeg(-1,[-.09,.4,-.66],[0,-1,-.5],[0,-1,.3]);
+ const pr=([X,Y,Z])=>[x+k*(Z-.06),y-k*(Y-lift)+k*lift-k*lift,-X];
+ const P2=([X,Y,Z])=>[x+k*(Z-.06),y-k*Y,-X];
+ return ekFig(J,P2,k,{u,hem:.76,rs:.2,id:++ekId,sx:x,sy:y})};
+/* Läuferin von hinten, um al (Grad) zur Kreismitte (links) geneigt, Kufe bei (x, y) */
+const ekBack=(x,y,k,al)=>{const a=al*PI/180,ca=Math.cos(a),sa=Math.sin(a),J=ekBase();
+ J.aL=ekArm(-1,[-.8,1.3,0],[0,-1,0]);J.aR=ekArm(1,[.8,1.3,0],[0,-1,0]);
+ J.lL=ekLeg(-1,[-.02,.15,0],[0,0,1],[0,0,1]);J.lR=ekLeg(1,[.12,.36,-.28],[0,-.5,-1],[0,0,1]);
+ const pr=([X,Y,Z])=>{const xr=X*ca-Y*sa,yr=X*sa+Y*ca;return[x+k*xr,y-k*yr,-Z]};
+ return ekFig(J,pr,k,{hem:.76,rs:.2,id:++ekId,sx:x,sy:y})};
+let ekPh=0,ekT=0;const ekTH=(x,y,s,z,a,c)=>`<text x="${ekF(x)}" y="${ekF(y)}" text-anchor="${a}" style="font-size:${z}px;font-weight:700;fill:${c};paint-order:stroke;stroke:var(--card);stroke-width:5px;stroke-linejoin:round">${s}</text>`;
+fm(FP,KD,EKL,'Eine Eiskunstläuferin zeigt drei Dinge auf einmal: Bei der Pirouette dreht sie sich schneller, wenn sie die Arme anzieht (v = ω · r). Beim Ausgleiten bremst nur die sehr kleine Gleitreibung Stahl auf Eis. Im Bogen braucht sie eine Zentripetalkraft und legt sich nach innen.',
+ [['v','Ansicht','sel',['Pirouette (Arme anziehen)','Ausgleiten (Reibung)','Bogen (Kurve)'],0],['r','r_Hand',.15,.85,.01,'m',.85],['n0','n_aus',.5,3,.1,'1/s',1.5],
+  ['u','Untergrund','sel',['Schlittschuh auf Eis (μ = 0,015)','Inliner in der Halle (μ_R = 0,008)','Straßenschuh auf Eis (μ = 0,12)'],0],['v0','v₀',1,10,.5,'m/s',6],['m','m',30,100,1,'kg',55],['vb','v',1,10,.5,'m/s',5],['rb','r_Bogen',3,20,.5,'m',8]],
+ (s,t)=>{const dt=t>=ekT?t-ekT:0;ekT=t;
+  if(s.v==0){const I0=.8,kA=2.9,Ir=r=>I0+kA*r*r,n=s.n0*Ir(.85)/Ir(s.r),w=2*PI*n,vh=w*s.r,az=w*w*s.r,ZL=6,q=Math.min(1,n/5);
+   ekPh+=w/ZL*dt;const k=150,cx=190,base=376,ph=ekPh;
+   const hy=1.36-.12*Math.min(1,Math.max(0,(.85-s.r)/.7)),rx=k*s.r,ry=k*s.r*.2,yh=base-k*hy;
+   let d=`<path d="M20 ${base+4}Q${cx} ${base-40} 360 ${base+4}L360 ${base+30}H20Z" fill="#dbeafe" fill-opacity=".55"/><path d="M20 ${base+4}Q${cx} ${base-40} 360 ${base+4}" fill="none" stroke="var(--wire)" stroke-width="1.5"/>`+
+    [60,95].map(a=>`<ellipse cx="${cx}" cy="${base+8}" rx="${a}" ry="${a*.12}" fill="none" stroke="#93c5fd" stroke-width="1.2" stroke-opacity=".8"/>`).join('')+
+    `<line x1="${cx}" y1="${base+16}" x2="${cx}" y2="90" stroke="var(--mute)" stroke-dasharray="9 3 2 3"/><ellipse cx="${cx}" cy="${ekF(yh)}" rx="${ekF(rx)}" ry="${ekF(ry)}" fill="none" stroke="var(--flow)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+   d+=ekSpin(cx,base,k,ph,s.r,q);
+   d+=`<ellipse cx="${cx}" cy="98" rx="46" ry="9" fill="none" stroke="var(--ink)" stroke-width="1.6"/><polygon points="${cx+10},${107} ${cx-2},${102.5} ${cx-2},${111.5}" fill="var(--ink)"/>`+SXT(cx-56,104,'ω = '+nf(w,3)+' 1/s',18,'end','var(--ink)',700);
+   /* Draufsicht */
+   const X0=500,Y0=150,k2=110,a=-ph,Hx=X0+k2*s.r*Math.cos(a),Hy=Y0+k2*s.r*Math.sin(a),Hx2=X0-k2*s.r*Math.cos(a),Hy2=Y0-k2*s.r*Math.sin(a),vl=Math.min(70,10+vh*7);
+   d+=SXT(X0,30,'von oben',16,'middle','var(--mute)',600)+`<circle cx="${X0}" cy="${Y0}" r="${ekF(k2*s.r)}" fill="none" stroke="var(--flow)" stroke-width="1.5" stroke-dasharray="5 4"/>`+
+    `<line x1="${ekF(Hx2)}" y1="${ekF(Hy2)}" x2="${ekF(Hx)}" y2="${ekF(Hy)}" stroke="${EKC.I}" stroke-width="9" stroke-linecap="round"/><line x1="${ekF(Hx2)}" y1="${ekF(Hy2)}" x2="${ekF(Hx)}" y2="${ekF(Hy)}" stroke="${EKC.dr}" stroke-width="6.6" stroke-linecap="round"/>`+
+    `<ellipse cx="${X0}" cy="${Y0}" rx="22" ry="15" transform="rotate(${ekF(a*180/PI)} ${X0} ${Y0})" fill="${EKC.dk}" stroke="${EKC.I}" stroke-width="1.5"/><circle cx="${X0}" cy="${Y0}" r="10" fill="${EKC.hr}" stroke="${EKC.I}" stroke-width="1.3"/>`+
+    `<circle cx="${ekF(Hx)}" cy="${ekF(Hy)}" r="5.5" fill="${EKC.sk}" stroke="${EKC.I}" stroke-width="1.3"/><circle cx="${ekF(Hx2)}" cy="${ekF(Hy2)}" r="5.5" fill="${EKC.sk}" stroke="${EKC.I}" stroke-width="1.3"/>`+
+    AR(+ekF(Hx),+ekF(Hy),Math.sin(a)*vl,-Math.cos(a)*vl,'var(--ok)')+SXT(X0,Y0+k2*.85+26,'Hand: v = ω · r = '+nf(vh,3)+' m/s',16,'middle','var(--ok)',700);
+   const bw=200,nm=s.n0*Ir(.85)/Ir(.15);
+   d+=SXT(400,318,'Drehzahl n = '+nf(n,3)+' 1/s',16)+BAR3(400,326,bw*n/nm,12,'var(--flow)',5)+SXT(400,366,'Drehenergie: '+nf(n/s.n0,3)+'-fach',16)+BAR3(400,374,bw*n/nm,12,'var(--amber)',5)+SXT(400,410,'Zeitlupe: '+ZL+'-mal langsamer',13,'start','var(--mute)',500);
+   return{vb:'0 0 640 420',d,res:[[nf(n,3)+' 1/s','Drehzahl n'],[nf(w,3)+' 1/s','ω'],[nf(vh,3)+' m/s','v der Hand']],
+    rows:[['Arme','Hände '+nf(s.r)+' m von der Drehachse'],['n',nf(n,3)+' 1/s = '+nf(n*60,3)+' 1/min'],['ω',nf(w,3)+' 1/s'],['v Hand',nf(vh,3)+' m/s'],['a_Z Hand',nf(az,3)+' m/s² = '+nf(az/G,2)+' · g'],['Drehenergie',nf(n/s.n0,3)+'-fach gegenüber Arme ausgestreckt']],
+    st:[['Winkelgeschwindigkeit',`ω = 2 · π · n = 2 · π · ${nf(n,3)} 1/s = ${nf(w,3)} 1/s`],['Bahngeschwindigkeit der Hand',`v = ω · r = ${nf(w,3)} 1/s · ${nf(s.r)} m = ${nf(vh,3)} m/s`],['Zentripetalbeschleunigung',`a_Z = ω² · r = ${nf(az,3)} m/s² (${nf(az/G,2)}-fache Erdbeschleunigung)`],
+     ['Warum schneller?','Von außen wirkt kaum ein Drehmoment (Reibung Kufe auf Eis sehr klein). Der Drehschwung bleibt erhalten. Liegt die Masse der Arme näher an der Achse, dreht sie schneller.'],
+     ['Woher kommt die Energie?','Beim Anziehen zieht sie die Arme gegen die Fliehwirkung nach innen. Diese Muskelarbeit steckt danach in der schnelleren Drehung.'],['Modell der App','Rumpf und Beine zusammen mit festen Werten, Arme je nach Abstand. Echte Läuferinnen erreichen so 4 bis 6 Umdrehungen pro Sekunde.']]}}
+  const m=s.m;
+  if(s.v==1){const mu=[.015,.008,.12][s.u],a=mu*G,Ts=s.v0/a,S=s.v0*s.v0/(2*a),Ek=m*s.v0*s.v0/2,ZR=Math.max(1,Ts/8),C=Ts/ZR+2.5,tau=(!play&&t===0)?Ts:Math.min((t%C)*ZR,Ts),x=s.v0*tau-a*tau*tau/2,vv=Math.max(0,s.v0-a*tau),E=m*vv*vv/2;
+   const x0=70,L=520,sc=L/(S*1.12),G0=272,k=100,ice=s.u!=1;
+   const step=[1,2,5,10,20,25,50,100,200][[1,2,5,10,20,25,50,100,200].findIndex(q=>S*1.12/q<=8)]||500;
+   let d=`<rect x="20" y="${G0}" width="600" height="26" fill="${ice?'#dbeafe':'#cbd5e1'}" stroke="var(--ink)" stroke-width="1.5"/><path d="M20 ${G0}L36 ${G0-12}H636L620 ${G0}Z" fill="${ice?'#eff6ff':'#e2e8f0'}" stroke="var(--ink)" stroke-width="1.5"/>`;
+   for(let q=0;q*step<=S*1.12;q++){const X=x0+q*step*sc;d+=`<line x1="${ekF(X)}" y1="${G0+26}" x2="${ekF(X)}" y2="${G0+34}" stroke="var(--ink)"/>`+SXT(+ekF(X),G0+52,nf(q*step)+' m',13,'middle','var(--mute)',500)}
+   d+=`<line x1="${x0}" y1="${G0-6}" x2="${ekF(x0+x*sc)}" y2="${G0-6}" stroke="var(--flow)" stroke-width="2.5" stroke-opacity=".6"/><line x1="${ekF(x0+S*sc)}" y1="${G0-30}" x2="${ekF(x0+S*sc)}" y2="${G0+26}" stroke="var(--red)" stroke-width="2" stroke-dasharray="4 3"/>`+SXT(+ekF(x0+S*sc)-6,G0+19,'Halt nach '+nf(S,3)+' m',13,'end','var(--red)',700);
+   d+=ekGlide(x0+x*sc,G0-6,k,s.u,t*9)+(vv>.05?AR(+ekF(x0+x*sc-30),G0-196,30+vv*7,0,'var(--ok)'):'')+SXT(+ekF(x0+x*sc-30),G0-206,'v = '+nf(vv,3)+' m/s',15,'start','var(--ok)',700);
+   const bw=230;d+=SXT(40,34,'Bewegungsenergie '+fmt(E,'J'),15)+BAR3(40,42,bw*E/Ek,12,'var(--amber)',5)+SXT(340,34,'Reibungswärme '+fmt(Ek-E,'J'),15)+BAR3(340,42,bw*(Ek-E)/Ek,12,'var(--red)',5)+
+    SXT(320,G0+80,'⏱ '+nf(tau,3)+' s'+(ZR>1.05?' · Zeitraffer: '+nf(ZR,2)+'-mal schneller':''),15,'middle','var(--mute)',600);
+   return{vb:'0 0 640 360',d,res:[[nf(S,3)+' m','Gleitweg s'],[nf(Ts,3)+' s','Dauer t'],[fmt(mu*m*G,'N'),'Reibungskraft F_R']],
+    rows:[['Untergrund',['Stahlkufe auf Eis','Inliner-Rollen auf Hallenboden','Gummisohle auf Eis'][s.u]],['μ',String(mu).replace('.',',')],['F_R',fmt(mu*m*G,'N')],['E_kin am Anfang',fmt(Ek,'J')],['Verzögerung a',nf(a,3)+' m/s²'],['Gleitweg s',nf(S,3)+' m'],['Dauer t',nf(Ts,3)+' s']],
+    st:[['Reibungskraft',`F_R = μ · m · g = ${String(mu).replace('.',',')} · ${nf(m)} kg · 9,81 m/s² = ${fmt(mu*m*G,'N')}`],['Bewegungsenergie',`E_kin = m · v₀² / 2 = ${nf(m)} · ${nf(s.v0)}² / 2 = ${fmt(Ek,'J')}`],['Gleitweg',`F_R · s = E_kin  →  s = v₀² / (2 · μ · g) = ${nf(S,3)} m (die Masse kürzt sich)`],['Dauer',`a = μ · g = ${nf(a,3)} m/s², t = v₀ / a = ${nf(Ts,3)} s`],['Warum gleitet die Kufe?','Ein hauchdünner Wasserfilm aus Reibungswärme wirkt wie ein Schmiermittel. Druckschmelzen allein reicht nicht.']]}}
+  {const w=s.vb/s.rb,T=2*PI/w,FZ=m*s.vb*s.vb/s.rb,FG=m*G,al=Math.atan(FZ/FG)*180/PI,F=Math.hypot(FG,FZ);
+   ekPh+=w*dt;const X0=170,Y0=190,R=Math.min(130,40+s.rb*5.5),a=ekPh,P=[X0+R*Math.cos(a),Y0-R*Math.sin(a)],tg=[-Math.sin(a),-Math.cos(a)],rd=[-Math.cos(a),Math.sin(a)];
+   let d=`<rect x="14" y="20" width="312" height="340" rx="60" fill="#bfdbfe" fill-opacity=".35" stroke="var(--ink)" stroke-width="1.5"/>`+SXT(30,46,'Eisfläche von oben',15,'start','var(--mute)',600)+
+    `<circle cx="${X0}" cy="${Y0}" r="${ekF(R)}" fill="none" stroke="var(--flow)" stroke-width="1.5" stroke-dasharray="5 4"/><circle cx="${X0}" cy="${Y0}" r="4" fill="var(--ink)"/><line x1="${X0}" y1="${Y0}" x2="${ekF(P[0])}" y2="${ekF(P[1])}" stroke="var(--mute)" stroke-dasharray="4 4"/>`+
+    SXT(X0+6,Y0+20,'r = '+nf(s.rb)+' m',14,'start','var(--mute)',600)+
+    `<g transform="translate(${ekF(P[0])} ${ekF(P[1])}) rotate(${ekF(-a*180/PI)})"><ellipse cx="0" cy="0" rx="9" ry="13" fill="${EKC.dk}" stroke="${EKC.I}" stroke-width="1.3"/><line x1="-26" y1="0" x2="26" y2="0" stroke="${EKC.I}" stroke-width="5" stroke-linecap="round"/><line x1="-26" y1="0" x2="26" y2="0" stroke="${EKC.dr}" stroke-width="3" stroke-linecap="round"/><circle cx="0" cy="0" r="6" fill="${EKC.hr}" stroke="${EKC.I}"/></g>`+
+    AR(+ekF(P[0]),+ekF(P[1]),tg[0]*55,tg[1]*55,'var(--ok)','v')+AR(+ekF(P[0]),+ekF(P[1]),rd[0]*42,rd[1]*42,'var(--flow)');
+   const Bx=500,By=356,k=150,ar=al*PI/180,Sx=Bx-.95*k*Math.sin(ar),Sy=By-.95*k*Math.cos(ar);
+   d+=SXT(372,46,'von hinten',15,'start','var(--mute)',600)+`<rect x="350" y="${By}" width="270" height="18" fill="#dbeafe" stroke="var(--ink)" stroke-width="1.5"/><line x1="${Bx}" y1="${By}" x2="${Bx}" y2="70" stroke="var(--mute)" stroke-dasharray="9 3 2 3"/>`+ekBack(Bx,By,k,al)+
+    `<path d="M${Bx} ${By-70}A70 70 0 0 0 ${ekF(Bx-70*Math.sin(ar))} ${ekF(By-70*Math.cos(ar))}" fill="none" stroke="var(--ink)" stroke-width="1.3"/>`+ekTH(Bx+10,By-60,'α = '+nf(al,3)+'°',16,'start','var(--ink)')+
+    `<circle cx="${ekF(Sx)}" cy="${ekF(Sy)}" r="6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>`+AR(+ekF(Sx),+ekF(Sy),0,80,'var(--red)')+ekTH(Sx-10,Sy+78,'F_G',17,'end','var(--red)')+AR(+ekF(Sx),+ekF(Sy),-Math.max(22,80*FZ/FG),0,'var(--flow)')+ekTH(Sx-Math.max(22,80*FZ/FG),Sy-12,'F_Z',17,'end','var(--flow)')+
+    SXT(360,By+40,'← Kreismitte',14,'start','var(--mute)',600);
+   return{vb:'0 0 640 410',d,res:[[fmt(FZ,'N'),'Zentripetalkraft F_Z'],[nf(al,3)+'°','Neigung α'],[nf(T,3)+' s','Zeit für einen Kreis']],
+    rows:[['ω',nf(w,3)+' 1/s'],['T',nf(T,3)+' s'],['F_G',fmt(FG,'N')],['F_Z',fmt(FZ,'N')],['α',nf(al,3)+'°'],['Kraft vom Eis',fmt(F,'N')]],
+    st:[['Winkelgeschwindigkeit',`ω = v / r = ${nf(s.vb)} / ${nf(s.rb)} = ${nf(w,3)} 1/s`],['Zentripetalkraft',`F_Z = m · v² / r = ${nf(m)} · ${nf(s.vb)}² / ${nf(s.rb)} = ${fmt(FZ,'N')}`],['Neigung',`tan α = F_Z / F_G = v² / (r · g) → α = ${nf(al,3)}°`],['Kraft vom Eis',`F = √(F_G² + F_Z²) = ${fmt(F,'N')}, sie zeigt von der Kufe genau durch den Schwerpunkt`]]}}},
+ 'Pirouette: Blau gestrichelt die Bahn der Hände. Ausgleiten: Gelb Bewegungsenergie, Rot Reibungswärme. Bogen: Grün v, Blau F_Z zur Kreismitte, Rot F_G.',1,
+ [['Arme ausstrecken',s=>{s.v=0;s.r=.85}],['Arme anziehen',s=>{s.v=0;s.r=.15}]]);
+M[M.length-1].vis2=(o,UI)=>{const on={r:o.v==0,n0:o.v==0,u:o.v==1,v0:o.v==1,m:o.v!=0,vb:o.v==2,rb:o.v==2};for(const k in on)(UI[k]||[]).forEach(e=>{const c=e.closest('.ctl');if(c)c.hidden=!on[k]})};
 /* ===== Arbeit, Energie & Leistung (Übersicht): zwei Personen tragen dieselben Bücher die Treppe hinauf ===== */
 const AEL='Arbeit, Energie & Leistung (Übersicht)';
 const AELB=(x,y)=>[['#b91c1c',0],['#1d4ed8',7],['#15803d',14]].map(([c,o],i)=>`<rect x="${x-13+(i%2)*2}" y="${y-21+o}" width="26" height="7" rx="1.5" fill="${c}" stroke="var(--ink)" stroke-width="1.2"/><line x1="${x-9+(i%2)*2}" x2="${x+9+(i%2)*2}" y1="${y-17.5+o}" y2="${y-17.5+o}" stroke="#fff" stroke-opacity=".55"/>`).join('');
@@ -6394,7 +6599,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=153,NEWS='Neu im Üben: Mit „‹ Letzte Aufgabe“ holst Du die vorige Aufgabe samt Deiner Eingabe zurück, auch bei den Prüfungsaufgaben.';
+const APPV=154,NEWS='Neu unter Physik › Kinematik & Dynamik: Eiskunstlauf: Drehen & Gleiten. Die Läuferin dreht schneller, wenn sie die Arme anzieht, gleitet aus und legt sich in die Kurve. Dazu ein Praxisauftrag in sechs Teilen.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['24.10.2026',142,['Prüfungssimulation: 8 Rechenaufgaben und 2 Erläuterungsaufgaben (vorher 10 Rechenaufgaben). Gewichtung unverändert: Physik 60, Chemie 20, Statistik und Mathematik 20 Punkte. Erläuterungen bewerten die Teilnehmenden selbst mit dem Erwartungshorizont.','Lernstand: „sicher geübt“ verlangt zusätzlich zwei verschiedene Aufgabenarten (vorher nur 80 % richtig und Stufe Anwenden). Ältere Lernstände ohne Arten-Zählung behalten die alte Regel.']],
