@@ -1,0 +1,12 @@
+/* Aufgaben für das Test-Thema „Konzentration & Verdünnung“ (nicht in der App, siehe README.md). Stufe in LVT "num": "Konzentration & Verdünnung":2 */
+MCQ.push(
+['Konzentration & Verdünnung','In 250 ml Lösung sind 0,05 mol gelöst. Wie groß ist c?',['0,2 mol/l','0,0125 mol/l','12,5 mol/l','5 mol/l'],'c = n / V = 0,05 mol / 0,25 l = 0,2 mol/l.'],
+['Konzentration & Verdünnung','Was bleibt beim Verdünnen gleich?',['Die Stoffmenge des gelösten Stoffes','Die Konzentration','Das Volumen','Die Massenkonzentration'],'Es kommt nur Lösemittel dazu: n = c₁ · V₁ = c₂ · V₂.'],
+['Konzentration & Verdünnung','Was bedeutet eine Verdünnung 1 : 10?',['1 Teil Lösung in 10 Teilen Gesamtvolumen','1 Teil Lösung plus 10 Teile Wasser','10 Teile Lösung plus 1 Teil Wasser','Die Konzentration steigt auf das Zehnfache'],'1 ml Lösung wird auf 10 ml aufgefüllt, also 1 ml Lösung + 9 ml Wasser.'],
+['Konzentration & Verdünnung','Ein Zuckerwürfel (3 g) wird im Weltmeer verteilt. Etwa wie viele Zuckermoleküle sind dann in einem Liter?',['Etwa 4','Etwa 4 Millionen','Etwa 4 · 10²¹','Keines, Zucker zerfällt'],'5,3 · 10²¹ Moleküle verteilen sich auf 1,33 · 10²¹ l: rund 4 je Liter.']);
+Object.assign(GEN,{
+'Konzentration & Verdünnung':r=>{if(r()<.5){const n=rg(r,2,20,1),V=rg(r,100,500,50),c=n/V;return[`In ${V} ml Lösung sind ${n} mmol Kupfersulfat gelöst. Wie groß ist die Konzentration c in mol/l?`,c,'mol/l',['c = n / V',`c = ${n} mmol / ${V} ml`,`c = ${nf(c,3)} mol/l (mmol/ml = mol/l)`]]}
+ const c1=pk(r,[.5,1,2]),V1=rg(r,5,50,5),V2=pk(r,[100,250,500]),c2=c1*V1/V2;return[`${V1} ml einer Lösung mit c₁ = ${nf(c1)} mol/l werden auf ${V2} ml aufgefüllt. Wie groß ist c₂ in mol/l?`,c2,'mol/l',['c₁ · V₁ = c₂ · V₂','c₂ = c₁ · V₁ / V₂',`c₂ = ${nf(c1)} · ${V1} / ${V2} = ${nf(c2,3)} mol/l`]]}});
+FEH.push(
+['Konzentration & Verdünnung','Lena rechnet: „10 mmol in 200 ml, also c = 10 / 200 = 0,05 mmol/l.“ Wo liegt der Fehler?',['mmol / ml ergibt mol/l: c = 0,05 mol/l.','Sie hätte 200 / 10 rechnen müssen.','Die Konzentration ist 2000 mol/l.','Es fehlt die Molmasse.'],'Die Einheiten kürzen sich: 1 mmol/ml = 1 mol/l.'],
+['Konzentration & Verdünnung','Tom stellt 1 : 10 her mit 1 ml Lösung und 10 ml Wasser. Was stimmt nicht?',['Das sind 11 ml, also 1 : 11. Richtig: 1 ml Lösung + 9 ml Wasser.','Nichts, das ist genau 1 : 10.','Er hätte 10 ml Lösung nehmen müssen.','Es müssten 100 ml Wasser sein.'],'Das Verhältnis bezieht sich auf das Gesamtvolumen.']);
