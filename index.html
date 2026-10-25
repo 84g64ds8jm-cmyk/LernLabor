@@ -745,23 +745,47 @@ function KKON(s,t){
 const SU=[['Wasser',0,100],['Ethanol',-114,78],['Stickstoff',-210,-196],['Quecksilber',-39,357],['Eisen',1538,2861]];
 /* Reglerbereich je Stoff: Anfang und Ende der Erwärmungskurve (Schmelzpunkt − 80 K bis Siedepunkt + 80 K) */
 const AGT=i=>{const [,mp,bp]=SU[i],a=Math.max(-273,mp-80),b=bp+80;return['T','T',a,b,1,'°C',Math.min(b,Math.max(a,20))]};
-M.push({g:'Chemie',name:'Aggregatzustand',anim:1,desc:'Fest, flüssig, gasförmig: Je höher die Temperatur, desto schneller bewegen sich die Teilchen. Bei Schmelz- und Siedepunkt bleibt die Temperatur trotz Heizen konstant.',leg:'Rechts die Erwärmungskurve des Stoffes, der Punkt zeigt den aktuellen Zustand.',
- p:[['s','Stoff','sel',SU.map(x=>x[0]),0],AGT(0)],
- sync(o,k){if(k!='s')return;const q=AGT(o.s);M[cur].p.splice(1,1,q);o.T=Math.min(q[3],Math.max(q[2],o.T));build()},
+M.push({g:'Chemie',name:'Aggregatzustand',anim:1,desc:'Fest, flüssig, gasförmig: Je höher die Temperatur, desto schneller bewegen sich die Teilchen. Bei Schmelz- und Siedepunkt bleibt die Temperatur trotz Heizen konstant.',leg:'Rechts die Erwärmungskurve des Stoffes, der Punkt zeigt den aktuellen Zustand. Das Thermometer zeigt dieselbe Temperatur. Mit „Gleichmäßig heizen“ läuft die Energiezufuhr von selbst: Beim Schmelzen und Sieden bleibt das Thermometer stehen.',
+ p:[['s','Stoff','sel',SU.map(x=>x[0]),0],AGT(0),['m','Ablauf','sel',['Temperatur einstellen','Gleichmäßig heizen'],0]],
+ vis:s=>s.m==1?[]:['T'],
+ sync(o,k){if(k=='m'){clock=0;return}if(k!='s')return;const q=AGT(o.s);M[cur].p.splice(1,1,q);o.T=Math.min(q[3],Math.max(q[2],o.T));build()},
  f(s,t){
-  const [nm,mp,bp]=SU[s.s],Tc=s.T,Tk=Tc+273.15,st=Tc<mp-.5?0:Tc<=mp+.5?1.5:Tc<bp-.5?1:Tc<=bp+.5?2.5:2,sp=Math.sqrt(Math.max(Tk,1))/9;
+  const [nm,mp,bp]=SU[s.s],w=280,u0=.2*Math.max(0,1-(mp-Math.max(-273,mp-80))/80),hz=s.m==1;let Tc,st,f=0,u;
+  /* u: Fortschritt der Energiezufuhr entlang der Kurve (0 … 1); Abschnitte fest, schmelzen, flüssig, sieden, gasförmig */
+  if(hz){const tt=t%30;u=u0+(1-u0)*Math.min(1,tt/26);
+   if(u<.2){st=0;Tc=mp-80*(1-u/.2)}else if(u<.35){st=1.5;Tc=mp;f=(u-.2)/.15}else if(u<.65){st=1;Tc=mp+(bp-mp)*(u-.35)/.3}else if(u<.85){st=2.5;Tc=bp;f=(u-.65)/.2}else{st=2;Tc=bp+80*(u-.85)/.15}
+   Tc=Math.round(Tc)}
+  else{Tc=s.T;st=Tc<mp-.5?0:Tc<=mp+.5?1.5:Tc<bp-.5?1:Tc<=bp+.5?2.5:2;f=.5;
+   u=st==0?.2*Math.max(0,1-(mp-Tc)/80):st==1.5?.275:st==1?.35+.3*(Tc-mp)/(bp-mp):st==2.5?.75:.85+.15*Math.min(1,(Tc-bp)/80)}
+  const Tk=Tc+273.15,sp=Math.sqrt(Math.max(Tk,1))/9,pts=[[340,260],[340+.2*w,200],[340+.35*w,200],[340+.65*w,100],[340+.85*w,100],[620,40]],U=[0,.2,.35,.65,.85,1];
+  let j=1;while(j<5&&u>U[j])j++;const k=(u-U[j-1])/(U[j]-U[j-1]),mx=340+w*u,my=pts[j-1][1]+(pts[j][1]-pts[j-1][1])*k;
   const GA=GLAS(30,34,270,236,{ry:12});let h=GA.b;
-  for(let i=0;i<30;i++){let x,y,c;
-   if(st==0){x=60+(i%6)*40+2.5*Math.sin(t*sp*3+i*2.1);y=70+Math.floor(i/6)*40+2.5*Math.sin(t*sp*3+i*1.3);c='var(--ink)'}
-   else if(st==1||st==1.5){x=50+(i%6)*44+(Math.floor(i/6)%2)*20+9*Math.sin(t*sp*1.2+i*2.1);y=245-Math.floor(i/6)*23+7*Math.sin(t*sp*1.1+i*1.7);c='var(--flow)'}
-   else{x=45+210*(.5+.5*Math.sin(t*sp*(.6+(i%5)*.25)+i*2.4));y=45+190*(.5+.5*Math.sin(t*sp*(.5+(i%4)*.3)+i*1.3));c='var(--amber)'}
-   h+=BALL(x,y,8,c,1.5)}
-  h+=GA.f;const w=280,pts=[[340,260],[340+.2*w,200],[340+.35*w,200],[340+.65*w,100],[340+.85*w,100],[620,40]];
-  let mx=st==0?340+.2*w*Math.max(0,1-(mp-Tc)/80):st==1.5?340+.275*w:st==1?340+w*(.35+.3*(Tc-mp)/(bp-mp)):st==2.5?340+.75*w:340+w*(.85+.15*Math.min(1,(Tc-bp)/80));
-  const my=st==0?260-60*Math.max(0,1-(mp-Tc)/80):st==1.5?200:st==1?200-100*(Tc-mp)/(bp-mp):st==2.5?100:100-60*Math.min(1,(Tc-bp)/80);
-  h+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--wire)" stroke-width="3"/><circle cx="${mx}" cy="${my}" r="8" fill="var(--red)" stroke="var(--ink)" stroke-width="2"/>`+T(340,285,'Energiezufuhr','t2')+T(330,40,'T','t2','end')+T(340,194,'Schmelzen','t2')+T(380+.35*w,94,'Sieden','t2');
-  const zn=st==1.5?'schmilzt/erstarrt':st==2.5?'siedet/kondensiert':['fest','flüssig','gasförmig'][st];
-  return{vb:'0 0 640 300',svg:h,res:[[zn,'Zustand'],[nf(Tk,5)+' K','Temperatur'],[nm,'Stoff']],th:['Größe','Wert'],rows:[['Schmelzpunkt',mp+' °C ('+nf(mp+273.15,5)+' K)'],['Siedepunkt',bp+' °C ('+nf(bp+273.15,5)+' K)'],['Temperatur',Tc+' °C'],['Teilchen',st==0?'schwingen am Platz':st==2||st==2.5?'frei, sehr schnell':'verschiebbar, nah']],
+  /* Teilchen: beim Schmelzen und Sieden wechselt ein wachsender Anteil f den Zustand */
+  const n=Math.round(f*30),sol=i=>[60+(i%6)*37+2.5*Math.sin(t*sp*3+i*2.1),70+Math.floor(i/6)*40+2.5*Math.sin(t*sp*3+i*1.3)],
+   liq=(i,j)=>[44+(j%6)*37+(Math.floor(j/6)%2)*14+8*Math.sin(t*sp*1.2+i*2.1),245-Math.floor(j/6)*23+7*Math.sin(t*sp*1.1+i*1.7)],
+   gas=(i,y1)=>[45+200*(.5+.5*Math.sin(t*sp*(.6+(i%5)*.25)+i*2.4)),45+(y1-45)*(.5+.5*Math.sin(t*sp*(.5+(i%4)*.3)+i*1.3))];
+  const L=30-n,ys=st==2.5?245-(Math.ceil(L/6)-1)*23-14:235;
+  if(st==2.5)for(let b=0;b<5;b++){const yb=250-((t*40+b*37)%Math.max(20,250-ys)),xb=70+b*42+6*Math.sin(t*3+b);if(yb>ys+6)h+=`<circle cx="${xb}" cy="${yb}" r="${3+b%2}" fill="none" stroke="var(--flow)" stroke-width="1.5" opacity=".8"/>`}
+  for(let i=0;i<30;i++){let p,c;
+   if(st==0){p=sol(i);c='var(--ink)'}
+   else if(st==1.5){if(i<L){p=sol(i);c='var(--ink)'}else{p=liq(i,i-L);c='var(--flow)'}}
+   else if(st==1){p=liq(i,i);c='var(--flow)'}
+   else if(st==2.5){if(i<L){p=liq(i,i);c='var(--flow)'}else{p=gas(i,ys);c='var(--amber)'}}
+   else{p=gas(i,235);c='var(--amber)'}
+   h+=BALL(p[0],p[1],8,c,1.5)}
+  /* Thermometer im Glas: Säulenhöhe = Höhe des Punktes auf der Kurve */
+  const tx=280,pl=st==1.5||st==2.5;
+  h+=`<rect x="${tx-7}" y="14" width="14" height="246" rx="7" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5" opacity=".92"/>`;
+  [[200,mp],[100,bp]].forEach(([y])=>h+=`<path d="M${tx-7} ${y}h6" stroke="var(--ink)" stroke-width="1.5"/>`);
+  h+=`<rect x="${tx-2.5}" y="${my}" width="5" height="${262-my}" fill="var(--red)"/><circle cx="${tx}" cy="262" r="9" fill="var(--red)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="${tx-3}" cy="259" r="2.5" fill="#fff" opacity=".6"/>`;
+  h+=GA.f;
+  h+=`<path d="M${tx+8} ${my}H${mx-9}" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4 4" opacity=".7"/>`;
+  h+=TH(tx-12,17,nf(Tc,5)+' °C','t1','end');
+  h+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--wire)" stroke-width="3"/><circle cx="${mx}" cy="${my}" r="8" fill="var(--red)" stroke="var(--ink)" stroke-width="2"/>`;
+  h+=T(340,285,'Energiezufuhr','t2')+T(330,40,'T','t2','end')+TH(304,196,nf(mp,5)+' °C',st==1.5?'t1':'t2')+TH(304,96,nf(bp,5)+' °C',st==2.5?'t1':'t2')+T(340+.275*w,224,'Schmelzen','t2','middle')+T(340+.75*w,124,'Sieden','t2','middle');
+  if(pl)h+=TH(340+(st==1.5?.275:.75)*w,st==1.5?178:78,'T bleibt gleich','t1','middle');
+  const zn=st==1.5?(hz?'schmilzt':'schmilzt/erstarrt'):st==2.5?(hz?'siedet':'siedet/kondensiert'):['fest','flüssig','gasförmig'][st];
+  return{vb:'0 0 640 300',svg:h,res:[[zn,'Zustand'],[nf(Tc,5)+' °C','Thermometer'],[nf(Tk,5)+' K','Temperatur'],[nm,'Stoff']],th:['Größe','Wert'],rows:[['Schmelzpunkt',mp+' °C ('+nf(mp+273.15,5)+' K)'],['Siedepunkt',bp+' °C ('+nf(bp+273.15,5)+' K)'],['Temperatur',Tc+' °C'],['Teilchen',st==0?'schwingen am Platz':st==2?'frei, sehr schnell':st==2.5?'ein Teil ist frei und sehr schnell':st==1.5?'ein Teil verschiebbar, Rest am Platz':'verschiebbar, nah'],...(pl?[['Zugeführte Energie',st==1.5?'löst die Teilchen aus dem Gitter (Schmelzwärme)':'trennt die Teilchen voneinander (Verdampfungswärme)']]:[])],
   st:[['fest → flüssig / flüssig → fest','Schmelzen / Erstarren'],['flüssig → gasförmig / gasförmig → flüssig','Verdampfen / Kondensieren'],['fest → gasförmig / gasförmig → fest','Sublimieren / Resublimieren'],['Kelvin','T in K = T in °C + 273,15']]}}});
 /* Atommodell */
 const SY='H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr'.split(' '),NA='Wasserstoff,Helium,Lithium,Beryllium,Bor,Kohlenstoff,Stickstoff,Sauerstoff,Fluor,Neon,Natrium,Magnesium,Aluminium,Silicium,Phosphor,Schwefel,Chlor,Argon,Kalium,Calcium,Scandium,Titan,Vanadium,Chrom,Mangan,Eisen,Cobalt,Nickel,Kupfer,Zink,Gallium,Germanium,Arsen,Selen,Brom,Krypton'.split(',');
@@ -6279,7 +6303,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=148,NEWS='Neuer Praxisauftrag „Umzug mit Klavier“: Rampe, Flaschenzug in den 3. Stock, Kräfte am Dachausleger und elektrische Seilwinde, dazu zwei Begründen-Aufgaben.';
+const APPV=149,NEWS='Neu im Thema Aggregatzustand: Ein Thermometer im Becherglas zeigt, dass die Temperatur beim Schmelzen und Sieden stehen bleibt. Mit „Gleichmäßig heizen“ läuft die Energiezufuhr von selbst.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['24.10.2026',142,['Prüfungssimulation: 8 Rechenaufgaben und 2 Erläuterungsaufgaben (vorher 10 Rechenaufgaben). Gewichtung unverändert: Physik 60, Chemie 20, Statistik und Mathematik 20 Punkte. Erläuterungen bewerten die Teilnehmenden selbst mit dem Erwartungshorizont.','Lernstand: „sicher geübt“ verlangt zusätzlich zwei verschiedene Aufgabenarten (vorher nur 80 % richtig und Stufe Anwenden). Ältere Lernstände ohne Arten-Zählung behalten die alte Regel.']],
