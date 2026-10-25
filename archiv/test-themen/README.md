@@ -32,6 +32,7 @@ Nicht hierher gehören: Simulation (`M.push`), Formeln (`FX`), Verstehen (`ERK`)
 | konzentration.js | Konzentration & Verdünnung | 4 | – | 1 | 2 |
 | kunststoffe.js | Kunststoffe: Ketten und Netze | 4 | – | – | – |
 | licht-farbe.js | Licht: Wellenlänge & Farbe | 3 | – | 1 | 1 |
+| mikroskopie.js | Mikroskopie | 7 | 1 | 1 | 2 |
 | orbitalmodell.js | Orbitalmodell & Mehrfachbindungen | 9 | 1 | 1 | – |
 | photoeffekt.js | Photoeffekt | 3 | – | 1 | 1 |
 | photometrie.js | Photometrie (Lambert-Beer) | 4 | – | 1 | 1 |
