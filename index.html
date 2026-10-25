@@ -853,6 +853,97 @@ M.push({g:'Chemie',name:'Bindungstypen',anim:1,desc:'Die Elektronegativitätsdif
   const b=BT[ty];
   return{vb:'0 0 640 300',svg:h,res:[[nf(d,2),'ΔEN'],[b[0].replace(' Atombindung',''),'Bindungsart'],[form||b[2],'Beispiel']],th:['Merkmal','Wert'],rows:[['EN '+A[0],nf(A[1],3)],['EN '+B[0],nf(B[1],3)],...rows,['Schmelzpunkt',b[1][0]],['Leitfähigkeit',b[1][1]],['Eigenschaft',b[1][2]]],
   st:[['ΔEN = |EN(A) − EN(B)|',`|${nf(A[1],3)} − ${nf(B[1],3)}| = ${nf(d,2)}`],['Faustregel','< 0,4 unpolar, 0,4 bis 1,7 polar, > 1,7 ionisch (Ionenbindung nur zwischen Metall und Nichtmetall)'],['Ionenbindung','Metall gibt Elektronen ab, Nichtmetall nimmt sie auf: Na + Cl → Na⁺ + Cl⁻'],['Größe der Ionen','Kationen sind kleiner als ihr Atom (die äußere Schale fehlt). Anionen sind größer (zusätzliche Elektronen stoßen sich ab). Na⁺ 102 pm statt 166 pm, Cl⁻ 181 pm statt 102 pm.'],['Atombindung','Nichtmetalle teilen Elektronenpaare: H₂, H₂O, CH₄'],['Metallbindung','Atomrümpfe im Elektronengas'],['Quellen der Radien','Ionenradien: R. D. Shannon, Acta Cryst. A32 (1976) 751, Koordinationszahl 6. Atomradien: Kovalenzradien nach Cordero u. a., Dalton Trans. 2008. Metallradien für Koordinationszahl 12.']]}}});
+/* Orbitalmodell & Mehrfachbindungen: Elektronenwolken als Keulen (σ blau, π orange), Abstände maßstäblich in pm */
+const ORBM=[['C-Atom: s- und p-Orbitale','C'],['H₂: Einfachbindung (s + s)','H–H',74,436,'–','gerade','frei drehbar','Wasserstoff: Brenngas, Brennstoffzelle'],['Ethan C₂H₆: Einfachbindung','C–C',154,348,'sp³','109,5° (Tetraeder)','frei drehbar','Bestandteil von Erdgas'],['Ethen C₂H₄: Doppelbindung','C=C',134,614,'sp²','120° (eben)','nicht drehbar','Ausgangsstoff für Polyethylen (PE)'],['Ethin C₂H₂: Dreifachbindung','C≡C',120,839,'sp','180° (gestreckt)','nicht drehbar','Acetylen zum Autogenschweißen']];
+const ORBT=(x,y,s,z=18,a='start',c='var(--ink)',w=600)=>`<text x="${x}" y="${y}" text-anchor="${a}" style="font-size:${z}px;font-weight:${w};fill:${c};paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round">${s}</text>`;
+function ORB(s,t){
+ const v=s.v,M0=ORBM[v],ap=v?s.n/100:1,phi=(20+t*15)*PI/180,be=-.32,sc=.86,cx=205,cy=200,SG='var(--flow)',PI_='var(--amber)',SO='#22a06b';
+ /* Projektion: Drehung um die Bindungsachse (x), dann leicht um y gekippt; z zeigt zum Betrachter */
+ let sc2=sc;const P=([x,y,z])=>{const y1=y*Math.cos(phi)-z*Math.sin(phi),z1=y*Math.sin(phi)+z*Math.cos(phi),x2=x*Math.cos(be)+z1*Math.sin(be),z2=-x*Math.sin(be)+z1*Math.cos(be);return[cx+sc2*x2,cy-sc2*y1,z2]};
+ const add=(a,b,k=1)=>[a[0]+k*b[0],a[1]+k*b[1],a[2]+k*b[2]],nrm=a=>{const l=Math.hypot(...a);return a.map(q=>q/l)},it=[];
+ const pth=p=>'M'+p.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join('L')+'Z';
+ /* konvexe Hülle der projizierten Punkte = Umriss eines Körpers */
+ const hull=pts=>{pts=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];for(const p of pts){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(const p of pts.slice().reverse()){while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}return lo.slice(0,-1).concat(up.slice(0,-1))};
+ const cloud=(pts3,c,op,z)=>{const q=pts3.map(P),zz=z!=null?z:q.reduce((a,b)=>a+b[2],0)/q.length;if(op<.02)return;const d=pth(hull(q));it.push([zz,`<path d="${d}" fill="${c}" fill-opacity="${(.34*op).toFixed(2)}" stroke="${c}" stroke-opacity="${(.85*op).toFixed(2)}" stroke-width="1.6"/><path d="${d}" fill="url(#g-ball)" opacity="${(.55*op).toFixed(2)}"/>`])};
+ const basis=d=>{const a=Math.abs(d[0])<.9?[1,0,0]:[0,1,0],u=nrm([d[1]*a[2]-d[2]*a[1],d[2]*a[0]-d[0]*a[2],d[0]*a[1]-d[1]*a[0]]),w=[d[1]*u[2]-d[2]*u[1],d[2]*u[0]-d[0]*u[2],d[0]*u[1]-d[1]*u[0]];return[u,w]};
+ /* Keule (Hybrid- oder p-Orbital): Spitze am Kern, Bauch bei 0,6 · L */
+ const lobe=(N,d,L,r,c,op=1)=>{d=nrm(d);const [u,w]=basis(d),C=add(N,d,.6*L),pts=[N];for(let i=0;i<24;i++){const a=i*PI/12;for(const k of [-.6,-.3,0,.3,.6]){const rr=r*Math.sqrt(1-k*k);pts.push(add(add(add(C,d,k*r*(k>0?1.25:1)),u,rr*Math.cos(a)),w,rr*Math.sin(a)))}}cloud(pts,c,op,P(add(N,d,.45*L))[2])};
+ /* Ellipsoid: Mitte C, Halbachsen entlang Achsen A1, A2, A3 */
+ const ell=(C,A,c,op=1)=>{const pts=[];for(let i=0;i<14;i++)for(let j=0;j<24;j++){const th=i*PI/13,ph=j*PI/12,s1=Math.sin(th);pts.push(add(add(add(C,A[0],Math.cos(th)),A[1],s1*Math.cos(ph)),A[2],s1*Math.sin(ph)))}cloud(pts,c,op)};
+ const sph=(C,r,c,op=1)=>ell(C,[[r,0,0],[0,r,0],[0,0,r]],c,op);
+ const nuc=(N,el)=>{const q=P(N),r=el=='C'?11:7;it.push([1e4+q[2],BALL(q[0],q[1],r,el=='C'?'#4b5563':'#e5e7eb',1.4)+(el=='C'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:13px;font-weight:800;fill:#fff">C</text>`:'')])};
+ let h='',res,rows,st;
+ const sm=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),mg=sm(.72,.96,ap);
+ if(v==0){
+  /* C-Atom: 1s klein, 2s Kugel, drei 2p-Hanteln */
+  const O=[0,0,0];sph(O,62,SO,.55);sph(O,22,SO,.9);
+  [[1,0,0],[0,1,0],[0,0,1]].forEach((d,i)=>{lobe(O,d,150,40,PI_,i==2?.6:.85);lobe(O,d.map(q=>-q),150,40,PI_,i==2?.6:.85)});
+  nuc(O,'C');
+  it.sort((a,b)=>a[0]-b[0]);h=it.map(q=>q[1]).join('');
+  h+=ORBT(205,32,'Kohlenstoff: 6 Elektronen','20','middle','var(--ink)',800);
+  /* Kästchenschema rechts */
+  const bx=(x,y,n,lab)=>{let g=`<rect x="${x}" y="${y}" width="30" height="34" rx="4" fill="var(--card)" stroke="var(--ink)" stroke-width="1.6"/>`;if(n>0)g+=ORBT(x+(n==2?9:15),y+25,'↑',20,'middle','var(--flow)',800);if(n>1)g+=ORBT(x+21,y+25,'↓',20,'middle','var(--flow)',800);return g+(lab?ORBT(x+15,y+54,lab,15,'middle','var(--mute)',600):'')};
+  const sch=(y,a,tit)=>ORBT(425,y-10,tit,17,'start','var(--ink)',700)+bx(425,y,2,'1s')+bx(465,y,a[0],'2s')+bx(505,y,a[1],'2p')+bx(537,y,a[2],'')+bx(569,y,a[3],'');
+  h+=sch(80,[2,1,1,0],'Grundzustand')+`<path d="M520 170V196M512 188L520 198 528 188" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>`+ORBT(534,190,'Bindung',15,'start','var(--mute)')+sch(232,[1,1,1,1],'bindungsbereit')+ORBT(425,320,'4 einzelne Elektronen',17,'start','var(--ink)',700)+ORBT(425,342,'→ C bildet 4 Bindungen',17,'start','var(--ink)',700);
+  h+=`<circle cx="40" cy="378" r="8" fill="${SO}" fill-opacity=".45" stroke="${SO}"/>`+ORBT(54,385,'s-Orbital: Kugel',18)+`<ellipse cx="226" cy="378" rx="13" ry="7" fill="${PI_}" fill-opacity=".45" stroke="${PI_}"/>`+ORBT(246,385,'p-Orbital: Hantel (x, y, z)',18);
+  res=[['6','Elektronen'],['4','Valenzelektronen'],['4','Bindungen']];
+  rows=[['Elektronenkonfiguration','1s² 2s² 2p²'],['Orbital','Raum, in dem sich ein Elektron sehr wahrscheinlich aufhält (Elektronenwolke)'],['s-Orbital','kugelförmig, 1 pro Schale'],['p-Orbital','hantelförmig, 3 pro Schale (x, y, z)'],['Belegung','höchstens 2 Elektronen je Orbital (↑↓)']];
+  st=[['Orbital statt Bahn','Im Schalenmodell kreisen Elektronen auf Bahnen. Im Orbitalmodell gibt es keine Bahn, nur Wolken, in denen das Elektron mit hoher Wahrscheinlichkeit ist.'],['Schale und Orbital','K-Schale: 1s. L-Schale: 2s und drei 2p. Gleiche Schale, verschiedene Form.'],['Kohlenstoff','Für Bindungen verteilt C seine 4 Außenelektronen auf 4 Orbitale mit je einem Elektron. So entstehen 4 Bindungen, z. B. in CH₄.']];
+ } else {
+  const ty=v,bl=M0[2],dC=(ty==1?bl:bl)*(1+1.6*(1-ap)),C1=[-dC/2,0,0],C2=[dC/2,0,0];sc2=Math.min(sc,200/(dC/2+[0,58,84,102,154][ty]+4));
+  if(ty==1){
+   /* H₂: zwei 1s-Kugeln überlappen */
+   sph(C1,58,SG,1);sph(C2,58,SG,1);if(mg>0)ell([0,0,0],[[dC/2+20,0,0],[0,40,0],[0,0,40]],SG,mg);nuc(C1,'H');nuc(C2,'H');
+  } else {
+   const CH=[0,109,108,106][ty-1],HR=48,LB=.62*bl+12,W=34;
+   /* Richtungen der C–H-Bindungen am linken C (rechtes C gespiegelt) */
+   let D1=[];
+   if(ty==2){for(let k=0;k<3;k++){const a=(90+120*k)*PI/180;D1.push([-1/3,Math.sqrt(8)/3*Math.cos(a),Math.sqrt(8)/3*Math.sin(a)])}}
+   else if(ty==3)D1=[[-.5,0,Math.sqrt(3)/2],[-.5,0,-Math.sqrt(3)/2]];
+   else D1=[[-1,0,0]];
+   const mir=(d,k)=>ty==2?(()=>{const a=(30+120*k)*PI/180;return[1/3,Math.sqrt(8)/3*Math.cos(a),Math.sqrt(8)/3*Math.sin(a)]})():[-d[0],d[1],d[2]];
+   [[C1,D1],[C2,D1.map(mir)]].forEach(([C,D])=>D.forEach(d=>{const Hp=add(C,d,CH);lobe(C,d,CH*.95,W*.9,SG,1);sph(Hp,HR,'#94a3b8',.9);nuc(Hp,'H')}));
+   /* σ-Bindung C–C: zwei Keulen aufeinander zu, dann gemeinsame Wolke */
+   lobe(C1,[1,0,0],LB,W,SG,1-.6*mg);lobe(C2,[-1,0,0],LB,W,SG,1-.6*mg);
+   if(mg>0)ell([0,0,0],[[dC/2+16,0,0],[0,W*.95,0],[0,0,W*.95]],SG,mg);
+   /* π-Bindungen: p-Orbitale senkrecht zur Achse, verschmelzen oben/unten */
+   const PD=ty==3?[[0,1,0]]:ty==4?[[0,1,0],[0,0,1]]:[];
+   PD.forEach(n=>{[C1,C2].forEach(C=>{lobe(C,n,92,30,PI_,1-mg);lobe(C,n.map(q=>-q),92,30,PI_,1-mg)});
+    if(mg>0)[1,-1].forEach(sg=>ell(add([0,0,0],n,sg*48),[[dC/2+34,0,0],n.map(q=>q*30),(n[1]?[0,0,26]:[0,26,0])],PI_,mg))});
+   nuc(C1,'C');nuc(C2,'C');
+  }
+  it.sort((a,b)=>a[0]-b[0]);h=it.map(q=>q[1]).join('');
+  const np=[0,0,0,1,2][ty];
+  h+=ORBT(205,32,M0[0].split(':')[0],21,'middle','var(--ink)',800)+ORBT(205,56,np?`1 σ + ${np} π`:'1 σ-Bindung',18,'middle','var(--mute)',700);
+  if(ap<.99)h+=ORBT(205,334,`Abstand ${nf(dC,3)} pm (gebunden: ${bl} pm)`,18,'middle','var(--mute)',600);
+  /* rechts: Strichformel, Kugel-Stab-Modell, Diagramm */
+  const SF=['','H–H','H₃C–CH₃','H₂C=CH₂','H–C≡C–H'][ty];h+=ORBT(522,76,SF,24,'middle','var(--ink)',800);
+  {const y0=118,kx=522,L=ty==1?44:58,nb=[1,1,1,2,3][ty],lin=(x1,y1,x2,y2,n)=>{let g='';const dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy),ox=-dy/l*5,oy=dx/l*5;for(let i=0;i<n;i++){const k=i-(n-1)/2;g+=`<path d="M${x1+k*ox} ${y1+k*oy}L${x2+k*ox} ${y2+k*oy}" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`}return g};
+   let g='';const a=[kx-L/2,y0],b=[kx+L/2,y0];const Hs=[];
+   if(ty==2){[[-1,-.9],[-1,.9],[-.45,1.1]].forEach(([sx,sy])=>{Hs.push([a,[a[0]+sx*26,a[1]+sy*24]]);Hs.push([b,[b[0]-sx*26,b[1]-sy*24]])})}
+   if(ty==3){[[-.85,-1],[-.85,1]].forEach(([sx,sy])=>{Hs.push([a,[a[0]+sx*30,a[1]+sy*22]]);Hs.push([b,[b[0]-sx*30,b[1]+sy*22]])})}
+   if(ty==4){Hs.push([a,[a[0]-36,y0]]);Hs.push([b,[b[0]+36,y0]])}
+   Hs.forEach(([p,q])=>g+=lin(p[0],p[1],q[0],q[1],1));g+=lin(a[0],a[1],b[0],b[1],nb);
+   Hs.forEach(([,q])=>g+=BALL(q[0],q[1],7,'#e5e7eb',1.2));
+   const ce=ty==1?'#e5e7eb':'#4b5563',rr=ty==1?9:12;g+=BALL(a[0],a[1],rr,ce,1.4)+BALL(b[0],b[1],rr,ce,1.4);
+   h+=g+ORBT(522,166,'Kugel-Stab-Modell',16,'middle','var(--mute)',600)}
+  /* Diagramm: Bindungslänge und -energie im Vergleich */
+  {const R=ORBM.slice(1),y0=202;
+   h+=ORBT(424,y0,'Länge in pm',17,'start','var(--ink)',700)+ORBT(424,y0+107,'Energie in kJ/mol',17,'start','var(--ink)',700);
+   R.forEach((r,i)=>{const on=i+1==ty,y=y0+8+i*21,y2=y0+113+i*21,o=on?1:.4,lab=ORBT(424,y+15,r[1],18,'start',on?'var(--ink)':'var(--mute)',on?800:600);
+    const w1=r[2]/160*84,w2=r[3]/900*84;
+    h+=lab+`<rect x="480" y="${y}" width="${w1}" height="16" rx="3" fill="var(--flow)" opacity="${o}"/>`+ORBT(484+w1,y+14,r[2],16,'start',on?'var(--ink)':'var(--mute)',on?800:500);
+    h+=ORBT(424,y2+15,r[1],18,'start',on?'var(--ink)':'var(--mute)',on?800:600)+`<rect x="480" y="${y2}" width="${w2}" height="16" rx="3" fill="var(--amber)" opacity="${o}"/>`+ORBT(484+w2,y2+14,r[3],16,'start',on?'var(--ink)':'var(--mute)',on?800:500)})}
+  h+=`<rect x="22" y="352" width="18" height="12" rx="6" fill="${SG}" fill-opacity=".45" stroke="${SG}"/>`+ORBT(46,364,'σ: Wolke auf der Bindungsachse',18)+`<rect x="22" y="376" width="18" height="12" rx="6" fill="${PI_}" fill-opacity=".45" stroke="${PI_}"/>`+ORBT(46,388,'π: Wolken ober- und unterhalb der Achse',18);
+  res=[[bl+' pm','Bindungslänge'],[bl&&M0[3]+' kJ/mol','Bindungsenergie'],[np?`1 σ + ${np} π`:'1 σ','Bindungen']];
+  rows=[['Bindung',M0[1]],['Bindungswinkel',M0[5]],['Drehbarkeit um die Bindung',M0[6]],...(ty>1?[['Orbitale am C (Hybrid)',M0[4]]]:[]),['Elektronenpaare zwischen den Atomen',String([0,1,1,2,3][ty])],['Technik',M0[7]]];
+  st=[['σ-Bindung','Die Wolken überlappen direkt auf der Verbindungslinie. Jede Einfachbindung ist eine σ-Bindung.'],['π-Bindung','Zwei p-Orbitale liegen parallel und überlappen seitlich, oberhalb und unterhalb der Achse. Sie kommt nur zusätzlich zur σ-Bindung vor.'],['Mehrfachbindung','Doppelbindung = 1 σ + 1 π, Dreifachbindung = 1 σ + 2 π. Je mehr Bindungen, desto kürzer und fester, aber π ist schwächer als σ (C=C: 614 statt 2 · 348 kJ/mol).'],['Drehbarkeit','Um eine Einfachbindung können sich die Molekülteile drehen. Die π-Bindung verhindert das.'],['Reaktionsfreudigkeit','Die π-Wolke liegt außen und ist leicht angreifbar. Darum reagieren Ethen und Ethin viel leichter als Ethan (z. B. Polymerisation zu PE).'],['Quelle der Werte','Mittlere Bindungslängen und Bindungsenthalpien aus üblichen Tabellenwerken, gerundet.']];
+ }
+ return{vb:'0 0 640 400',svg:h,res,th:['Merkmal','Wert'],rows,st}}
+M.push({g:'Chemie',name:'Orbitalmodell & Mehrfachbindungen',anim:1,desc:'Im Orbitalmodell sind Elektronen Wolken (Orbitale). Überlappen die Wolken zweier Atome, entsteht eine Bindung: direkt auf der Achse eine σ-Bindung, seitlich darüber und darunter eine π-Bindung. Doppel- und Dreifachbindungen bestehen aus einer σ- und einer oder zwei π-Bindungen.',leg:'Blau: σ-Wolken, orange: π-Wolken bzw. p-Orbitale, grau: Wasserstoff. Abstände der Atomkerne maßstäblich, die Form der Wolken ist vereinfacht. Das Molekül dreht sich langsam um die Bindungsachse. Mit „Annäherung“ rücken die Atome zusammen, bis sich die Wolken überlagern.',
+ p:[['v','Ansicht','sel',ORBM.map(x=>x[0]),3],['n','Annäherung',0,100,5,'%',100]],
+ vis:s=>s.v==0?[]:['n'],
+ f(s,t){return ORB(s,t)}});
 /* Neue Themen */
 const FP='Physik',FC='Chemie',FS='Statistik',FM='Mathematik',MF='Mechanik der Festkörper',HP='Hydraulik & Pneumatik',KD='Kinematik & Dynamik',AE='Arbeit, Leistung, Energie',WL='Wärmelehre',ET='Elektrotechnik',AP='Atombau & Periodensystem',CB='Chemische Bindungen',RS='Reaktionen & Stöchiometrie',SB='Säuren, Basen & Neutralisation',OR='Oxidation & Reduktion',EC='Elektrochemie',WH='Wasser & Härte';
 const NICE=v=>{const p=10**Math.floor(Math.log10(v)),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p},TICKS=m=>{const st=NICE(m/4),a=[];for(let v=0;v<=m*1.0001;v+=st)a.push(+v.toPrecision(12));return a};
@@ -2269,7 +2360,7 @@ const BSK={
 'Histogramm':BSV(320,175,`${[10,26,50,36,18,30,56,42,16,6].map((h,i)=>`<rect x="${40+i*26}" y="${145-h*1.9}" width="24" height="${h*1.9}" fill="#8b5cf6" fill-opacity=".35"/>`).join('')}<path d="M34 30V145H310"/>${BTX(300,165,'Messwert',0,'end')}<text transform="rotate(-90 20 95)" x="20" y="95" fill="currentColor" stroke="none" text-anchor="middle">Häufigkeit</text>${BTX(92,22,'Schicht 1',0,'middle')}${BTX(222,22,'Schicht 2',0,'middle')}`)};
 BEW.forEach(r=>{if(r[1]==='s'&&!r[5]&&BSK[r[0]])r[5]=BSK[r[0]]});
 /* Zuordnung */
-const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];
+const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];MAP['Orbitalmodell & Mehrfachbindungen']=[FC,CB];
 M.forEach(m=>{const x=MAP[m.name];if(x){m.F=x[0];m.g=x[1]}});
 const DFN0='Ableitung: Steigung & Tangente',INN0='Integral: Fläche unter dem Graphen';
 const MR='Rechnen im Alltag',MFG='Formeln & Gleichungen',MGD='Geometrie & Diagramme',MDI='Differential- & Integralrechnung';
