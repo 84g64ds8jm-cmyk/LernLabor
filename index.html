@@ -6303,7 +6303,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=149,NEWS='Neu im Thema Aggregatzustand: Ein Thermometer im Becherglas zeigt, dass die Temperatur beim Schmelzen und Sieden stehen bleibt. Mit „Gleichmäßig heizen“ läuft die Energiezufuhr von selbst.';
+const APPV=150,NEWS='Gemischte Schaltungen: Wenn Du unter „Art der Schaltung“ eine andere Schaltung antippst, bleibt die Seite jetzt stehen. Nur das Schaltbild wechselt mit einer kurzen Überblendung, so siehst Du direkt, was sich ändert. Vorher sprang die Seite nach oben.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['24.10.2026',142,['Prüfungssimulation: 8 Rechenaufgaben und 2 Erläuterungsaufgaben (vorher 10 Rechenaufgaben). Gewichtung unverändert: Physik 60, Chemie 20, Statistik und Mathematik 20 Punkte. Erläuterungen bewerten die Teilnehmenden selbst mit dem Erwartungshorizont.','Lernstand: „sicher geübt“ verlangt zusätzlich zwei verschiedene Aufgabenarten (vorher nur 80 % richtig und Stufe Anwenden). Ältere Lernstände ohne Arten-Zählung behalten die alte Regel.']],
@@ -6974,7 +6974,7 @@ const NK='ll_notes';let ntm=0;$('#notetx').oninput=e=>{clearTimeout(ntm);ntm=set
 let ROUTING=false,REPLACE=false,FM=false,PROBE=false,UPD=false;
 function route(){if(prac){if(FM)return'fehler';if(PS.oral)return'muendlich';if(PS.exam)return'pruefung';const s=PS.sel||'';if(s.startsWith('M:')){const i=byName(s.slice(2));return i>=0?'ueben/'+SN[i]+(LVSEL?'/'+LVSEL:''):'ueben'}return'ueben'}
  if(SIMV)return'simulation';if(MEMV)return KMO?'kurstermine':'lernstand';if(HWV)return'hausaufgaben'+(typeof HWU!=='undefined'&&HWU?'/'+HWU:'');if(MCV)return'mathe-check';if(GLV)return'glossar';if(FSV)return'formelsammlung';if(DOZV)return'dozent';if(KIV)return'ki';if(cur>=0)return'thema/'+SN[cur];return''}
-window.llRoute=route;window.llSL=SL;
+window.llRoute=route;window.llSL=SL;window.llQuiet=f=>{REPLACE=true;try{f()}finally{REPLACE=false}};
 function sync(){if(ROUTING)return;const r=route(),want=r?'#'+r:'',url=want||location.pathname+location.search;if(location.hash===want||(!want&&!location.hash))return;
  try{if(REPLACE)history.replaceState({y:0},'',url);else{history.replaceState(Object.assign({},history.state,{y:scrollY}),'');history.pushState({y:0},'',url);scrollTo(0,0)}}catch(e){}}
 function openRoute(h){h=decodeURIComponent((h||'').replace(/^#/,''));const [a,...b]=h.split('/'),rest=b.join('/');
@@ -7215,7 +7215,7 @@ const ctl1=ctl;ctl=function(o,q){const r=ctl1.apply(this,arguments);const n=$('#
 /* SIM-08: Art der gemischten Schaltung als Knöpfe statt Regler */
 gemCtl=function(){const f=curF(),g=curG(),gm=gIx(f,g).filter(isGem),k=gm.indexOf(cur);if(gm.length<2||k<0)return;
  const nm=j=>M[j].name.replace('Gemischt ',''),w=$('#gsw');w.innerHTML='<h3 id="gsh">Art der Schaltung</h3><div class="gsb" role="group" aria-labelledby="gsh">'+gm.map((j,i)=>`<button type="button" data-j="${j}" aria-pressed="${i===k}">${nm(j)}</button>`).join('')+'</div>';w.hidden=false;
- $$('.gsb button',w).forEach(b=>b.onclick=()=>{const j=+b.dataset.j;if(j===cur)return;const a=S[cur],c=S[j];Object.keys(c).forEach(x=>{if(x in a)c[x]=a[x]});go(j,{F:f,g});const q=$(`#gsw .gsb button[data-j="${j}"]`);if(q)q.focus({preventScroll:true})})};
+ $$('.gsb button',w).forEach(b=>b.onclick=()=>{const j=+b.dataset.j;if(j===cur)return;const a=S[cur],c=S[j];Object.keys(c).forEach(x=>{if(x in a)c[x]=a[x]});/* ohne neuen Verlaufseintrag und ohne Sprung nach oben */const y=scrollY,nx=()=>go(j,{F:f,g});window.llQuiet?llQuiet(nx):nx();scrollTo(0,y);/* Kästen nicht neu einblenden, nur das Schaltbild wechselt */try{document.getAnimations().forEach(a=>{if(a.animationName==='in')a.finish()})}catch(e){}if(!matchMedia('(prefers-reduced-motion:reduce)').matches){const sv=$('#svg');if(sv&&sv.animate)sv.animate([{opacity:.35},{opacity:1}],{duration:220,easing:'ease-out'})}const q=$(`#gsw .gsb button[data-j="${j}"]`);if(q)q.focus({preventScroll:true})})};
 /* FDB-01: „Nächste Aufgabe“ erst nach Rückmeldung und Erklärung; MOT-01: Fortschrittszeile nach richtiger Antwort */
 $('#pfb').after($('#psol'));{const d=document.createElement('div');d.id='pmot';d.className='pmot';d.hidden=true;d.setAttribute('role','status');$('#pfb').after(d)}
 const pdone=()=>{const c=PS.cur,on=!!c&&!!c.done&&$('#pck').textContent==='Nächste Aufgabe';$('#practice').classList.toggle('pdone',on);if(on){$('#pnx').hidden=false;$('#pnx').textContent='Nächste Aufgabe →'}};
