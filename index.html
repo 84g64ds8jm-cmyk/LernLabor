@@ -854,27 +854,124 @@ M.push({g:'Chemie',name:'Bindungstypen',anim:1,desc:'Die Elektronegativitätsdif
   return{vb:'0 0 640 300',svg:h,res:[[nf(d,2),'ΔEN'],[b[0].replace(' Atombindung',''),'Bindungsart'],[form||b[2],'Beispiel']],th:['Merkmal','Wert'],rows:[['EN '+A[0],nf(A[1],3)],['EN '+B[0],nf(B[1],3)],...rows,['Schmelzpunkt',b[1][0]],['Leitfähigkeit',b[1][1]],['Eigenschaft',b[1][2]]],
   st:[['ΔEN = |EN(A) − EN(B)|',`|${nf(A[1],3)} − ${nf(B[1],3)}| = ${nf(d,2)}`],['Faustregel','< 0,4 unpolar, 0,4 bis 1,7 polar, > 1,7 ionisch (Ionenbindung nur zwischen Metall und Nichtmetall)'],['Ionenbindung','Metall gibt Elektronen ab, Nichtmetall nimmt sie auf: Na + Cl → Na⁺ + Cl⁻'],['Größe der Ionen','Kationen sind kleiner als ihr Atom (die äußere Schale fehlt). Anionen sind größer (zusätzliche Elektronen stoßen sich ab). Na⁺ 102 pm statt 166 pm, Cl⁻ 181 pm statt 102 pm.'],['Atombindung','Nichtmetalle teilen Elektronenpaare: H₂, H₂O, CH₄'],['Metallbindung','Atomrümpfe im Elektronengas'],['Quellen der Radien','Ionenradien: R. D. Shannon, Acta Cryst. A32 (1976) 751, Koordinationszahl 6. Atomradien: Kovalenzradien nach Cordero u. a., Dalton Trans. 2008. Metallradien für Koordinationszahl 12.']]}}});
 /* Orbitalmodell & Mehrfachbindungen: Elektronenwolken als Keulen (σ blau, π orange), Abstände maßstäblich in pm */
-const ORBM=[['C-Atom: s- und p-Orbitale','C'],['H₂: Einfachbindung (s + s)','H–H',74,436,'–','gerade','frei drehbar','Wasserstoff: Brenngas, Brennstoffzelle'],['Ethan C₂H₆: Einfachbindung','C–C',154,348,'sp³','109,5° (Tetraeder)','frei drehbar','Bestandteil von Erdgas'],['Ethen C₂H₄: Doppelbindung','C=C',134,614,'sp²','120° (eben)','nicht drehbar','Ausgangsstoff für Polyethylen (PE)'],['Ethin C₂H₂: Dreifachbindung','C≡C',120,839,'sp','180° (gestreckt)','nicht drehbar','Acetylen zum Autogenschweißen']];
+const ORBM=[['C-Atom: s- und p-Orbitale','C'],['H₂: Einfachbindung (s + s)','H–H',74,436,'–','gerade','frei drehbar','Wasserstoff: Brenngas, Brennstoffzelle'],['Ethan C₂H₆: Einfachbindung','C–C',154,348,'sp³','109,5° (Tetraeder)','frei drehbar','Bestandteil von Erdgas'],['Ethen C₂H₄: Doppelbindung','C=C',134,614,'sp²','120° (eben)','nicht drehbar','Ausgangsstoff für Polyethylen (PE)'],['Ethin C₂H₂: Dreifachbindung','C≡C',120,839,'sp','180° (gestreckt)','nicht drehbar','Acetylen zum Autogenschweißen'],['Benzol C₆H₆: π-Ring (sp²)'],['Ethanol: Hydroxylgruppe –OH'],['Methanal: Carbonylgruppe C=O'],['Essigsäure: Carboxylgruppe –COOH'],['Alkane: Kettenlänge']];
 const ORBT=(x,y,s,z=18,a='start',c='var(--ink)',w=600)=>`<text x="${x}" y="${y}" text-anchor="${a}" style="font-size:${z}px;font-weight:${w};fill:${c};paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round">${s}</text>`;
 function ORB(s,t){
- const v=s.v,M0=ORBM[v],ap=v?s.n/100:1,phi=(20+t*15)*PI/180,be=-.32,sc=.86,cx=205,cy=200,SG='var(--flow)',PI_='var(--amber)',SO='#22a06b';
+ const v=s.v,M0=ORBM[v],ap=v&&v<6?s.n/100:1,phi=(20+t*15)*PI/180,spin=v>=5&&v<9,psi=t*14*PI/180,tau=30*PI/180,be=-.32,sc=.86,cx=205,cy=200,SG='var(--flow)',PI_='var(--amber)',SO='#22a06b';
  /* Projektion: Drehung um die Bindungsachse (x), dann leicht um y gekippt; z zeigt zum Betrachter */
- let sc2=sc;const P=([x,y,z])=>{const y1=y*Math.cos(phi)-z*Math.sin(phi),z1=y*Math.sin(phi)+z*Math.cos(phi),x2=x*Math.cos(be)+z1*Math.sin(be),z2=-x*Math.sin(be)+z1*Math.cos(be);return[cx+sc2*x2,cy-sc2*y1,z2]};
+ let sc2=sc;const P=([x,y,z])=>{if(spin){const x1=x*Math.cos(psi)+z*Math.sin(psi),z1=-x*Math.sin(psi)+z*Math.cos(psi);return[cx+sc2*x1,cy-sc2*(y*Math.cos(tau)-z1*Math.sin(tau)),y*Math.sin(tau)+z1*Math.cos(tau)]}const y1=y*Math.cos(phi)-z*Math.sin(phi),z1=y*Math.sin(phi)+z*Math.cos(phi),x2=x*Math.cos(be)+z1*Math.sin(be),z2=-x*Math.sin(be)+z1*Math.cos(be);return[cx+sc2*x2,cy-sc2*y1,z2]};
  const add=(a,b,k=1)=>[a[0]+k*b[0],a[1]+k*b[1],a[2]+k*b[2]],nrm=a=>{const l=Math.hypot(...a);return a.map(q=>q/l)},it=[];
- const pth=p=>'M'+p.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join('L')+'Z';
+ /* glatter Umriss: Catmull-Rom-Kurve durch die Hüllpunkte */
+ const pth=p=>{const n=p.length,f=q=>q[0].toFixed(1)+' '+q[1].toFixed(1);let d='M'+f(p[0]);for(let i=0;i<n;i++){const a=p[(i-1+n)%n],b=p[i],c=p[(i+1)%n],e=p[(i+2)%n];d+='C'+f([b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6])+' '+f([c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6])+' '+f(c)}return d+'Z'};
  /* konvexe Hülle der projizierten Punkte = Umriss eines Körpers */
  const hull=pts=>{pts=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];for(const p of pts){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(const p of pts.slice().reverse()){while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}return lo.slice(0,-1).concat(up.slice(0,-1))};
- const cloud=(pts3,c,op,z)=>{const q=pts3.map(P),zz=z!=null?z:q.reduce((a,b)=>a+b[2],0)/q.length;if(op<.02)return;const d=pth(hull(q));it.push([zz,`<path d="${d}" fill="${c}" fill-opacity="${(.34*op).toFixed(2)}" stroke="${c}" stroke-opacity="${(.85*op).toFixed(2)}" stroke-width="1.6"/><path d="${d}" fill="url(#g-ball)" opacity="${(.55*op).toFixed(2)}"/>`])};
+ const cloud=(pts3,c,op,z)=>{const q=pts3.map(P),zz=z!=null?z:q.reduce((a,b)=>a+b[2],0)/q.length;if(op<.02)return;const d=pth(hull(q));it.push([zz,`<path d="${d}" fill="${c}" fill-opacity="${(.4*op).toFixed(2)}" stroke="${c}" stroke-opacity="${(.6*op).toFixed(2)}" stroke-width="1.3"/><path d="${d}" fill="url(#g-ball)" opacity="${(.75*op).toFixed(2)}"/>`])};
  const basis=d=>{const a=Math.abs(d[0])<.9?[1,0,0]:[0,1,0],u=nrm([d[1]*a[2]-d[2]*a[1],d[2]*a[0]-d[0]*a[2],d[0]*a[1]-d[1]*a[0]]),w=[d[1]*u[2]-d[2]*u[1],d[2]*u[0]-d[0]*u[2],d[0]*u[1]-d[1]*u[0]];return[u,w]};
- /* Keule (Hybrid- oder p-Orbital): Spitze am Kern, Bauch bei 0,6 · L */
- const lobe=(N,d,L,r,c,op=1)=>{d=nrm(d);const [u,w]=basis(d),C=add(N,d,.6*L),pts=[N];for(let i=0;i<24;i++){const a=i*PI/12;for(const k of [-.6,-.3,0,.3,.6]){const rr=r*Math.sqrt(1-k*k);pts.push(add(add(add(C,d,k*r*(k>0?1.25:1)),u,rr*Math.cos(a)),w,rr*Math.sin(a)))}}cloud(pts,c,op,P(add(N,d,.45*L))[2])};
+ /* Keule (Hybrid- oder p-Orbital): rundliche Birne, am Kern schmal, Bauch bei 0,6 · L, außen rund */
+ const lobe=(N,d,L,r,c,op=1)=>{if(op<.02)return;d=nrm(d);const [u,w]=basis(d),pts=[];for(let i=0;i<=16;i++){const q=i/16,rr=r*Math.pow(Math.sin(PI*Math.pow(q,1.35)),.55),C=add(N,d,L*q);for(let j=0;j<20;j++){const a=j*PI/10;pts.push(add(add(C,u,rr*Math.cos(a)),w,rr*Math.sin(a)))}}cloud(pts,c,op,P(add(N,d,.5*L))[2])};
  /* Ellipsoid: Mitte C, Halbachsen entlang Achsen A1, A2, A3 */
  const ell=(C,A,c,op=1)=>{const pts=[];for(let i=0;i<14;i++)for(let j=0;j<24;j++){const th=i*PI/13,ph=j*PI/12,s1=Math.sin(th);pts.push(add(add(add(C,A[0],Math.cos(th)),A[1],s1*Math.cos(ph)),A[2],s1*Math.sin(ph)))}cloud(pts,c,op)};
  const sph=(C,r,c,op=1)=>ell(C,[[r,0,0],[0,r,0],[0,0,r]],c,op);
- const nuc=(N,el)=>{const q=P(N),r=el=='C'?11:7;it.push([1e4+q[2],BALL(q[0],q[1],r,el=='C'?'#4b5563':'#e5e7eb',1.4)+(el=='C'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:13px;font-weight:800;fill:#fff">C</text>`:'')])};
+ const nuc=(N,el)=>{const q=P(N),r=el=='H'?7:11;it.push([1e4+q[2],BALL(q[0],q[1],r,el=='C'?'#4b5563':el=='O'?'#dc2626':'#e5e7eb',1.4)+(el!='H'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:13px;font-weight:800;fill:#fff">${el}</text>`:'')])};
  let h='',res,rows,st;
  const sm=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),mg=sm(.72,.96,ap);
- if(v==0){
+ if(v>=5){
+  /* Benzol, funktionelle Gruppen, Alkan-Kette: allgemeine Moleküle aus Atomliste und Bindungsliste */
+  const OC='#dc2626',LPC='#8b5cf6',W=32,cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],sub=(a,b)=>add(a,b,-1),Y=[0,1,0];
+  const term=a=>{const u=nrm(cr(a,Y));return[0,120,240].map(g=>{const q=g*PI/180;return add(a.map(x=>-x/3),add(u.map(x=>x*Math.cos(q)),Y,Math.sin(q)),.943)})},tet2=(a,b)=>{const m=nrm(add(a,b)).map(q=>-q);return[add(m.map(q=>q*.5774),Y,.8165),add(m.map(q=>q*.5774),Y,-.8165)]};
+  const A=[],B=[],LP=[];let pring=0,info;
+  const at=(el,p)=>(A.push([el,p]),A.length-1),bd=(i,j,o=1)=>B.push([i,j,o]);
+  if(v==5){
+   /* Benzol: Sechseck in der Ebene, 139 pm, H 109 pm */
+   const R=139*(1+.7*(1-ap)),ci=[];for(let k=0;k<6;k++){const a=k*PI/3;ci.push(at('C',[R*Math.cos(a),0,R*Math.sin(a)]))}
+   for(let k=0;k<6;k++){const a=k*PI/3;bd(ci[k],ci[(k+1)%6]);bd(ci[k],at('H',[(R+109)*Math.cos(a),0,(R+109)*Math.sin(a)]))}pring=R;
+   info=['C₆H₆',['6 C-Atome sp², 120°','alle C–C gleich: 139 pm','6 π-Elektronen als Ring','über und unter der Ebene'],[['139 pm','C–C im Ring'],['6','π-Elektronen'],['sp²','am C-Atom']],
+    [['Bindungswinkel','120° (ebenes Sechseck)'],['C–C-Abstand','139 pm, zwischen Einfach- (154) und Doppelbindung (134)'],['π-Elektronen','6, gleichmäßig über den Ring verteilt (delokalisiert)'],['Strichformel','Sechseck mit Kreis; die Schreibweise mit drei Doppelbindungen ist nur eine Hilfe'],['Technik','Ausgangsstoff für Polystyrol, Farbstoffe, Kunstharze; im Benzin höchstens 1 %'],['Gefahr','krebserzeugend: als Lösemittel ersetzt (z. B. durch Toluol)']]];
+  } else if(v<9){
+   const d1=[.8165,0,.5774],d2=[.8165,0,-.5774];
+   if(v==6){/* Ethanol CH₃–CH₂–OH, Zickzack in der Ebene */
+    const C1=[0,0,0],C2=add(C1,d1,153),O=add(C2,d2,143),Hh=add(O,d1,96),c1=at('C',C1),c2=at('C',C2),o=at('O',O),h=at('H',Hh);bd(c1,c2);bd(c2,o);bd(o,h);
+    term(d1).forEach(d=>bd(c1,at('H',add(C1,d,109))));
+    tet2(d1.map(q=>-q),d2).forEach(d=>bd(c2,at('H',add(C2,d,109))));tet2(d2.map(q=>-q),d1).forEach(d=>LP.push([o,d]));
+    info=['CH₃–CH₂–OH',['Hydroxylgruppe –OH','O zieht Elektronen an (δ−)','2 freie Elektronenpaare','–OH: wasserlöslich'],[['–OH','Gruppe'],['Alkohol','Stoffklasse'],['2','freie e⁻-Paare am O']],
+     [['Funktionelle Gruppe','Hydroxylgruppe –OH (Alkohole)'],['Bindungen am O','O–C und O–H: je eine σ-Bindung, Winkel etwa 109°'],['Polarität','O δ−, H δ+: Wasserstoffbrücken, darum mischbar mit Wasser'],['Technik','Reinigungs- und Desinfektionsmittel, Kraftstoffzusatz (E10)'],['Gefahr','leicht entzündbar, Flammpunkt 13 °C']]];
+   } else if(v==7){/* Methanal H₂C=O */
+    const c=at('C',[0,0,0]),o=at('O',[121,0,0]);bd(c,o,2);[1,-1].forEach(sg=>{bd(c,at('H',[-55,0,sg*95]));LP.push([o,[.5,0,sg*.866]])});
+    info=['H₂C=O',['Carbonylgruppe C=O','C=O: 1 σ + 1 π','2 freie Elektronenpaare','polar: O δ−, C δ+'],[['C=O','Gruppe'],['Aldehyd','Stoffklasse'],['121 pm','C=O']],
+     [['Funktionelle Gruppe','Carbonylgruppe C=O (Aldehyde, Ketone wie Aceton)'],['Doppelbindung','1 σ + 1 π wie bei C=C, aber polar: O zieht die Elektronen an'],['Form','eben, Winkel etwa 120° (sp² am C)'],['Technik','Formaldehyd: Leim für Spanplatten, Desinfektion'],['Gefahr','giftig und krebserzeugend: Raumluft-Grenzwerte beachten']]];
+   } else {/* Essigsäure CH₃–COOH */
+    const C2=[0,0,0],O1=[60.5,0,104.8],O2=[67,0,-116],c1=at('C',[-152,0,0]),c2=at('C',C2),o1=at('O',O1),o2=at('O',O2),hh=at('H',add(O2,[.983,0,.182],97));
+    bd(c1,c2);bd(c2,o1,2);bd(c2,o2);bd(o2,hh);
+    term([1,0,0]).forEach(d=>bd(c1,at('H',add([-152,0,0],d,109))));
+    LP.push([o1,[1,0,0]],[o1,[-.5,0,.866]]);tet2([-.5,0,.866],[.983,0,.182]).forEach(d=>LP.push([o2,d]));
+    info=['CH₃–COOH',['Carboxylgruppe –COOH','C=O und C–O–H','am selben C-Atom','O–H gibt H⁺ ab: sauer'],[['–COOH','Gruppe'],['Carbonsäure','Stoffklasse'],['sauer','Eigenschaft']],
+     [['Funktionelle Gruppe','Carboxylgruppe –COOH: Carbonyl C=O und Hydroxyl –OH am selben C-Atom'],['Warum sauer','Die C=O-Gruppe zieht Elektronen vom O–H ab, das H⁺ löst sich leichter'],['In Wasser','CH₃COOH + H₂O ⇌ CH₃COO⁻ + H₃O⁺ (schwache Säure)'],['Technik','Speiseessig (etwa 5 %), Entkalker; weitere Carbonsäuren: Ameisensäure, Zitronensäure'],['Gefahr','konzentriert (Eisessig) ätzend']]];
+   }
+  }
+  if(v<9){
+   /* Mittelpunkt in den Ursprung, Wolken zeichnen */
+   const cm=A.reduce((s,a)=>add(s,a[1],1/A.length),[0,0,0]);A.forEach(a=>a[1]=sub(a[1],cm));
+   sc2=Math.min(.95,175/(Math.max(...A.map(a=>Math.hypot(a[1][0],a[1][2])))+50));
+   B.forEach(([i,j,o])=>{const [ei,pi]=A[i],[ej,pj]=A[j],L=Math.hypot(...sub(pj,pi)),d=nrm(sub(pj,pi));
+    if(ej=='H'||ei=='H'){const [p,q]=ej=='H'?[pi,pj]:[pj,pi];lobe(p,sub(q,p),L*.95,W*.9,SG,1);sph(q,46,'#94a3b8',.9)}
+    else{const mm=v==5?mg:1;lobe(pi,d,.62*L+12,W,SG,1-.6*mm);lobe(pj,d.map(q=>-q),.62*L+12,W,SG,1-.6*mm);
+     const [u,w]=basis(d);if(mm>0)ell(add(pi,d,L/2),[d.map(q=>q*(L/2+16)),u.map(q=>q*W*.95),w.map(q=>q*W*.95)],SG,mm);
+     if(o==2){const pp=nrm(cr(d,Y));[1,-1].forEach(sg=>ell(add(add(pi,d,L/2),Y,sg*46),[d.map(q=>q*(L/2+30)),Y.map(q=>q*28),pp.map(q=>q*26)],PI_,1))}}});
+   LP.forEach(([i,d])=>lobe(A[i][1],d,70,25,LPC,.9));
+   if(v==5){
+    /* π-Ring: vorher p-Hanteln an jedem C, danach je ein Ring über und unter der Ebene */
+    A.forEach(([e,p])=>{if(e=='C')[1,-1].forEach(sg=>lobe(p,Y.map(q=>q*sg),92,28,PI_,1-mg))});
+    if(mg>0)[1,-1].forEach(sg=>{const out=[],inn=[];for(let k=0;k<48;k++){const a=k*PI/24,c=Math.cos(a),s2=Math.sin(a);[-13,13].forEach(dy=>out.push(P([(pring+28)*c,sg*42+dy,(pring+28)*s2])));inn.push(P([(pring-28)*c,sg*42+(sg>0?13:-13),(pring-28)*s2]))}
+     const d=pth(hull(out))+' '+pth(inn.slice().reverse()),zz=out.reduce((a,b)=>a+b[2],0)/out.length;
+     it.push([zz+(sg>0?60:-60),`<path d="${d}" fill-rule="evenodd" fill="${PI_}" fill-opacity="${(.42*mg).toFixed(2)}" stroke="${PI_}" stroke-opacity="${(.6*mg).toFixed(2)}" stroke-width="1.3"/><path d="${d}" fill-rule="evenodd" fill="url(#g-ball)" opacity="${(.7*mg).toFixed(2)}"/>`])})}
+   A.forEach(([e,p])=>{if(e!='H')nuc(p,e)});
+   it.sort((a,b)=>a[0]-b[0]);h=it.map(q=>q[1]).join('');
+   h+=ORBT(205,32,M0[0].split(':')[0],21,'middle','var(--ink)',800)+ORBT(205,56,M0[0].split(': ')[1],18,'middle','var(--mute)',700);
+   if(v==5&&ap<.99)h+=ORBT(205,334,`Abstand C–C ${nf(pring,3)} pm (gebunden: 139 pm)`,18,'middle','var(--mute)',600);
+   /* rechts: Formel, Kugel-Stab-Modell von oben, Merksätze */
+   h+=ORBT(522,76,info[0],24,'middle','var(--ink)',800);
+   {const xs=A.map(a=>a[1][0]),zs=A.map(a=>a[1][2]),k=Math.min(.42,170/(Math.max(...xs)-Math.min(...xs)+60),70/(Math.max(...zs)-Math.min(...zs)+40)),Q=p=>[522+p[0]*k,124-p[2]*k];let g='';
+    B.forEach(([i,j,o])=>{const a=Q(A[i][1]),b=Q(A[j][1]),l=Math.hypot(b[0]-a[0],b[1]-a[1]),ox=-(b[1]-a[1])/l*3.5,oy=(b[0]-a[0])/l*3.5;for(let n=0;n<o;n++){const f=n-(o-1)/2;g+=`<path d="M${a[0]+f*ox} ${a[1]+f*oy}L${b[0]+f*ox} ${b[1]+f*oy}" stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/>`}});
+    if(v==5)g+=`<circle cx="522" cy="124" r="${139*k*.55}" fill="none" stroke="var(--ink)" stroke-width="2.2"/>`;
+    A.forEach(([e,p])=>{const q=Q(p);g+=BALL(q[0],q[1],e=='H'?5.5:9,e=='H'?'#e5e7eb':e=='O'?OC:'#4b5563',1.2)});
+    h+=g+ORBT(522,186,'Kugel-Stab-Modell',16,'middle','var(--mute)',600)}
+   info[1].forEach((l,i)=>h+=ORBT(424,226+i*26,l,17,'start',i?'var(--ink)':'var(--acc)',i?600:800));
+   h+=`<rect x="22" y="352" width="18" height="12" rx="6" fill="${SG}" fill-opacity=".45" stroke="${SG}"/>`+ORBT(46,364,'σ',18)+`<rect x="70" y="352" width="18" height="12" rx="6" fill="${PI_}" fill-opacity=".45" stroke="${PI_}"/>`+ORBT(94,364,'π',18)+(LP.length?`<rect x="118" y="352" width="18" height="12" rx="6" fill="${LPC}" fill-opacity=".45" stroke="${LPC}"/>`+ORBT(142,364,'freies Elektronenpaar',18):'')+(A.some(a=>a[0]=='O')?BALL(30,382,7,OC,1.2)+ORBT(46,388,'O-Atom',18)+BALL(132,382,7,'#4b5563',1.2)+ORBT(146,388,'C-Atom',18):'');
+   res=info[2];rows=info[3];
+   st=[['Funktionelle Gruppe','Eine Atomgruppe, die die Eigenschaften eines Stoffes bestimmt: –OH (Alkohole), C=O (Aldehyde, Ketone), –COOH (Carbonsäuren).'],['Freies Elektronenpaar','Zwei Elektronen am O-Atom, die nicht an einer Bindung beteiligt sind. Sie machen die Gruppe polar und reaktionsfähig.'],['Benzol','Ein Ring aus 6 C-Atomen mit sp²-Orbitalen. Die 6 p-Orbitale überlappen ringsum zu einer gemeinsamen π-Wolke ober- und unterhalb der Ebene. Darum sind alle C–C-Abstände gleich.'],['σ und π','σ: Wolke auf der Bindungsachse. π: seitliche Überlappung von p-Orbitalen, nur zusätzlich zu σ.']];
+  } else {
+   /* Alkan-Kette CₙH₂ₙ₊₂: Zickzack mit 109,5°, je C rund 126 pm länger */
+   const n=s.k,AL=['Methan','Ethan','Propan','Butan','Pentan','Hexan','Heptan','Oktan','Nonan','Decan','Undecan','Dodecan','Tridecan','Tetradecan','Pentadecan','Hexadecan','Heptadecan','Octadecan','Nonadecan','Eicosan'][n-1],
+    KP=[-162,-89,-42,-1,36,69,98,126,151,174,196,216,235,254,271,287,302,316,330,343],FP=[-182,-183,-188,-138,-130,-95,-91,-57,-54,-30,-26,-10,-5,6,10,18,22,28,32,37],
+    C=[];for(let i=0;i<n;i++)C.push([i*125.8,0,(i%2)*88.9]);
+    const L=(n-1)*125.8,cm=[L/2,0,n>1?44.5:0];C.forEach((c,i)=>C[i]=sub(c,cm));
+    sc2=Math.min(.86,370/(L+260));
+    const HH=[];C.forEach((c,i)=>{let D=[];
+     if(n==1)D=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(nrm);
+     else if(i==0||i==n-1)D=term(nrm(sub(C[i?i-1:1],c)));
+     else D=tet2(nrm(sub(C[i-1],c)),nrm(sub(C[i+1],c)));
+     D.forEach(d=>HH.push([c,add(c,d,109)]))});
+    const stk=(p,q,wd)=>{const a=P(p),b=P(q);it.push([(a[2]+b[2])/2,`<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}" stroke="var(--ink)" stroke-width="${wd}" stroke-linecap="round"/>`])};
+    for(let i=0;i+1<n;i++){const d=nrm(sub(C[i+1],C[i])),[u,w]=basis(d),m=add(C[i],d,77);ell(m,[d.map(q=>q*95),u.map(q=>q*30),w.map(q=>q*30)],SG,.75);stk(C[i],C[i+1],Math.max(2,9*sc2))}
+    HH.forEach(([c,p])=>{stk(c,p,Math.max(1.5,6*sc2));const q=P(p);it.push([q[2],BALL(q[0],q[1],Math.max(3,25*sc2),'#e5e7eb',1)])});
+    C.forEach(c=>{const q=P(c);it.push([q[2]+1,BALL(q[0],q[1],Math.max(4.5,38*sc2),'#4b5563',1.2)])});
+    it.sort((a,b)=>a[0]-b[0]);h=it.map(q=>q[1]).join('');
+    const M=12.01*n+1.008*(2*n+2),zs=n<=4?'gasförmig':n<=16?'flüssig':'fest',use=n<=2?'Erdgas, Heizgas':n<=4?'Flüssiggas (Propan, Butan)':n<=10?'Benzin':n<=16?'Kerosin, Diesel, Heizöl':'Paraffin, Kerzenwachs, Schmierfett';
+    h+=ORBT(205,32,`${AL} C${isub(n)}H${isub(2*n+2)}`,21,'middle','var(--ink)',800)+ORBT(205,56,`${n} C-Atom${n>1?'e':''}, ${2*n+2} H-Atome`,18,'middle','var(--mute)',700);
+    {const bx=40,by=336,b=100*sc2;h+=`<path d="M${bx} ${by}H${bx+b}M${bx} ${by-5}V${by+5}M${bx+b} ${by-5}V${by+5}" stroke="var(--ink)" stroke-width="2"/>`+ORBT(bx+b+8,by+6,'100 pm',16,'start','var(--mute)',600)}
+    if(n>1)h+=ORBT(205,372,`End-C bis End-C: ${nf(L,3)} pm`,18,'middle','var(--ink)',700);
+    /* rechts: Siedepunkt über der Kettenlänge */
+    {const x0=440,x1=626,y0=124,y1=262,X=i=>x0+(i-1)/19*(x1-x0),Yp=T=>y1-(T+200)/550*(y1-y0);
+     h+=ORBT(424,84,'Siedepunkt in °C',17,'start','var(--ink)',700)+ORBT(424,104,'über der Kettenlänge',15,'start','var(--mute)',600);
+     h+=`<path d="M${x0} ${Yp(20)}H${x1}" stroke="var(--mute)" stroke-dasharray="4 4"/>`+ORBT(x1,Yp(20)-5,'20 °C',13,'end','var(--mute)',600);
+     h+=`<path d="M${x0} ${y0-6}V${y1}H${x1}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`+[-150,0,150,300].map(T=>ORBT(x0-4,Yp(T)+5,T,13,'end','var(--mute)',600)).join('')+[1,5,10,15,20].map(i=>ORBT(X(i),y1+18,i,13,'middle','var(--mute)',600)).join('')+ORBT((x0+x1)/2,y1+36,'C-Atome',14,'middle','var(--mute)',600);
+     h+=`<polyline points="${KP.map((T,i)=>X(i+1).toFixed(1)+','+Yp(T).toFixed(1)).join(' ')}" fill="none" stroke="var(--red)" stroke-width="2.5"/><circle cx="${X(n)}" cy="${Yp(KP[n-1])}" r="7" fill="var(--red)" stroke="var(--ink)" stroke-width="2"/>`;
+     [['Zustand (20 °C)',zs],['Verwendung',use.split(',')[0]]].forEach(([a,b],i)=>h+=ORBT(424,330+i*40,a,15,'start','var(--mute)',600)+ORBT(424,349+i*40,b,18,'start','var(--ink)',800))}
+    res=[[KP[n-1]+' °C','Siedepunkt'],[nf(L,3)+' pm','Kettenlänge'],[zs,'bei 20 °C']];
+    rows=[['Summenformel',`C${isub(n)}H${isub(2*n+2)} (allgemein CₙH₂ₙ₊₂)`],['Molare Masse',nf(M,4)+' g/mol'],['Schmelzpunkt / Siedepunkt',FP[n-1]+' °C / '+KP[n-1]+' °C'],['H-Atome je C-Atom',nf((2*n+2)/n,3)+' (nähert sich 2)'],['Massenanteil Kohlenstoff',nf(1201*n/M,3)+' %'],['Verwendung',use]];
+    st=[['Kettenlänge','Jedes weitere C-Atom macht die Kette um etwa 126 pm länger. Die C–C-Bindung ist 154 pm lang, wegen des Winkels von 109,5° liegt die Kette als Zickzack.'],['Siedepunkt','Lange Ketten berühren sich auf größerer Fläche. Die Anziehung zwischen den Molekülen (Van-der-Waals-Kräfte) wächst, darum steigen Siede- und Schmelzpunkt.'],['Lange Ketten','Ab etwa 17 C-Atomen fest (Paraffin). Sehr lange Ketten sind beweglich und knäueln sich, z. B. Polyethylen mit vielen tausend C-Atomen.'],['Quelle der Werte','Siede- und Schmelzpunkte der n-Alkane bei 1013 hPa aus üblichen Tabellenwerken, gerundet.']];
+  }
+ } else if(v==0){
   /* C-Atom: 1s klein, 2s Kugel, drei 2p-Hanteln */
   const O=[0,0,0];sph(O,62,SO,.55);sph(O,22,SO,.9);
   [[1,0,0],[0,1,0],[0,0,1]].forEach((d,i)=>{lobe(O,d,150,40,PI_,i==2?.6:.85);lobe(O,d.map(q=>-q),150,40,PI_,i==2?.6:.85)});
@@ -928,7 +1025,7 @@ function ORB(s,t){
    const ce=ty==1?'#e5e7eb':'#4b5563',rr=ty==1?9:12;g+=BALL(a[0],a[1],rr,ce,1.4)+BALL(b[0],b[1],rr,ce,1.4);
    h+=g+ORBT(522,166,'Kugel-Stab-Modell',16,'middle','var(--mute)',600)}
   /* Diagramm: Bindungslänge und -energie im Vergleich */
-  {const R=ORBM.slice(1),y0=202;
+  {const R=ORBM.slice(1,5),y0=202;
    h+=ORBT(424,y0,'Länge in pm',17,'start','var(--ink)',700)+ORBT(424,y0+107,'Energie in kJ/mol',17,'start','var(--ink)',700);
    R.forEach((r,i)=>{const on=i+1==ty,y=y0+8+i*21,y2=y0+113+i*21,o=on?1:.4,lab=ORBT(424,y+15,r[1],18,'start',on?'var(--ink)':'var(--mute)',on?800:600);
     const w1=r[2]/160*84,w2=r[3]/900*84;
@@ -940,9 +1037,9 @@ function ORB(s,t){
   st=[['σ-Bindung','Die Wolken überlappen direkt auf der Verbindungslinie. Jede Einfachbindung ist eine σ-Bindung.'],['π-Bindung','Zwei p-Orbitale liegen parallel und überlappen seitlich, oberhalb und unterhalb der Achse. Sie kommt nur zusätzlich zur σ-Bindung vor.'],['Mehrfachbindung','Doppelbindung = 1 σ + 1 π, Dreifachbindung = 1 σ + 2 π. Je mehr Bindungen, desto kürzer und fester, aber π ist schwächer als σ (C=C: 614 statt 2 · 348 kJ/mol).'],['Drehbarkeit','Um eine Einfachbindung können sich die Molekülteile drehen. Die π-Bindung verhindert das.'],['Reaktionsfreudigkeit','Die π-Wolke liegt außen und ist leicht angreifbar. Darum reagieren Ethen und Ethin viel leichter als Ethan (z. B. Polymerisation zu PE).'],['Quelle der Werte','Mittlere Bindungslängen und Bindungsenthalpien aus üblichen Tabellenwerken, gerundet.']];
  }
  return{vb:'0 0 640 400',svg:h,res,th:['Merkmal','Wert'],rows,st}}
-M.push({g:'Chemie',name:'Orbitalmodell & Mehrfachbindungen',anim:1,desc:'Im Orbitalmodell sind Elektronen Wolken (Orbitale). Überlappen die Wolken zweier Atome, entsteht eine Bindung: direkt auf der Achse eine σ-Bindung, seitlich darüber und darunter eine π-Bindung. Doppel- und Dreifachbindungen bestehen aus einer σ- und einer oder zwei π-Bindungen.',leg:'Blau: σ-Wolken, orange: π-Wolken bzw. p-Orbitale, grau: Wasserstoff. Abstände der Atomkerne maßstäblich, die Form der Wolken ist vereinfacht. Das Molekül dreht sich langsam um die Bindungsachse. Mit „Annäherung“ rücken die Atome zusammen, bis sich die Wolken überlagern.',
- p:[['v','Ansicht','sel',ORBM.map(x=>x[0]),3],['n','Annäherung',0,100,5,'%',100]],
- vis:s=>s.v==0?[]:['n'],
+M.push({g:'Chemie',name:'Orbitalmodell & Mehrfachbindungen',anim:1,desc:'Im Orbitalmodell sind Elektronen Wolken (Orbitale). Überlappen die Wolken zweier Atome, entsteht eine Bindung: direkt auf der Achse eine σ-Bindung, seitlich darüber und darunter eine π-Bindung. Doppel- und Dreifachbindungen bestehen aus einer σ- und einer oder zwei π-Bindungen. Weitere Ansichten: der Benzolring, funktionelle Gruppen und Alkan-Ketten von 1 bis 20 C-Atomen.',leg:'Blau: σ-Wolken, orange: π-Wolken bzw. p-Orbitale, violett: freie Elektronenpaare, grau: Wasserstoff, rot: Sauerstoff. Abstände der Atomkerne maßstäblich, die Form der Wolken ist vereinfacht. Das Molekül dreht sich langsam. Mit „Annäherung“ rücken die Atome zusammen, bis sich die Wolken überlagern. Bei den Alkanen wächst die Kette mit dem Regler „C-Atome“, der Maßstab passt sich an.',
+ p:[['v','Ansicht','sel',ORBM.map(x=>x[0]),3],['n','Annäherung',0,100,5,'%',100],['k','C-Atome',1,20,1,'',8]],
+ vis:s=>s.v==0||(s.v>5&&s.v<9)?[]:s.v==9?['k']:['n'],
  f(s,t){return ORB(s,t)}});
 /* Neue Themen */
 const FP='Physik',FC='Chemie',FS='Statistik',FM='Mathematik',MF='Mechanik der Festkörper',HP='Hydraulik & Pneumatik',KD='Kinematik & Dynamik',AE='Arbeit, Leistung, Energie',WL='Wärmelehre',ET='Elektrotechnik',AP='Atombau & Periodensystem',CB='Chemische Bindungen',RS='Reaktionen & Stöchiometrie',SB='Säuren, Basen & Neutralisation',OR='Oxidation & Reduktion',EC='Elektrochemie',WH='Wasser & Härte';
