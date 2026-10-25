@@ -1,0 +1,9 @@
+/* Aufgaben für das Test-Thema „Welle-Teilchen-Dualismus“ (nicht in der App, siehe README.md). Stufe in LVT "num": "Welle-Teilchen-Dualismus":3 */
+MCQ.push(
+['Welle-Teilchen-Dualismus','Welche Aussage beschreibt den Welle-Teilchen-Dualismus?',['Licht und Elektronen zeigen je nach Versuch Wellen- oder Teilcheneigenschaften','Licht ist eine Welle, Elektronen sind Teilchen','Licht ist ein Teilchen, Elektronen sind Wellen','Nur sehr helles Licht ist eine Welle'],'Doppelspalt zeigt die Welle, Photoeffekt und einzelne Treffer zeigen das Teilchen, bei Licht und Elektronen.'],
+['Welle-Teilchen-Dualismus','Wie berechnet man die Wellenlänge eines Elektrons?',['λ = h / (m · v)','λ = c / f','λ = m · v / h','λ = h · f'],'De-Broglie-Wellenlänge: λ = h / p mit p = m · v.'],
+['Welle-Teilchen-Dualismus','Warum zeigt ein Elektronenmikroskop feinere Details als ein Lichtmikroskop?',['Schnelle Elektronen haben eine viel kürzere Wellenlänge als Licht','Elektronen sind heller als Licht','Elektronen haben keine Masse','Elektronen werden nicht abgelenkt'],'Die Auflösung hängt von der Wellenlänge ab. Bei 100 V sind es 123 pm, bei Licht etwa 500 nm.']);
+Object.assign(GEN,{
+'Welle-Teilchen-Dualismus':r=>{const U=rg(r,100,1000,100),v=Math.sqrt(2*1.602e-19*U/9.109e-31),l=6.626e-34/(9.109e-31*v)*1e12;return[`Elektronen werden mit U = ${U} V beschleunigt. Wie groß ist ihre Wellenlänge in pm?`,l,'pm',['v = √(2 · e · U / m)',`v = ${nf(v/1e6,3)} · 10⁶ m/s`,'λ = h / (m · v)',`λ = 6,626 · 10⁻³⁴ / (9,109 · 10⁻³¹ · ${nf(v/1e6,3)} · 10⁶) m = ${nf(l,3)} pm`]]}});
+FEH.push(
+['Welle-Teilchen-Dualismus','Ein Kollege sagt: „Elektronen sind Teilchen, die können keine Interferenz zeigen.“ Was ist falsch?',['Elektronen bilden am Doppelspalt ebenfalls Streifen (λ = h / (m · v)).','Nichts, nur Licht interferiert.','Elektronen interferieren nur im Vakuum nicht.','Elektronen sind reine Wellen.'],'Das zeigte Jönsson 1961 mit dem Elektronen-Doppelspalt.']);

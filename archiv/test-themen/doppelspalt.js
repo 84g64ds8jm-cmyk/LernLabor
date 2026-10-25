@@ -1,0 +1,9 @@
+/* Aufgaben für das Test-Thema „Doppelspalt: Welle oder Teilchen“ (nicht in der App, siehe README.md). Stufe in LVT "num": "Doppelspalt: Welle oder Teilchen":2 */
+MCQ.push(
+['Doppelspalt: Welle oder Teilchen','Was zeigt das Streifenmuster am Doppelspalt?',['Licht verhält sich wie eine Welle (Interferenz)','Licht besteht aus Teilchen mit Masse','Die Spalte sind verschmutzt','Licht wird im Spalt langsamer'],'Helle Streifen entstehen, wo Berg auf Berg trifft, dunkle, wo Berg auf Tal trifft.'],
+['Doppelspalt: Welle oder Teilchen','Wie ändern sich die Streifen, wenn der Spaltabstand größer wird?',['Sie rücken enger zusammen','Sie werden breiter','Sie verschwinden','Sie werden farbiger'],'Δy = λ · L / d: größeres d, kleineres Δy.'],
+['Doppelspalt: Welle oder Teilchen','Man schickt einzelne Photonen durch den Doppelspalt. Was sieht man nach langer Zeit?',['Aus vielen Punkten entsteht das Streifenmuster','Nur zwei helle Flecken hinter den Spalten','Eine gleichmäßig helle Fläche','Gar nichts'],'Jedes Photon landet als Punkt. Die Verteilung der Punkte folgt dem Wellenmuster.']);
+Object.assign(GEN,{
+'Doppelspalt: Welle oder Teilchen':r=>{const l=pk(r,[450,532,650]),d=pk(r,[.1,.2,.25,.5]),L=rg(r,1,4,.5),y=l*1e-9*L/(d*1e-3)*1000;return[`Laserlicht mit λ = ${l} nm fällt auf einen Doppelspalt mit d = ${nf(d)} mm. Der Schirm steht ${nf(L)} m entfernt. Wie groß ist der Streifenabstand Δy in mm?`,y,'mm',['Δy = λ · L / d',`Δy = ${l} · 10⁻⁹ m · ${nf(L)} m / (${nf(d)} · 10⁻³ m)`,`Δy = ${nf(y,3)} mm`]]}});
+FEH.push(
+['Doppelspalt: Welle oder Teilchen','Ein Kollege sagt: „Größerer Spaltabstand gibt breitere Streifen.“ Stimmt das?',['Nein, Δy = λ · L / d: die Streifen werden enger.','Ja, Δy wächst mit d.','Der Spaltabstand spielt keine Rolle.','Nur die Helligkeit ändert sich.'],'d steht im Nenner.']);
