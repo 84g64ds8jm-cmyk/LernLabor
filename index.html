@@ -1074,13 +1074,14 @@ M.push({g:'Chemie',name:'Orbitalmodell & Mehrfachbindungen',test:1,anim:1,desc:'
  vis:s=>s.v==0||(s.v>5&&s.v<9)?[]:s.v==9?['k','db','me']:['n'],
  f(s,t){return ORB(s,t)}});
 /* Organische Grundreaktionen: Atome wandern von den Ausgangsstoffen zu den Produkten, alte Bindungswolken lösen sich, neue entstehen */
-const ORXM=['Verbrennung: Methan + Sauerstoff','Substitution: Methan + Chlor','Addition: Ethen + Brom','Polymerisation: Ethen → Polyethylen','Nitrierung: Benzol + Salpetersäure','Knallgas: Wasserstoff + Sauerstoff','Neutralisation: Salzsäure + Natronlauge','Veresterung: Essigsäure + Ethanol','Eliminierung: Ethanol → Ethen + Wasser'];
+const ORXM=['Verbrennung: Methan + Sauerstoff','Substitution: Methan + Chlor','Addition: Ethen + Brom','Polymerisation: Ethen → Polyethylen','Nitrierung: Benzol + Salpetersäure','Knallgas: Wasserstoff + Sauerstoff','Neutralisation: Salzsäure + Natronlauge','Veresterung: Essigsäure + Ethanol','Eliminierung: Ethanol → Ethen + Wasser','Polymerisation: Chlorethen → PVC','Lösen: Kochsalz in Wasser'];
 function ORX(s,t){
- const v=s.v,p=s.m==1?s.r/100:Math.min(1,Math.max(0,((t%11)-1)/8)),psi=.35*Math.sin(t*.4),tau=v==4?.7:.26,sc=v==3?.44:v==4?.5:v==7?.4:.62,cx=205,cy=196,SG='var(--flow)',PI_='var(--amber)';
+ const v=s.v,p0=s.m==1?s.r/100:Math.min(1,Math.max(0,((t%11)-1)/8)),sm0=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),p=v==6?Math.min(1,p0/.76):p0,pc=v==6?sm0(.8,.97,p0):0,psi=.35*Math.sin(t*.4),tau=v==4?.7:.26,sc=v==3||v==9||v==10?.44:v==4?.5:v==7?.4:.62,cx=205,cy=196,SG='var(--flow)',PI_='var(--amber)';
  const P=([x,y,z])=>{const x1=x*Math.cos(psi)+z*Math.sin(psi),z1=-x*Math.sin(psi)+z*Math.cos(psi);return[cx+sc*x1,cy-sc*(y*Math.cos(tau)-z1*Math.sin(tau)),y*Math.sin(tau)+z1*Math.cos(tau)]};
  const it=[],{add,nrm,ell,basis}=orbKit(P,it),sub=(a,b)=>add(a,b,-1),sm=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),ez=x=>x*x*(3-2*x),cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
  const TD=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(nrm),td=(a,u,g)=>{const w=cr(a,u),q=g*PI/180;return add(a.map(x=>-x/3),add(u.map(x=>x*Math.cos(q)),w,Math.sin(q)),.943)};
  /* A: [Element, Start, Ende]; B: [i, j, Ordnung, Art] mit Art k = bleibt, o = löst sich, n = entsteht */
+ const GIT=(Lc,a)=>{const G=[];for(const i of [-1,0,1])for(const j of [-1,0,1])for(const k of [-.5,.5])G.push([(i+j+k+.5)%2?'Na':'Cl',add(Lc,[i*a,j*a,k*a]),[i,j,k]]);return G};
  const A=[],B=[],at=(e,a,b)=>(A.push([e,a,b]),A.length-1);let info,LB,win=[.38,.5,.52,.66],one=0;
  if(v==0){
   const C0=[-170,0,0],c=at('C',C0,[130,0,0]),Hs=TD.map(d=>add(C0,d,109)),O0=[[89.5,110,0],[210.5,110,0],[89.5,-110,0],[210.5,-110,0]],
@@ -1125,8 +1126,8 @@ function ORX(s,t){
   /* Neutralisation: H⁺ und OH⁻ werden zu Wasser, Na⁺ und Cl⁻ bleiben gelöst */
   const hh=at('H',[-240,60,0],[-16,1,0]),cl=at('Cl',[-113,60,0],[-190,95,0]),na=at('Na',[60,-80,0],[-190,-90,0]),o=at('O',[190,-80,0],[60,60,0]),ho=at('H',[258,-16,0],[136,1,0]);
   B.push([hh,cl,1,'o'],[na,o,1,'o'],[o,ho,1,'k'],[o,hh,1,'n']);
-  LB=[[[hh,cl],'Salzsäure'],[[na,o,ho],'Natronlauge']];LB.p=[[[na,cl],'Na⁺ + Cl⁻ gelöst'],[[o,hh,ho],'Wasser']];LB.q=[[na,'+'],[cl,'−'],[hh,'+'],[o,'−']];
-  info=['HCl + NaOH → NaCl + H₂O',[['Reaktionstyp','Neutralisation: H⁺ und OH⁻ bilden Wasser'],['Bedingung','in Wasser gelöst, läuft sofort ab, wird warm'],['Ergebnis','pH 7: Kochsalzlösung, Na⁺ und Cl⁻ bleiben gelöst']],[['H',2,2],['O',1,1],['Na',1,1],['Cl',1,1]]];
+  LB=[[[hh,cl],'Salzsäure'],[[na,o,ho],'Natronlauge']];LB.p=[[[na,cl],'Na⁺ + Cl⁻ gelöst'],[[o,hh,ho],'Wasser']];LB.q=[[na,'+'],[cl,'−'],[hh,'+'],[o,'−']];LB.w=[o,hh,ho];LB.ion=[[na,[1,1,.5]],[cl,[1,0,.5]]];
+  info=['HCl + NaOH → NaCl + H₂O',[['Reaktionstyp','Neutralisation: H⁺ und OH⁻ bilden Wasser'],['Bedingung','in Wasser gelöst, läuft sofort ab, wird warm'],['Ergebnis','pH 7: Kochsalzlösung; beim Eindampfen bildet sich ein Ionengitter']],[['H',2,2],['O',1,1],['Na',1,1],['Cl',1,1]]];
  } else if(v==7||v==8){
   /* CH₃- und CH₂-Gruppen: fehlende H-Richtungen aus den Nachbarrichtungen */
   const ch3=(a)=>[0,120,240].map(g=>td(a,[0,0,1],g)),ch2=(a,b)=>{const m=nrm(add(a,b)).map(q=>-q),n=nrm(cr(a,b));return[add(m.map(q=>q*.5774),n,.8165),add(m.map(q=>q*.5774),n,-.8165)]},
@@ -1149,45 +1150,71 @@ function ORX(s,t){
    LB=[[[ca,cb,o,ho,hb,...h1,...h2],'Ethanol']];LB.p=[[[ca,cb,...h1,...h2],'Ethen'],[[o,ho,hb],'Wasser']];
    info=['C₂H₅OH → C₂H₄ + H₂O',[['Reaktionstyp','Eliminierung: OH und H gehen ab, eine Doppelbindung entsteht'],['Bedingung','konzentrierte Schwefelsäure, etwa 170 °C'],['Gegenstück','zur Addition: Ethen + Wasser ergibt wieder Ethanol']],[['C',2,2],['H',6,6],['O',1,1]]];
   }
+ } else if(v==10){
+  /* Lösen: Wasser-Dipole ziehen Ionen von Ecken und Kanten aus dem Gitter und umhüllen sie */
+  const G=GIT([-90,0,0],92),Ii=G.map(([e,q])=>at(e,q,q)),go=[[[1,1,.5],[170,195,0]],[[1,0,.5],[265,0,0]],[[1,-1,.5],[170,-200,0]],[[-1,-1,-.5],[-170,-210,0]]],LV=[];
+  go.forEach(([ijk,T])=>{const g=G.findIndex(x=>x[2].join()==ijk.join()),i=Ii[g];A[i][2]=T;LV.push(i)});
+  /* Gitterlinien zwischen Nachbarn: bleiben, oder lösen sich, wenn ein Ion geht */
+  G.forEach((x,a)=>G.forEach((y,b)=>{if(b>a&&Math.abs(x[2][0]-y[2][0])+Math.abs(x[2][1]-y[2][1])+Math.abs(x[2][2]-y[2][2])==1)B.push([Ii[a],Ii[b],'g',LV.includes(Ii[a])||LV.includes(Ii[b])?'o':'k'])}));
+  /* je Ion drei Wassermoleküle: am Na⁺ zeigt O zum Ion, am Cl⁻ zeigt ein H zum Ion */
+  const rot=(u,g)=>[u[0]*Math.cos(g)-u[1]*Math.sin(g),u[0]*Math.sin(g)+u[1]*Math.cos(g),0],W=[];let dw=null;
+  LV.forEach((i,n)=>{const ion=A[i][2],cat=A[i][0]=='Na',ls=A[i][1];[0,2.09,4.19].forEach((g0,k)=>{const u=rot([1,0,0],g0+n*.7);let O,H1,H2;
+    if(cat){O=add(ion,u,cat?80:0);H1=add(O,rot(u,.91),96);H2=add(O,rot(u,-.91),96)}else{H1=add(ion,u,72);O=add(H1,u,96);H2=add(O,rot(u.map(q=>-q),1.82),96)}
+    const s0=k*2.1+n*1.3,th=(n*3+k)*PI/6+.3,st=q=>add([-90+250*Math.cos(th),250*Math.sin(th),0],rot(sub(q,O),s0));
+    const o=at('O',st(O),O),h1=at('H',st(H1),H1),h2=at('H',st(H2),H2);B.push([o,h1,1,'k'],[o,h2,1,'k']);W.push(o,h1,h2);if(!dw)dw=[o,h1,h2]})});
+  LB=[[Ii,'Kochsalz-Kristall']];LB.p=[[[LV[0]],'Na⁺ mit Hydrathülle'],[[LV[3]],'Cl⁻ mit Hydrathülle']];LB.lin=1;LB.nolab=1;LB.d=dw;LB.lv=LV;
+  info=['NaCl → Na⁺(aq) + Cl⁻(aq)',[['Vorgang','Lösen: Wasser zieht Ionen aus dem Gitter'],['Warum','Wasser ist ein Dipol: O ist δ−, H ist δ+'],['Merke','Polares löst Polares: Öl oder Benzin lösen kein Salz']],[['Na⁺',9,9],['Cl⁻',9,9],['H₂O',12,12]]];
+  win=[.35,.6,.6,.8];
  } else {
   one=1;const CC=[],chain=i=>[(i-2.5)*125.8,(i%2)*88.9-44.5,0];
   for(let k=0;k<3;k++)for(let j=0;j<2;j++){const i=2*k+j;CC.push(at('C',[(k-1)*270+(j?67:-67),0,0],chain(i)))}
   for(let i=0;i<6;i++){const c0=A[CC[i]][1],k=i>>1,j=i&1,a=sub(chain(i-1<0?1:i-1),chain(i)),b=sub(chain(i+1>5?4:i+1),chain(i)),m=nrm(add(nrm(a),nrm(b))).map(q=>-q);
-   [1,-1].forEach(sg=>{const d=add(m.map(q=>q*.5774),[0,0,1],sg*.8165),h=at('H',add(c0,[j?54.5:-54.5,0,sg*94.4]),add(chain(i),d,109));B.push([CC[i],h,1,'k'])})}
+   [1,-1].forEach(sg=>{const d=add(m.map(q=>q*.5774),[0,0,1],sg*.8165),cl=v==9&&j==1&&sg==1,L=cl?177:109,h=at(cl?'Cl':'H',add(c0,nrm([j?54.5:-54.5,0,sg*94.4]),L),add(chain(i),d,L));B.push([CC[i],h,1,'k'])})}
   for(let k=0;k<3;k++)B.push([CC[2*k],CC[2*k+1],1,'k'],[CC[2*k],CC[2*k+1],'pi','o']);B.push([CC[1],CC[2],1,'n'],[CC[3],CC[4],1,'n']);
-  LB=[[[CC[0],CC[1]],'Ethen'],[[CC[2],CC[3]],'Ethen'],[[CC[4],CC[5]],'Ethen']];LB.p=[[CC,'Ausschnitt aus Polyethylen']];LB.end=[CC[0],CC[5]];
-  info=['n C₂H₄ → (–CH₂–CH₂–)ₙ',[['Reaktionstyp','Polymerisation: viele Ethen-Moleküle hängen sich aneinander'],['Bedingung','Katalysator, Druck und Wärme'],['Produkt','Polyethylen (PE): Folien, Rohre, Kanister']],[['C','2n','2n'],['H','4n','4n']]];
+  const mn=v==9?'Chlorethen':'Ethen';LB=[[[CC[0],CC[1]],mn],[[CC[2],CC[3]],mn],[[CC[4],CC[5]],mn]];LB.p=[[CC,v==9?'Ausschnitt aus PVC':'Ausschnitt aus Polyethylen']];LB.end=[CC[0],CC[5]];
+  info=v==9?['n C₂H₃Cl → (–CH₂–CHCl–)ₙ',[['Reaktionstyp','Polymerisation: Chlorethen (Vinylchlorid) bildet lange Ketten'],['Herstellung','Chlorethen aus Ethen und Chlor, dabei entsteht HCl'],['Produkt','PVC: Rohre, Fensterprofile, Kabelisolierung']],[['C','2n','2n'],['H','3n','3n'],['Cl','n','n']]]:['n C₂H₄ → (–CH₂–CH₂–)ₙ',[['Reaktionstyp','Polymerisation: viele Ethen-Moleküle hängen sich aneinander'],['Bedingung','Katalysator, Druck und Wärme'],['Produkt','Polyethylen (PE): Folien, Rohre, Kanister']],[['C','2n','2n'],['H','4n','4n']]];
  }
  /* Weg der Atome: zusammenrücken, umordnen, auseinander */
- const [w0,w1,w2,w3]=win,pos=([,a,b])=>{const a2=a.map(q=>q*(one?.9:.75)),b2=one?b:b.map(q=>q*.8);
+ const [w0,w1,w2,w3]=win,pos=([,a,b])=>{if(LB.lin)return add(a,sub(b,a),ez(sm(.2,.9,p)));const a2=a.map(q=>q*(one?.9:.75)),b2=one?b:b.map(q=>q*.8);
   if(p<.35)return add(a,sub(a2,a),ez(p/.35));if(p<.65)return add(a2,sub(b2,a2),ez((p-.35)/.3));return add(b2,sub(b,b2),ez((p-.65)/.35))};
- const X=A.map(pos),op=k=>k=='k'?1:k=='o'?1-sm(w0,w1,p):sm(w2,w3,p);
- B.forEach(([i,j,o,k])=>{const f=op(k);if(f<.02)return;const a=X[i],b=X[j],L=Math.hypot(...sub(b,a)),d=nrm(sub(b,a)),[u,w]=basis(d),mid=add(a,d,L/2);
+ const X=A.map(pos),AO=A.map(()=>1);let GX=[];
+ if(v==6&&pc>0){const G=GIT([-150,0,0],92);LB.w.forEach(i=>{X[i]=add(X[i],[0,pc*170,0]);AO[i]=1-pc});
+  LB.ion.forEach(([i,ijk])=>{const g=G.find(x=>x[2].join()==ijk.join());X[i]=add(X[i],sub(g[1],X[i]),ez(pc))});GX=G.filter(x=>!LB.ion.some(y=>y[1].join()==x[2].join()))}
+ const op=k=>k=='k'?1:k=='o'?1-sm(w0,w1,p):sm(w2,w3,p);
+ B.forEach(([i,j,o,k])=>{const f=op(k)*Math.min(AO[i],AO[j]);if(f<.02)return;if(o=='g'){const q1=P(X[i]),q2=P(X[j]);it.push([Math.min(q1[2],q2[2])-1,`<path d="M${q1[0].toFixed(1)} ${q1[1].toFixed(1)}L${q2[0].toFixed(1)} ${q2[1].toFixed(1)}" stroke="var(--mute)" stroke-width="1.5" opacity="${(.7*f).toFixed(2)}"/>`]);return}const a=X[i],b=X[j],L=Math.hypot(...sub(b,a)),d=nrm(sub(b,a)),[u,w]=basis(d),mid=add(a,d,L/2);
   if(o=='pi'||o==2){const n=nrm(cr(d,Math.abs(d[2])>.9?[1,0,0]:[0,0,1]));[1,-1].forEach(sg=>ell(add(mid,n,sg*42),[d.map(q=>q*(L/2+20)),n.map(q=>q*26),nrm(cr(d,n)).map(q=>q*24)],PI_,f))}
-  if(o!='pi'){ell(mid,[d.map(q=>q*(L/2+14)),u.map(q=>q*28),w.map(q=>q*28)],SG,.8*f);
+  if(o!='pi'){if(v!=10)ell(mid,[d.map(q=>q*(L/2+14)),u.map(q=>q*28),w.map(q=>q*28)],SG,.8*f);
    const q1=P(a),q2=P(b),l=Math.hypot(q2[0]-q1[0],q2[1]-q1[1])||1,ox=-(q2[1]-q1[1])/l*3.4,oy=(q2[0]-q1[0])/l*3.4;let g='';
    for(let n=0;n<(o==2?2:1);n++){const e=o==2?n-.5:0;g+=`<path d="M${(q1[0]+e*ox).toFixed(1)} ${(q1[1]+e*oy).toFixed(1)}L${(q2[0]+e*ox).toFixed(1)} ${(q2[1]+e*oy).toFixed(1)}" stroke="var(--ink)" stroke-width="${o==2?3:4.5}" stroke-linecap="round" opacity="${f.toFixed(2)}"/>`}
    it.push([(q1[2]+q2[2])/2,g])}});
  /* offene Kettenenden beim Polyethylen */
  if(LB.end){const f=sm(.66,.8,p);if(f>.02)LB.end.forEach((i,k)=>{const a=X[i],b=add(a,[k?1:-1,k?-.6:.6,0],80),q1=P(a),q2=P(b);it.push([q1[2],`<path d="M${q1[0]} ${q1[1]}L${q2[0]} ${q2[1]}" stroke="var(--ink)" stroke-width="4.5" stroke-dasharray="3 6" stroke-linecap="round" opacity="${f}"/>`])})}
- const RA={H:25,C:36,N:34,O:33,Na:40,Cl:42,Br:46},CO={H:'#e5e7eb',C:'#4b5563',N:'#1e3a8a',O:'#dc2626',Na:'#7c3aed',Cl:'#16a34a',Br:'#9a3412'};
- A.forEach(([e],i)=>{const q=P(X[i]),r=RA[e]*sc;it.push([q[2]+1,BALL(q[0],q[1],r,CO[e],1.3)+(e!='H'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:${e.length>1?11:13}px;font-weight:800;fill:#fff">${e}</text>`:'')])});
+ const RA={H:25,C:36,N:34,O:33,Na:v==6||v==10?30:40,Cl:v==6||v==10?46:42,Br:46},CO={H:'#e5e7eb',C:'#4b5563',N:'#1e3a8a',O:'#dc2626',Na:'#7c3aed',Cl:'#16a34a',Br:'#9a3412'};
+ const ION=(e,x,y,r)=>BALL(x,y,r,CO[e],1.3)+`<text x="${x}" y="${y+4.5}" text-anchor="middle" style="font-size:12px;font-weight:800;fill:#fff">${e=='Na'?'+':'−'}</text>`;
+ A.forEach(([e],i)=>{if(AO[i]<.02)return;const q=P(X[i]),r=RA[e]*sc,ion=v==10&&(e=='Na'||e=='Cl');it.push([q[2]+1,(AO[i]<1?`<g opacity="${AO[i].toFixed(2)}">`:'')+(ion?ION(e,q[0],q[1],r):BALL(q[0],q[1],r,CO[e],1.3)+(e!='H'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:${e.length>1?11:13}px;font-weight:800;fill:#fff">${e}</text>`:''))+(AO[i]<1?'</g>':'')])});
+ /* Ionengitter beim Eindampfen */
+ GX.forEach(([e,g])=>{const q=P(g),r=RA[e]*sc;it.push([q[2]+1,`<g opacity="${pc.toFixed(2)}">`+ION(e,q[0],q[1],r)+'</g>'])});
  it.sort((a,b)=>a[0]-b[0]);let h=it.map(q=>q[1]).join('');
  /* Licht bei der Substitution, Energie bei der Verbrennung */
  if(v==1){const f=sm(.05,.12,p)*(1-sm(.3,.38,p));if(f>.02){const q=P(X[A.length-1]),q0=P(X[A.length-2]),mx=(q[0]+q0[0])/2,my=(q[1]+q0[1])/2;h+=`<path d="M${mx+70} ${my-110}q-8 14 2 22t-4 22 2 22 -6 20" fill="none" stroke="#eab308" stroke-width="4" stroke-linecap="round" opacity="${f}"/>`+ORBT(mx+82,my-104,'Licht',17,'start','#ca8a04',800)}}
  if(v==0||v==5){const f=sm(.45,.55,p)*(1-sm(.75,.9,p));if(f>.02)h=`<circle cx="${cx}" cy="${cy}" r="170" fill="url(#g-glow)" opacity="${f}"/>`+h+ORBT(cx,cy+150,'Energie wird frei',19,'middle','#ea580c',800)}
  /* Namen unter den Teilchen */
  const lab=(L,f)=>{if(f<.02)return;L.forEach(([ix,nm])=>{const q=ix.map(i=>P(X[i])),x=q.reduce((a,b)=>a+b[0],0)/q.length,y=Math.max(...q.map(b=>b[1]));h+=`<g opacity="${f.toFixed(2)}">`+ORBT(x,y+(ix.length>5?52:34),nm,17,'middle','var(--ink)',800)+'</g>'})};
- lab(LB,1-sm(.25,.35,p));lab(LB.p,sm(.72,.82,p));
+ lab(LB,1-sm(.25,.35,p));if(!LB.nolab)lab(LB.p,sm(.72,.82,p)*(1-pc));
+ if(pc>.02)h+=`<g opacity="${pc.toFixed(2)}">`+ORBT(Math.max(110,P([-150,-150,0])[0]),P([-150,-150,0])[1]+20,'Ionengitter (Kochsalz)',17,'middle','var(--ink)',800)+'</g>';
+ /* Hydrathüllen beim Lösen: gestrichelter Kreis um jedes herausgelöste Ion */
+ if(LB.lv){const f=sm(.75,.9,p);if(f>.02)LB.lv.forEach(i=>{const q=P(X[i]);h=`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${(150*sc).toFixed(1)}" fill="${A[i][0]=='Na'?'#7c3aed':'#16a34a'}" fill-opacity="${(.08*f).toFixed(3)}" stroke="${A[i][0]=='Na'?'#7c3aed':'#16a34a'}" stroke-dasharray="5 4" stroke-width="1.5" opacity="${f.toFixed(2)}"/>`+h})}
+ /* Teilladungen am ersten Wassermolekül beim Lösen */
+ if(LB.d){const f=sm(.1,.25,p);if(f>.02){const [o,h1,h2]=LB.d.map(i=>P(X[i]));h+=`<g opacity="${f.toFixed(2)}">`+ORBT(o[0],o[1]-16,'δ−',16,'middle','var(--flow)',900)+ORBT(h1[0]+12,h1[1]-10,'δ+',15,'middle','var(--red)',900)+ORBT(h2[0]+12,h2[1]-10,'δ+',15,'middle','var(--red)',900)+'</g>'}}
  /* Ionenladungen bei der Neutralisation: H⁺ und OH⁻ nur im Übergang, Na⁺ und Cl⁻ bleiben */
  if(LB.q)LB.q.forEach(([i,c],k)=>{const f=k<2?sm(.45,.65,p):sm(.3,.4,p)*(1-sm(.6,.7,p));if(f<.02)return;const q=P(X[i]),r=RA[A[i][0]]*sc;h+=`<g opacity="${f.toFixed(2)}">`+ORBT(q[0]+r*.8,q[1]-r*.6,c,20,'middle',c=='+'?'var(--red)':'var(--flow)',900)+'</g>'});
- const ph=p<.35?'1 · Die Teilchen stoßen zusammen':p<.66?'2 · Alte Bindungen lösen sich, neue entstehen':'3 · Neue Stoffe sind entstanden';
+ const ph=v==10?(p<.3?'1 · Wassermoleküle umgeben den Kristall':p<.75?'2 · Wasser zieht Ionen aus dem Gitter':'3 · Jedes Ion trägt eine Hülle aus Wasser'):pc>0?'4 · Wasser verdunstet: Ionen bilden ein Gitter':p<.35?'1 · Die Teilchen stoßen zusammen':p<.66?'2 · Alte Bindungen lösen sich, neue entstehen':'3 · Neue Stoffe sind entstanden';
  h+=ORBT(205,32,info[0],info[0].length>28?17:22,'middle','var(--ink)',800)+ORBT(205,58,ph,17,'middle','var(--mute)',700);
  /* rechts: Reaktionstyp, Bedingung, Atombilanz, bei der Addition das Bromwasser */
  let y=88;info[1].forEach(([a,b])=>{h+=ORBT(424,y,a,15,'start','var(--mute)',600);WRAP(b,22).forEach((l,i)=>h+=ORBT(424,y+20+i*19,l,16,'start','var(--ink)',700));y+=30+WRAP(b,22).length*19});
  if(v==2){const c=`color-mix(in srgb,#c2410c ${Math.round(85*(1-sm(.45,.7,p)))}%,#dbeafe)`,G=GLAS(560,y-6,40,92,{tube:1,lv:62,c,op:.75});h+=G.b+G.f+ORBT(546,y+40,'Brom-',14,'end','var(--mute)',600)+ORBT(546,y+57,'wasser',14,'end','var(--mute)',600)}
  else{h+=ORBT(424,y+4,'Atome links = rechts',15,'start','var(--mute)',600);info[2].forEach(([e,a,b],i)=>h+=ORBT(424+i*(info[2].length>3?54:68),y+28,`${e}: ${a}`,17,'start','var(--ink)',800));}
- return{vb:'0 0 640 400',svg:h,res:[[info[1][0][1].split(':')[0],'Reaktionstyp'],[Math.round(p*100)+' %','Fortschritt'],[p<.66?LB.map(x=>x[1]).filter((x,i,a)=>a.indexOf(x)==i).join(' + '):LB.p.map(x=>x[1]).join(' + '),p<.66?'Ausgangsstoffe':'Produkte']],th:['Merkmal','Wert'],
+ return{vb:'0 0 640 400',svg:h,res:[[info[1][0][1].split(':')[0],'Reaktionstyp'],[Math.round(p0*100)+' %','Fortschritt'],[p<.66?LB.map(x=>x[1]).filter((x,i,a)=>a.indexOf(x)==i).join(' + '):LB.p.map(x=>x[1]).join(' + '),p<.66?'Ausgangsstoffe':'Produkte']],th:['Merkmal','Wert'],
   rows:[['Gleichung',info[0]],...info[1],['Atombilanz',info[2].map(([e,a,b])=>`${e}: ${a} → ${b}`).join(', ')]],
   st:[['Was bei jeder Reaktion passiert','Bindungen (Elektronenwolken) lösen sich, die Atome ordnen sich neu, neue Bindungen entstehen. Atome gehen nicht verloren: Links und rechts stehen gleich viele.'],['Substitution','Ein Atom wird gegen ein anderes getauscht. Typisch für Alkane, braucht Licht oder Wärme.'],['Addition','Ein Molekül lagert sich an eine Doppel- oder Dreifachbindung an. Die π-Bindung öffnet sich, die σ-Bindung bleibt. Nachweis mit Bromwasser.'],['Substitution am Benzolring','Benzol hat zwar π-Elektronen, der π-Ring ist aber besonders stabil. Statt einer Addition wird ein H-Atom ausgetauscht, z. B. gegen die Nitrogruppe –NO₂ (Nitrobenzol, Ausgangsstoff für Anilin und Farbstoffe). Benzol entfärbt Bromwasser deshalb nicht.'],['Polymerisation','Viele kleine Moleküle (Monomere) verbinden sich zu einer langen Kette (Polymer), z. B. Ethen zu Polyethylen.'],['Verbrennung','Kohlenwasserstoffe reagieren mit Sauerstoff zu CO₂ und Wasser, dabei wird Energie frei.'],['Vereinfachung','Die Bewegung der Atome ist schematisch. Echte Reaktionen laufen oft in mehreren Schritten (bei der Substitution über Chlor-Atome als Radikale).']]}}
 M.push({g:'Chemie',name:'Organische Grundreaktionen',test:1,anim:1,desc:'Grundreaktionen der organischen Chemie im Kugel- und Wolkenmodell: Verbrennung, Substitution, Addition und Polymerisation, dazu die Nitrierung von Benzol als Substitution am Ring. Man sieht, welche Bindungen sich lösen und welche neu entstehen.',leg:'Blau: σ-Wolken, orange: π-Wolken. Grau: C, weiß: H, rot: O, dunkelblau: N, grün: Cl, braun: Br. Die Bewegung ist schematisch. Mit „Ablauf: mit Regler“ lässt sich jeder Schritt einzeln ansehen.',
