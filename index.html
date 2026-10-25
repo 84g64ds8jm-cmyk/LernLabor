@@ -1769,6 +1769,119 @@ M.push({g:'Chemie',name:'Chromatographie',test:1,anim:1,desc:'Chromatographie tr
  p:[['pr','Probe','sel',CHP.map(x=>x[0]),0],['m','Ablauf','sel',['läuft von selbst','mit Regler'],0],['t','Laufzeit',0,10,.5,'min',6]],
  vis:s=>s.m==1?['t']:[],
  f(s,t){return CHS(s,t)}});
+/* Fällungs- & Farbreaktionen (Test): Reagenzglas, Farbreaktionen, Löslichkeitsprodukt, Trennungsgang */
+/* Fällungen: Name, Kation, Anion, Anionen je Kation, Niederschlag, Farbe, Farbname, Lösung vorher, Deckkraft, Farbe Kation, Farbe Anion, Gleichung, Hinweis */
+const FLR=[['Chlorid + Silbernitrat','Ag⁺','Cl⁻',1,'AgCl','#f1f5f9','weiß, käsig','#e0f2fe',.2,'#9ca3af','#22c55e','Ag⁺ + Cl⁻ → AgCl↓','Am Licht wird AgCl langsam violett-grau (Silber).'],
+ ['Bromid + Silbernitrat','Ag⁺','Br⁻',1,'AgBr','#fef3c7','gelblich-weiß','#e0f2fe',.2,'#9ca3af','#b45309','Ag⁺ + Br⁻ → AgBr↓','Löst sich nur in konzentriertem Ammoniak.'],
+ ['Iodid + Silbernitrat','Ag⁺','I⁻',1,'AgI','#fde047','gelb','#e0f2fe',.2,'#9ca3af','#7c3aed','Ag⁺ + I⁻ → AgI↓','Löst sich auch in Ammoniak nicht.'],
+ ['Sulfat + Bariumchlorid','Ba²⁺','SO₄²⁻',1,'BaSO₄','#f8fafc','weiß, feinkörnig','#e0f2fe',.2,'#84cc16','#eab308','Ba²⁺ + SO₄²⁻ → BaSO₄↓','Bleibt auch in Salzsäure: so unterscheidet man Sulfat von Carbonat.'],
+ ['Carbonat + Calciumchlorid','Ca²⁺','CO₃²⁻',1,'CaCO₃','#f8fafc','weiß','#e0f2fe',.2,'#f97316','#64748b','Ca²⁺ + CO₃²⁻ → CaCO₃↓','Löst sich in Salzsäure unter Aufschäumen (CO₂).'],
+ ['Eisen(III) + Natronlauge','Fe³⁺','OH⁻',3,'Fe(OH)₃','#9a3412','rotbraun, flockig','#fde68a',.5,'#a16207','#e11d48','Fe³⁺ + 3 OH⁻ → Fe(OH)₃↓','Rost hat dieselbe Farbe: Eisenoxidhydrat.'],
+ ['Kupfer(II) + Natronlauge','Cu²⁺','OH⁻',2,'Cu(OH)₂','#38bdf8','hellblau','#60a5fa',.45,'#0284c7','#e11d48','Cu²⁺ + 2 OH⁻ → Cu(OH)₂↓','Beim Erhitzen wird es schwarz (CuO).'],
+ ['Blei(II) + Kaliumiodid','Pb²⁺','I⁻',2,'PbI₂','#facc15','goldgelb','#e0f2fe',.2,'#475569','#7c3aed','Pb²⁺ + 2 I⁻ → PbI₂↓','In heißem Wasser löslich, beim Abkühlen glitzernde Plättchen („Goldregen“). Blei ist giftig.']];
+/* Farbreaktionen: Name, Reagenz, Lösung vorher, Lösung nachher, Gleichung, Hinweis */
+const FFR=[['Eisen(III) + Thiocyanat','KSCN-Lösung','#fde68a','#991b1b','Fe³⁺ + 3 SCN⁻ → Fe(SCN)₃','Blutrot. Sehr empfindlich: schon Spuren Eisen färben.'],
+ ['Kupfer(II) + Ammoniak','Ammoniak','#93c5fd','#1e3a8a','Cu²⁺ + 4 NH₃ → [Cu(NH₃)₄]²⁺','Erst fällt hellblaues Cu(OH)₂, im Überschuss löst es sich tiefblau.'],
+ ['Iod + Stärke','Iod-Lösung','#fefce8','#1e1b4b','I₂ + Stärke → Iod-Stärke','Blauschwarz. Nachweis für Iod oder für Stärke.'],
+ ['Silberchlorid + Ammoniak','Ammoniak','#e0f2fe','#e0f2fe','AgCl + 2 NH₃ → [Ag(NH₃)₂]⁺ + Cl⁻','AgCl löst sich: Chlorid bestätigt.'],
+ ['Silberiodid + Ammoniak','Ammoniak','#e0f2fe','#e0f2fe','AgI + NH₃ → keine Reaktion','AgI bleibt gelb: Iodid bestätigt.']];
+/* Löslichkeitsprodukte bei 25 °C (Richtwerte, mol²/l²) */
+const FLK=[['AgCl','Ag⁺','Cl⁻',1.8e-10,'#f1f5f9'],['AgBr','Ag⁺','Br⁻',5.4e-13,'#fef3c7'],['AgI','Ag⁺','I⁻',8.5e-17,'#fde047'],['BaSO₄','Ba²⁺','SO₄²⁻',1.1e-10,'#f8fafc'],['CaCO₃','Ca²⁺','CO₃²⁻',3.4e-9,'#f8fafc']];
+/* Proben für den Trennungsgang */
+const FTP=[['Probe 1',['Ag⁺','Fe³⁺']],['Probe 2',['Cu²⁺','Ca²⁺']],['Probe 3',['Ag⁺','Cu²⁺','Ba²⁺']],['Probe 4',['Fe³⁺','Ca²⁺']]];
+/* Reagenzglas mit Lösung, Trübung (pa) und Bodensatz (sed) */
+const FLT=(x,y,w,h,lv,sc,so,pa,pc,sed,t,sd=1)=>{const G=GLAS(x,y,w,h,{tube:1,lv,c:sc,op:so}),R=w/2-2,cx=x+w/2,yb=y+h-w/2,ys=y+h-lv,ix=x+2,iw=w-4;let s=G.b;
+ if(pa>0){const cl=pa*(1-sed);
+  if(cl>.01){s+=`<path d="M${ix} ${ys}V${yb}A${R} ${R} 0 0 0 ${ix+iw} ${yb}V${ys}Z" fill="${pc}" opacity="${(.5*cl).toFixed(2)}"/>`;
+   const N=Math.round(70*cl);for(let i=0;i<N;i++){const px=ix+4+KZR(i*3+sd)*(iw-8),py=ys+8+((KZR(i*7+sd*5)+t*.02*(1+KZR(i)))%1)*(yb-ys+R*.4-8);s+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${(1.3+KZR(i*11)*1.4).toFixed(1)}" fill="${pc}" stroke="#64748b" stroke-width=".4" opacity=".9"/>`}}
+  const hs=pa*sed*R*1.5;if(hs>.5){const yl=yb+R-hs;let p;
+   if(yl>=yb){const hw=Math.sqrt(Math.max(0,R*R-(yl-yb)**2));p=`M${cx-hw} ${yl}A${R} ${R} 0 0 0 ${cx+hw} ${yl}Z`}else p=`M${cx-R} ${yl}V${yb}A${R} ${R} 0 0 0 ${cx+R} ${yb}V${yl}Z`;
+   s+=`<path d="${p}" fill="${pc}" stroke="#64748b" stroke-width=".8"/>`;for(let i=0;i<14;i++){const gx=cx-R*.7+KZR(i*5+sd)*R*1.4,gy=yl+2+KZR(i*9+sd)*Math.max(1,hs*.7);if(gy<yb+R-3)s+=`<circle cx="${gx.toFixed(1)}" cy="${gy.toFixed(1)}" r="1.4" fill="#64748b" opacity=".35"/>`}}}
+ return s+G.f};
+/* Tropfpipette mit fallendem Tropfen */
+const FLP=(x,y,c,t,on)=>{let s=`<path d="M${x-4} ${y}h8v46l-3 12h-2l-3-12Z" fill="url(#g-glas)" stroke="var(--ink)" stroke-width="1.5"/><rect x="${x-3}" y="${y+20}" width="6" height="26" fill="${c}" opacity=".7"/>`+BALL(x,y-10,11,'#ef4444',1.5);
+ if(on){const f=(t*.9)%1,dy=y+62+f*46;s+=`<path d="M${x} ${dy-6}Q${x+4} ${dy} ${x} ${dy+3}Q${x-4} ${dy} ${x} ${dy-6}Z" fill="${c}" stroke="var(--ink)" stroke-width=".8" opacity="${(1-f*.6).toFixed(2)}"/>`}return s};
+const FLI=(x,y,r,c)=>BALL(x,y,r,c,1);
+/* Glastrichter mit Faltenfilter */
+const FLF=(x,y)=>`<path d="M${x-20} ${y}L${x-3} ${y+24}V${y+40}H${x+3}V${y+24}L${x+20} ${y}Z" fill="url(#g-glas)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/><path d="M${x-15} ${y+2}L${x} ${y+21}L${x+15} ${y+2}" fill="#fafaf9" stroke="var(--mute)" stroke-width="1"/><ellipse cx="${x}" cy="${y}" rx="20" ry="4" fill="none" stroke="var(--ink)" stroke-width="1.6"/>`;
+/* Text in Zeilen von höchstens m Zeichen */
+const FLW=(x,y,txt,m,sz,c,wt,dy)=>{const L=[];let z='';txt.split(' ').forEach(w=>{if(z&&(z+' '+w).length>m){L.push(z);z=w}else z=z?z+' '+w:w});if(z)L.push(z);return L.map((l,i)=>ORBT(x,y+i*dy,l,sz,'start',c,wt)).join('')};
+function FLS(s,t){const v=s.v;let h='';
+ if(v==0){const R=FLR[s.r],n=s.n,pa=Math.min(n,10)/10,sed=Math.min(1,s.z/5),G='Reagenz: '+R[0].split(' + ')[1];
+  h+=ORBT(20,32,'Fällung: '+R[0],19,'start','var(--ink)',800);
+  h+=FLP(130,70,'#e0f2fe',t,n>0)+FLT(100,170,60,190,120,R[7],R[8],pa,R[5],sed,t)+ORBT(130,390,G,14,'middle','var(--mute)',700)+ORBT(176,96,n+' Tropfen',15,'start','var(--ink)',800);
+  if(n>10)h+=ORBT(176,120,'Überschuss:',13,'start','var(--mute)',700)+ORBT(176,138,'kein neuer',13,'start','var(--mute)',700)+ORBT(176,156,'Niederschlag',13,'start','var(--mute)',700);
+  /* rechts: Teilchenebene */
+  const bx=330,by=56,bw=290,bh=170,cN=6,q=R[3],nb=Math.round(pa*cN);h+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>`+ORBT(bx+10,by+20,'Teilchenebene',13,'start','var(--mute)',700);
+  for(let i=nb;i<cN;i++){const px=bx+24+KZR(i*13+s.r)*(bw-48),py=by+40+KZR(i*17+s.r)*70+6*Math.sin(t*1.5+i);h+=FLI(px,py,11,R[9],R[1].replace(/[⁺²³]/g,''));
+   for(let j=0;j<q;j++){const ax=bx+24+KZR(i*29+j*7+s.r)*(bw-48),ay=by+40+KZR(i*31+j*3+s.r)*70+6*Math.cos(t*1.3+i+j);h+=FLI(ax,ay,8,R[10],'')}}
+  /* Kristall: Kationen und Anionen im Gitter am Boden */
+  {const u=(bw-30)/cN,d=Math.min(18,u/(q+1));for(let i=0;i<nb;i++){const gx=bx+15+i*u+d/2,gy=by+bh-22;h+=FLI(gx,gy,9,R[9],'');for(let j=0;j<q;j++)h+=FLI(gx+d*(j+1),gy-(j%2?14:0),8,R[10],'')}}
+  if(nb)h+=ORBT(bx+bw-10,by+bh-48,'Kristall '+R[4],13,'end','var(--ink)',800);
+  h+=FLI(bx+16,by+bh+24,9,R[9],'')+ORBT(bx+30,by+bh+29,R[1],14,'start','var(--ink)',700)+FLI(bx+90,by+bh+24,8,R[10],'')+ORBT(bx+104,by+bh+29,R[2],14,'start','var(--ink)',700);
+  h+=ORBT(bx,290,R[11],18,'start','var(--ink)',800)+`<rect x="${bx}" y="306" width="34" height="22" rx="4" fill="${R[5]}" stroke="var(--ink)" stroke-width="1.2"/>`+ORBT(bx+44,322,R[4]+': '+R[6],15,'start','var(--ink)',700)+FLW(bx,356,R[12],40,13,'var(--mute)',600,18);
+  return{vb:'0 0 640 400',svg:h,res:[[R[4],'Niederschlag'],[R[6],'Farbe'],[Math.round(pa*100)+' %','ausgefällt']],th:['Nachweis','Niederschlag'],rows:FLR.map(x=>[x[0],x[4]+' '+x[6]]),
+   st:[['Ionengleichung',R[11]],['Was passiert','Die Ionen '+R[1]+' und '+R[2]+' bilden ein schwer lösliches Salz. Es fällt als Niederschlag aus und trübt die Lösung. Na⁺, K⁺ und NO₃⁻ bleiben gelöst (Zuschauer-Ionen).'],['Vollständig?','Ein Tropfen mehr Reagenz ins klare Filtrat: Bildet sich kein Niederschlag mehr, ist die Fällung vollständig.']]}}
+ if(v==1){const F=FFR[s.f],n=s.n;let pa=0,pc='#f1f5f9',mix=0;
+  if(s.f==0)mix=Math.min(n,8)/8;
+  if(s.f==1){pa=n<=6?n/6:Math.max(0,1-(n-6)/8);pc='#38bdf8';mix=n<=6?0:Math.min(1,(n-6)/8)}
+  if(s.f==2)mix=Math.min(n,5)/5;
+  if(s.f==3)pa=Math.max(0,1-n/10);
+  if(s.f==4){pa=1;pc='#fde047'}
+  const sc=`color-mix(in srgb,${F[3]} ${Math.round(mix*100)}%,${F[2]})`,so=.35+.55*mix;
+  h+=ORBT(20,32,'Farbreaktion: '+F[0],19,'start','var(--ink)',800);
+  h+=FLP(130,70,s.f==2?'#a16207':'#e0f2fe',t,n>0)+FLT(100,170,60,190,120,sc,so,pa,pc,.35,t,3)+ORBT(130,390,'Reagenz: '+F[1],14,'middle','var(--mute)',700)+ORBT(176,96,n+' Tropfen',15,'start','var(--ink)',800);
+  const bx=330;h+=ORBT(bx,70,'vorher',14,'start','var(--mute)',700)+ORBT(bx+150,70,'nachher',14,'start','var(--mute)',700)+`<rect x="${bx}" y="80" width="110" height="60" rx="8" fill="${F[2]}" stroke="var(--ink)" stroke-width="1.2"/><path d="M${bx+118} 110h22m-8-7 8 7-8 7" fill="none" stroke="var(--ink)" stroke-width="2"/><rect x="${bx+150}" y="80" width="110" height="60" rx="8" fill="${s.f>=3?(s.f==3?'#e0f2fe':'#fde047'):F[3]}" stroke="var(--ink)" stroke-width="1.2"/>`;
+  h+=ORBT(bx,180,'jetzt',14,'start','var(--mute)',700)+`<rect x="${bx}" y="190" width="260" height="22" rx="6" fill="${pa>.05?`color-mix(in srgb,${pc} ${Math.round(pa*60)}%,${sc})`:sc}" stroke="var(--ink)" stroke-width="1"/>`;
+  h+=ORBT(bx,256,F[4],16,'start','var(--ink)',800);h+=FLW(bx,290,F[5],34,14,'var(--mute)',600,21);
+  const st=s.f==1?(n==0?'Ausgangslösung hellblau':n<=6?'hellblauer Niederschlag Cu(OH)₂':pa>0?'Niederschlag löst sich':'tiefblaue Lösung'):s.f==3?(pa>0?'AgCl löst sich':'klar: Chlorid'):s.f==4?'AgI bleibt: Iodid':mix>=1?'volle Farbe':'Farbe nimmt zu';
+  return{vb:'0 0 640 400',svg:h,res:[[n+' Tropfen',F[1]],[st,'Beobachtung'],[Math.round(mix*100)+' %','Farbumschlag']],th:['Farbreaktion','Ergebnis'],rows:FFR.map(x=>[x[0],x[5].split('. ')[0]]),
+   st:[['Gleichung',F[4]],['Beobachtung',F[5]],['Merke','Farbreaktionen weisen Ionen auch ohne Niederschlag nach. Die Farbe kommt meist von einem Komplex.']]}}
+ if(v==2){const K=FLK[s.k],a=s.a,b=s.b,Q=10**(a+b),L=K[3],cA=10**a,cB=10**b,over=Q>L;
+  /* ausfallende Menge x aus (cA − x)(cB − x) = K_L */
+  const x=over?((cA+cB)-Math.sqrt((cA-cB)**2+4*L))/2:0,fr=over?x/Math.min(cA,cB):0;
+  h+=ORBT(20,32,'Wann fällt '+K[0]+' aus?',19,'start','var(--ink)',800);
+  const G=GLAS(40,120,220,230,{lv:170,c:'#e0f2fe',op:.3});h+=G.b;
+  for(let i=0;i<14;i++){const px=58+KZR(i*3)*184,py=200+KZR(i*7)*120+5*Math.sin(t+i);if(KZR(i*5)>fr*.9)h+=FLI(px,py,i%2?8:10,i%2?'#22c55e':'#9ca3af','')}
+  if(over){const N=Math.round(40+60*fr);for(let i=0;i<N;i++){const px=52+KZR(i*13+1)*196,py=190+((KZR(i*17)+t*.03)%1)*140;h+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="1.8" fill="${K[4]}" stroke="#64748b" stroke-width=".4"/>`}
+   h+=`<ellipse cx="150" cy="340" rx="${(60+50*fr).toFixed(0)}" ry="${(5+6*fr).toFixed(1)}" fill="${K[4]}" stroke="#64748b" stroke-width="1"/>`}
+  h+=G.f+ORBT(150,380,over?'Niederschlag':'klare Lösung',16,'middle',over?'var(--red)':'var(--ok)',800);
+  /* rechts: Diagramm log c(Kation) über log c(Anion) */
+  const X0=360,Y0=300,W=240,H=240,px=v=>X0+(v+8)/7*W,py=v=>Y0-(v+8)/7*H,lk=Math.log10(L);
+  const pts=[];for(let u=-8;u<=-1.001;u+=.05){const w=lk-u;if(w>=-8&&w<=-1)pts.push([px(u),py(w)])}
+  h+=`<rect x="${X0}" y="${Y0-H}" width="${W}" height="${H}" fill="var(--card)" stroke="var(--line)"/>`;
+  {const cl=w=>Math.max(-8,Math.min(-1,w));let A='';for(let u=-8;u<=-1.001;u+=.05)A+=(A?' L':'M')+px(u).toFixed(1)+' '+py(cl(lk-u)).toFixed(1);h+=`<path d="${A} L${px(-1)} ${py(-1)} L${px(-8)} ${py(-1)}Z" fill="var(--amber)" opacity=".18"/>`}
+  if(pts.length>1){const P=pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L');h+=`<path d="M${P}" fill="none" stroke="var(--amber)" stroke-width="3"/>`}else h+=ORBT(X0+W/2,Y0-H/2+40,'K_L so klein: überall Niederschlag',12,'middle','var(--amber)',700);
+  for(let g=-8;g<=-1;g++)h+=`<path d="M${px(g)} ${Y0}v5M${X0} ${py(g)}h-5" stroke="var(--mute)"/>`+(g%2==0?ORBT(px(g),Y0+20,g,12,'middle','var(--mute)',600)+ORBT(X0-8,py(g)+4,g,12,'end','var(--mute)',600):'');
+  h+=ORBT(X0+W/2,Y0+40,'lg c('+K[2]+')',14,'middle','var(--ink)',700)+ORBT(X0,Y0-H-10,'lg c('+K[1]+')',14,'start','var(--ink)',700)+ORBT(X0+W-6,Y0-H+20,'Niederschlag',13,'end','var(--amber)',800)+ORBT(X0+8,Y0-10,'gelöst',13,'start','var(--ok)',800);
+  h+=`<circle cx="${px(b)}" cy="${py(a)}" r="7" fill="${over?'var(--red)':'var(--ok)'}" stroke="var(--ink)" stroke-width="1.5"/>`;
+  h+=ORBT(20,64,'Q = c('+K[1]+') · c('+K[2]+') = '+SCI(Q),15,'start','var(--ink)',700)+ORBT(20,86,'K_L = '+SCI(L)+(over?' → Q > K_L':' → Q ≤ K_L'),15,'start',over?'var(--red)':'var(--ok)',800);
+  return{vb:'0 0 640 400',svg:h,res:[[SCI(Q)+' mol²/l²','Ionenprodukt Q'],[SCI(L)+' mol²/l²','Löslichkeitsprodukt K_L'],[over?Math.round(fr*100)+' % fallen aus':'nichts fällt aus','Ergebnis']],th:['Salz','K_L bei 25 °C'],rows:FLK.map(x=>[x[0],SCI(x[3])+' mol²/l²']),
+   st:[['Ionenprodukt',`Q = ${SCI(cA)} mol/l · ${SCI(cB)} mol/l = ${SCI(Q)} mol²/l²`],['Vergleich',over?`Q > K_L (${SCI(L)}): Die Lösung ist übersättigt, ${K[0]} fällt aus, bis Q = K_L.`:`Q ≤ K_L (${SCI(L)}): Alles bleibt gelöst.`],['Merke','Je kleiner K_L, desto schwerer löslich. AgI fällt schon bei winzigen Konzentrationen aus.']]}}
+ /* Trennungsgang */
+ const P=FTP[s.pr],I=P[1],has=x=>I.includes(x),k=s.k,ag=has('Ag⁺'),fe=has('Fe³⁺'),cu=has('Cu²⁺'),ca=has('Ca²⁺'),ba=has('Ba²⁺');
+ h+=ORBT(20,30,'Trennungsgang: '+P[0],19,'start','var(--ink)',800);
+ const C=[['Probe','',cu?'#60a5fa':fe?'#fde68a':'#e0f2fe',cu||fe?.45:.2,0,'','',''],
+  ['1. + HCl','Silbergruppe',cu?'#60a5fa':fe?'#fde68a':'#e0f2fe',cu||fe?.45:.2,ag?1:0,'#f1f5f9',ag?'AgCl weiß':'kein ↓',ag?'Ag⁺':''],
+  ['2. + NH₃','Ammoniakgruppe',cu?'#1e3a8a':'#e0f2fe',cu?.75:.2,fe?1:0,'#9a3412',fe?'Fe(OH)₃ rotbraun':cu?'tiefblau':'kein ↓',(fe?'Fe³⁺ ':'')+(cu?'Cu²⁺':'')],
+  ['3. + (NH₄)₂CO₃','Carbonatgruppe','#e0f2fe',.2,ca||ba?1:0,'#f8fafc',ca||ba?'Carbonat weiß':'kein ↓',ca||ba?'Ca²⁺/Ba²⁺':''],
+  ['4. Flammprobe','des Carbonats','',0,0,'',ca?'ziegelrot':ba?'fahlgrün':'entfällt',ca?'Ca²⁺':ba?'Ba²⁺':'']];
+ C.forEach((c,i)=>{const x=24+i*124,on=i<=k,op=on?1:.25;h+=`<g opacity="${op}">`;
+  h+=ORBT(x+48,62,c[0],14,'middle','var(--ink)',800)+ORBT(x+48,80,c[1],12,'middle','var(--mute)',600);
+  if(i<4)h+=FLT(x+30,100,36,150,100,c[2],c[3],on?c[4]:0,c[5],.6,t,i+2);
+  else h+=SPFL(x+34,190,on&&(ca||ba)?(ca?'#ea580c':'#84cc16'):'#93c5fd',t,.5);
+  if(on&&i>0)h+=ORBT(x+48,284,c[6],13,'middle','var(--ink)',700)+(c[7]?ORBT(x+48,302,'→ '+c[7],13,'middle','var(--red)',800):'');
+  if(!on)h+=ORBT(x+48,284,'?',18,'middle','var(--mute)',800);
+  h+='</g>';if(i<4)h+=`<path d="M${x+82} 175h30m-8-6 8 6-8 6" fill="none" stroke="var(--mute)" stroke-width="2" opacity="${i<k?1:.3}"/>`+(i>0&&i<3?FLF(x+97,118)+ORBT(x+97,200,'Filtrat',11,'middle','var(--mute)',600):'')});
+ const found=[ag&&k>=1?'Ag⁺':'',fe&&k>=2?'Fe³⁺':'',cu&&k>=2?'Cu²⁺':'',ca&&k>=4?'Ca²⁺':'',ba&&k>=4?'Ba²⁺':''].filter(Boolean);
+ h+=ORBT(20,350,k<4?'Nächster Schritt: '+C[k+1][0].slice(3):'Ergebnis: '+P[0]+' enthält '+I.join(', '),16,'start','var(--ink)',800)+ORBT(20,376,'Bisher nachgewiesen: '+(found.length?found.join(', '):'noch nichts'),14,'start','var(--mute)',700);
+ return{vb:'0 0 640 400',svg:h,res:[[k+' von 4','Schritt'],[found.length?found.join(', '):'–','nachgewiesen'],[k<4?'?':I.join(', '),'Probe enthält']],th:['Schritt','fällt aus / zeigt'],
+  rows:[['1. Salzsäure','AgCl weiß (Silbergruppe)'],['2. Ammoniak','Fe(OH)₃ rotbraun; Cu²⁺ bleibt tiefblau gelöst'],['3. Ammoniumcarbonat','CaCO₃, BaCO₃ weiß'],['4. Flammprobe','Ca ziegelrot, Ba fahlgrün']],
+  st:[['Prinzip','Nacheinander zugegebene Reagenzien fällen je eine Gruppe von Ionen. Der Niederschlag wird abfiltriert, mit dem Filtrat geht es weiter.'],['Reihenfolge','Erst Salzsäure, sonst würde Ag⁺ bei Ammoniak und Carbonat stören.'],['Vereinfacht','Der echte Kationen-Trennungsgang hat mehr Gruppen (z. B. mit H₂S). Hier ist er auf vier sichere Schritte gekürzt.']]}}
+M.push({g:'Chemie',name:'Fällungs- & Farbreaktionen',test:1,anim:1,desc:'Viele Ionen weist man nasschemisch nach: Ein Reagenz bildet mit ihnen einen farbigen Niederschlag oder eine farbige Lösung. Das Löslichkeitsprodukt sagt, wann etwas ausfällt. Im Trennungsgang fällt man Gruppe für Gruppe.',leg:'Farben der Niederschläge echt, Mengen vereinfacht: Nach 10 Tropfen ist alles ausgefällt. K_L-Werte sind Richtwerte bei 25 °C. Der Trennungsgang ist auf vier sichere Schritte gekürzt.',
+ p:[['v','Ansicht','sel',['Reagenzglas','Farbreaktionen','Wann fällt etwas aus?','Trennungsgang'],0],['r','Nachweis','sel',FLR.map(x=>x[0]),0],['f','Reaktion','sel',FFR.map(x=>x[0]),0],['n','Tropfen',0,20,1,'',6],['z','Absetzen',0,5,.5,'min',1],['k','Salz','sel',FLK.map(x=>x[0]),0],['a','lg c(Kation)',-8,-1,.5,'',-4],['b','lg c(Anion)',-8,-1,.5,'',-5],['pr','Probe','sel',FTP.map(x=>x[0]),0],['k2','Schritt',0,4,1,'',1]],
+ vis2:(o,UI)=>{const on={r:o.v==0,z:o.v==0,f:o.v==1,n:o.v<2,k:o.v==2,a:o.v==2,b:o.v==2,pr:o.v==3,k2:o.v==3};for(const k in on)(UI[k]||[]).forEach(e=>{const c=e.closest('.ctl');if(c)c.hidden=!on[k]})},
+ f(s,t){return FLS(s.v==3?Object.assign({},s,{k:s.k2}):s,t)}});
 /* Licht & Quanten (Test): Wellenlänge & Farbe, Doppelspalt, Photoeffekt */
 /* Farbband 380–780 nm als schmale Rechtecke */
 const LQB=(x,y,w,h)=>{let s='';for(let l=380;l<780;l+=5)s+=`<rect x="${(x+w*(l-380)/400).toFixed(1)}" y="${y}" width="${(w*5/400+.6).toFixed(1)}" height="${h}" fill="${WLC(l+2.5)}"/>`;return s+`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`};
@@ -3319,7 +3432,7 @@ const BSK={
 'Histogramm':BSV(320,175,`${[10,26,50,36,18,30,56,42,16,6].map((h,i)=>`<rect x="${40+i*26}" y="${145-h*1.9}" width="24" height="${h*1.9}" fill="#8b5cf6" fill-opacity=".35"/>`).join('')}<path d="M34 30V145H310"/>${BTX(300,165,'Messwert',0,'end')}<text transform="rotate(-90 20 95)" x="20" y="95" fill="currentColor" stroke="none" text-anchor="middle">Häufigkeit</text>${BTX(92,22,'Schicht 1',0,'middle')}${BTX(222,22,'Schicht 2',0,'middle')}`)};
 BEW.forEach(r=>{if(r[1]==='s'&&!r[5]&&BSK[r[0]])r[5]=BSK[r[0]]});
 /* Zuordnung */
-const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];MAP['Orbitalmodell & Mehrfachbindungen']=[FC,CB];MAP['Chemische Grundreaktionen']=[FC,CB];MAP['Kunststoffe: Ketten und Netze']=[FC,CB];MAP['Tenside & Grenzflächen']=[FC,CB];MAP['Haber-Bosch-Verfahren']=[FC,RS];['Spektroskopie & Flammenfärbung','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Chromatographie'].forEach(n=>MAP[n]=[FC,AN]);['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Photoeffekt','Welle-Teilchen-Dualismus'].forEach(n=>MAP[n]=[FP,LQ]);
+const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];MAP['Orbitalmodell & Mehrfachbindungen']=[FC,CB];MAP['Chemische Grundreaktionen']=[FC,CB];MAP['Kunststoffe: Ketten und Netze']=[FC,CB];MAP['Tenside & Grenzflächen']=[FC,CB];MAP['Haber-Bosch-Verfahren']=[FC,RS];['Spektroskopie & Flammenfärbung','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Chromatographie','Fällungs- & Farbreaktionen'].forEach(n=>MAP[n]=[FC,AN]);['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Photoeffekt','Welle-Teilchen-Dualismus'].forEach(n=>MAP[n]=[FP,LQ]);
 M.forEach(m=>{const x=MAP[m.name];if(x){m.F=x[0];m.g=x[1]}});
 const DFN0='Ableitung: Steigung & Tangente',INN0='Integral: Fläche unter dem Graphen';
 const MR='Rechnen im Alltag',MFG='Formeln & Gleichungen',MGD='Geometrie & Diagramme',MDI='Differential- & Integralrechnung';
@@ -3333,7 +3446,7 @@ GORD[WL]=['Aggregatzustand','Wärmekapazität','Wärmeausdehnung','Schmelz- & Ve
 GORD[MF]=['Kräfteparallelogramm','Kräftezerlegung (Seilkräfte)','Gesetz von Hooke','Gleit-, Haft- & Rollreibung','Schiefe Ebene','Reibung (schiefe Ebene)','Drehmoment','Hebel','Rolle & Flaschenzug','Zug-/Druckspannung & Sicherheit','Scherung & Flächenpressung'];
 GORD[RS]=['Reaktionsgleichungen & Mol','Haber-Bosch-Verfahren'];
 GORD[LQ]=['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Photoeffekt','Welle-Teilchen-Dualismus'];
-GORD[AN]=['Spektroskopie & Flammenfärbung','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Neutralisation & Titration','Chromatographie'];
+GORD[AN]=['Spektroskopie & Flammenfärbung','Fällungs- & Farbreaktionen','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Neutralisation & Titration','Chromatographie'];
 GORD[AE]=['Arbeit, Energie & Leistung (Übersicht)','Arbeit & Leistung','Wirkungsgrad','Energieformen & Erhaltung'];
 GORD[HP]=['Druck','Hydraulik','Hydraulische Leistung & Volumenstrom','Auftrieb und Dichte','Pneumatik: Luftverbrauch','Gasgesetze','Gasdichte (Normzustand → Betrieb)'];
 GORD[ET]=['Grundlagen: Stromkreis','Ohmsches Gesetz','Leitungswiderstand','Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)','Elektrische Arbeit & Leistung','Gleich- & Wechselstrom','Drehstrom (Stern & Dreieck)'];
@@ -5830,6 +5943,8 @@ ERK['Photometrie (Lambert-Beer)']=['Eine farbige Lösung schluckt Licht. Die Ext
 BET['Photometrie (Lambert-Beer)']='Mit Photometer-Küvettentests prüft man im Betrieb Abwasser auf Nitrat, Phosphat, Eisen oder CSB und die Härte des Kesselspeisewassers. Auch Trübungsmessung und Farbkontrolle von Lacken arbeiten mit dem Lichtweg durch die Probe.';
 ERK['Chromatographie']=['Ein Laufmittel wandert durch die stationäre Phase (Papier, Kieselgel) und nimmt die Stoffe des Gemischs mit. Stoffe, die stark an der stationären Phase haften, bleiben zurück. So trennt sich das Gemisch. Der R_f-Wert = Laufstrecke Fleck / Laufstrecke Front kennzeichnet einen Stoff unter gleichen Bedingungen.',['Die Startlinie mit Kugelschreiber ziehen. Die Tinte läuft mit, nur Bleistift bleibt liegen.','Die Startlinie unter den Laufmittelspiegel tauchen. Dann lösen sich die Flecken im Laufmittel auf.','Die Laufstrecke ab Papierrand statt ab Startlinie messen.','R_f-Werte aus verschiedenen Läufen mit anderem Laufmittel vergleichen. Vergleichsprobe gehört auf dasselbe Papier.']];
 BET['Chromatographie']='Gaschromatographen prüfen Erdgas, Lösemittel und Raumluft am Arbeitsplatz, die HPLC Reinheit und Zusätze in Ölen und Lebensmitteln. Im Labor zeigt eine Dünnschichtchromatographie schnell, ob ein Produkt rein ist.';
+ERK['Fällungs- & Farbreaktionen']=['Bei einer Fällung bilden zwei gelöste Ionen ein schwer lösliches Salz. Es fällt als Niederschlag aus, oft mit typischer Farbe: AgCl weiß, AgI gelb, Fe(OH)₃ rotbraun. Ob etwas ausfällt, entscheidet das Löslichkeitsprodukt: Ist c(Kation) · c(Anion) größer als K_L, fällt Salz aus. Farbreaktionen wie Fe³⁺ mit Thiocyanat zeigen Ionen auch ohne Niederschlag.',['Zu wenig Reagenz zugeben. Erst wenn ein weiterer Tropfen im klaren Filtrat nichts mehr trübt, ist die Fällung vollständig.','Mit Leitungswasser statt destilliertem Wasser arbeiten. Leitungswasser enthält Chlorid und gibt mit Silbernitrat selbst eine Trübung.','Weiße Niederschläge verwechseln: AgCl löst sich in Ammoniak, BaSO₄ nicht in Salzsäure, CaCO₃ schäumt mit Salzsäure.','Im Trennungsgang die Reihenfolge ändern. Dann fallen Ionen in der falschen Gruppe aus.']];
+BET['Fällungs- & Farbreaktionen']='Im Kraftwerk und im Kesselhaus prüft man Speisewasser mit Silbernitrat auf Chlorid, weil Chlorid Lochfraß im Stahl auslöst. Sulfat im Grundwasser greift Beton an und wird mit Bariumchlorid nachgewiesen. Schnelltests mit Farbreaktion zeigen Eisen im Kühlwasser oder Kupfer im Abwasser einer Galvanik.';
 ERK['Licht: Wellenlänge & Farbe']=['Licht ist eine elektromagnetische Welle mit c ≈ 3 · 10⁸ m/s. Wellenlänge und Frequenz hängen über c = λ · f zusammen. Die Wellenlänge bestimmt die Farbe, die Frequenz die Energie eines Photons: E = h · f.',['nm nicht in m umrechnen. 550 nm = 550 · 10⁻⁹ m = 5,5 · 10⁻⁷ m.','Glauben, rotes Licht sei energiereicher als blaues. Kurze Wellen (blau, UV) tragen mehr Energie.','Frequenz und Wellenlänge gemeinsam steigen lassen. Steigt die eine, sinkt die andere.','Weißes Licht für eine eigene Farbe halten. Es ist eine Mischung aller Farben.']];
 BET['Licht: Wellenlänge & Farbe']='UV-Licht härtet Lacke und Kleber in Sekunden, braucht aber Schutzbrille und Abschirmung. Lichtschranken und Laser-Entfernungsmesser arbeiten mit Infrarot oder rotem Licht. Am Schweißplatz schützt der Filter gegen UV und grelles Licht.';
 ERK['Doppelspalt: Welle oder Teilchen']=['Hinter zwei engen Spalten überlagern sich die Wellen: Wo Berg auf Berg trifft, wird es hell, wo Berg auf Tal trifft, dunkel. Schickt man einzelne Photonen, kommt jedes an genau einer Stelle an. Die Welle bestimmt nur, wo es wahrscheinlich ankommt. Licht zeigt so beide Seiten: Welle und Teilchen.',['Das Streifenmuster für zwei Bilder der Spalte halten. Es entsteht durch Interferenz und hat viele Streifen.','Glauben, ein einzelnes Photon teile sich auf. Jedes Photon landet als ein Punkt.','Δy = λ · L / d falsch einsetzen: Bei größerem Spaltabstand rücken die Streifen zusammen.','mm und nm nicht umrechnen.']];
@@ -8138,6 +8253,8 @@ const GLA=[
 ['Maschinenfähigkeitsindex','C_m','C_mk mit Lage','Fähig meist ab C_mk ≥ 1,67.']];
 // Begriffe ohne eigenes Formelzeichen: [Begriff, Erklärung, Fach, [Themen], Suchmuster für Aufgabentexte]
 const GLB=[
+['Niederschlag','Fester Stoff, der aus einer Lösung ausfällt, weil zwei Ionen ein schwer lösliches Salz bilden. Beispiel: Ag⁺ + Cl⁻ → AgCl↓ (weiß). Abtrennen durch Filtrieren.','C',['Fällungs- & Farbreaktionen'],'Niederschlag|Niederschläge|Fällung|ausfällen'],
+['Löslichkeitsprodukt','K_L = c(Kation) · c(Anion) in einer gesättigten Lösung. Ist das Ionenprodukt größer als K_L, fällt Salz aus. Kleines K_L heißt schwer löslich, z. B. AgCl 1,8 · 10⁻¹⁰ mol²/l².','C',['Fällungs- & Farbreaktionen'],'Löslichkeitsprodukt|K_L'],
 ['Spannungsfall','Spannung, die auf einer Leitung verloren geht: ΔU = I · R_L mit R_L = ρ · 2 · l / A. Sie fehlt am Verbraucher. Für Beleuchtung empfiehlt DIN VDE 0100-520 höchstens 3 %.','P',['Leitungswiderstand','Ohmsches Gesetz'],'Spannungsfall|Spannungsabfall|Leitungswiderstand|spezifische[nr]? Widerstand'],
 ['Normbedingungen','Festgelegter Zustand, um Gasmengen zu vergleichen: 0 °C (273,15 K) und 1013,25 hPa. Unter Normbedingungen nimmt 1 mol jedes Gases etwa 22,4 l ein.','C',['Reaktionsgleichungen & Mol','Gasdichte (Normzustand → Betrieb)','Gasgesetze'],'Normbedingung|Normzustand'],
 ['Elektrolyt','Flüssigkeit oder feuchter Stoff mit beweglichen Ionen, der dadurch Strom leitet, z. B. Salzwasser, Säure oder Batteriesäure. Ohne Elektrolyt gibt es keine Korrosion und keine galvanische Zelle.','C',['Korrosion','Galvanische Zelle & Spannungsreihe','Elektrolyse','Blei-Batterie (Akkumulator)'],'Elektrolyt'],

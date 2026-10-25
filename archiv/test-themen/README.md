@@ -27,6 +27,7 @@ Nicht hierher gehören: Simulation (`M.push`), Formeln (`FX`), Verstehen (`ERK`)
 | chromatographie.js | Chromatographie | 3 | – | 1 | 1 |
 | doppelspalt.js | Doppelspalt: Welle oder Teilchen | 3 | – | 1 | 1 |
 | dualismus.js | Welle-Teilchen-Dualismus | 3 | – | 1 | 1 |
+| faellung.js | Fällungs- & Farbreaktionen | 7 | – | 1 | 2 |
 | grundreaktionen.js | Chemische Grundreaktionen | 12 | 1 | 1 | – |
 | haber-bosch.js | Haber-Bosch-Verfahren | 4 | – | 1 | – |
 | konzentration.js | Konzentration & Verdünnung | 4 | – | 1 | 2 |
