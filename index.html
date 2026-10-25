@@ -1534,12 +1534,14 @@ const SPE=[['Na','Natrium','#ffb000','gelb',[[589.0,1],[589.6,.8],[568.8,.12],[6
  ['Hg','Quecksilber','#a5b4fc','bläulich weiß',[[404.7,.5],[435.8,1],[546.1,1],[577.0,.6],[579.1,.6]],1]];
 const SPPR=[['Probe A',[0,1],'Natrium überdeckt in der Flamme das Violett von Kalium. Im Spektrum sieht man beide.'],['Probe B',[2,4],'Lithium und Strontium färben die Flamme beide rot. Erst die Linien trennen sie.'],['Probe C',[5,6],'Barium und Kupfer färben beide grün. Die Linien verraten, was drin ist.']];
 /* Bunsenbrenner mit gefärbter Flamme und Magnesiastäbchen; k = Maßstab */
-const SPFL=(cx,yb,col,t,k=1)=>{const fl=(hg,wd,c,op,j)=>{const q=(Math.sin(t*9+j)*3+Math.sin(t*13.7+j)*2)*k;return`<path d="M${cx-wd} ${yb}C${cx-wd} ${yb-hg*.45} ${cx-wd*.3+q*.3} ${yb-hg*.7} ${cx+q} ${yb-hg}C${cx+wd*.3+q*.3} ${yb-hg*.7} ${cx+wd} ${yb-hg*.45} ${cx+wd} ${yb}Q${cx} ${yb+wd*.5} ${cx-wd} ${yb}Z" fill="${c}" opacity="${op}"/>`};
+const SPFL=(cx,yb,col,t,k=1,lb)=>{const fl=(hg,wd,c,op,j)=>{const q=(Math.sin(t*9+j)*3+Math.sin(t*13.7+j)*2)*k;return`<path d="M${cx-wd} ${yb}C${cx-wd} ${yb-hg*.45} ${cx-wd*.3+q*.3} ${yb-hg*.7} ${cx+q} ${yb-hg}C${cx+wd*.3+q*.3} ${yb-hg*.7} ${cx+wd} ${yb-hg*.45} ${cx+wd} ${yb}Q${cx} ${yb+wd*.5} ${cx-wd} ${yb}Z" fill="${c}" opacity="${op}"/>`};
  let h=`<ellipse cx="${cx}" cy="${yb-60*k}" rx="${70*k}" ry="${90*k}" fill="${col}" opacity=".13"/>`;
  h+=`<ellipse cx="${cx+6}" cy="${yb+118*k}" rx="${58*k}" ry="${8*k}" fill="url(#g-shad)"/><path d="M${cx-48*k} ${yb+112*k}Q${cx-48*k} ${yb+96*k} ${cx} ${yb+96*k}Q${cx+48*k} ${yb+96*k} ${cx+48*k} ${yb+112*k}Z" fill="#6b7280" stroke="var(--ink)" stroke-width="1.5"/>`+ROD(cx-11*k,yb,22*k,100*k,'#9ca3af')+`<rect x="${cx-7*k}" y="${yb+70*k}" width="${14*k}" height="${8*k}" rx="2" fill="#1f2937"/>`;
  h+=fl(150*k,30*k,col,.75,0)+fl(105*k,19*k,'#fff',.22,1)+fl(42*k,10*k,'#3b82f6',.75,2);
- const x1=cx+125*k,y1=yb-150*k,x2=cx+10*k,y2=yb-62*k;
- h+=`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="var(--ink)" stroke-width="${6*k}" stroke-linecap="round"/><path d="M${x1} ${y1}L${x2} ${y2}" stroke="#f1f5f9" stroke-width="${3.4*k}" stroke-linecap="round"/>`+ROD(x1-6*k,y1-34*k,12*k,36*k,'#a16207',1.5)+BALL(x2,y2,5*k,'#f8fafc',1.2);
+ const x1=cx+125*k,y1=yb-136*k,x2=cx+10*k,y2=yb-62*k;
+ h+=`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="var(--ink)" stroke-width="${6*k}" stroke-linecap="round"/><path d="M${x1} ${y1}L${x2} ${y2}" stroke="#f1f5f9" stroke-width="${3.4*k}" stroke-linecap="round"/>`+ROD(x1-6*k,y1-28*k,12*k,30*k,'#a16207',1.5)+BALL(x2,y2,6.5*k,'#f8fafc',1.2)+BALL(x2-4*k,y2+3*k,3.5*k,'#f8fafc',1)+BALL(x2+4*k,y2+4*k,3*k,'#f8fafc',1);
+ /* Beschriftung: Halter, Stäbchen, Salzprobe */
+ if(lb)h+=ORBT(x1+12,y1-8,'Halter',14,'start','var(--mute)',700)+ORBT((x1+x2)/2+18,(y1+y2)/2-18,'Magnesiastäbchen',14,'start','var(--mute)',700)+`<path d="M${cx-58} ${yb-122}L${x2-8} ${y2-6}" stroke="var(--ink)" stroke-width="1.3"/>`+ORBT(cx-110,yb-128,'Probe: '+lb,16,'start','var(--ink)',800);
  return h};
 /* Gasentladungsröhre mit Leuchtfarbe */
 const SPGT=(x0,x1,y,col,t)=>{const fl=.85+.15*Math.sin(t*20);let h=`<rect x="${x0}" y="${y-22}" width="${x1-x0}" height="44" rx="22" fill="${col}" opacity="${(.18*fl).toFixed(2)}"/>`;
@@ -1555,7 +1557,7 @@ function SPK(s,t){
  const st=[['Warum Linien?','Elektronen nehmen Energie auf und springen auf eine höhere Schale. Fallen sie zurück, geben sie genau die Energiedifferenz als Licht ab: ΔE = h · f = h · c / λ. Weil die Schalen feste Energien haben, entstehen nur einzelne Wellenlängen.'],['Nachweis','Man vergleicht die Linien der Probe mit den Linien bekannter Elemente. Stimmen alle Linien eines Elements überein, ist es enthalten.'],['Breite Streifen','Calcium, Strontium und Barium bilden in der Flamme Moleküle wie CaOH. Diese senden breite Banden statt scharfer Linien aus.']];
  if(v==0){
   const gas=E[5];h+=ORBT(20,34,(gas?'Leuchtröhre: ':'Flammenfärbung: ')+E[1]+' ('+E[0]+')',22,'start','var(--ink)',800);
-  let sx,sy;if(gas){h+=SPGT(40,260,190,E[2],t);sx=150;sy=190}else{h+=SPFL(130,250,E[2],t);sx=140;sy=170}
+  let sx,sy;if(gas){h+=SPGT(40,260,190,E[2],t);sx=150;sy=190}else{h+=SPFL(130,250,E[2],t,1,['NaCl','KCl','LiCl','CaCl₂','SrCl₂','BaCl₂','CuCl₂'][s.e]+' (Salz)');sx=140;sy=170}
   /* Lichtweg: Quelle → Prisma → Linien auf dem Schirm */
   const P=[[400,92],[358,170],[442,170]],bx=372,bw=256,by=262;
   h+=`<path d="M${sx+20} ${sy-10}L380 136" stroke="${E[2]}" stroke-width="7" opacity=".55" stroke-linecap="round"/>`;
@@ -1613,6 +1615,23 @@ const KZP=(n,x,y,w,h,t,c,r=6)=>{let s='';for(let i=0;i<n;i++){const px=x+r+(w-2*
 /* Messkolben: Bauch und Hals mit Eichstrich, Flüssigkeit bis zum Strich */
 const KZK=(cx,yb,rb,c,op)=>{const nk=14,yn=yb-2*rb,ytop=yn-80,body=`M${cx-nk} ${ytop}V${yn+rb*.25}C${cx-rb*1.1} ${yn+rb*.6} ${cx-rb} ${yb} ${cx} ${yb}C${cx+rb} ${yb} ${cx+rb*1.1} ${yn+rb*.6} ${cx+nk} ${yn+rb*.25}V${ytop}`;
  return`<ellipse cx="${cx+4}" cy="${yb+3}" rx="${rb*.9}" ry="7" fill="url(#g-shad)"/><path d="M${cx-nk+3} ${yn-34}V${yn+rb*.25}C${cx-rb*1.1+3} ${yn+rb*.6} ${cx-rb+3} ${yb-3} ${cx} ${yb-3}C${cx+rb-3} ${yb-3} ${cx+rb*1.1-3} ${yn+rb*.6} ${cx+nk-3} ${yn+rb*.25}V${yn-34}Z" fill="${c}" opacity="${op}"/><path d="${body}" fill="url(#g-glas)" stroke="var(--ink)" stroke-width="2"/><path d="M${cx-nk-4} ${yn-34}H${cx+nk+4}" stroke="var(--red)" stroke-width="2"/><ellipse cx="${cx}" cy="${ytop}" rx="${nk}" ry="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`};
+/* Zuckerwürfel räumlich: Vorderseite, helle Oberseite, graue Seite, Kristallkörnung */
+const ZCUBE=(x,y,a)=>{if(a<2)return'';const d=a*.42,st='stroke="var(--ink)" stroke-width="1.3" stroke-linejoin="round"';let s=`<ellipse cx="${x+a/2+d/2}" cy="${y+a+2}" rx="${a*.75}" ry="${Math.max(2,a*.12)}" fill="url(#g-shad)"/><path d="M${x} ${y}L${x+d} ${y-d}H${x+a+d}L${x+a} ${y}Z" fill="#ffffff" ${st}/><path d="M${x+a} ${y}L${x+a+d} ${y-d}V${y+a-d}L${x+a} ${y+a}Z" fill="#d4d4d8" ${st}/><rect x="${x}" y="${y}" width="${a}" height="${a}" fill="#f4f4f5" ${st}/>`;
+ if(a>14){const n=Math.round(a*a/22);for(let i=0;i<n;i++){const u=KZR(i+501),v=KZR(i+733),r=.6+1.1*KZR(i+977);s+=`<rect x="${(x+2+u*(a-5)).toFixed(1)}" y="${(y+2+v*(a-5)).toFixed(1)}" width="${(r*1.6).toFixed(1)}" height="${(r*1.6).toFixed(1)}" fill="${i%3?'#d4d4d8':'#fff'}" transform="rotate(${(KZR(i+11)*90).toFixed(0)} ${(x+2+u*(a-5)).toFixed(1)} ${(y+2+v*(a-5)).toFixed(1)})"/>`}
+  for(let i=0;i<Math.round(n/3);i++){const u=KZR(i+1301),v=KZR(i+1409);s+=`<circle cx="${(x+d*v+u*(a-3)+2).toFixed(1)}" cy="${(y-d*v+1).toFixed(1)}" r=".9" fill="#a1a1aa"/>`}}
+ return s};
+/* IBC-Container: Kunststofftank im Stahlgitterkäfig auf Palette, mit Einfüllstutzen und Auslaufhahn */
+const IBC=(x,y,w,h,t,lv)=>{const d=t,cage='#94a3b8',ln=(x1,y1,x2,y2,wd=4)=>`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="var(--ink)" stroke-width="${wd+2}" stroke-linecap="round"/><path d="M${x1} ${y1}L${x2} ${y2}" stroke="${cage}" stroke-width="${wd}" stroke-linecap="round"/>`;
+ let s=BAR3(x-8,y+h,w+16,16,'#a16207',d);for(let i=0;i<3;i++)s+=`<rect x="${x-2+i*(w/2-4)}" y="${y+h+4}" width="16" height="12" fill="#1f2937" opacity=".55"/>`;
+ /* Tank: durchscheinend weiß, Füllstand vorne und an der Seite */
+ const yl=y+h-lv;s+=BAR3(x+4,y+4,w-8,h-4,'#f8fafc',d-6,{op:.9})+`<rect x="${x+5}" y="${yl}" width="${w-10}" height="${y+h-yl-1}" fill="#93c5fd" opacity=".55"/><path d="M${x+w-4} ${yl}L${x+w+d-10} ${yl-d+6}V${y+h-d+6}L${x+w-4} ${y+h}Z" fill="#93c5fd" opacity=".45"/><path d="M${x+5} ${yl}H${x+w-5}" stroke="#2563eb" stroke-width="1.5"/>`;
+ s+=`<ellipse cx="${x+w/2+d/2}" cy="${y-d/2+2}" rx="20" ry="7" fill="#64748b" stroke="var(--ink)" stroke-width="1.5"/><rect x="${x+w/2+d/2-20}" y="${y-d/2-8}" width="40" height="10" fill="#64748b" stroke="var(--ink)" stroke-width="1.2"/><ellipse cx="${x+w/2+d/2}" cy="${y-d/2-8}" rx="20" ry="7" fill="#94a3b8" stroke="var(--ink)" stroke-width="1.5"/>`;
+ /* Gitterkäfig: Rohre vorne, oben und an der rechten Seite */
+ for(let i=0;i<=4;i++){const xx=x+i*w/4;s+=ln(xx,y,xx+d,y-d,3)}for(let j=0;j<=4;j++){const yy=y+j*h/4;s+=ln(x+w,yy,x+w+d,yy-d,3)}
+ s+=ln(x+d,y-d,x+w+d,y-d,3)+ln(x+w+d,y-d,x+w+d,y+h-d,3);
+ for(let i=0;i<=4;i++){const xx=x+i*w/4;s+=ln(xx,y,xx,y+h)}for(let j=0;j<=4;j++){const yy=y+j*h/4;s+=ln(x,yy,x+w,yy)}
+ s+=ROD(x+w/2-12,y+h-22,24,16,'#334155',1.4)+`<rect x="${x+w/2-4}" y="${y+h-28}" width="8" height="8" fill="#ef4444" stroke="var(--ink)" stroke-width="1"/>`;
+ return s};
 function KZS(s,t){
  const v=s.v,CU='#2563eb',op=c=>(.08+.8*Math.min(1,Math.sqrt(c))).toFixed(2);let h='';
  if(v==0){const n=s.n,V=s.V,c=n/V,lv=V/500*250,x=40,w=220,yb=350;
@@ -1655,18 +1674,21 @@ function KZS(s,t){
  /* Zuckerwürfel: 3 g Saccharose = 8,8 mmol, Gefäß wird mit dem Regler größer */
  const G=KZG[s.g],n=3/342.3,c=n/G[1],N=n*6.022e23,NL=N/G[1],F=G[1]/.25,ph=((t/6)%1+1)%1;
  h+=ORBT(20,32,'Ein Zuckerwürfel in: '+G[0],19,'start','var(--ink)',800);
- if(s.g==0){const GL=GLAS(70,110,170,230,{lv:190,c:'#bae6fd',op:.45});h+=GL.b;const cs=Math.max(0,1-ph*1.4)*30,dis=Math.min(1,ph*1.4);
-  if(cs>2)h+=`<rect x="${155-cs/2}" y="${328-cs}" width="${cs}" height="${cs}" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/>`;h+=KZP(Math.round(24*dis),80,170,150,160,t,'#f8fafc',4)+GL.f+ORBT(155,372,'0,25 l',15,'middle','var(--mute)',700)}
- else{const sc=[0,.2,.45,.7,.85,1][s.g];
-  /* Bildchen für das Gefäß: Eimer, IBC, Becken, See, Meer */
+ if(s.g==0){const GL=GLAS(70,110,170,230,{lv:190,c:'#bae6fd',op:.45});h+=GL.b;const dis=Math.min(1,ph*1.4);
+  const cs=Math.max(0,1-ph*1.4)*44;h+=KZP(Math.round(24*dis),80,170,150,150,t,'#f8fafc',4);
+  /* Schlieren über dem Würfel: gelöster Zucker sinkt und verteilt sich */
+  if(cs>3)for(let i=0;i<3;i++){const x0=140+i*12,yy=322-cs;h+=`<path d="M${x0} ${yy}q${6*Math.sin(t*2+i)} -20 0 -40t0 -40" fill="none" stroke="#fff" stroke-width="2.4" opacity="${(.5*cs/44).toFixed(2)}"/>`}
+  h+=ZCUBE(150-cs/2,330-cs,cs)+GL.f+ORBT(155,372,'0,25 l',15,'middle','var(--mute)',700);
+  if(cs>8)h+=`<path d="M${150-cs/2+4} ${330-cs+4}L110 92" stroke="var(--ink)" stroke-width="1.3"/>`+ORBT(70,84,'Zuckerwürfel, 3 g',15,'start','var(--ink)',800);else h+=ORBT(70,84,'Zucker ist gelöst',15,'start','var(--ink)',800)}
+ else{  /* Bildchen für das Gefäß: Eimer, IBC, Becken, See, Meer */
   if(s.g==1){const GL=GLAS(90,170,130,160,{lv:120,c:'#bae6fd',op:.45});h+=GL.b+GL.f+`<path d="M92 172Q155 110 218 172" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`}
-  else if(s.g==2){h+=BAR3(60,140,190,190,'#e5e7eb',22);for(let i=0;i<5;i++)h+=`<path d="M${60+i*47.5} 140V330M60 ${140+i*47.5}H250" stroke="#94a3b8" stroke-width="3"/>`;h+=`<rect x="66" y="190" width="178" height="134" fill="#bae6fd" opacity=".45"/>`+ROD(140,108,30,32,'#64748b')}
+  else if(s.g==2)h+=IBC(50,150,180,170,48,140);
   else{const col=s.g==3?'#38bdf8':s.g==4?'#0ea5e9':'#0369a1';h+=`<path d="M20 ${s.g==3?250:220}Q90 ${s.g==3?236:200} 160 ${s.g==3?250:220}T300 ${s.g==3?250:220}V350H20Z" fill="${col}" opacity=".55" stroke="var(--ink)" stroke-width="1.5"/>`;
    if(s.g==3)h+=`<path d="M20 250V350H300V250" fill="none" stroke="var(--ink)" stroke-width="4"/>`+[60,120,180,240].map(x=>`<path d="M${x} 254V346" stroke="#fff" stroke-width="2" stroke-dasharray="8 6" opacity=".7"/>`).join('');
    if(s.g==4)h+=`<path d="M20 220L70 150L120 200L170 120L230 205L300 160V220Z" fill="#94a3b8" opacity=".6" stroke="var(--ink)" stroke-width="1.5"/>`;
    if(s.g==5)for(let i=0;i<4;i++){const y=250+i*24,o=t*20%60;h+=`<path d="M${20-o+i*15} ${y}q15 -8 30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0" fill="none" stroke="#fff" stroke-width="2" opacity=".55"/>`}}
   /* ein Würfel zum Größenvergleich: winzig */
-  h+=`<rect x="150" y="${s.g<3?150:200}" width="${(12*(1-sc)+2).toFixed(1)}" height="${(12*(1-sc)+2).toFixed(1)}" fill="#fff" stroke="var(--ink)" stroke-width="1.2"/>`+ORBT(155,385,G[2],15,'middle','var(--mute)',700)}
+  const cy=[0,150,128,236,206,236][s.g],cx=s.g==2?118:150;h+=ZCUBE(cx,cy,10)+`<path d="M${cx+14} ${cy-4}L${cx+48} ${cy-40}" stroke="var(--ink)" stroke-width="1.3"/>`+ORBT(cx+50,cy-44,'1 Zuckerwürfel',14,'start','var(--ink)',800)+ORBT(155,388,G[2],15,'middle','var(--mute)',700)}
  /* rechts: Leiter der Zehnerpotenzen */
  const X0=340;h+=ORBT(X0,74,'3 g Zucker = 8,8 mmol = '+SCI(N)+' Moleküle',14,'start','var(--mute)',700);
  const NS=NL*.02,lines=[['Konzentration c',SCI(c)+' mol/l'],['Massenkonzentration β',SCI(3/G[1]*1000)+' mg/l'],['Verdünnung zum Glas','1 : '+SCI(F)],['Zuckermoleküle je Liter',SCI(NL)],['… in einem Schnapsglas (20 ml)',NS<1?'im Mittel keines ('+SCI(NS)+')':SCI(NS)]];
@@ -1685,16 +1707,20 @@ const PHL=[['grün 525 nm',525,2400],['blau 450 nm',450,250],['rot 650 nm',650,3
 function PHS(s){
  const L=PHL[s.w],c=s.c/1000,d=s.d,A=L[2]*c*d,T=10**-A,col=WLC(L[1]),MN='#a21caf';let h='';
  h+=ORBT(20,32,'Photometer: Licht durch die Küvette',19,'start','var(--ink)',800);
- const y=180,cw=40*d,cx0=170,cx1=cx0+cw;
- /* Lampe, Filter, Strahl, Küvette, Detektor */
- h+=`<circle cx="44" cy="${y}" r="34" fill="#fde68a" opacity=".35"/>`+BALL(44,y,20,'#fef3c7',1.5)+ROD(36,y+20,16,40,'#9ca3af',1.5);
- h+=`<rect x="96" y="${y-34}" width="16" height="68" rx="3" fill="${col}" opacity=".8" stroke="var(--ink)" stroke-width="1.5"/>`;
- h+=`<rect x="64" y="${y-9}" width="32" height="18" fill="#fde68a" opacity=".6"/><rect x="112" y="${y-9}" width="${cx0-112}" height="18" fill="${col}" opacity=".85"/>`;
- h+=`<rect x="${cx1}" y="${y-9}" width="${300-cx1}" height="18" fill="${col}" opacity="${(.85*T).toFixed(3)}"/>`;
- h+=BAR3(cx0,y-50,cw,100,MN,14,{op:(.1+.85*Math.min(1,s.c/.4)).toFixed(2)})+`<rect x="${cx0}" y="${y-50}" width="${cw}" height="14" fill="var(--card)" opacity=".55"/>`;
- h+=`<rect x="300" y="${y-40}" width="34" height="80" rx="5" fill="#334155" stroke="var(--ink)" stroke-width="1.5"/><rect x="306" y="${y-12}" width="6" height="24" fill="#94a3b8"/>`;
- h+=ORBT(44,y+86,'Lampe',13,'middle','var(--mute)',700)+ORBT(104,y+56,'Filter',13,'middle','var(--mute)',700)+ORBT(cx0+cw/2,y+76,'d = '+String(d).replace('.',',')+' cm',14,'middle','var(--ink)',800)+ORBT(317,y+60,'Detektor',13,'middle','var(--mute)',700);
- h+=`<rect x="196" y="300" width="138" height="44" rx="8" fill="#0f172a" stroke="var(--ink)" stroke-width="1.5"/>`+`<text x="265" y="330" text-anchor="middle" style="font-size:18px;font-weight:800;fill:#4ade80">A = ${A.toFixed(3).replace('.',',')}</text>`;
+ /* Photometer als Gerät: Gehäuse mit Blick ins Innere, darin Lampe, Linse, Filter, Küvette, Fotodiode; unten die Anzeige */
+ const y=172,cw=Math.round(24*d),cx0=200-cw/2,cx1=cx0+cw,op=(.1+.85*Math.min(1,s.c/.4)).toFixed(2);
+ h+=BAR3(14,96,312,212,'#cbd5e1',28)+`<rect x="26" y="108" width="288" height="142" rx="8" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><path d="M26 108l14 -10h274l-14 10" fill="#000" opacity=".06"/>`;
+ h+=`<circle cx="56" cy="${y}" r="26" fill="#fde68a" opacity=".45"/>`+ROD(48,y+14,16,24,'#9ca3af',1.3)+BALL(56,y,14,'#fef9c3',1.3);
+ /* Strahl: weiß bis zum Filter, dann farbig, hinter der Küvette schwächer */
+ h+=`<path d="M70 ${y-6}L92 ${y-8}V${y+8}L70 ${y+6}Z" fill="#fde68a" opacity=".7"/><path d="M108 ${y-8}H${cx0}V${y+8}H108Z" fill="${col}" opacity=".85"/><path d="M${cx1} ${y-8}H272V${y+8}H${cx1}Z" fill="${col}" opacity="${(.85*T).toFixed(3)}"/>`;
+ h+=`<ellipse cx="88" cy="${y}" rx="5" ry="20" fill="#bae6fd" opacity=".8" stroke="var(--ink)" stroke-width="1.2"/>`+BAR3(98,y-30,8,60,col,8,{op:.85});
+ /* Küvette: Glas mit Lösung, Deckel */
+ h+=BAR3(cx0,y-38,cw,78,MN,12,{op})+`<rect x="${cx0}" y="${y-56}" width="${cw}" height="18" fill="#e2e8f0" opacity=".5"/>`+`<path d="M${cx0} ${y-56}h${cw}l12 -12h-${cw}Z" fill="#94a3b8" stroke="var(--ink)" stroke-width="1.2"/><rect x="${cx0}" y="${y-56}" width="${cw}" height="96" fill="url(#g-glas)" stroke="var(--ink)" stroke-width="1.5"/><path d="M${cx0} ${y+44}h${cw}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3"/>`;
+ h+=`<path d="M${cx0} ${y+52}h${cw}M${cx0} ${y+48}v8M${cx1} ${y+48}v8" stroke="var(--ink)" stroke-width="1.3"/>`;
+ h+=BAR3(272,y-26,22,52,'#334155',10)+`<rect x="272" y="${y-8}" width="5" height="16" fill="#38bdf8"/>`;
+ h+=ORBT(56,228,'Lampe',12,'middle','var(--mute)',700)+ORBT(102,228,'Filter',12,'middle','var(--mute)',700)+ORBT(200,228,'Küvette',12,'middle','var(--mute)',700)+ORBT(200,244,'d = '+String(d).replace('.',',')+' cm',12,'middle','var(--ink)',800)+ORBT(284,228,'Fotodiode',12,'middle','var(--mute)',700);
+ /* Bedienfeld */
+ h+=`<rect x="120" y="258" width="150" height="40" rx="6" fill="#0f172a" stroke="var(--ink)" stroke-width="1.5"/><text x="195" y="284" text-anchor="middle" style="font-size:18px;font-weight:800;fill:#4ade80">A = ${A.toFixed(3).replace('.',',')}</text>`+[36,66].map(x=>`<circle cx="${x}" cy="274" r="9" fill="#64748b" stroke="var(--ink)" stroke-width="1.3"/>`).join('')+`<text x="51" y="300" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#334155">${L[1]} nm</text>`;
  h+=ORBT(20,330,'I / I₀ = '+(T*100).toFixed(1).replace('.',',')+' %',16,'start','var(--ink)',700)+ORBT(20,358,'KMnO₄ schluckt grünes Licht',14,'start','var(--mute)',600);
  /* rechts: Kalibriergerade A über c */
  const X0=392,X1=620,Y0=84,Y1=300,XC=u=>X0+u/.4*(X1-X0),YA=u=>Y1-Math.min(1.05,u/2)*(Y1-Y0);
@@ -1761,7 +1787,7 @@ function LQW(s,t){
 const DSI=(y,l,d)=>{const L=2,b=5e-5,yy=y/1000,a=Math.PI*d/1000*yy/(l*1e-9*L),q=Math.PI*b*yy/(l*1e-9*L);const sc=q?Math.sin(q)/q:1;return Math.cos(a)**2*sc*sc};
 const DSR=i=>{const v=Math.sin(i*12.9898+78.233)*43758.5453;return v-Math.floor(v)};
 function DSP(s,t){
- const l=s.l,d=s.d,col=WLC(l),dy=l*1e-9*2/(d/1000)*1000,Y=20,sx=150,sy=200,s1=sy-22,s2=sy+22,scx=300,yS=v=>sy+v/Y*150;let h='';
+ const l=s.l,d=s.d,col=`color-mix(in srgb,${WLC(l)} 72%,#000)`,dy=l*1e-9*2/(d/1000)*1000,Y=20,sx=150,sy=200,s1=sy-22,s2=sy+22,scx=300,yS=v=>sy+v/Y*150;let h='';
  h+=ORBT(20,34,s.v==0?'Doppelspalt: Licht als Welle':'Doppelspalt: einzelne Photonen',21,'start','var(--ink)',800);
  h+=LQL(44,sy,col)+`<path d="M70 ${sy}H${sx}" stroke="${col}" stroke-width="10" opacity=".5"/>`;
  /* Wand mit zwei Spalten */
@@ -1811,7 +1837,7 @@ function PES(s,t){
 M.push({g:'Physik',name:'Licht: Wellenlänge & Farbe',test:1,anim:1,desc:'Licht ist eine elektromagnetische Welle. Die Wellenlänge bestimmt die Farbe: violett ist kurz und energiereich, rot ist lang und energiearm. Frequenz f = c / λ, Energie eines Photons E = h · f.',leg:'Welle maßstäblich (100 nm ≙ 25 px) in der Farbe der Wellenlänge. Rechts das sichtbare Spektrum mit Zeiger, darunter Frequenz und Photonenenergie. Unter 380 nm Ultraviolett, über 780 nm Infrarot.',
  p:[['l','Wellenlänge λ',380,780,5,'nm',550]],f(s,t){return LQW(s,t)}});
 M.push({g:'Physik',name:'Doppelspalt: Welle oder Teilchen',test:1,anim:1,desc:'Licht durch zwei enge Spalte ergibt helle und dunkle Streifen: Interferenz, also Welle. Schickt man das Licht so schwach, dass einzelne Photonen ankommen, sieht man einzelne Punkte, also Teilchen. Aus vielen Punkten entsteht trotzdem dasselbe Streifenmuster.',leg:'Links Lampe, Doppelspalt und Schirm (nicht maßstäblich). Rechts die Helligkeit auf dem Schirm. In der Ansicht „Teilchen“ sammeln sich die Treffer mit der Zeit, das Bild startet nach 45 s neu.',
- p:[['v','Ansicht','sel',['Welle','Teilchen (einzelne Photonen)'],0],['l','Wellenlänge λ',400,700,10,'nm',550],['d','Spaltabstand d',.1,.5,.05,'mm',.25]],f(s,t){return DSP(s,t)}});
+ p:[['v','Ansicht','sel',['Welle','Teilchen (einzelne Photonen)'],0],['l','Wellenlänge λ',400,700,10,'nm',650],['d','Spaltabstand d',.1,.5,.05,'mm',.25]],f(s,t){return DSP(s,t)}});
 M.push({g:'Physik',name:'Photoeffekt',test:1,anim:1,desc:'Licht kann Elektronen aus einem Metall lösen, aber nur, wenn seine Frequenz hoch genug ist. Helleres Licht löst mehr Elektronen aus, nicht schnellere. Das erklärt nur das Teilchenmodell: Licht besteht aus Photonen mit E = h · f.',leg:'Wellenpakete: Photonen, blaue Kugeln: Elektronen. UV-Licht ist gestrichelt (unsichtbar). Rechts die Bewegungsenergie der Elektronen über der Frequenz, die Gerade beginnt bei der Grenzfrequenz f_G. Austrittsarbeiten gerundet.',
  p:[['l','Wellenlänge λ',200,700,10,'nm',250],['I','Helligkeit',0,100,10,'%',60],['m','Metall','sel',PEM.map(x=>x[0]+' ('+String(x[1]).replace('.',',')+' eV)'),0]],f(s,t){return PES(s,t)}});
 /* Neue Themen */
