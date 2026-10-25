@@ -1,0 +1,10 @@
+/* Aufgaben für das Test-Thema „Haber-Bosch-Verfahren“ (nicht in der App, siehe README.md). Stufe in LVT "num": "Haber-Bosch-Verfahren":2 */
+MCQ.push(
+['Haber-Bosch-Verfahren','Warum arbeitet eine Ammoniak-Anlage bei hohem Druck?',['Aus 4 Gasteilchen werden 2, hoher Druck verschiebt das Gleichgewicht zum NH₃','Hoher Druck macht den Katalysator heiß','Bei hohem Druck zerfällt NH₃ schneller','Druck spart Wasserstoff'],'N₂ + 3 H₂ ⇌ 2 NH₃: links 4, rechts 2 Gasteilchen. Ein Gleichgewicht weicht dem Druck aus, indem es die Teilchenzahl verringert (Prinzip von Le Chatelier).'],
+['Haber-Bosch-Verfahren','Warum läuft die Anlage bei etwa 450 °C, obwohl bei tieferer Temperatur mehr NH₃ im Gleichgewicht wäre?',['Bei tiefer Temperatur ist die Reaktion zu langsam','Bei 450 °C ist am meisten NH₃ im Gleichgewicht','Der Katalysator schmilzt unter 450 °C','Unter 450 °C entsteht Salpetersäure'],'Die NH₃-Bildung ist exotherm, Kälte begünstigt NH₃. Aber kalt reagiert N₂ kaum, auch mit Katalysator. 450 °C ist der Kompromiss aus Ausbeute und Geschwindigkeit.'],
+['Haber-Bosch-Verfahren','Was bewirkt der Eisen-Katalysator?',['Die Reaktion wird schneller, das Gleichgewicht bleibt gleich','Es entsteht mehr NH₃ im Gleichgewicht','Er liefert den Stickstoff','Er senkt den Druck'],'Ein Katalysator senkt die Aktivierungsenergie für Hin- und Rückreaktion gleich. Das Gleichgewicht stellt sich schneller ein, seine Lage ändert sich nicht.'],
+['Haber-Bosch-Verfahren','Welcher Katalysator wird beim Haber-Bosch-Verfahren eingesetzt?',['Eisen mit Zusätzen','Platin','Kupfer','Schwefelsäure'],'Eisen. Platin (als Netz) dient im Ostwald-Verfahren, das aus Ammoniak Salpetersäure macht.']
+);
+Object.assign(GEN,{
+'Haber-Bosch-Verfahren':r=>{const m=rg(r,1,20,1),x=m*2*17/28;return[`Wie viel kg Ammoniak entstehen höchstens aus ${m} kg Stickstoff (N₂ + 3 H₂ → 2 NH₃; M(N₂) = 28 g/mol, M(NH₃) = 17 g/mol)?`,x,'kg',['Aus 1 mol N₂ entstehen 2 mol NH₃',`n(N₂) = ${m} kg / 28 g/mol`,`m(NH₃) = ${m} kg · 2 · 17 / 28 = ${nf(x,3)} kg`],{abs:.02}]}
+});
