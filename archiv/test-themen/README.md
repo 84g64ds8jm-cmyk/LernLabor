@@ -20,14 +20,22 @@ ORAL.push( {...} );                  // Mündlich (falls vorhanden)
 
 Nicht hierher gehören: Simulation (`M.push`), Formeln (`FX`), Verstehen (`ERK`), Im Betrieb (`BET`), Glossar (`GLB`). Die bleiben in der App.
 
-## Inhalt (Stand v165)
+## Inhalt (Stand v167)
 
 | Datei | Thema | Ankreuz | Begründen | Rechnen | Fehler |
 |---|---|---|---|---|---|
-| orbitalmodell.js | Orbitalmodell & Mehrfachbindungen | 9 | 1 | 1 | – |
+| chromatographie.js | Chromatographie | 3 | – | 1 | 1 |
+| doppelspalt.js | Doppelspalt: Welle oder Teilchen | 3 | – | 1 | 1 |
+| dualismus.js | Welle-Teilchen-Dualismus | 3 | – | 1 | 1 |
 | grundreaktionen.js | Chemische Grundreaktionen | 12 | 1 | 1 | – |
-| kunststoffe.js | Kunststoffe: Ketten und Netze | 4 | – | – | – |
 | haber-bosch.js | Haber-Bosch-Verfahren | 4 | – | 1 | – |
+| konzentration.js | Konzentration & Verdünnung | 4 | – | 1 | 2 |
+| kunststoffe.js | Kunststoffe: Ketten und Netze | 4 | – | – | – |
+| licht-farbe.js | Licht: Wellenlänge & Farbe | 3 | – | 1 | 1 |
+| orbitalmodell.js | Orbitalmodell & Mehrfachbindungen | 9 | 1 | 1 | – |
+| photoeffekt.js | Photoeffekt | 3 | – | 1 | 1 |
+| photometrie.js | Photometrie (Lambert-Beer) | 4 | – | 1 | 1 |
+| spektroskopie.js | Spektroskopie & Flammenfärbung | 4 | – | 1 | 1 |
 | tenside.js | Tenside & Grenzflächen | 5 | 1 | – | 2 |
 
 Differential- und Integralrechnung liegt weiter in `archiv/differential-integral/`.
@@ -39,4 +47,4 @@ Differential- und Integralrechnung liegt weiter in `archiv/differential-integral
 3. Wenn das Thema für alle gedacht ist: `test:1` beim Thema entfernen (Abzeichen weg).
 4. `APPV`, `NEWS`, `sw.js` hochzählen, `node tests/check.js` laufen lassen.
 
-Prüfung am 25.10.2026: Mit allen fünf Dateien eingebaut läuft das Prüfskript grün.
+Prüfung am 25.10.2026: Mit allen Dateien eingebaut läuft das Prüfskript grün.
