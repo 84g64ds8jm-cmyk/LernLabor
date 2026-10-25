@@ -856,11 +856,9 @@ M.push({g:'Chemie',name:'Bindungstypen',anim:1,desc:'Die Elektronegativitätsdif
 /* Orbitalmodell & Mehrfachbindungen: Elektronenwolken als Keulen (σ blau, π orange), Abstände maßstäblich in pm */
 const ORBM=[['C-Atom: s- und p-Orbitale','C'],['H₂: Einfachbindung (s + s)','H–H',74,436,'–','gerade','frei drehbar','Wasserstoff: Brenngas, Brennstoffzelle'],['Ethan C₂H₆: Einfachbindung','C–C',154,348,'sp³','109,5° (Tetraeder)','frei drehbar','Bestandteil von Erdgas'],['Ethen C₂H₄: Doppelbindung','C=C',134,614,'sp²','120° (eben)','nicht drehbar','Ausgangsstoff für Polyethylen (PE)'],['Ethin C₂H₂: Dreifachbindung','C≡C',120,839,'sp','180° (gestreckt)','nicht drehbar','Acetylen zum Autogenschweißen'],['Benzol C₆H₆: π-Ring (sp²)'],['Ethanol: Hydroxylgruppe –OH'],['Methanal: Carbonylgruppe C=O'],['Essigsäure: Carboxylgruppe –COOH'],['Alkane: Kettenlänge']];
 const ORBT=(x,y,s,z=18,a='start',c='var(--ink)',w=600)=>`<text x="${x}" y="${y}" text-anchor="${a}" style="font-size:${z}px;font-weight:${w};fill:${c};paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round">${s}</text>`;
-function ORB(s,t){
- const v=s.v,M0=ORBM[v],ap=v&&v<6?s.n/100:1,phi=(20+t*15)*PI/180,spin=v>=5&&v<9,psi=t*14*PI/180,tau=30*PI/180,be=-.32,sc=.86,cx=205,cy=200,SG='var(--flow)',PI_='var(--amber)',SO='#22a06b';
- /* Projektion: Drehung um die Bindungsachse (x), dann leicht um y gekippt; z zeigt zum Betrachter */
- let sc2=sc;const P=([x,y,z])=>{if(spin){const x1=x*Math.cos(psi)+z*Math.sin(psi),z1=-x*Math.sin(psi)+z*Math.cos(psi);return[cx+sc2*x1,cy-sc2*(y*Math.cos(tau)-z1*Math.sin(tau)),y*Math.sin(tau)+z1*Math.cos(tau)]}const y1=y*Math.cos(phi)-z*Math.sin(phi),z1=y*Math.sin(phi)+z*Math.cos(phi),x2=x*Math.cos(be)+z1*Math.sin(be),z2=-x*Math.sin(be)+z1*Math.cos(be);return[cx+sc2*x2,cy-sc2*y1,z2]};
- const add=(a,b,k=1)=>[a[0]+k*b[0],a[1]+k*b[1],a[2]+k*b[2]],nrm=a=>{const l=Math.hypot(...a);return a.map(q=>q/l)},it=[];
+/* Bausteine für Orbitalbilder: Projektion P und Zeichenliste it kommen vom Aufrufer */
+function orbKit(P,it){
+ const add=(a,b,k=1)=>[a[0]+k*b[0],a[1]+k*b[1],a[2]+k*b[2]],nrm=a=>{const l=Math.hypot(...a);return a.map(q=>q/l)};
  /* glatter Umriss: Catmull-Rom-Kurve durch die Hüllpunkte */
  const pth=p=>{const n=p.length,f=q=>q[0].toFixed(1)+' '+q[1].toFixed(1);let d='M'+f(p[0]);for(let i=0;i<n;i++){const a=p[(i-1+n)%n],b=p[i],c=p[(i+1)%n],e=p[(i+2)%n];d+='C'+f([b[0]+(c[0]-a[0])/6,b[1]+(c[1]-a[1])/6])+' '+f([c[0]-(e[0]-b[0])/6,c[1]-(e[1]-b[1])/6])+' '+f(c)}return d+'Z'};
  /* konvexe Hülle der projizierten Punkte = Umriss eines Körpers */
@@ -873,6 +871,12 @@ function ORB(s,t){
  const ell=(C,A,c,op=1)=>{const pts=[];for(let i=0;i<14;i++)for(let j=0;j<24;j++){const th=i*PI/13,ph=j*PI/12,s1=Math.sin(th);pts.push(add(add(add(C,A[0],Math.cos(th)),A[1],s1*Math.cos(ph)),A[2],s1*Math.sin(ph)))}cloud(pts,c,op)};
  const sph=(C,r,c,op=1)=>ell(C,[[r,0,0],[0,r,0],[0,0,r]],c,op);
  const nuc=(N,el)=>{const q=P(N),r=el=='H'?7:11;it.push([1e4+q[2],BALL(q[0],q[1],r,el=='C'?'#4b5563':el=='O'?'#dc2626':'#e5e7eb',1.4)+(el!='H'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:13px;font-weight:800;fill:#fff">${el}</text>`:'')])};
+ return{add,nrm,hull,pth,cloud,basis,lobe,ell,sph,nuc}}
+function ORB(s,t){
+ const v=s.v,M0=ORBM[v],ap=v&&v<6?s.n/100:1,phi=(20+t*15)*PI/180,spin=v>=5&&v<9,psi=t*14*PI/180,tau=30*PI/180,be=-.32,sc=.86,cx=205,cy=200,SG='var(--flow)',PI_='var(--amber)',SO='#22a06b';
+ /* Projektion: Drehung um die Bindungsachse (x), dann leicht um y gekippt; z zeigt zum Betrachter */
+ let sc2=sc;const P=([x,y,z])=>{if(spin){const x1=x*Math.cos(psi)+z*Math.sin(psi),z1=-x*Math.sin(psi)+z*Math.cos(psi);return[cx+sc2*x1,cy-sc2*(y*Math.cos(tau)-z1*Math.sin(tau)),y*Math.sin(tau)+z1*Math.cos(tau)]}const y1=y*Math.cos(phi)-z*Math.sin(phi),z1=y*Math.sin(phi)+z*Math.cos(phi),x2=x*Math.cos(be)+z1*Math.sin(be),z2=-x*Math.sin(be)+z1*Math.cos(be);return[cx+sc2*x2,cy-sc2*y1,z2]};
+ const it=[],{add,nrm,hull,pth,cloud,basis,lobe,ell,sph,nuc}=orbKit(P,it);
  let h='',res,rows,st;
  const sm=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),mg=sm(.72,.96,ap);
  if(v>=5){
@@ -1067,6 +1071,125 @@ M.push({g:'Chemie',name:'Orbitalmodell & Mehrfachbindungen',anim:1,desc:'Im Orbi
  vis2:(o,UI)=>(UI.nm||[]).forEach(e=>{const c=e.closest('.ctl');if(c)c.hidden=o.v!=9}),
  vis:s=>s.v==0||(s.v>5&&s.v<9)?[]:s.v==9?['k','db','me']:['n'],
  f(s,t){return ORB(s,t)}});
+/* Organische Grundreaktionen: Atome wandern von den Ausgangsstoffen zu den Produkten, alte Bindungswolken lösen sich, neue entstehen */
+const ORXM=['Verbrennung: Methan + Sauerstoff','Substitution: Methan + Chlor','Addition: Ethen + Brom','Polymerisation: Ethen → Polyethylen'];
+function ORX(s,t){
+ const v=s.v,p=s.m==1?s.r/100:Math.min(1,Math.max(0,((t%11)-1)/8)),psi=.35*Math.sin(t*.4),tau=.26,sc=v==3?.44:.62,cx=205,cy=196,SG='var(--flow)',PI_='var(--amber)';
+ const P=([x,y,z])=>{const x1=x*Math.cos(psi)+z*Math.sin(psi),z1=-x*Math.sin(psi)+z*Math.cos(psi);return[cx+sc*x1,cy-sc*(y*Math.cos(tau)-z1*Math.sin(tau)),y*Math.sin(tau)+z1*Math.cos(tau)]};
+ const it=[],{add,nrm,ell,basis}=orbKit(P,it),sub=(a,b)=>add(a,b,-1),sm=(a,b,x)=>Math.max(0,Math.min(1,(x-a)/(b-a))),ez=x=>x*x*(3-2*x),cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const TD=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(nrm),td=(a,u,g)=>{const w=cr(a,u),q=g*PI/180;return add(a.map(x=>-x/3),add(u.map(x=>x*Math.cos(q)),w,Math.sin(q)),.943)};
+ /* A: [Element, Start, Ende]; B: [i, j, Ordnung, Art] mit Art k = bleibt, o = löst sich, n = entsteht */
+ const A=[],B=[],at=(e,a,b)=>(A.push([e,a,b]),A.length-1);let info,LB,win=[.38,.5,.52,.66],one=0;
+ if(v==0){
+  const C0=[-170,0,0],c=at('C',C0,[130,0,0]),Hs=TD.map(d=>add(C0,d,109)),O0=[[89.5,110,0],[210.5,110,0],[89.5,-110,0],[210.5,-110,0]],
+   W=[[-150,120,0],[-150,-120,0]],o=[at('O',O0[0],[130,116,0]),at('O',O0[1],W[0]),at('O',O0[2],[130,-116,0]),at('O',O0[3],W[1])],
+   h=Hs.map((q,i)=>at('H',q,add(W[i>>1],[i%2?75.9:-75.9,-58.8,0])));
+  h.forEach(i=>B.push([c,i,1,'o']));B.push([o[0],o[1],2,'o'],[o[2],o[3],2,'o'],[c,o[0],2,'n'],[c,o[2],2,'n'],[o[1],h[0],1,'n'],[o[1],h[1],1,'n'],[o[3],h[2],1,'n'],[o[3],h[3],1,'n']);
+  LB=[[[c,...h],'Methan'],[[o[0],o[1]],'Sauerstoff'],[[o[2],o[3]],'Sauerstoff']];LB.p=[[[c,o[0],o[2]],'CO₂'],[[o[1],h[0],h[1]],'Wasser'],[[o[3],h[2],h[3]],'Wasser']];
+  info=['CH₄ + 2 O₂ → CO₂ + 2 H₂O',[['Reaktionstyp','Verbrennung (Oxidation)'],['Bedingung','Zündung, Methan zündet bei etwa 600 °C'],['Energie','wird frei: 802 kJ/mol (Heizwert, rund 50 MJ/kg)']],[['C',1,1],['H',4,4],['O',4,4]]];
+ } else if(v==1){
+  const C0=[-150,0,0],c=at('C',C0,[-140,0,0]),h1=at('H',add(C0,[1,0,0],109),[70,150,0]),hs=[0,120,240].map(g=>{const d=td([1,0,0],[0,1,0],g);return at('H',add(C0,d,109),add([-140,0,0],d,109))}),
+   ca=at('Cl',[80.5,0,0],[197,150,0]),cb=at('Cl',[279.5,0,0],[38,0,0]);
+  B.push([c,h1,1,'o'],...hs.map(i=>[c,i,1,'k']),[ca,cb,1,'o'],[c,cb,1,'n'],[h1,ca,1,'n']);
+  LB=[[[c,h1,...hs],'Methan'],[[ca,cb],'Chlor']];LB.p=[[[c,cb,...hs],'Chlormethan'],[[h1,ca],'Chlorwasserstoff']];
+  info=['CH₄ + Cl₂ → CH₃Cl + HCl',[['Reaktionstyp','Substitution: ein H wird durch Cl ersetzt'],['Bedingung','Licht (UV) spaltet Cl₂ in zwei Chlor-Atome (Radikale)'],['Typisch für','Alkane: nur Einfachbindungen, nichts zum Anlagern']],[['C',1,1],['H',4,4],['Cl',2,2]]];
+  win=[.12,.3,.5,.66];
+ } else if(v==2){
+  one=1;const c1=at('C',[-67,-40,0],[-77,-20,0]),c2=at('C',[67,-40,0],[77,-20,0]),
+   hs=[[-1,1],[-1,-1],[1,1],[1,-1]].map(([sx,sz],i)=>{const C=i<2?[-77,-20,0]:[77,-20,0],a=i<2?[1,0,0]:[-1,0,0],d=td(a,[0,1,0],i%2?240:120);return at('H',[sx*121.5,-40,sz*94.4],add(C,d,109))}),
+   b1=at('Br',[-114,190,0],add([-77,-20,0],td([1,0,0],[0,1,0],0),194)),b2=at('Br',[114,190,0],add([77,-20,0],td([-1,0,0],[0,1,0],0),194));
+  B.push([c1,c2,1,'k'],[c1,c2,'pi','o'],...hs.map((h,i)=>[i<2?c1:c2,h,1,'k']),[b1,b2,1,'o'],[c1,b1,1,'n'],[c2,b2,1,'n']);
+  LB=[[[c1,c2,...hs],'Ethen'],[[b1,b2],'Brom']];LB.p=[[[c1,c2,...hs,b1,b2],'1,2-Dibromethan']];
+  info=['C₂H₄ + Br₂ → C₂H₄Br₂',[['Reaktionstyp','Addition: Br lagert sich an die Doppelbindung an'],['Bedingung','läuft schon bei Raumtemperatur'],['Nachweis','Bromwasser entfärbt sich: Doppelbindung vorhanden']],[['C',2,2],['H',4,4],['Br',2,2]]];
+ } else {
+  one=1;const CC=[],chain=i=>[(i-2.5)*125.8,(i%2)*88.9-44.5,0];
+  for(let k=0;k<3;k++)for(let j=0;j<2;j++){const i=2*k+j;CC.push(at('C',[(k-1)*270+(j?67:-67),0,0],chain(i)))}
+  for(let i=0;i<6;i++){const c0=A[CC[i]][1],k=i>>1,j=i&1,a=sub(chain(i-1<0?1:i-1),chain(i)),b=sub(chain(i+1>5?4:i+1),chain(i)),m=nrm(add(nrm(a),nrm(b))).map(q=>-q);
+   [1,-1].forEach(sg=>{const d=add(m.map(q=>q*.5774),[0,0,1],sg*.8165),h=at('H',add(c0,[j?54.5:-54.5,0,sg*94.4]),add(chain(i),d,109));B.push([CC[i],h,1,'k'])})}
+  for(let k=0;k<3;k++)B.push([CC[2*k],CC[2*k+1],1,'k'],[CC[2*k],CC[2*k+1],'pi','o']);B.push([CC[1],CC[2],1,'n'],[CC[3],CC[4],1,'n']);
+  LB=[[[CC[0],CC[1]],'Ethen'],[[CC[2],CC[3]],'Ethen'],[[CC[4],CC[5]],'Ethen']];LB.p=[[CC,'Ausschnitt aus Polyethylen']];LB.end=[CC[0],CC[5]];
+  info=['n C₂H₄ → (–CH₂–CH₂–)ₙ',[['Reaktionstyp','Polymerisation: viele Ethen-Moleküle hängen sich aneinander'],['Bedingung','Katalysator, Druck und Wärme'],['Produkt','Polyethylen (PE): Folien, Rohre, Kanister']],[['C','2n','2n'],['H','4n','4n']]];
+ }
+ /* Weg der Atome: zusammenrücken, umordnen, auseinander */
+ const [w0,w1,w2,w3]=win,pos=([,a,b])=>{const a2=a.map(q=>q*(one?.9:.75)),b2=one?b:b.map(q=>q*.8);
+  if(p<.35)return add(a,sub(a2,a),ez(p/.35));if(p<.65)return add(a2,sub(b2,a2),ez((p-.35)/.3));return add(b2,sub(b,b2),ez((p-.65)/.35))};
+ const X=A.map(pos),op=k=>k=='k'?1:k=='o'?1-sm(w0,w1,p):sm(w2,w3,p);
+ B.forEach(([i,j,o,k])=>{const f=op(k);if(f<.02)return;const a=X[i],b=X[j],L=Math.hypot(...sub(b,a)),d=nrm(sub(b,a)),[u,w]=basis(d),mid=add(a,d,L/2);
+  if(o=='pi'||o==2){const n=nrm(cr(d,Math.abs(d[2])>.9?[1,0,0]:[0,0,1]));[1,-1].forEach(sg=>ell(add(mid,n,sg*42),[d.map(q=>q*(L/2+20)),n.map(q=>q*26),nrm(cr(d,n)).map(q=>q*24)],PI_,f))}
+  if(o!='pi'){ell(mid,[d.map(q=>q*(L/2+14)),u.map(q=>q*28),w.map(q=>q*28)],SG,.8*f);
+   const q1=P(a),q2=P(b),l=Math.hypot(q2[0]-q1[0],q2[1]-q1[1])||1,ox=-(q2[1]-q1[1])/l*3.4,oy=(q2[0]-q1[0])/l*3.4;let g='';
+   for(let n=0;n<(o==2?2:1);n++){const e=o==2?n-.5:0;g+=`<path d="M${(q1[0]+e*ox).toFixed(1)} ${(q1[1]+e*oy).toFixed(1)}L${(q2[0]+e*ox).toFixed(1)} ${(q2[1]+e*oy).toFixed(1)}" stroke="var(--ink)" stroke-width="${o==2?3:4.5}" stroke-linecap="round" opacity="${f.toFixed(2)}"/>`}
+   it.push([(q1[2]+q2[2])/2,g])}});
+ /* offene Kettenenden beim Polyethylen */
+ if(LB.end){const f=sm(.66,.8,p);if(f>.02)LB.end.forEach((i,k)=>{const a=X[i],b=add(a,[k?1:-1,k?-.6:.6,0],80),q1=P(a),q2=P(b);it.push([q1[2],`<path d="M${q1[0]} ${q1[1]}L${q2[0]} ${q2[1]}" stroke="var(--ink)" stroke-width="4.5" stroke-dasharray="3 6" stroke-linecap="round" opacity="${f}"/>`])})}
+ const RA={H:25,C:36,O:33,Cl:42,Br:46},CO={H:'#e5e7eb',C:'#4b5563',O:'#dc2626',Cl:'#16a34a',Br:'#9a3412'};
+ A.forEach(([e],i)=>{const q=P(X[i]),r=RA[e]*sc;it.push([q[2]+1,BALL(q[0],q[1],r,CO[e],1.3)+(e!='H'?`<text x="${q[0]}" y="${q[1]+4.5}" text-anchor="middle" style="font-size:${e.length>1?11:13}px;font-weight:800;fill:#fff">${e}</text>`:'')])});
+ it.sort((a,b)=>a[0]-b[0]);let h=it.map(q=>q[1]).join('');
+ /* Licht bei der Substitution, Energie bei der Verbrennung */
+ if(v==1){const f=sm(.05,.12,p)*(1-sm(.3,.38,p));if(f>.02){const q=P(X[A.length-1]),q0=P(X[A.length-2]),mx=(q[0]+q0[0])/2,my=(q[1]+q0[1])/2;h+=`<path d="M${mx+70} ${my-110}q-8 14 2 22t-4 22 2 22 -6 20" fill="none" stroke="#eab308" stroke-width="4" stroke-linecap="round" opacity="${f}"/>`+ORBT(mx+82,my-104,'Licht',17,'start','#ca8a04',800)}}
+ if(v==0){const f=sm(.45,.55,p)*(1-sm(.75,.9,p));if(f>.02)h=`<circle cx="${cx}" cy="${cy}" r="170" fill="url(#g-glow)" opacity="${f}"/>`+h+ORBT(cx,cy+150,'Energie wird frei',19,'middle','#ea580c',800)}
+ /* Namen unter den Teilchen */
+ const lab=(L,f)=>{if(f<.02)return;L.forEach(([ix,nm])=>{const q=ix.map(i=>P(X[i])),x=q.reduce((a,b)=>a+b[0],0)/q.length,y=Math.max(...q.map(b=>b[1]));h+=`<g opacity="${f.toFixed(2)}">`+ORBT(x,y+(ix.length>5?52:34),nm,17,'middle','var(--ink)',800)+'</g>'})};
+ lab(LB,1-sm(.25,.35,p));lab(LB.p,sm(.72,.82,p));
+ const ph=p<.35?'1 · Die Teilchen stoßen zusammen':p<.66?'2 · Alte Bindungen lösen sich, neue entstehen':'3 · Neue Stoffe sind entstanden';
+ h+=ORBT(205,32,info[0],22,'middle','var(--ink)',800)+ORBT(205,58,ph,17,'middle','var(--mute)',700);
+ /* rechts: Reaktionstyp, Bedingung, Atombilanz, bei der Addition das Bromwasser */
+ let y=88;info[1].forEach(([a,b])=>{h+=ORBT(424,y,a,15,'start','var(--mute)',600);WRAP(b,22).forEach((l,i)=>h+=ORBT(424,y+20+i*19,l,16,'start','var(--ink)',700));y+=30+WRAP(b,22).length*19});
+ if(v==2){const c=`color-mix(in srgb,#c2410c ${Math.round(85*(1-sm(.45,.7,p)))}%,#dbeafe)`,G=GLAS(560,y-6,40,92,{tube:1,lv:62,c,op:.75});h+=G.b+G.f+ORBT(546,y+40,'Brom-',14,'end','var(--mute)',600)+ORBT(546,y+57,'wasser',14,'end','var(--mute)',600)}
+ else{h+=ORBT(424,y+4,'Atome links = rechts',15,'start','var(--mute)',600);info[2].forEach(([e,a,b],i)=>h+=ORBT(424+i*68,y+28,`${e}: ${a}`,17,'start','var(--ink)',800));}
+ return{vb:'0 0 640 400',svg:h,res:[[info[1][0][1].split(':')[0],'Reaktionstyp'],[Math.round(p*100)+' %','Fortschritt'],[p<.66?LB.map(x=>x[1]).filter((x,i,a)=>a.indexOf(x)==i).join(' + '):LB.p.map(x=>x[1]).join(' + '),p<.66?'Ausgangsstoffe':'Produkte']],th:['Merkmal','Wert'],
+  rows:[['Gleichung',info[0]],...info[1],['Atombilanz',info[2].map(([e,a,b])=>`${e}: ${a} → ${b}`).join(', ')]],
+  st:[['Was bei jeder Reaktion passiert','Bindungen (Elektronenwolken) lösen sich, die Atome ordnen sich neu, neue Bindungen entstehen. Atome gehen nicht verloren: Links und rechts stehen gleich viele.'],['Substitution','Ein Atom wird gegen ein anderes getauscht. Typisch für Alkane, braucht Licht oder Wärme.'],['Addition','Ein Molekül lagert sich an eine Doppel- oder Dreifachbindung an. Die π-Bindung öffnet sich, die σ-Bindung bleibt. Nachweis mit Bromwasser.'],['Polymerisation','Viele kleine Moleküle (Monomere) verbinden sich zu einer langen Kette (Polymer), z. B. Ethen zu Polyethylen.'],['Verbrennung','Kohlenwasserstoffe reagieren mit Sauerstoff zu CO₂ und Wasser, dabei wird Energie frei.'],['Vereinfachung','Die Bewegung der Atome ist schematisch. Echte Reaktionen laufen oft in mehreren Schritten (bei der Substitution über Chlor-Atome als Radikale).']]}}
+M.push({g:'Chemie',name:'Organische Grundreaktionen',anim:1,desc:'Vier Grundreaktionen der organischen Chemie im Kugel- und Wolkenmodell: Verbrennung, Substitution, Addition und Polymerisation. Man sieht, welche Bindungen sich lösen und welche neu entstehen.',leg:'Blau: σ-Wolken, orange: π-Wolken. Grau: C, weiß: H, rot: O, grün: Cl, braun: Br. Die Bewegung ist schematisch. Mit „Ablauf: mit Regler“ lässt sich jeder Schritt einzeln ansehen.',
+ p:[['v','Reaktion','sel',ORXM,0],['m','Ablauf','sel',['läuft von selbst','mit Regler'],0],['r','Fortschritt',0,100,5,'%',50]],
+ vis:s=>s.m==1?['r']:[],
+ f(s,t){return ORX(s,t)}});
+/* Kunststoffe: Ketten und Netze. Ketten als Röhren, Vernetzungsstellen als rote Brücken, Zug und Temperatur verformen das Bild */
+const KUM=[['Thermoplast, lineare Ketten (PE-HD)',80,130,0,'Rohre, Flaschenkästen, Kanister'],['Thermoplast, verzweigte Ketten (PE-LD)',60,110,0,'Folien, Tüten, Kabelmantel'],['Elastomer (weitmaschig vernetzt)',0,0,200,'Dichtungen, Reifen, Schläuche'],['Duroplast (engmaschig vernetzt)',0,0,260,'Platinen, Schaltergehäuse, Griffe, GFK']];
+const KUN=(()=>{const R=((x)=>()=>(x=(x*16807)%2147483647)/2147483647)(7),K=[];
+ /* je Typ: Ketten (Punktlisten), Äste und Brücken; Koordinaten im Bereich x 110…310, y 92…308 */
+ for(let ty=0;ty<4;ty++){const C=[],BR=[];
+  if(ty==0)for(let c=0;c<9;c++){const y0=100+c*24,pts=[];for(let i=0;i<18;i++){const fold=c%3==2&&i>12;pts.push([112+i*11.5-(fold?(i-12)*23:0),y0+(fold?12:0)+3*Math.sin(i*1.7+c)])}C.push(pts)}
+  else for(let c=0;c<(ty==1?9:ty==2?9:12);c++){let x=128+(c%3)*72+R()*24,y=110+(Math.floor(c/3)%4)*(ty==3?52:68)+R()*20,a=R()*6.3;const pts=[];for(let i=0;i<24;i++){a+=(R()-.5)*1.4;x+=10*Math.cos(a);y+=10*Math.sin(a);if(x<112||x>308){a=PI-a;x=Math.max(112,Math.min(308,x))}if(y<94||y>306){a=-a;y=Math.max(94,Math.min(306,y))}pts.push([x,y])}C.push(pts);
+   if(ty==1)for(let b=0;b<2;b++){const j=4+Math.floor(R()*16),q=pts[j],aa=R()*6.3,bp=[q];for(let i=1;i<6;i++)bp.push([q[0]+i*9*Math.cos(aa+i*.3),q[1]+i*9*Math.sin(aa+i*.3)]);C.push(bp)}}
+  if(ty>1){const need=ty==2?9:34;for(let a=0;a<C.length&&BR.length<need;a++)for(let b=a+1;b<C.length&&BR.length<need;b++)for(let i=1;i<C[a].length-1&&BR.length<need;i+=ty==2?5:2)for(let j=1;j<C[b].length-1;j++){const d=Math.hypot(C[a][i][0]-C[b][j][0],C[a][i][1]-C[b][j][1]);if(d<(ty==2?26:30)&&d>8&&!BR.some(q=>Math.hypot(C[q[0]][q[1]][0]-C[a][i][0],C[q[0]][q[1]][1]-C[a][i][1])<(ty==2?40:16))){BR.push([a,i,b,j]);break}}}
+  K.push({C,BR})}return K})();
+function KUNS(s,t){
+ const ty=s.ty,[nm,Te,Tm,Tz,use]=KUM[ty],T=s.T,z=s.z/100,K=KUN[ty],tp=ty<2,
+  zer=tp?T>=300:T>=Tz,melt=tp&&T>=Tm&&!zer,soft=tp&&T>=Te&&!melt&&!zer,bruch=ty==3&&z>.05&&!zer;
+ /* Dehnung: Duroplast kaum, Elastomer viel, Thermoplast je nach Temperatur */
+ const lam=1+(ty==3?Math.min(z,.05):z*(ty==2?.6:soft||melt?.7:.3)),cxk=210,cyk=200,amp=.6+5*(T-20)/300+(melt?6:0),dark=zer?Math.min(1,(T-(tp?300:Tz))/30+.4):0;
+ const tf=(p,c,i)=>{let x=p[0]+amp*Math.sin(t*3.1+i*1.9+c*2.3),y=p[1]+amp*Math.cos(t*2.7+i*1.3+c*1.1);if(melt){x+=14*Math.sin(t*.5+c*1.7);y+=10*Math.cos(t*.4+c*2.1)}
+  x=cxk+(x-cxk)*lam;y=cyk+(y-cyk)/Math.sqrt(lam);if(bruch)x+=x>cxk?14:-14;return[x,y]};
+ const col=['#0e7490','#0369a1','#15803d','#7c2d12'][ty],ccol=dark?`color-mix(in srgb,${col} ${Math.round(100-80*dark)}%,#1c1917)`:col;
+ let h='';
+ /* Klemmbacken und Zugpfeile */
+ const xl=cxk-100*lam-26,xr=cxk+100*lam+6;h+=ROD(xl,82,20,236,'#9ca3af',1.5)+ROD(xr,82,20,236,'#9ca3af',1.5);
+ if(z>0){const F=10+18*z;h+=`<path d="M${xl-4} 200H${xl-4-F}M${xl-4-F+10} 192L${xl-4-F} 200L${xl-4-F+10} 208M${xr+24} 200H${xr+24+F}M${xr+24+F-10} 192L${xr+24+F} 200L${xr+24+F-10} 208" fill="none" stroke="var(--red)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`+ORBT(xr+28,186,'F',18,'start','var(--red)',800)}
+ /* Ketten als Röhren: dunkle Kontur, Farbe, Glanzlinie */
+ K.C.forEach((pts,c)=>{const q=pts.map((p,i)=>tf(p,c,i));let segs=[q];if(zer||bruch){segs=[];let cur=[];q.forEach((p,i)=>{cur.push(p);const cut=zer?(i%6==5&&dark>.3):(bruch&&i<q.length-1&&(q[i][0]-cxk)*(q[i+1][0]-cxk)<0);if(cut){segs.push(cur);cur=[]}});segs.push(cur)}
+  segs.filter(g=>g.length>1).forEach(g=>{const d='M'+g.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');h+=`<path d="${d}" fill="none" stroke="var(--ink)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><path d="${d}" fill="none" stroke="${ccol}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".45" transform="translate(-1.2 -1.6)"/>`})});
+ K.BR.forEach(([a,i,b,j])=>{const p=tf(K.C[a][i],a,i),q=tf(K.C[b][j],b,j);if(bruch&&(p[0]-cxk)*(q[0]-cxk)<0)return;h+=`<path d="M${p[0]} ${p[1]}L${q[0]} ${q[1]}" stroke="var(--red)" stroke-width="4" stroke-linecap="round"/>`+BALL(p[0],p[1],4.5,'var(--red)',1)+BALL(q[0],q[1],4.5,'var(--red)',1)});
+ if(bruch)h+=ORBT(cxk,98,'Bruch!',22,'middle','var(--red)',800);
+ const zs=zer?'zersetzt (verkohlt)':melt?'schmelzflüssig':soft?'erweicht, warm formbar':tp?'fest, zäh':ty==2?'gummielastisch':'hart, spröde',
+  rest=zer?'–':z==0?'kein Zug':bruch?'Bruch':ty==2?'geht ganz zurück':ty==3?'geht zurück':melt?'fließt weg':soft?'bleibt (Umformen)':z>.3?'bleibt teilweise':'geht fast zurück';
+ h+=ORBT(205,32,['Thermoplast','Thermoplast','Elastomer','Duroplast'][ty],21,'middle','var(--ink)',800)+ORBT(205,56,['lineare Ketten (PE-HD)','verzweigte Ketten (PE-LD)','weitmaschig vernetzt','engmaschig vernetzt'][ty],17,'middle','var(--mute)',700);
+ h+=ORBT(205,346,'Zustand: '+zs,18,'middle','var(--ink)',800)+ORBT(205,372,'nach dem Loslassen: '+rest,17,'middle','var(--mute)',700);
+ /* rechts: Steifigkeit über der Temperatur (schematisch) */
+ {const x0=440,x1=626,y0=96,y1=250,X=T=>x0+(T-20)/300*(x1-x0),Y=k=>y1-k*(y1-y0),CV=[[[20,.85],[80,.85],[125,.3],[135,.02]],[[20,.65],[60,.65],[105,.15],[112,.02]],[[20,.25],[200,.25]],[[20,.95],[260,.95]]];
+  h+=ORBT(424,36,'Steifigkeit',17,'start','var(--ink)',700)+ORBT(424,58,'schematisch',14,'start','var(--mute)',600);
+  h+=`<path d="M${x0} ${y0-8}V${y1}H${x1}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`+[20,100,200,300].map(v=>ORBT(X(v),y1+18,v,13,'middle','var(--mute)',600)).join('')+ORBT((x0+x1)/2,y1+36,'Temperatur in °C',14,'middle','var(--mute)',600)+ORBT(x0-6,y0+6,'hoch',13,'end','var(--mute)',600)+ORBT(x0-6,y1,'0',13,'end','var(--mute)',600);
+  CV.forEach((c,k)=>{const on=k==ty,cc=['#0e7490','#0369a1','#15803d','#7c2d12'][k],d=c.map(([a,b])=>X(a).toFixed(1)+','+Y(b).toFixed(1)).join(' '),e=c[c.length-1];
+   h+=`<polyline points="${d}" fill="none" stroke="${cc}" stroke-width="${on?3.5:2}" opacity="${on?1:.35}"/>`+(k>1?ORBT(X(e[0]),Y(e[1])+6,'✕',16,'middle',cc,800):'')});
+  const c=CV[ty];let kk=0;if(T<=c[c.length-1][0]){for(let i=1;i<c.length;i++)if(T<=c[i][0]){const [a,b]=c[i-1],[a2,b2]=c[i];kk=b+(b2-b)*(T-a)/(a2-a);break}}
+  h+=`<path d="M${X(T)} ${y0-6}V${y1}" stroke="var(--red)" stroke-dasharray="4 4"/>`+(T<=c[c.length-1][0]?`<circle cx="${X(T)}" cy="${Y(kk)}" r="7" fill="var(--red)" stroke="var(--ink)" stroke-width="2"/>`:'');
+  [['Beispiel',use.split(',')[0]],['Schweißen, Umschmelzen',tp?'ja':'nein']].forEach(([a,b],i)=>h+=ORBT(424,320+i*42,a,15,'start','var(--mute)',600)+ORBT(424,340+i*42,b,17,'start','var(--ink)',800))}
+ return{vb:'0 0 640 400',svg:h,res:[[zs,'Zustand'],[rest,'nach Entlasten'],[tp?'ja':'nein','schmelzbar']],th:['Merkmal','Wert'],
+  rows:[['Aufbau',['lange, kaum verzweigte Ketten, teils geordnet (kristallin)','Ketten mit vielen Ästen, locker gepackt','Ketten mit wenigen Brücken (weitmaschig)','dichtes Netz aus Brücken (engmaschig)'][ty]],['Zusammenhalt',tp?'nur Anziehung zwischen den Ketten (Van-der-Waals), keine Brücken':'feste Atombindungen zwischen den Ketten'],['Beim Erwärmen',tp?`erweicht ab etwa ${Te} °C, schmilzt bei etwa ${Tm} °C`:`schmilzt nicht, zersetzt sich ab etwa ${Tz} °C`],['Verformung',tp?'warm umformbar, schweißbar, recycelbar durch Einschmelzen':ty==2?'stark dehnbar, federt zurück':'hart und formstabil, bricht bei Überlast'],['Beispiele',use]],
+  st:[['Thermoplast','Lange Ketten, nur durch schwache Kräfte zusammengehalten. Wärme lässt die Ketten aneinander vorbeigleiten: erst weich, dann flüssig. Abkühlen macht sie wieder fest. Darum schweiß- und recycelbar.'],['Linear oder verzweigt','Lineare Ketten liegen dicht und teils geordnet: PE-HD ist fester und schmilzt höher. Äste halten die Ketten auf Abstand: PE-LD ist weicher.'],['Elastomer','Wenige Brücken verbinden die Ketten. Bei Zug strecken sich die Knäuel, die Brücken ziehen sie zurück. Nicht schmelzbar.'],['Duroplast','Viele Brücken bilden ein festes Netz. Hart, wärmebeständig, aber spröde. Beim Erhitzen zersetzt er sich, statt zu schmelzen.'],['Werte','Temperaturen sind typische Richtwerte, je nach Sorte verschieden.']]}}
+M.push({g:'Chemie',name:'Kunststoffe: Ketten und Netze',anim:1,desc:'Ob ein Kunststoff schmilzt, federt oder bricht, hängt am Aufbau seiner Molekülketten: lose Ketten (Thermoplast), weitmaschig vernetzt (Elastomer) oder engmaschig vernetzt (Duroplast).',leg:'Farbige Röhren: Molekülketten, rote Brücken: Vernetzungsstellen (Atombindungen zwischen den Ketten). Mit „Temperatur“ werden die Ketten unruhiger, mit „Zug“ wird die Probe zwischen den Klemmen gedehnt. Rechts die Steifigkeit über der Temperatur, schematisch.',
+ p:[['ty','Kunststoff','sel',KUM.map(x=>x[0]),0],['T','Temperatur',20,320,5,'°C',20],['z','Zug',0,100,5,'%',0]],
+ f(s,t){return KUNS(s,t)}});
 /* Neue Themen */
 const FP='Physik',FC='Chemie',FS='Statistik',FM='Mathematik',MF='Mechanik der Festkörper',HP='Hydraulik & Pneumatik',KD='Kinematik & Dynamik',AE='Arbeit, Leistung, Energie',WL='Wärmelehre',ET='Elektrotechnik',AP='Atombau & Periodensystem',CB='Chemische Bindungen',RS='Reaktionen & Stöchiometrie',SB='Säuren, Basen & Neutralisation',OR='Oxidation & Reduktion',EC='Elektrochemie',WH='Wasser & Härte';
 const NICE=v=>{const p=10**Math.floor(Math.log10(v)),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p},TICKS=m=>{const st=NICE(m/4),a=[];for(let v=0;v<=m*1.0001;v+=st)a.push(+v.toPrecision(12));return a};
@@ -2483,7 +2606,7 @@ const BSK={
 'Histogramm':BSV(320,175,`${[10,26,50,36,18,30,56,42,16,6].map((h,i)=>`<rect x="${40+i*26}" y="${145-h*1.9}" width="24" height="${h*1.9}" fill="#8b5cf6" fill-opacity=".35"/>`).join('')}<path d="M34 30V145H310"/>${BTX(300,165,'Messwert',0,'end')}<text transform="rotate(-90 20 95)" x="20" y="95" fill="currentColor" stroke="none" text-anchor="middle">Häufigkeit</text>${BTX(92,22,'Schicht 1',0,'middle')}${BTX(222,22,'Schicht 2',0,'middle')}`)};
 BEW.forEach(r=>{if(r[1]==='s'&&!r[5]&&BSK[r[0]])r[5]=BSK[r[0]]});
 /* Zuordnung */
-const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];MAP['Orbitalmodell & Mehrfachbindungen']=[FC,CB];
+const MAP={};['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(n=>MAP[n]=[FP,ET]);MAP['Hydraulik']=[FP,HP];['Hebel','Rolle & Flaschenzug','Reibung (schiefe Ebene)'].forEach(n=>MAP[n]=[FP,MF]);['Kreisbewegung','Sinus & Kosinus','Schwingung','Beschleunigung & Bremsen'].forEach(n=>MAP[n]=[FP,KD]);MAP['Aggregatzustand']=[FP,WL];MAP['Säuren & Basen']=[FC,SB];MAP['Korrosion']=[FC,OR];MAP['Atommodell']=[FC,AP];MAP['Bindungstypen']=[FC,CB];MAP['Orbitalmodell & Mehrfachbindungen']=[FC,CB];MAP['Organische Grundreaktionen']=[FC,CB];MAP['Kunststoffe: Ketten und Netze']=[FC,CB];
 M.forEach(m=>{const x=MAP[m.name];if(x){m.F=x[0];m.g=x[1]}});
 const DFN0='Ableitung: Steigung & Tangente',INN0='Integral: Fläche unter dem Graphen';
 const MR='Rechnen im Alltag',MFG='Formeln & Gleichungen',MGD='Geometrie & Diagramme',MDI='Differential- & Integralrechnung';
