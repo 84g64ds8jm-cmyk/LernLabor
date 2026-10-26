@@ -809,7 +809,7 @@ const SU=[['Wasser',0,100],['Ethanol',-114,78],['Stickstoff',-210,-196],['Quecks
 /* Reglerbereich je Stoff: Anfang und Ende der Erwärmungskurve (Schmelzpunkt − 80 K bis Siedepunkt + 80 K) */
 const AGT=i=>{const [,mp,bp]=SU[i],a=Math.max(-273,mp-80),b=bp+80;return['T','T',a,b,1,'°C',Math.min(b,Math.max(a,20))]};
 M.push({g:'Chemie',name:'Aggregatzustand',anim:1,desc:'Fest, flüssig, gasförmig: Je höher die Temperatur, desto schneller bewegen sich die Teilchen. Bei Schmelz- und Siedepunkt bleibt die Temperatur trotz Heizen konstant.',leg:'Rechts die Erwärmungskurve des Stoffes, der Punkt zeigt den aktuellen Zustand. Das Thermometer zeigt dieselbe Temperatur. Mit „Gleichmäßig heizen“ läuft die Energiezufuhr von selbst: Beim Schmelzen und Sieden bleibt das Thermometer stehen.',
- p:[['s','Stoff','sel',SU.map(x=>x[0]),0],AGT(0),['m','Ablauf','sel',['Temperatur einstellen','Gleichmäßig heizen'],0]],
+ p:[['s','Stoff','sel',SU.map(x=>x[0]),0],AGT(0),['m','Ablauf','sel',['Temperatur einstellen','Gleichmäßig heizen'],1]],
  vis:s=>s.m==1?[]:['T'],
  sync(o,k){if(k=='m'){clock=0;return}if(k!='s')return;const q=AGT(o.s);M[cur].p.splice(1,1,q);o.T=Math.min(q[3],Math.max(q[2],o.T));build()},
  f(s,t){
@@ -8718,7 +8718,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=196,NEWS='Zahleneingabe: Bei „1.250“ fragt die App jetzt nach, ob 1,25 oder 1250 gemeint ist, statt selbst zu raten. Dezimalzahlen bitte mit Komma schreiben.';
+const APPV=197,NEWS='Aggregatzustand: Der Ablauf „Gleichmäßig heizen“ startet jetzt von selbst. Du siehst sofort, wie das Thermometer beim Schmelzen und Sieden stehen bleibt. Die Temperatur kannst Du weiterhin unter „Ablauf“ selbst einstellen.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['26.10.2026',196,['Zahleneingabe: Eine Zahl wie 1.250 (ein Punkt, genau drei Ziffern dahinter) wird nicht mehr automatisch gedeutet. Die App fragt „Meinst Du 1,25 oder 1250?“ und wertet erst nach der Korrektur (Üben, Hausaufgaben, Mathe-Check). In der Probeprüfung erscheint der Hinweis unter dem Feld; bleibt die Eingabe unklar, zählt sie nicht als richtig.']],
