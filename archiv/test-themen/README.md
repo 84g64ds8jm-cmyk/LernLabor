@@ -20,7 +20,7 @@ ORAL.push( {...} );                  // Mündlich (falls vorhanden)
 
 Nicht hierher gehören: Simulation (`M.push`), Formeln (`FX`), Verstehen (`ERK`), Im Betrieb (`BET`), Glossar (`GLB`). Die bleiben in der App.
 
-## Inhalt (Stand v167)
+## Inhalt (Stand v172)
 
 | Datei | Thema | Ankreuz | Begründen | Rechnen | Fehler |
 |---|---|---|---|---|---|
