@@ -14,3 +14,8 @@ FEH.push(
 ['Kondensator: Laden & Entladen','Jonas sagt: „Nach τ = R · C ist der Kondensator voll geladen.“ Was stimmt?',['Nach 1 τ sind es erst 63 %, praktisch voll ist er nach etwa 5 τ.','Stimmt genau, τ ist die volle Ladezeit.','Nach τ ist er halb voll, nach 2 τ voll.','Ein Kondensator wird nie voll.'],'Die Ladekurve ist eine e-Funktion: 63 % nach 1 τ, 86 % nach 2 τ, 99 % nach 5 τ.'],
 ['Kondensator: Laden & Entladen','Ein Kollege rechnet τ = 10 kΩ · 100 µF = 1000. Wo liegt der Fehler?',['Die Vorsätze fehlen: 10 000 Ω · 0,0001 F = 1 s.','Kein Fehler, τ = 1000 s.','Man muss R durch C teilen.','τ hat keine Einheit.'],'Vor dem Multiplizieren in Grundeinheiten umrechnen: kΩ in Ω, µF in F. Ω · F ergibt Sekunden.']
 );
+BEW.push(
+['Kondensator: Laden & Entladen','b','Ein Frequenzumrichter hat im Zwischenkreis große Kondensatoren. Erkläre, warum man nach dem Abschalten einige Minuten warten muss, bevor man den Schaltschrank öffnet.',
+ 'Der Kondensator speichert Ladung Q = C · U und damit die Energie W = ½ · C · U². Nach dem Abschalten bleibt die Spannung am Kondensator stehen, weil keine Verbindung zur Quelle mehr nötig ist, um sie zu halten. Erst über einen Entladewiderstand sinkt sie nach u_C = U · e^(−t/τ) mit τ = R · C ab. Bei großen C und hochohmigem R dauert das Minuten; nach 5 τ ist der Kondensator praktisch leer. Deshalb die Wartezeit laut Herstellerangabe und vor der Arbeit Spannungsfreiheit messen.',
+ ['Kondensator speichert Ladung und Energie W = ½ · C · U²','Spannung bleibt nach dem Abschalten stehen','Entladung mit τ = R · C, nach 5 τ praktisch leer','Wartezeit einhalten, Spannungsfreiheit feststellen']]
+);
