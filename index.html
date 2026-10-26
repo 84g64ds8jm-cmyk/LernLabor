@@ -187,6 +187,9 @@ main{position:relative;z-index:1}
 .kmd.on{background:var(--acc);color:#fff;font-weight:800}
 /* Fehler üben ist wichtiger als Vorlesen: großer Hauptknopf, Vorlesen klein */
 .erkp{margin:12px 0 6px}#erkgo{font-size:1.08em;font-weight:800;padding:12px 22px;min-height:48px;border-radius:14px}.btn.sec.rdb{font-size:.82em;padding:4px 12px;min-height:40px;opacity:.9}
+/* UI-01: Vorlesen im Stil der Nebenknöpfe statt Browser-Standard */
+.btn{border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:10px;font-weight:700;padding:8px 16px;min-height:44px;cursor:pointer}
+.btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:600}.btn.sec:hover{border-color:var(--acc)}.btn.sec.rdb{padding:6px 14px;opacity:1}
 #pbt{width:100%;box-sizing:border-box;font:inherit;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}.bskw{max-width:520px;margin:8px 0;color:var(--ink)}.bsk{width:100%;height:auto;display:block}.bck{display:flex;gap:10px;align-items:flex-start;margin:8px 0;cursor:pointer}.bck input{width:22px;height:22px;flex:none;margin-top:1px}
 .oel{padding-left:1.4em}.oel li{margin:6px 0}.oef{display:flex;flex-wrap:wrap;gap:10px 14px}.oef label{display:flex;flex-direction:column;gap:4px;font-weight:600}.oef .oew,#onum,#otxt{flex:1 1 100%}#onum,#otxt{display:flex;flex-wrap:wrap;gap:10px 14px}#onum[hidden],#otxt[hidden]{display:none}.oef textarea,.oef input,.oef select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}.ofl{cursor:pointer;display:inline-block}.oef label{min-width:0;max-width:100%}.oef select,.oef input,.oef textarea{max-width:100%;box-sizing:border-box}.oef .oew textarea{width:100%}
 .gla{width:100%;border-collapse:collapse}.gla th,.gla td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}.gla td.gls{font-size:1.15em;white-space:nowrap;width:auto;min-width:0}.gla th{font-size:.85em;color:var(--mute);white-space:nowrap}#gl .seg{display:flex;flex-wrap:nowrap;max-width:100%}@media(max-width:519px){#gl .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;border-radius:16px}}#gl .seg button{flex:1 1 auto;min-width:0;padding:7px 6px;font-size:.9em;white-space:nowrap;overflow-wrap:normal;word-break:normal;hyphens:none}
@@ -323,7 +326,7 @@ svg .tk{font-size:12px}
 }
 /* Knopfzeile unter den Reglern: eine Zeile, Seltenes unter „⋯ Mehr“ */
 .btns{gap:6px;align-items:center}.btns button{padding:6px 12px}
-.btns .more{position:relative}.btns .more>summary{list-style:none;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;min-height:36px;white-space:nowrap}.btns .more>summary::-webkit-details-marker{display:none}
+.btns .more{position:relative}.btns .mm.l{left:0;right:auto}.btns .more>summary{list-style:none;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;min-height:36px;white-space:nowrap}.btns .more>summary::-webkit-details-marker{display:none}
 .btns .more[open]>summary{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,var(--bg))}
 .btns .mm{position:absolute;right:0;top:calc(100% + 6px);z-index:30;display:flex;flex-direction:column;gap:2px;min-width:190px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)}
 .btns .mm button{border:0;background:none;text-align:left;justify-content:flex-start;width:100%;margin:0}
@@ -8487,14 +8490,14 @@ function nav(){
  $('#bgr').setAttribute('fill','url(#p-'+(cur>=0?({Physik:'phys',Chemie:'chem',Statistik:'stat',Mathematik:'math',Umrechnen:'unit',Energie:'energy',Sicherheit:'safe'}[curF()]||'home'):'home')+')');
  $('#home').hidden=!hm;$('#app').hidden=cur<0;$('#practice').hidden=!prac;$('#sim').hidden=!SIMV;$('#mem').hidden=!MEMV;$('#ki').hidden=!KIV;if($('#doz'))$('#doz').hidden=!DOZV;if($('#hw'))$('#hw').hidden=!HWV;if($('#mc'))$('#mc').hidden=!MCV;if($('#gl'))$('#gl').hidden=!GLV;if($('#fsm'))$('#fsm').hidden=!FSV;$('#desc').hidden=cur<0;$('#gs').hidden=$('#ms').hidden=cur<0;if(cur<0){$('#fx').hidden=true;$('#erk').hidden=true;$('#tq').hidden=true}{const pr=$('#pred');if(pr)pr.hidden=cur<0||!pr.innerHTML}
  if(hm)homeView();
- {const bk=prac&&PBACK&&M[PBACK.i]?PBACK:null;['#pbk','#pbk2'].forEach((s,j)=>{const b=$(s);if(!b)return;b.hidden=!bk;if(bk){b.textContent=(j?'‹ Zurück zum Thema':'‹ Zurück zu '+M[bk.i].name);b.onclick=()=>{go(bk.i,bk.cx);scrollTo(0,0)}}})}
+ {const bk=prac&&PBACK&&M[PBACK.i]?PBACK:null;['#pbk','#pbk2'].forEach((s,j)=>{const b=$(s);if(!b)return;b.hidden=!bk||!j/* NAV-01: nur der untere Rückweg, mit Themennamen */;if(bk){b.textContent='‹ Zurück zu '+M[bk.i].name;b.onclick=()=>{go(bk.i,bk.cx);scrollTo(0,0)}}})}
  const last=FA.length+1;
  const dn=memDueCount(),simr=SIM&&!SIM.done;
  const L={0:'🏠 Startseite',[last]:'✏️ Üben',[last+1]:'🎓 Prüfungsaufgaben',[last+2]:'🗣️ Mündliche Prüfung',[last+3]:'⏱️ Prüfungssimulation'+(simr?' ●':''),[last+4]:'📈 Lernstand'+(dn?' ('+dn+')':''),[last+5]:'📝 Hausaufgaben',[last+6]:KIOK?'🤖 KI-Tutor':null,[last+7]:KIOK?'🎤 KI-Prüfer':null,[last+8]:DOZENT?'👩‍🏫 Kursübersicht':null,100:'📤 Lernfortschritt senden',108:'📅 Meine Kurstermine',109:'⚙️ Sonstiges',101:'⚖️ Impressum & Datenschutz',104:'🆕 Version '+APPV+' · Was ist neu',105:'🎨 Darstellung',106:'🧭 So funktioniert das Lernlabor',102:'🧮 Mathe-Check',103:'📖 Glossar',107:'✍️ Begründen & Skizzieren',110:'📘 Formelsammlung'};FA.forEach((f,i)=>L[i+1]=(IC[f]||'')+' '+f);{const W=LASTF._&&FA.includes(LASTF._)?fLast(LASTF._)[0]:-1;if(cur<0&&W>=0)L[111]='↩ Weiter: '+M[W].name}
  const P={0:hm,[last]:prac&&!PS.exam&&KIND!=='bew',107:prac&&!PS.exam&&KIND==='bew',[last+1]:prac&&!!PS.exam&&!PS.oral,[last+2]:prac&&!!PS.oral,[last+3]:SIMV,[last+4]:MEMV&&!KMO,108:MEMV&&KMO,[last+5]:HWV,[last+6]:KIV&&KIMODE==='tutor',[last+7]:KIV&&KIMODE==='pruef',[last+8]:DOZV,102:MCV,103:GLV,110:FSV};FA.forEach((f,i)=>P[i+1]=cur>=0&&i===fi);
- NG=[['🏠','Start',[0]],cur>=0?[IC[FA[fi]]||'📚',FA[fi],[...FA.map((f,i)=>i+1),103,110]]:['📚','Lernen',[...FA.map((f,i)=>i+1),103,110,111]],['🎓','Üben & Prüfen',[102,last+5,last,107,last+2,last+1,last+3,last+7]],[...meSym(),[last+4,100,108,last+6,last+8,109]]].map(g=>[g[0],g[1],g[2].filter(k=>L[k]!=null)]);
+ NG=[['🏠','Start',[0]],cur>=0?[IC[FA[fi]]||'📚',FA[fi],[...FA.map((f,i)=>i+1),103,110]]:['📚','Lernen',[...FA.map((f,i)=>i+1),103,110,111]],['🎓','Üben & Prüfen',[102,last+5,last,107,last+2,last+1,last+3,last+7]],[...meSym(),[last+4,100,108,last+6,last+8,105,109]/* NAV-03: Darstellung direkt unter Ich */]].map(g=>[g[0],g[1],g[2].filter(k=>L[k]!=null)]);
  nmClose();$('#fs').innerHTML=NG.map((g,i)=>`<button type="button" data-g="${i}" aria-pressed="${g[2].some(k=>P[k])}"${i?` aria-haspopup="menu" aria-expanded="false"`:''}><span class="ni" aria-hidden="true">${g[0]}</span><span>${g[1]}</span>${i===3&&dn?`<i aria-label="${dn} fällig">${dn}</i>`:i===2&&simr?'<i aria-label="läuft">●</i>':''}</button>`).join('');
- const go2=k=>{if(k===109){nmFill(3,[106,105,101,104],'Sonstiges',true);return}nmClose();if(k===108){kmOpen();return}if(k===0){cur=-1;prac=false;nav()}else if(k===last)openPractice('Alle');else if(k===last+1)openExam();else if(k===last+2)openOral();else if(k===last+3)simOpen();else if(k===last+4)memOpen();else if(k===last+5)hwOpen();else if(k===last+6)kiOpen('tutor');else if(k===last+7)kiOpen('pruef');else if(k===last+8)dozOpen();else if(k===102)mcOpen();else if(k===103){glOpen();return}else if(k===110){fsOpen();return}else if(k===107)openPractice('Alle','bew');else if(k===106){if(window.llTour)window.llTour();return}else if(k===105){const v=$('#ftd');if(v){v.open=true;v.scrollIntoView({block:'start'})}return}else if(k===104){const v=$('#ftv');if(v){v.open=true;v.scrollIntoView({block:'start'})}return}else if(k===101){const ft=$('#ft');if(ft){ft.querySelectorAll('details').forEach(d=>{if(/Impressum|Datenschutz/.test(d.textContent.slice(0,40)))d.open=true});ft.scrollIntoView({block:'start'})}return}else if(k===100){memOpen();const r=$('#rsend');if(r){r.scrollIntoView({block:'start'});return}}else if(k===111)go(...fLast(LASTF._));else go(...fLast(FA[k-1]));window.scrollTo(0,0)};
+ const go2=k=>{if(k===109){nmFill(3,[106,101,104],'Sonstiges',true);return}nmClose();if(k===108){kmOpen();return}if(k===0){cur=-1;prac=false;nav()}else if(k===last)openPractice('Alle');else if(k===last+1)openExam();else if(k===last+2)openOral();else if(k===last+3)simOpen();else if(k===last+4)memOpen();else if(k===last+5)hwOpen();else if(k===last+6)kiOpen('tutor');else if(k===last+7)kiOpen('pruef');else if(k===last+8)dozOpen();else if(k===102)mcOpen();else if(k===103){glOpen();return}else if(k===110){fsOpen();return}else if(k===107)openPractice('Alle','bew');else if(k===106){if(window.llTour)window.llTour();return}else if(k===105){const v=$('#ftd');if(v){v.open=true;v.scrollIntoView({block:'start'})}return}else if(k===104){const v=$('#ftv');if(v){v.open=true;v.scrollIntoView({block:'start'})}return}else if(k===101){const ft=$('#ft');if(ft){ft.querySelectorAll('details').forEach(d=>{if(/Impressum|Datenschutz/.test(d.textContent.slice(0,40)))d.open=true});ft.scrollIntoView({block:'start'})}return}else if(k===100){memOpen();const r=$('#rsend');if(r){r.scrollIntoView({block:'start'});return}}else if(k===111)go(...fLast(LASTF._));else go(...fLast(FA[k-1]));window.scrollTo(0,0)};
  $('#fs').querySelectorAll('button').forEach(b=>b.onclick=()=>{const g=+b.dataset.g;if(g===0){go2(0);return}if(NMO===g){nmClose();return}nmClose();NMO=g;b.setAttribute('aria-expanded','true');const m=$('#nm');nmFill(g,NG[g][2],g===1?'Lernen':NG[g][1]);m.style.left=innerWidth>=900?b.offsetLeft+'px':'';m.hidden=false;$('#nmb').hidden=false});
  /* Menü füllen; Untermenü (Sonstiges) mit Zurück zum Reiter */
  function nmFill(g,ks,t,sub){const m=$('#nm');m.innerHTML=`<h3>${t}</h3>`+(sub?`<button type="button" role="menuitem" class="nmz" data-z="1">‹ Zurück</button>`:'')+(()=>{const kk=ks.filter(k=>L[k]!=null),bt=k=>`<button type="button" role="menuitem" data-k="${k}" aria-current="${!!P[k]}">${k===111?'<small>↩ Weiter mit</small>'+M[fLast(LASTF._)[0]].name:L[k]}</button>`;if(g!==1||sub||!kk.includes(103))return kk.map(bt).join('');const n=kk.filter(k=>k===103||k===110),w=kk.includes(111);return kk.filter(k=>!n.includes(k)&&k!==111).map(bt).join('')+'<h4 class="nms">Nachschlagen</h4>'+`<div class="nmn${w?' w':''}"><div>${n.map(bt).join('')}</div>${w?bt(111):''}</div>`})();m.querySelectorAll('[data-k]').forEach(x=>x.onclick=()=>go2(+x.dataset.k));const z=m.querySelector('[data-z]');if(z)z.onclick=()=>nmFill(g,NG[g][2],NG[g][1]);m.querySelector('button').focus({preventScroll:true})}
@@ -8712,7 +8715,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=194,NEWS='Einheiten in jedem Rechenschritt: Auch Zwischenergebnisse, Folgezeilen, Tipps, Hausaufgaben-Hinweise, der Rechenweg in den Themen, Erklärungen und die Ankreuz-Ansicht zeigen jetzt überall die Einheit, zum Beispiel ω = 15,71 1/s und v = 15,71 1/s · 0,5 m = 7,854 m/s. So rechnest Du die Einheiten immer mit, wie es die Prüfung verlangt.';
+const APPV=195,NEWS='Bedienung verbessert: Mehr-Menü bleibt im Bild, Dunkelmodus mit besser lesbaren Knöpfen, Auftrag am Laptop neben den Reglern, Hauptmenü und Einführung mit der Tastatur bedienbar, Übungsaufgabe bleibt beim Neuladen erhalten.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['26.10.2026',194,['Einheiten in jedem Rechenschritt: Zwischenergebnisse und Folgezeilen (z. B. ω = 2π · 150 1/min / (60 s/min) = 15,71 1/s; v = 15,71 1/s · 0,5 m = 7,854 m/s), Umrechnungsfaktoren (60 s/min, 3,6 MJ/kWh), Tipps, Hausaufgaben-Hinweise, Mathe-Check, Rechenweg in den Themen, Erklärungen, „Fehler finden“ und Aufträge tragen jetzt überall Einheiten. Die Ankreuz-Ansicht zeigt den Lösungsweg ohne „; =“ und ohne doppeltes Ergebnis. Bei „Fehler finden“ bleibt die falsche Rechnung absichtlich ohne Einheit, wenn gerade der Einheitenfehler gesucht ist.']],
@@ -9468,10 +9471,13 @@ const build0=build;build=function(){probeBar();build0.apply(this,arguments);cons
  const n=store.get(NK,{})[m.name]||'';$('#notetx').value=n;note.classList.toggle('has',!!n.trim());note.open=false;
  const add=(l,fn,c)=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.onclick=fn;if(c)b.className=c;$('#btns').appendChild(b);return b};
  /* seltene Aktionen in „⋯ Mehr“, damit die Knöpfe in eine Zeile passen */
- const bx=$('#btns'),ub=[...bx.children].find(b=>b.textContent.startsWith('✏️')),fv=[...bx.children].find(b=>/Favorit$/.test(b.textContent));
+ const bx=$('#btns');bx.querySelectorAll('.more').forEach(x=>x.remove());/* CTL-02: nie doppelt */
+ const ub=[...bx.children].find(b=>b.textContent.startsWith('✏️')),fv=[...bx.children].find(b=>/Favorit$/.test(b.textContent));
  if(ub)bx.appendChild(ub);if(fv){bx.appendChild(fv);const fs=()=>{const on=FAV.includes(m.name);fv.innerHTML=(on?'★':'☆')+'<span class="lb"> Favorit</span>';fv.setAttribute('aria-pressed',on);fv.title=on?'Aus Favoriten entfernen':'Als Favorit merken'};fs();fv.onclick=()=>{toggleFav(m.name);fs()}}
  bx.classList.toggle('voll',bx.children.length>2);
  const mo=document.createElement('details');mo.className='more';mo.innerHTML='<summary aria-label="Weitere Aktionen" title="Teilen, QR-Code, Fehler melden">⋯<span class="lb"> Mehr</span></summary><div class="mm" role="menu"></div>';bx.appendChild(mo);
+ /* CTL-01: Menü öffnet zur Seite mit Platz */
+ mo.addEventListener('toggle',()=>{const mm=mo.lastChild;mm.classList.remove('l');if(!mo.open)return;const r=mm.getBoundingClientRect();if(r.left<8)mm.classList.add('l')});
  const mi=(l,fn,c)=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','menuitem');b.textContent=l;b.onclick=()=>{mo.open=false;fn()};if(c)b.className=c;mo.lastChild.appendChild(b)};
  mi('🔗 Teilen',()=>share(m.name,base()+'#thema/'+SN[cur]));mi('▦ QR-Code',()=>qrShow(m.name,base()+'#thema/'+SN[cur]));mi('⚑ Fehler melden',topicReport,'rep');
 };
@@ -9592,7 +9598,7 @@ if(typeof DOZENT!=='undefined'&&DOZENT&&typeof dozView==='function'){const dz1=d
 
 /* ---------- Übungsmodus: Filter eingeklappt, Rundenzähler, Lösungsweg sichtbar, Meine Fehler ---------- */
 const ph=$('#practice .ph'),flt=document.createElement('details');flt.id='pflt';flt.innerHTML='<summary></summary><div class="pfl"></div>';ph.appendChild(flt);flt.querySelector('.pfl').append($('#pe'),$('#pf'),$('#pk'),$('#plv'));ph.appendChild($('#sc'));
-const fltSum=()=>{const t=[$('#pe'),$('#pf'),$('#pk'),$('#plv')].filter(s=>!s.hidden&&s.selectedIndex>=0&&!(s.id==='plv'&&s.value==='0')&&!(s.id==='pe'&&s.value==='Alle')).map(s=>{const o=s.options[s.selectedIndex];return o.dataset.full||o.text});flt.querySelector('summary').textContent='Auswahl: '+(t.join(' · ')||'alle');flt.hidden=FM};
+const fltSum=()=>{const t=[$('#pe'),$('#pf'),$('#pk'),$('#plv')].filter(s=>!s.hidden&&s.selectedIndex>=0&&!(s.id==='plv'&&s.value==='0')&&!(s.id==='pe'&&s.value==='Alle')).map(s=>{const o=s.options[s.selectedIndex];return (o.dataset.full||o.text).replace(/^Dieses Thema:\s*/,'').replace(/,\s*vor allem .*$/,'')});/* TXT-02: kurze Auswahlzeile mit Hinweis aufs Ändern */flt.querySelector('summary').innerHTML=rEsc(t.join(' · ')||'Alle Themen')+' <span class="fltc">ändern</span>';flt.hidden=FM};
 ['#pf','#pk','#plv'].forEach(s=>$(s).addEventListener('change',()=>{fltSum();flt.open=false}));$('#pe').addEventListener('change',fltSum);
 let SS={ok:0,n:0,st:0};const resetS=()=>{SS={ok:0,n:0,st:0}};
 ['openPractice','openExam','openOral'].forEach(k=>{const f=window[k];window[k]=function(){FM=false;resetS();return f.apply(this,arguments)}});
@@ -9853,5 +9859,138 @@ const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
  const n1=nav;nav=function(){const r=n1.apply(this,arguments);try{upTitle()}catch(e){}return r};
  addEventListener('hashchange',()=>setTimeout(upTitle,0));addEventListener('popstate',()=>setTimeout(upTitle,0));setTimeout(upTitle,0)})();</script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>{const had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&window.llUpdate)window.llUpdate()});navigator.serviceWorker.register('sw.js').then(r=>{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{})});setInterval(()=>r.update().catch(()=>{}),36e5)}).catch(()=>{})});</script>
+<!-- UI-Audit FN-01 -->
+<script>/* FN-01: Größe, „=“ und Wert nicht trennen (geschütztes Leerzeichen um = und ≈ in sichtbaren Texten) */
+(()=>{const RX=/ ([=≈]) /g,SKIP='SCRIPT,STYLE,TEXTAREA,INPUT,OPTION,svg,text,tspan';
+ const fix=root=>{if(!root||root.nodeType!==1&&root.nodeType!==3)return;if(root.nodeType===3){if(root.nodeValue.indexOf(' = ')>-1||root.nodeValue.indexOf(' ≈ ')>-1){const p=root.parentElement;if(p&&!p.closest(SKIP))root.nodeValue=root.nodeValue.replace(RX,' $1 ')}return}
+  if(root.closest&&root.closest(SKIP))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;const L=[];while(n=w.nextNode())if(n.nodeValue.indexOf(' = ')>-1||n.nodeValue.indexOf(' ≈ ')>-1)L.push(n);L.forEach(fix)};
+ const m=document.querySelector('main')||document.body;fix(m);let q=new Set(),t=0;
+ new MutationObserver(ms=>{ms.forEach(x=>x.addedNodes.forEach(a=>q.add(a)));if(!t)t=requestAnimationFrame(()=>{t=0;const a=[...q];q.clear();a.forEach(fix)})}).observe(document.body,{childList:true,subtree:true})})();
+</script>
+<!-- UI-Audit UI-02 -->
+<style>/* UI-02: Ansicht-Umschalter über der Skizze bündig mit dem Bildkasten statt eingerückt und überlappend */
+.gsw.gtop,html body .gsw.gtop{margin:0 0 12px 0;max-width:none;box-shadow:none}
+@media(max-width:899px){html body .gsw.gtop{margin:0 0 10px 0}}
+</style>
+<!-- UI-Audit RES-04 -->
+<style>/* RES-04: Formelsammlung bei 320 px ohne Überbreite: lange Bezeichnungen silbengetrennt umbrechen */
+@media(max-width:359px){.fsl td{-webkit-hyphens:auto;hyphens:auto;overflow-wrap:anywhere}.fsc{overflow-x:auto}}
+</style>
+<!-- UI-Audit RES-03 -->
+<style>/* RES-03: Menüband auf sehr schmalen Handys einzeilig, alle Reiter gleich hoch */
+@media(max-width:359px){#fs button{font-size:11px;letter-spacing:-.01em;white-space:nowrap;padding:6px 1px}}
+</style>
+<!-- UI-Audit TXT-01 -->
+<script>/* TXT-01: kurzer Such-Platzhalter auf schmalen Bildschirmen, Beispiele bleiben im Titel */
+(()=>{const q=document.getElementById('q');if(!q)return;const L=q.placeholder,mq=matchMedia('(max-width:599px)'),ms=matchMedia('(max-width:359px)'),up=()=>{q.placeholder=ms.matches?'Suchen …':mq.matches?'Thema oder Formel …':L};q.title=L;up();mq.addEventListener('change',up);ms.addEventListener('change',up)})();
+</script>
+<!-- UI-Audit A11Y-01 -->
+<style>/* A11Y-01: im Dunkelmodus Flächen mit weißer Schrift in den dunklen Fachstufen (wie hell, ACC-01), farbige Schrift auf dunklem Grund in hellen Stufen; jeweils ≥ 4,5 : 1 */
+:root[data-theme="dark"]{--accf:#1d4ed8;--acct:#60a5fa}:root[data-theme="dark"] :is(body[data-f="Physik"],.hc[data-f="Physik"],.ftile[data-f="Physik"]){--accf:#1d4ed8;--acct:#60a5fa}:root[data-theme="dark"] :is(body[data-f="Chemie"],.hc[data-f="Chemie"],.ftile[data-f="Chemie"]){--accf:#047857;--acct:#34d399}:root[data-theme="dark"] :is(body[data-f="Statistik"],.hc[data-f="Statistik"],.ftile[data-f="Statistik"]){--accf:#6d28d9;--acct:#a78bfa}:root[data-theme="dark"] :is(body[data-f="Mathematik"],.hc[data-f="Mathematik"],.ftile[data-f="Mathematik"]){--accf:#be185d;--acct:#f472b6}:root[data-theme="dark"] :is(body[data-f="Umrechnen"],.hc[data-f="Umrechnen"],.ftile[data-f="Umrechnen"]){--accf:#c2410c;--acct:#fb923c}:root[data-theme="dark"] :is(body[data-f="Energie"],.hc[data-f="Energie"],.ftile[data-f="Energie"]){--accf:#b45309;--acct:#fbbf24}:root[data-theme="dark"] :is(body[data-f="Sicherheit"],.hc[data-f="Sicherheit"],.ftile[data-f="Sicherheit"]){--accf:#b91c1c;--acct:#f87171}:root[data-theme="dark"] :is(.sbtn,.smpre .chip[aria-pressed=true],.stabs .chip[aria-pressed=true],.seg button[aria-pressed=true],#nm button[aria-current=true],#pck,#ki .btn,.kmd.on,.btn:not(.sec),.sch .chip[aria-pressed="true"],.dsg button[aria-pressed=true],.chip.pri,.btns .pri,.gsw .gsb button[aria-pressed="true"],#gs button[aria-pressed="true"],#ms button[aria-pressed="true"]){--acc:var(--accf)}:root[data-theme="dark"] :is(#thc,#legm){--acc:var(--acct)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--accf:#1d4ed8;--acct:#60a5fa}:root:not([data-theme="light"]) :is(body[data-f="Physik"],.hc[data-f="Physik"],.ftile[data-f="Physik"]){--accf:#1d4ed8;--acct:#60a5fa}:root:not([data-theme="light"]) :is(body[data-f="Chemie"],.hc[data-f="Chemie"],.ftile[data-f="Chemie"]){--accf:#047857;--acct:#34d399}:root:not([data-theme="light"]) :is(body[data-f="Statistik"],.hc[data-f="Statistik"],.ftile[data-f="Statistik"]){--accf:#6d28d9;--acct:#a78bfa}:root:not([data-theme="light"]) :is(body[data-f="Mathematik"],.hc[data-f="Mathematik"],.ftile[data-f="Mathematik"]){--accf:#be185d;--acct:#f472b6}:root:not([data-theme="light"]) :is(body[data-f="Umrechnen"],.hc[data-f="Umrechnen"],.ftile[data-f="Umrechnen"]){--accf:#c2410c;--acct:#fb923c}:root:not([data-theme="light"]) :is(body[data-f="Energie"],.hc[data-f="Energie"],.ftile[data-f="Energie"]){--accf:#b45309;--acct:#fbbf24}:root:not([data-theme="light"]) :is(body[data-f="Sicherheit"],.hc[data-f="Sicherheit"],.ftile[data-f="Sicherheit"]){--accf:#b91c1c;--acct:#f87171}:root:not([data-theme="light"]) :is(.sbtn,.smpre .chip[aria-pressed=true],.stabs .chip[aria-pressed=true],.seg button[aria-pressed=true],#nm button[aria-current=true],#pck,#ki .btn,.kmd.on,.btn:not(.sec),.sch .chip[aria-pressed="true"],.dsg button[aria-pressed=true],.chip.pri,.btns .pri,.gsw .gsb button[aria-pressed="true"],#gs button[aria-pressed="true"],#ms button[aria-pressed="true"]){--acc:var(--accf)}:root:not([data-theme="light"]) :is(#thc,#legm){--acc:var(--acct)}}</style>
+<!-- UI-Audit RES-01 -->
+<style>/* RES-01: am Laptop „Vermute zuerst“ einzeilig, Auftrag in der rechten Spalte unter den Werten */
+@media(min-width:900px){#pred:not([hidden]){display:flex;flex-wrap:wrap;align-items:center;gap:2px 12px;padding:6px 10px 6px 14px}#pred>p:first-child{flex:1 1 360px}#pred .predx{width:auto;flex:none;min-height:40px;font-size:1.15em;padding:2px 12px}#pred .predx span{font-size:.75em}#pred .predo,#pred>p.sub{flex:1 1 100%}
+.panel>#auf{margin:14px 0 0}}</style>
+<script>/* RES-01 */(()=>{const mq=matchMedia('(min-width:900px)');
+const place=()=>{const a=document.getElementById('auf'),p=document.getElementById('pred'),c=document.getElementById('ctls');if(!a||!p||!c)return;const rp=c.closest('.panel');
+ if(mq.matches){if(a.parentElement!==rp)rp.append(a)}else if(a.previousElementSibling!==p)p.after(a)};
+const b=build;build=function(){const r=b.apply(this,arguments);place();return r};mq.addEventListener('change',place);place()})();</script>
+<!-- UI-Audit LRN-01 -->
+<style>/* LRN-01 */#gs.one,#ms.one{display:none!important}</style>
+<script>/* LRN-01: Leiste mit nur einem Eintrag ausblenden, der Pfad über dem Titel nennt Gebiet und Thema schon */(()=>{const one=()=>['#gs','#ms'].forEach(s=>{const e=document.querySelector(s);if(e)e.classList.toggle('one',e.querySelectorAll('button').length===1)});
+const b=build;build=function(){const r=b.apply(this,arguments);one();return r};one()})();</script>
+<!-- UI-Audit A11Y-04 -->
+<style>/* A11Y-04 */.skipl{position:absolute;left:8px;top:-60px;z-index:9999;background:var(--card);color:var(--ink);border:2px solid var(--flow);border-radius:10px;padding:10px 16px;font-weight:700;text-decoration:none}.skipl:focus{top:8px}</style>
+<script>/* A11Y-04: Fokus bleibt nach „Nächste Aufgabe“ und Seitenwechsel im Inhalt, Sprunglink zum Inhalt */(()=>{
+const vis=e=>e&&e.offsetParent!==null&&!e.closest('[hidden]');
+const head=()=>{for(const s of ['#tht','#practice h2','#sim h2','#mem h2','#hw h2','#mc h2','#gl h2','#fsm h2','#doz h2','#ki h2','#home h2','main h2','h2']){const e=[...document.querySelectorAll(s)].find(vis);if(e)return e}};
+const fh=()=>{const h=head();if(!h)return false;if(!h.hasAttribute('tabindex'))h.setAttribute('tabindex','-1');h.focus({preventScroll:true});return true};
+const a=document.createElement('a');a.className='skipl';a.href='#';a.textContent='Zum Inhalt springen';a.onclick=e=>{e.preventDefault();const h=head();if(h){h.scrollIntoView({block:'start'});fh()}};document.body.prepend(a);
+/* Nächste Aufgabe: am Laptop gleich ins Antwortfeld, am Handy auf die Frage (keine Tastatur, die aufspringt) */
+let nx=false;document.addEventListener('click',e=>{if(e.target.closest('#pnx,#pag'))nx=true},true);
+const q=newQ;newQ=function(){const r=q.apply(this,arguments);if(nx){nx=false;const pin=document.getElementById('pin'),pq=document.getElementById('pq');if(matchMedia('(pointer:fine)').matches&&vis(pin))pin.focus({preventScroll:true});else if(vis(pq)){pq.setAttribute('tabindex','-1');pq.focus({preventScroll:true})}}return r};
+/* Seitenwechsel: wenn der Fokus auf dem Seitenkörper gelandet ist, auf die Überschrift der neuen Ansicht setzen */
+let t=0;const chk=()=>{clearTimeout(t);t=setTimeout(()=>{const ae=document.activeElement;if(!ae||ae===document.body||!vis(ae))fh()},250)};
+document.addEventListener('click',e=>{if(e.target.closest('button,a,[role=menuitem],summary'))chk()});document.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')chk()});addEventListener('popstate',chk)})();</script>
+<!-- UI-Audit NAV-01 -->
+<script>/* NAV-01: kommt die Übung aus dem Thema, reicht „‹ Zurück zu …“ unten; „Thema: … →“ nur bei Aufgaben aus anderen Themen */(()=>{const pr=document.getElementById('practice');if(!pr)return;
+const f=()=>{const g=document.getElementById('pgo'),b=document.getElementById('pbk2');if(b&&b.offsetParent&&b.dataset.t!==b.textContent+innerWidth){b.dataset.t=b.textContent+innerWidth;b.classList.remove('lang');if(b.offsetHeight>50)b.classList.add('lang')}if(!g)return;const n=g.textContent.replace(/^Thema:\s*/,'').replace(/\s*→\s*$/,'').trim();const same=!!(b&&!b.hidden&&n&&b.textContent.includes(n));if(g.hidden!==same)g.hidden=same};
+new MutationObserver(f).observe(pr,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});f()})();</script>
+<style>/* NAV-01: langer Themenname im unteren Rückweg darf umbrechen */#practice .pb #pbk2{white-space:normal;line-height:1.2;text-align:center}#practice .pb #pbk2.lang{flex:1 1 100%;font-size:14px}</style>
+<!-- UI-Audit A11Y-02 -->
+<script>/* A11Y-02: Einführung als echtes Dialogfenster: Tab bleibt im Fenster, Escape schließt überall, Hintergrund ist inaktiv */(()=>{
+document.addEventListener('keydown',e=>{const t=document.querySelector('div.tour');if(!t)return;
+ if(e.key==='Escape'&&!t.contains(e.target)){e.preventDefault();t.querySelector('.tsk').click();return}
+ if(e.key!=='Tab')return;const f=[...t.querySelectorAll('button,a[href],input,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled&&!x.hidden&&x.offsetParent!==null);if(!f.length)return;
+ const i=f.indexOf(document.activeElement);if(e.shiftKey&&(i<=0)){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&(i<0||i===f.length-1)){e.preventDefault();f[0].focus()}},true);
+const sync=()=>{const on=!!document.querySelector('div.tour');document.querySelectorAll('body>main,body>footer,body>header').forEach(x=>{x.inert=on})};
+new MutationObserver(sync).observe(document.body,{childList:true});sync()})();</script>
+<!-- UI-Audit CTL-03 -->
+<style>/* CTL-03: Trefferflächen auf 44 px, die sichtbare Größe bleibt */
+#ms button::after{inset:-5px 0}#ms{padding-top:5px;padding-bottom:5px}#tq #tqb::after{inset:-9px -2px}
+.smst button,.simp,.simr,#legm{position:relative}.smst button::after,.simp::after,.simr::after,#legm::after{content:'';position:absolute;top:min(0px,calc(50% - 22px));bottom:min(0px,calc(50% - 22px));left:min(0px,calc(50% - 22px));right:min(0px,calc(50% - 22px))}
+label.sck{display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}label.sck>#sct{width:22px;height:22px;margin:0;accent-color:var(--acc)}</style>
+<!-- UI-Audit A11Y-03 -->
+<script>/* A11Y-03: Hauptmenü nach dem Menümuster: Fokus auf den ersten Eintrag, Pfeiltasten, Pos1/Ende, Tab schließt */(()=>{const nm=document.getElementById('nm'),fs=document.getElementById('fs');if(!nm||!fs)return;
+const items=()=>[...nm.querySelectorAll('[role=menuitem]')].filter(b=>!b.disabled&&b.offsetParent!==null);
+let kb=false;
+fs.addEventListener('keydown',e=>{const b=e.target.closest('button');if(!b)return;if(e.key==='Enter'||e.key===' ')kb=true;
+ if(e.key==='ArrowDown'&&b.getAttribute('aria-expanded')==='true'&&!nm.hidden){e.preventDefault();const i=items();if(i[0])i[0].focus()}});
+fs.addEventListener('click',()=>{if(!kb)return;kb=false;setTimeout(()=>{if(!nm.hidden){const i=items();if(i[0])i[0].focus()}},0)});
+nm.addEventListener('keydown',e=>{const i=items(),k=i.indexOf(document.activeElement);if(!i.length)return;
+ if(e.key==='ArrowDown'){e.preventDefault();i[(k+1)%i.length].focus()}else if(e.key==='ArrowUp'){e.preventDefault();i[(k-1+i.length)%i.length].focus()}
+ else if(e.key==='Home'){e.preventDefault();i[0].focus()}else if(e.key==='End'){e.preventDefault();i[i.length-1].focus()}
+ else if(e.key==='Tab'){const o=fs.querySelector('[aria-expanded=true]');nmClose();if(o){e.preventDefault();o.focus()}}});
+/* Untermenü (z. B. Sonstiges): Fokus bleibt im Menü */
+new MutationObserver(()=>{if(!nm.hidden&&(document.activeElement===document.body||!document.activeElement)&&nm.dataset.kf){const i=items();if(i[0])i[0].focus()}}).observe(nm,{childList:true});
+nm.addEventListener('focusin',()=>{nm.dataset.kf='1'});nm.addEventListener('pointerdown',()=>{delete nm.dataset.kf})})();</script>
+<!-- UI-Audit A11Y-05 -->
+<script>/* A11Y-05: Regler nennen Größe und Einheit, Suchtreffer mit Pfeiltasten erreichbar */(()=>{
+const uOf=r=>{const n=r.parentElement.querySelector('.n');return n?n.textContent.trim():''};
+const vt=r=>{const u=uOf(r);r.setAttribute('aria-valuetext',String(+r.value).replace('.',',')+(u?' '+u:''))};
+const lab=()=>document.querySelectorAll('#ctls .ctl.rg:not(.gsl) input[type=range]').forEach(r=>{const l=r.parentElement.querySelector('label'),u=uOf(r);if(l)r.setAttribute('aria-label',l.textContent.trim()+(u?' in '+u:''));vt(r)});
+const b=build;build=function(){const x=b.apply(this,arguments);lab();return x};lab();
+const ct=document.getElementById('ctls');if(ct)ct.addEventListener('input',()=>ct.querySelectorAll('.ctl.rg:not(.gsl) input[type=range]').forEach(vt));
+const r0=render;render=function(){const x=r0.apply(this,arguments);if(ct)ct.querySelectorAll('.ctl.rg:not(.gsl) input[type=range]').forEach(vt);return x};
+const q=document.getElementById('q'),sr=document.getElementById('sr');if(!q||!sr)return;
+q.setAttribute('aria-controls','sr');const ex=()=>q.setAttribute('aria-expanded',String(!sr.hidden));new MutationObserver(ex).observe(sr,{attributes:true,attributeFilter:['hidden']});ex();
+const hits=()=>[...sr.querySelectorAll('.chip')].filter(x=>x.offsetParent!==null);
+q.addEventListener('keydown',e=>{if(e.key==='ArrowDown'&&!sr.hidden){const h=hits();if(h[0]){e.preventDefault();h[0].focus()}}});
+sr.addEventListener('keydown',e=>{const h=hits(),k=h.indexOf(document.activeElement);if(k<0)return;
+ if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();(h[k+1]||h[0]).focus()}else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();if(k===0)q.focus();else h[k-1].focus()}else if(e.key==='Escape'){e.preventDefault();q.focus()}})})();</script>
+<!-- UI-Audit FN-02 -->
+<style>/* FN-02: Indizes nie unter 11 px; Ergebniskacheln lieber untereinander als winzig */sub.sx{font-size:max(11px,.75em)}#res.r1{grid-template-columns:1fr!important}</style>
+<script>/* FN-02 */(()=>{let one=false;const fix=()=>{const r=document.getElementById('res');if(!r)return;if(!one&&[...r.querySelectorAll('b')].some(b=>{const f=parseFloat(b.style.fontSize);return f&&f<13}))one=true;r.classList.toggle('r1',one);if(one)r.querySelectorAll('b').forEach(b=>{b.style.fontSize='';b.style.whiteSpace=''})};
+const r=render;render=function(){const x=r.apply(this,arguments);fix();return x};const b=build;build=function(){one=false;const x=b.apply(this,arguments);fix();return x};fix()})();</script>
+<!-- UI-Audit UI-04 -->
+<style>/* UI-04: „Vermute zuerst“ (Frage, blau) und „Auftrag“ (Aufgabe, Fachfarbe) unterscheidbar; „Antworten zeigen“ als normaler Nebenknopf */
+.auf:not(.aufdone){background:color-mix(in srgb,var(--mint) 11%,var(--card));border-color:color-mix(in srgb,var(--mint) 45%,var(--line));border-left-color:#14b8a6}
+.auf:not(.aufdone)>details>summary b{color:#0f766e}:root[data-theme="dark"] .auf:not(.aufdone)>details>summary b{color:var(--mint)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .auf:not(.aufdone)>details>summary b{color:var(--mint)}}
+#pred .predx{width:auto;display:inline-flex;font-size:1em;color:var(--ink);border:1px solid var(--line);border-style:solid;font-weight:600;gap:6px;padding:6px 14px;margin:2px 0 4px}#pred .predx span{font-size:.92em}#pred .predx:hover{border-color:var(--flow)}
+#pred .predx{font-size:0}#pred .predx span{font-size:15px}#pred .predx span::before{content:"▸ ";color:var(--flow)}</style>
+<!-- UI-Audit UI-05 -->
+<script>/* UI-05: am Laptop keine Leiste mit einem einzelnen Knopf in der letzten Zeile; die Leiste wird so schmal, dass sich die Knöpfe gleichmäßiger verteilen */(()=>{const mq=matchMedia('(min-width:900px)');
+const rows=el=>{const t=[...el.querySelectorAll(':scope>button')].filter(b=>b.offsetParent).map(b=>b.offsetTop),u=[...new Set(t)];return{n:u.length,last:t.filter(x=>x===Math.max(...u)).length}};
+const bal=el=>{if(!el)return;el.style.maxWidth='';if(!mq.matches||getComputedStyle(el).flexWrap!=='wrap')return;let r=rows(el);if(r.n<2||r.last>1)return;const n=r.n;let w=el.getBoundingClientRect().width,ok='';
+ for(let i=0;i<60;i++){w-=12;el.style.maxWidth=w+'px';r=rows(el);if(r.n>n)break;if(r.last>1){ok=w+'px';break}}el.style.maxWidth=ok};
+const run=()=>['gs','ms'].forEach(i=>bal(document.getElementById(i)));
+const b=build;build=function(){const x=b.apply(this,arguments);run();return x};let t=0;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(run,150)});run()})();</script>
+<!-- UI-Audit NAV-04 -->
+<script>/* NAV-04: aktuelle Übungsaufgabe für diesen Tab merken; nach dem Neuladen steht dieselbe Aufgabe mit der begonnenen Eingabe da */(()=>{const K='ll_pcur';
+const rt=()=>{try{return window.llRoute?llRoute():location.hash}catch(e){return location.hash}};
+const save=()=>{try{const c=PS.cur;if(!c||PS.exam||c.k==='oral'||!prac){return}const j=JSON.stringify(c);if(JSON.stringify(JSON.parse(j))!==j)return;const p=document.getElementById('pin');sessionStorage.setItem(K,JSON.stringify({r:rt(),c:JSON.parse(j),v:p?p.value:''}))}catch(e){}};
+let done=false;const restore=()=>{if(done)return;try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&s.c&&s.r===rt()&&prac&&!PS.exam){done=true;PS.cur=s.c;renderQ();const p=document.getElementById('pin');if(p&&s.v)p.value=s.v}}catch(e){}};
+const q=newQ;newQ=function(){const x=q.apply(this,arguments);done=true;save();return x};restore();setTimeout(()=>{restore();done=true},0);
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='pin')save()});addEventListener('pagehide',save)})();</script>
+<!-- UI-Audit TXT-02 -->
+<style>/* TXT-02 */#pflt .fltc{color:var(--acc);font-weight:600;font-size:.92em;margin-left:4px;text-decoration:underline;text-underline-offset:2px}#pflt[open] .fltc{display:none}</style>
+<!-- UI-Audit UI-03 -->
+<style>/* UI-03 (Teil): „✏️ Üben“ unter den Werten sieht aus wie „✏️ Aufgaben zu diesem Thema üben“ oben (gleiche Aktion, gleiche Hauptfarbe) */
+.btns button.ubp{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700}.btns button.ubp:hover{background:color-mix(in srgb,var(--navy) 85%,#fff);border-color:var(--navy)}
+:root[data-theme="dark"] .btns button.ubp{background:var(--mint);color:var(--navy);border-color:var(--mint)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btns button.ubp{background:var(--mint);color:var(--navy);border-color:var(--mint)}}</style>
+<script>/* UI-03 */(()=>{const m=()=>{const b=document.querySelector('#btns>button');if(b&&/Üben/.test(b.textContent))b.classList.add('ubp')};const b=build;build=function(){const x=b.apply(this,arguments);m();return x};m()})();</script>
+<!-- UI-Audit LERNEN-WEITER -->
+<style>/* Lernen-Menü: „Weiter mit …“ so hoch wie ein Eintrag links, rechts mittig zwischen Glossar und Formelsammlung (Markus 26.10.) */#nm .nmn.w{align-items:center}#nm .nmn.w>[data-k="111"]{align-self:center;min-height:44px}</style>
 </body>
 </html>
