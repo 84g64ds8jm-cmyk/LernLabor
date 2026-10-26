@@ -9913,5 +9913,9 @@ const q=newQ;newQ=function(){const r=q.apply(this,arguments);if(nx){nx=false;con
 /* Seitenwechsel: wenn der Fokus auf dem Seitenkörper gelandet ist, auf die Überschrift der neuen Ansicht setzen */
 let t=0;const chk=()=>{clearTimeout(t);t=setTimeout(()=>{const ae=document.activeElement;if(!ae||ae===document.body||!vis(ae))fh()},250)};
 document.addEventListener('click',e=>{if(e.target.closest('button,a,[role=menuitem],summary'))chk()});document.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')chk()});addEventListener('popstate',chk)})();</script>
+<!-- UI-Audit NAV-01 -->
+<script>/* NAV-01: kommt die Übung aus dem Thema, reicht „‹ Zurück zu …“ oben; „Thema: … →“ nur bei gemischten Übungen */(()=>{const pr=document.getElementById('practice');if(!pr)return;
+const f=()=>{const g=document.getElementById('pgo'),b=document.getElementById('pbk');if(!g)return;const n=g.textContent.replace(/^Thema:\s*/,'').replace(/\s*→\s*$/,'').trim();const same=!!(b&&!b.hidden&&n&&b.textContent.includes(n));if(g.hidden!==same)g.hidden=same};
+new MutationObserver(f).observe(pr,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});f()})();</script>
 </body>
 </html>
