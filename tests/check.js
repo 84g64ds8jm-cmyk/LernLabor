@@ -95,6 +95,23 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
    i.value='12345';i.closest('.panel,div').querySelector('.hwck').click();const m=store.get('ll_mem',{t:{}});if(!Object.keys(m.t||{}).length)bad.push('Hausaufgabe: Antwort fehlt im Lernstand');if(!(store.get('ll_fehler',[])||[]).length)bad.push('Hausaufgabe: falsche Antwort fehlt unter Meine Fehler');
    if(!document.querySelector('#hw .glbb'))bad.push('Hausaufgabe: Begriffe-Kasten fehlt');return bad}));
   await c4.close()}
+ // Funktionsname und Argument (v198): „sin 75°“, „cos α“, „lg c(H₃O⁺)“, „√ 2“ stehen mit geschütztem Leerzeichen, damit kein Zeilenumbruch dazwischen kommt (Lösungswege, Hilfen, Themen, Glossar, Formelsammlung)
+ {const c6=await b.newContext({viewport:{width:360,height:800}});const q=await c6.newPage();q.on('pageerror',e=>errs.push('Funktionsname: '+e.message));
+  await q.addInitScript(()=>{try{localStorage.setItem('ll_tour','1')}catch(e){}});await q.goto('file://'+path.resolve(__dirname,'../index.html'));await q.waitForTimeout(700);
+  errs.push(...await q.evaluate(async()=>{const bad=[],tick=()=>new Promise(r=>setTimeout(r,0)),FN=/(?<![A-Za-zÄÖÜäöüß_])((?:arc)?(?:sin|cos|tan|cot)h?(?:²|³|⁻¹)?|ln|lg|log[₀-₉ₐ-ₓ]*|exp|√)[ \t\r\n]+(?![a-zäöüß]{3})\S{1,8}/g,
+   scan=(w,el)=>{el.querySelectorAll('svg,script,style,noscript,template,textarea').forEach(x=>x.remove());const t=el.textContent;let m;FN.lastIndex=0;while((m=FN.exec(t))){bad.push(w+': „'+m[0].replace(/\s+/g,' ')+'“ kann umbrechen („'+t.slice(Math.max(0,m.index-40),m.index+30).replace(/\s+/g,' ')+'“)');if(bad.length>60)return}},
+   box=document.createElement('div');box.style.width='120px';document.body.appendChild(box);
+   const put=(w,ls)=>{box.innerHTML=(ls||[]).map(l=>'<div>'+String(l)+'</div>').join('');subify(box);scan(w,box)};
+   [['90 mm · sin 75° = 86,933 mm','sin 75°'],['tan α = sin α / cos α','cos α'],['sin und cos','sin und'],['lg c(H₃O⁺) = −7','lg c'],['log₂ x sei','log₂ x'],['√ 2 ≈ 1,414','√ 2'],['Cosinus und Sinus ln','Cosinus und Sinus ln']].forEach(([a,w])=>{box.textContent=a;subify(box);if(!box.textContent.includes(w))bad.push('Funktionsname: „'+a+'“ ergibt „'+box.textContent+'“')});
+   const sol=[];for(const k of Object.keys(GEN))for(let i=0;i<10;i++){try{const x=GEN[k](mk(i*7919+1));sol.push(['Übung „'+k+'“',[x[0],...x[3]]])}catch(e){}}
+   for(const k of Object.keys(STEPS))for(let i=0;i<10;i++){try{const d=STEPS[k](mk(i*104729+3));sol.push(['Mehrschritt „'+k+'“',[d.intro,...d.steps.flatMap(s=>[s[0],...s[3],s[5]||''])]])}catch(e){}}
+   EXW.concat(PXW).forEach(([k,f])=>{for(let i=0;i<10;i++){try{const d=f(mk(i*31337+5));sol.push(['Prüfungs-/Praxisaufgabe „'+k+'“',[d.intro||'',...d.steps.flatMap(s=>[s[0],...s[3],s[5]||''])]])}catch(e){}}});
+   HW.forEach(u=>(u.x?[...u.tasks,u.x]:u.tasks).forEach(t=>{if(t.gen)for(let i=0;i<10;i++){try{const c=t.gen();sol.push(['Hausaufgabe „'+t.name+'“',[c.q,...(c.sol||[])]])}catch(e){}}}));
+   for(let sd=1;sd<=20;sd++)mcNew(sd).qs.forEach(x=>sol.push(['Mathe-Check',[x.q,...(x.sol||[])]]));
+   sol.forEach(([w,ls])=>put(w,ls));box.remove();
+   for(let i=0;i<M.length;i++){try{go(i);render();await tick();scan('Thema „'+M[i].name+'“',document.body.cloneNode(true))}catch(e){}}cur=-1;prac=false;nav();
+   try{glOpen();await tick();scan('Glossar',document.body.cloneNode(true))}catch(e){}
+   return [...new Set(bad)]}));await c6.close()}
  // Service Worker: Datei vorhanden und Cache-Name passt zur Version
  {const fs=require('fs'),sw=fs.readFileSync(path.resolve(__dirname,'../sw.js'),'utf8'),ix=fs.readFileSync(path.resolve(__dirname,'../index.html'),'utf8'),v=(ix.match(/APPV=(\d+)/)||[])[1];
   if(!/addEventListener\('fetch'/.test(sw))errs.push('sw.js: leer oder ohne fetch-Handler');if(!sw.includes("'lernlabor-v"+v+"'"))errs.push('sw.js: Cache-Name passt nicht zu APPV '+v)}
