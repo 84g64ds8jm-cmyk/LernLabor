@@ -9876,5 +9876,9 @@ const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
 <style>/* RES-04: Formelsammlung bei 320 px ohne Überbreite: lange Bezeichnungen silbengetrennt umbrechen */
 @media(max-width:359px){.fsl td{-webkit-hyphens:auto;hyphens:auto;overflow-wrap:anywhere}.fsc{overflow-x:auto}}
 </style>
+<!-- UI-Audit RES-03 -->
+<style>/* RES-03: Menüband auf sehr schmalen Handys einzeilig, alle Reiter gleich hoch */
+@media(max-width:359px){#fs button{font-size:11px;letter-spacing:-.01em;white-space:nowrap;padding:6px 1px}}
+</style>
 </body>
 </html>
