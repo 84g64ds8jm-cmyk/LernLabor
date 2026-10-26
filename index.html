@@ -9944,5 +9944,19 @@ nm.addEventListener('keydown',e=>{const i=items(),k=i.indexOf(document.activeEle
 /* Untermenü (z. B. Sonstiges): Fokus bleibt im Menü */
 new MutationObserver(()=>{if(!nm.hidden&&(document.activeElement===document.body||!document.activeElement)&&nm.dataset.kf){const i=items();if(i[0])i[0].focus()}}).observe(nm,{childList:true});
 nm.addEventListener('focusin',()=>{nm.dataset.kf='1'});nm.addEventListener('pointerdown',()=>{delete nm.dataset.kf})})();</script>
+<!-- UI-Audit A11Y-05 -->
+<script>/* A11Y-05: Regler nennen Größe und Einheit, Suchtreffer mit Pfeiltasten erreichbar */(()=>{
+const uOf=r=>{const n=r.parentElement.querySelector('.n');return n?n.textContent.trim():''};
+const vt=r=>{const u=uOf(r);r.setAttribute('aria-valuetext',String(+r.value).replace('.',',')+(u?' '+u:''))};
+const lab=()=>document.querySelectorAll('#ctls .ctl.rg:not(.gsl) input[type=range]').forEach(r=>{const l=r.parentElement.querySelector('label'),u=uOf(r);if(l)r.setAttribute('aria-label',l.textContent.trim()+(u?' in '+u:''));vt(r)});
+const b=build;build=function(){const x=b.apply(this,arguments);lab();return x};lab();
+const ct=document.getElementById('ctls');if(ct)ct.addEventListener('input',()=>ct.querySelectorAll('.ctl.rg:not(.gsl) input[type=range]').forEach(vt));
+const r0=render;render=function(){const x=r0.apply(this,arguments);if(ct)ct.querySelectorAll('.ctl.rg:not(.gsl) input[type=range]').forEach(vt);return x};
+const q=document.getElementById('q'),sr=document.getElementById('sr');if(!q||!sr)return;
+q.setAttribute('aria-controls','sr');const ex=()=>q.setAttribute('aria-expanded',String(!sr.hidden));new MutationObserver(ex).observe(sr,{attributes:true,attributeFilter:['hidden']});ex();
+const hits=()=>[...sr.querySelectorAll('.chip')].filter(x=>x.offsetParent!==null);
+q.addEventListener('keydown',e=>{if(e.key==='ArrowDown'&&!sr.hidden){const h=hits();if(h[0]){e.preventDefault();h[0].focus()}}});
+sr.addEventListener('keydown',e=>{const h=hits(),k=h.indexOf(document.activeElement);if(k<0)return;
+ if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();(h[k+1]||h[0]).focus()}else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();if(k===0)q.focus();else h[k-1].focus()}else if(e.key==='Escape'){e.preventDefault();q.focus()}})})();</script>
 </body>
 </html>
