@@ -21,5 +21,5 @@ BEW.push(
 Object.assign(GEN,{
 'Chemische Grundreaktionen':r=>{const N=['Methan','Ethan','Propan','Butan','Pentan','Hexan','Heptan','Oktan'];
  if(r()<.5){const n=rg(r,1,8,1),o=(3*n+1)/2;return[`Wie viele O₂-Moleküle braucht ein Molekül ${N[n-1]} (C${isub(n)}H${isub(2*n+2)}) zur vollständigen Verbrennung?`,o,'',[`Aus ${n} C werden ${n} CO₂: ${2*n} O-Atome`,`Aus ${2*n+2} H werden ${n+1} H₂O: ${n+1} O-Atome`,`Zusammen ${3*n+1} O-Atome = ${nf(o)} O₂`]]}
- const n=pk(r,[1,3,4]),m=rg(r,1,20,1),Ma=14*n+2,co=m*n*44/Ma;return[`Wie viel kg CO₂ entstehen beim vollständigen Verbrennen von ${m} kg ${N[n-1]} (C${isub(n)}H${isub(2*n+2)})? (C = 12, H = 1, O = 16 g/mol)`,co,'kg',[`M(${N[n-1]}) = ${n} · 12 + ${2*n+2} · 1 = ${Ma} g/mol, M(CO₂) = 44 g/mol`,`Aus 1 mol ${N[n-1]} entstehen ${n} mol CO₂`,`m(CO₂) = ${m} kg · ${n} · 44 / ${Ma} = ${nf(co,3)} kg`],{abs:.02}]}
+ const n=pk(r,[1,3,4]),m=rg(r,1,20,1),Ma=14*n+2,co=m*n*44/Ma;return[`Wie viel kg CO₂ entstehen beim vollständigen Verbrennen von ${m} kg ${N[n-1]} (C${isub(n)}H${isub(2*n+2)})? (C = 12, H = 1, O = 16 g/mol)`,co,'kg',[`M(${N[n-1]}) = ${n} · 12 + ${2*n+2} · 1 = ${Ma} g/mol, M(CO₂) = 44 g/mol`,`Aus 1 mol ${N[n-1]} entstehen ${n} mol CO₂`,`m(CO₂) = ${m} kg · ${n} · 44 / ${Ma} = ${nf(co,3)} kg`],{abs:.05}]}
 });
