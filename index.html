@@ -9867,5 +9867,10 @@ const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
  const m=document.querySelector('main')||document.body;fix(m);let q=new Set(),t=0;
  new MutationObserver(ms=>{ms.forEach(x=>x.addedNodes.forEach(a=>q.add(a)));if(!t)t=requestAnimationFrame(()=>{t=0;const a=[...q];q.clear();a.forEach(fix)})}).observe(document.body,{childList:true,subtree:true})})();
 </script>
+<!-- UI-Audit UI-02 -->
+<style>/* UI-02: Ansicht-Umschalter über der Skizze bündig mit dem Bildkasten statt eingerückt und überlappend */
+.gsw.gtop,html body .gsw.gtop{margin:0 0 12px 0;max-width:none;box-shadow:none}
+@media(max-width:899px){html body .gsw.gtop{margin:0 0 10px 0}}
+</style>
 </body>
 </html>
