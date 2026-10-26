@@ -9925,5 +9925,10 @@ document.addEventListener('keydown',e=>{const t=document.querySelector('div.tour
  const i=f.indexOf(document.activeElement);if(e.shiftKey&&(i<=0)){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&(i<0||i===f.length-1)){e.preventDefault();f[0].focus()}},true);
 const sync=()=>{const on=!!document.querySelector('div.tour');document.querySelectorAll('body>main,body>footer,body>header').forEach(x=>{x.inert=on})};
 new MutationObserver(sync).observe(document.body,{childList:true});sync()})();</script>
+<!-- UI-Audit CTL-03 -->
+<style>/* CTL-03: Trefferflächen auf 44 px, die sichtbare Größe bleibt */
+#ms button::after{inset:-5px 0}#ms{padding-top:5px;padding-bottom:5px}#tq #tqb::after{inset:-9px -2px}
+.smst button,.simp,.simr,#legm{position:relative}.smst button::after,.simp::after,.simr::after,#legm::after{content:'';position:absolute;top:min(0px,calc(50% - 22px));bottom:min(0px,calc(50% - 22px));left:min(0px,calc(50% - 22px));right:min(0px,calc(50% - 22px))}
+label.sck{display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}label.sck>#sct{width:22px;height:22px;margin:0;accent-color:var(--acc)}</style>
 </body>
 </html>
