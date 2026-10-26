@@ -6,5 +6,5 @@ MCQ.push(
 ['Haber-Bosch-Verfahren','Welcher Katalysator wird beim Haber-Bosch-Verfahren eingesetzt?',['Eisen mit Zusätzen','Platin','Kupfer','Schwefelsäure'],'Eisen. Platin (als Netz) dient im Ostwald-Verfahren, das aus Ammoniak Salpetersäure macht.']
 );
 Object.assign(GEN,{
-'Haber-Bosch-Verfahren':r=>{const m=rg(r,1,20,1),x=m*2*17/28;return[`Wie viel kg Ammoniak entstehen höchstens aus ${m} kg Stickstoff (N₂ + 3 H₂ → 2 NH₃; M(N₂) = 28 g/mol, M(NH₃) = 17 g/mol)?`,x,'kg',['Aus 1 mol N₂ entstehen 2 mol NH₃',`n(N₂) = ${m} kg / 28 g/mol`,`m(NH₃) = ${m} kg · 2 · 17 / 28 = ${nf(x,3)} kg`],{abs:.05}]}
+'Haber-Bosch-Verfahren':r=>{const m=rg(r,1,20,1),x=m*2*17/28;return[`Wie viel kg Ammoniak entstehen höchstens aus ${m} kg Stickstoff (N₂ + 3 H₂ → 2 NH₃; M(N₂) = 28 g/mol, M(NH₃) = 17 g/mol)?`,x,'kg',['Aus 1 mol N₂ entstehen 2 mol NH₃',`n(N₂) = ${m} kg / 28 g/mol`,`m(NH₃) = ${m} kg · 2 · 17 / 28 = ${nf(x,3)} kg`],{abs:.06}]}
 });
