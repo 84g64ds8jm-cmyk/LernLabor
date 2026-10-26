@@ -1,0 +1,16 @@
+/* Aufgaben für das Test-Thema „Spule: Induktivität & Lenz“ (nicht in der App, siehe README.md). Stufe in LVT "num": "Spule: Induktivität & Lenz":2 */
+MCQ.push(
+['Spule: Induktivität & Lenz','Was besagt die Lenzsche Regel?',['Die induzierte Spannung wirkt ihrer Ursache entgegen','Die induzierte Spannung verstärkt jede Stromänderung','Der Strom in einer Spule ist immer konstant','Eine Spule leitet keinen Gleichstrom'],'Beim Einschalten bremst die Spule den Stromanstieg, beim Ausschalten hält sie den Strom aufrecht.'],
+['Spule: Induktivität & Lenz','Wozu dient eine Freilaufdiode parallel zu einer Relaisspule?',['Sie verhindert die Spannungsspitze beim Abschalten','Sie verdoppelt die Anzugskraft','Sie richtet den Wechselstrom gleich','Sie schützt vor Kurzschluss beim Einschalten'],'Beim Abschalten leitet sie den Spulenstrom weiter, er klingt langsam ab. Ohne sie entstehen hohe Spannungsspitzen.'],
+['Spule: Induktivität & Lenz','Die Windungszahl einer Spule wird verdoppelt. Was passiert mit der Induktivität?',['Sie wird viermal so groß','Sie verdoppelt sich','Sie halbiert sich','Sie bleibt gleich'],'L = µ₀ · µ_r · N² · A / l: L wächst mit dem Quadrat der Windungszahl.'],
+['Spule: Induktivität & Lenz','Welche Zeitkonstante hat eine Spule mit L = 2 H und R = 40 Ω?',['50 ms','80 s','20 s','0,8 s'],'τ = L / R = 2 H / 40 Ω = 0,05 s = 50 ms.'],
+['Spule: Induktivität & Lenz','Was bewirkt ein Eisenkern in einer Spule?',['Er bündelt das Magnetfeld und vergrößert L stark','Er verkleinert die Induktivität','Er macht die Spule zum Kondensator','Er verhindert die Induktion'],'Eisen hat eine Permeabilitätszahl µ_r von mehreren hundert bis tausend. Die Induktivität steigt entsprechend.']
+);
+Object.assign(GEN,{
+'Spule: Induktivität & Lenz':r=>{const L=pk(r,[.5,1,2,5,10]),R=pk(r,[5,10,20,50]),U=pk(r,[12,24]),tau=L/R,I=U/R;
+ return r()<.5?[`Eine Spule mit L = ${nf(L)} H und R = ${R} Ω wird an U = ${U} V gelegt. Wie groß ist die Zeitkonstante τ in ms?`,tau*1000,'ms',['τ = L / R',`τ = ${nf(L)} H / ${R} Ω = ${nf(tau)} s`,`τ = ${nf(tau*1000)} ms`]]
+ :[`Eine Spule mit L = ${nf(L)} H und R = ${R} Ω wird an U = ${U} V eingeschaltet. Welcher Strom fließt nach t = 1 τ (in A)?`,I*(1-Math.exp(-1)),'A',['Endstrom I = U / R = '+nf(I)+' A','i = I · (1 − e^(−1)) = 0,632 · I',`i = ${nf(I*(1-Math.exp(-1)),3)} A`]]}});
+FEH.push(
+['Spule: Induktivität & Lenz','Lisa baut die Freilaufdiode an einem 24-V-Schütz in Durchlassrichtung ein. Was passiert?',['Die Diode schließt die 24 V kurz, Sicherung oder Diode fallen aus.','Nichts, die Richtung ist egal.','Das Schütz zieht doppelt so schnell an.','Die Spannungsspitze wird größer.'],'Die Freilaufdiode muss im Betrieb sperren (Kathode an +). Erst beim Abschalten, wenn die Spule umpolt, leitet sie.'],
+['Spule: Induktivität & Lenz','Ein Kollege meint: „An der Spule liegt beim Abschalten höchstens die Betriebsspannung.“ Was ist falsch?',['u_L = L · Δi / Δt wird bei schnellem Abschalten sehr groß, oft ein Vielfaches der Betriebsspannung.','Nichts, mehr Spannung als die Quelle liefert gibt es nicht.','Beim Abschalten ist u_L immer null.','Die Spannung halbiert sich beim Abschalten.'],'Die Spule will den Strom halten. Reißt er schlagartig ab, ist Δt winzig und die Spannung sehr groß, es entsteht ein Funke am Schalter.']
+);
