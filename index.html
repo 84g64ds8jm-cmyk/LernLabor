@@ -9598,7 +9598,7 @@ if(typeof DOZENT!=='undefined'&&DOZENT&&typeof dozView==='function'){const dz1=d
 
 /* ---------- Übungsmodus: Filter eingeklappt, Rundenzähler, Lösungsweg sichtbar, Meine Fehler ---------- */
 const ph=$('#practice .ph'),flt=document.createElement('details');flt.id='pflt';flt.innerHTML='<summary></summary><div class="pfl"></div>';ph.appendChild(flt);flt.querySelector('.pfl').append($('#pe'),$('#pf'),$('#pk'),$('#plv'));ph.appendChild($('#sc'));
-const fltSum=()=>{const t=[$('#pe'),$('#pf'),$('#pk'),$('#plv')].filter(s=>!s.hidden&&s.selectedIndex>=0&&!(s.id==='plv'&&s.value==='0')&&!(s.id==='pe'&&s.value==='Alle')).map(s=>{const o=s.options[s.selectedIndex];return o.dataset.full||o.text});flt.querySelector('summary').textContent='Auswahl: '+(t.join(' · ')||'alle');flt.hidden=FM};
+const fltSum=()=>{const t=[$('#pe'),$('#pf'),$('#pk'),$('#plv')].filter(s=>!s.hidden&&s.selectedIndex>=0&&!(s.id==='plv'&&s.value==='0')&&!(s.id==='pe'&&s.value==='Alle')).map(s=>{const o=s.options[s.selectedIndex];return (o.dataset.full||o.text).replace(/^Dieses Thema:\s*/,'').replace(/,\s*vor allem .*$/,'')});/* TXT-02: kurze Auswahlzeile mit Hinweis aufs Ändern */flt.querySelector('summary').innerHTML=rEsc(t.join(' · ')||'Alle Themen')+' <span class="fltc">ändern</span>';flt.hidden=FM};
 ['#pf','#pk','#plv'].forEach(s=>$(s).addEventListener('change',()=>{fltSum();flt.open=false}));$('#pe').addEventListener('change',fltSum);
 let SS={ok:0,n:0,st:0};const resetS=()=>{SS={ok:0,n:0,st:0}};
 ['openPractice','openExam','openOral'].forEach(k=>{const f=window[k];window[k]=function(){FM=false;resetS();return f.apply(this,arguments)}});
@@ -9982,5 +9982,7 @@ const save=()=>{try{const c=PS.cur;if(!c||PS.exam||c.k==='oral'||!prac){return}c
 let done=false;const restore=()=>{if(done)return;try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&s.c&&s.r===rt()&&prac&&!PS.exam){done=true;PS.cur=s.c;renderQ();const p=document.getElementById('pin');if(p&&s.v)p.value=s.v}}catch(e){}};
 const q=newQ;newQ=function(){const x=q.apply(this,arguments);done=true;save();return x};restore();setTimeout(()=>{restore();done=true},0);
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='pin')save()});addEventListener('pagehide',save)})();</script>
+<!-- UI-Audit TXT-02 -->
+<style>/* TXT-02 */#pflt .fltc{color:var(--acc);font-weight:600;font-size:.92em;margin-left:4px;text-decoration:underline;text-underline-offset:2px}#pflt[open] .fltc{display:none}</style>
 </body>
 </html>
