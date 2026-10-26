@@ -9896,5 +9896,9 @@ const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
 const place=()=>{const a=document.getElementById('auf'),p=document.getElementById('pred'),c=document.getElementById('ctls');if(!a||!p||!c)return;const rp=c.closest('.panel');
  if(mq.matches){if(a.parentElement!==rp)rp.append(a)}else if(a.previousElementSibling!==p)p.after(a)};
 const b=build;build=function(){const r=b.apply(this,arguments);place();return r};mq.addEventListener('change',place);place()})();</script>
+<!-- UI-Audit LRN-01 -->
+<style>/* LRN-01 */#gs.one,#ms.one{display:none!important}</style>
+<script>/* LRN-01: Leiste mit nur einem Eintrag ausblenden, der Pfad über dem Titel nennt Gebiet und Thema schon */(()=>{const one=()=>['#gs','#ms'].forEach(s=>{const e=document.querySelector(s);if(e)e.classList.toggle('one',e.querySelectorAll('button').length===1)});
+const b=build;build=function(){const r=b.apply(this,arguments);one();return r};one()})();</script>
 </body>
 </html>
