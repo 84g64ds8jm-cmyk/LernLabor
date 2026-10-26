@@ -37,13 +37,13 @@ Nicht hierher gehören: Simulation (`M.push`), Formeln (`FX`), Verstehen (`ERK`)
 | photometrie.js | Photometrie (Lambert-Beer) | 4 | – | 1 | 1 |
 | spektroskopie.js | Spektroskopie & Flammenfärbung | 4 | – | 1 | 1 |
 | tenside.js | Tenside & Grenzflächen | 5 | 1 | – | 2 |
-| elektrisches-feld.js | Elektrisches Feld | 4 | – | 1 | 1 |
-| kondensator.js | Kondensator: Laden & Entladen | 5 | – | 1 | 2 |
+| elektrisches-feld.js | Elektrisches Feld | 4 | 1 | 1 | 1 |
+| kondensator.js | Kondensator: Laden & Entladen | 5 | 1 | 1 | 2 |
 | lorentzkraft.js | Lorentzkraft & Induktion | 5 | 1 | 1 | 2 |
-| magnetisches-feld.js | Magnetisches Feld | 4 | – | 1 | 1 |
+| magnetisches-feld.js | Magnetisches Feld | 4 | 1 | 1 | 1 |
 | schwingkreis.js | LC-Schwingkreis | 4 | 1 | 1 | 1 |
-| spule.js | Spule: Induktivität & Lenz | 5 | – | 1 | 2 |
-| wechselstrom-cl.js | Kondensator & Spule am Wechselstrom | 4 | – | 1 | 1 |
+| spule.js | Spule: Induktivität & Lenz | 5 | 1 | 1 | 2 |
+| wechselstrom-cl.js | Kondensator & Spule am Wechselstrom | 4 | 1 | 1 | 1 |
 
 Differential- und Integralrechnung liegt weiter in `archiv/differential-integral/`.
 

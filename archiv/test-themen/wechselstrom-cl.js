@@ -12,3 +12,8 @@ Object.assign(GEN,{
 FEH.push(
 ['Kondensator & Spule am Wechselstrom','Tim rechnet für einen Kondensator X_C = 2π · f · C. Was hat er verwechselt?',['Das ist die Form für die Spule. Für den Kondensator gilt X_C = 1 / (2π · f · C).','Nichts, die Formel stimmt.','Es muss X_C = f · C heißen.','Der Kondensator hat am Wechselstrom keinen Widerstand.'],'X_C sinkt mit steigender Frequenz und Kapazität, X_L steigt mit Frequenz und Induktivität.']
 );
+BEW.push(
+['Kondensator & Spule am Wechselstrom','b','Erkläre, warum ein Kondensator bei Gleichspannung sperrt, bei Wechselspannung aber Strom fließt, und warum dieser Strom bei höherer Frequenz größer wird.',
+ 'Bei Gleichspannung lädt sich der Kondensator einmal auf, danach fließt kein Strom mehr: Das Dielektrikum lässt keine Ladungen durch. Bei Wechselspannung wird er ständig umgeladen; der Lade- und Entladestrom fließt in der Zuleitung, obwohl keine Ladung durch den Kondensator geht. Der Strom ist i = C · Δu/Δt. Je höher die Frequenz, desto schneller ändert sich die Spannung und desto größer der Strom. Der Blindwiderstand X_C = 1 / (2π · f · C) sinkt also mit der Frequenz. Der Strom eilt der Spannung dabei um 90° voraus.',
+ ['Gleichspannung: einmal laden, dann sperrt er','Wechselspannung: ständiges Umladen, Strom in der Zuleitung','i = C · Δu/Δt, höhere Frequenz → größerer Strom','X_C = 1 / (2π · f · C), Strom eilt 90° vor']]
+);

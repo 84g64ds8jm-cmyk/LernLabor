@@ -11,3 +11,8 @@ Object.assign(GEN,{
 FEH.push(
 ['Elektrisches Feld','Mia sagt: „Ohne eine zweite Ladung gibt es auch kein Feld.“ Was stimmt?',['Das Feld ist immer da, die zweite Ladung macht es nur sichtbar (Kraft).','Stimmt, Felder brauchen zwei Ladungen.','Felder gibt es nur zwischen Platten.','Felder gibt es nur bei Wechselspannung.'],'Das Feld gehört zur Ladung selbst. Eine Probeladung zeigt es durch die Kraft, erzeugt es aber nicht.']
 );
+BEW.push(
+['Elektrisches Feld','b','Erkläre, warum beim elektrostatischen Lackieren die Farbtröpfchen auch hinter Kanten auf dem Werkstück landen, und was die Spannung zwischen Pistole und Werkstück dabei bewirkt.',
+ 'Die Tröpfchen werden an der Pistole aufgeladen, das Werkstück ist geerdet. Zwischen beiden liegt eine hohe Spannung, also ein elektrisches Feld. Auf jedes geladene Tröpfchen wirkt die Kraft F = q · E in Richtung der Feldlinien. Die Feldlinien enden auf dem Werkstück und laufen auch um Kanten herum, deshalb folgen die Tröpfchen ihnen bis auf die Rückseite (Umgriff). Höhere Spannung bedeutet stärkeres Feld und größere Kraft, zu hohe Spannung führt aber zu Überschlägen.',
+ ['Tröpfchen geladen, Werkstück geerdet, dazwischen Feld','Kraft F = q · E entlang der Feldlinien','Feldlinien enden auf dem Werkstück, auch um Kanten (Umgriff)','Spannung bestimmt Feldstärke E = U / d']]
+);

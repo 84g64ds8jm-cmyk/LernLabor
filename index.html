@@ -1905,7 +1905,7 @@ M.push({g:'Physik',name:'Welle-Teilchen-Dualismus',test:1,anim:1,desc:'Zusammenf
  vis2:(o,UI)=>(UI.U||[]).forEach(e=>{const c=e.closest('.ctl');if(c)c.hidden=o.v!=1}),
  f(s,t){return WTD(s,t)}});
 /* Neue Themen */
-const FP='Physik',FC='Chemie',FS='Statistik',FM='Mathematik',MF='Mechanik der Festkörper',HP='Hydraulik & Pneumatik',KD='Kinematik & Dynamik',AE='Arbeit, Leistung, Energie',WL='Wärmelehre',ET='Elektrotechnik',AP='Atombau & Periodensystem',CB='Chemische Bindungen',RS='Reaktionen & Stöchiometrie',SB='Säuren, Basen & Neutralisation',OR='Oxidation & Reduktion',EC='Elektrochemie',WH='Wasser & Härte',AN='Analytische Chemie',LQ='Licht & Quanten';
+const FP='Physik',FC='Chemie',FS='Statistik',FM='Mathematik',MF='Mechanik der Festkörper',HP='Hydraulik & Pneumatik',KD='Kinematik & Dynamik',AE='Arbeit, Leistung, Energie',WL='Wärmelehre',ET='Elektrotechnik I',ET2='Elektrotechnik II',AP='Atombau & Periodensystem',CB='Chemische Bindungen',RS='Reaktionen & Stöchiometrie',SB='Säuren, Basen & Neutralisation',OR='Oxidation & Reduktion',EC='Elektrochemie',WH='Wasser & Härte',AN='Analytische Chemie',LQ='Licht & Quanten';
 const NICE=v=>{const p=10**Math.floor(Math.log10(v)),f=v/p;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p},TICKS=m=>{const st=NICE(m/4),a=[];for(let v=0;v<=m*1.0001;v+=st)a.push(+v.toPrecision(12));return a};
 const PLOT=(fn,xm,ym,xc,lx,ly)=>{const x0=330,y0=270,w=280,h=200;let p='';for(let i=0;i<=60;i++)p+=`${x0+w*i/60},${y0-h*Math.min(fn(xm*i/60)/ym,1.05)} `;const cx=x0+w*xc/xm,cy=y0-h*Math.min(fn(xc)/ym,1.05);
  const tk=TICKS(xm).map(v=>{const x=x0+w*v/xm;return`<line x1="${x}" x2="${x}" y1="${y0}" y2="${y0+5}" stroke="var(--wire)"/>`+(v>0&&x<x0+w-34?T(x,y0+17,nf(v),'t2 tk','middle'):'')}).join('')+TICKS(ym).map(v=>{const y=y0-h*v/ym;return`<line x1="${x0+1}" x2="${x0+w}" y1="${y}" y2="${y}" stroke="var(--wire)" stroke-opacity=".25"/>`+T(x0-6,y+4,nf(v),'t2 tk','end')}).join('');
@@ -3328,7 +3328,7 @@ const MR='Rechnen im Alltag',MFG='Formeln & Gleichungen',MGD='Geometrie & Diagra
 const XL={[FM]:{[MGD]:['Sinus & Kosinus']},[FC]:{[AN]:['Neutralisation & Titration']}};
 const inG=(m,f,g)=>(m.F===f&&m.g===g)||!!(XL[f]&&XL[f][g]&&XL[f][g].includes(m.name)),gIx=(f,g)=>{const a=M.map((m,i)=>m.F===f&&m.g===g?i:-1).filter(i=>i>=0);((XL[f]||{})[g]||[]).forEach(n=>{const i=M.findIndex(m=>m.name===n);if(i>=0&&!a.includes(i))a.push(i)});const o=GORD[g];if(o){const r=i=>{const k=o.indexOf(M[i].name);return k<0?o.length:k};a.sort((x,y)=>r(x)-r(y)||x-y)}return a};const GORD={'Elektrotechnik':['Grundlagen: Stromkreis','Ohmsches Gesetz','Reihe','Parallel']};const isGem=i=>i>=0&&/^Gemischt /.test(M[i].name);
 const FSI='Sicherheit',SXG1='Grundlagen & Kennzeichnung',SXG2='Elektrische Sicherheit',SXG3='Labor & Gefahrstoffe',SXG4='Brandschutz';
-const FA=[FP,FC,FE,FS,FM,FSI,FU],ORD={[FSI]:[SXG1,SXG2,SXG3,SXG4],[FM]:[MR,MFG,MGD,MDI],[FE]:[E1,E2,E3,E4],[FU]:[UE],[FP]:[WL,MF,AE,SR,HP,ET,KD,LQ],[FC]:[AP,CB,RS,OR,SB,EC,WH,AN],[FS]:[LM,SM,VT,QM]};
+const FA=[FP,FC,FE,FS,FM,FSI,FU],ORD={[FSI]:[SXG1,SXG2,SXG3,SXG4],[FM]:[MR,MFG,MGD,MDI],[FE]:[E1,E2,E3,E4],[FU]:[UE],[FP]:[WL,MF,AE,SR,HP,ET,ET2,KD,LQ],[FC]:[AP,CB,RS,OR,SB,EC,WH,AN],[FS]:[LM,SM,VT,QM]};
 /* Reihenfolge der Themen je Fachgebiet wie im Kurs (Foliensätze), v117 */
 GORD[WL]=['Aggregatzustand','Wärmekapazität','Wärmeausdehnung','Schmelz- & Verdampfungswärme','Mischungstemperatur'];
 GORD[MF]=['Kräfteparallelogramm','Kräftezerlegung (Seilkräfte)','Gesetz von Hooke','Gleit-, Haft- & Rollreibung','Schiefe Ebene','Reibung (schiefe Ebene)','Drehmoment','Hebel','Rolle & Flaschenzug','Zug-/Druckspannung & Sicherheit','Scherung & Flächenpressung'];
@@ -3337,7 +3337,8 @@ GORD[LQ]=['Licht: Wellenlänge & Farbe','Doppelspalt: Welle oder Teilchen','Phot
 GORD[AN]=['Spektroskopie & Flammenfärbung','Konzentration & Verdünnung','Photometrie (Lambert-Beer)','Neutralisation & Titration','Chromatographie'];
 GORD[AE]=['Arbeit, Energie & Leistung (Übersicht)','Arbeit & Leistung','Wirkungsgrad','Energieformen & Erhaltung'];
 GORD[HP]=['Druck','Hydraulik','Hydraulische Leistung & Volumenstrom','Auftrieb und Dichte','Pneumatik: Luftverbrauch','Gasgesetze','Gasdichte (Normzustand → Betrieb)'];
-GORD[ET]=['Grundlagen: Stromkreis','Ohmsches Gesetz','Leitungswiderstand','Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)','Elektrische Arbeit & Leistung','Gleich- & Wechselstrom','Drehstrom (Stern & Dreieck)','Elektrisches Feld','Magnetisches Feld','Lorentzkraft & Induktion','Kondensator: Laden & Entladen','Spule: Induktivität & Lenz','Kondensator & Spule am Wechselstrom','LC-Schwingkreis'];
+GORD[ET]=['Grundlagen: Stromkreis','Ohmsches Gesetz','Leitungswiderstand','Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)','Elektrische Arbeit & Leistung','Gleich- & Wechselstrom','Drehstrom (Stern & Dreieck)'];
+GORD[ET2]=['Elektrisches Feld','Magnetisches Feld','Lorentzkraft & Induktion','Kondensator: Laden & Entladen','Spule: Induktivität & Lenz','Kondensator & Spule am Wechselstrom','LC-Schwingkreis'];
 GORD[KD]=['Gleichförmige Bewegung','Beschleunigung & Bremsen','Freier Fall (mit Luftwiderstand)','Kraftgesetz F = m · a','Kreisbewegung','Eiskunstlauf: Drehen & Gleiten','Sinus & Kosinus','Schwingung'];
 GORD[OR]=['Oxidationszahlen','Korrosion'];
 GORD[QM]=['Histogramm','Prozess- & Maschinenfähigkeit','Qualitätsregelkarte (x̄-Karte)'];
@@ -3661,7 +3662,7 @@ let ELKZ={k:'',t0:0};const ELKT=(n,s,t)=>{const k=n+JSON.stringify(s);if(k!==ELK
 const EPS=8.854e-12,MU0=4e-7*PI,KOE=[['Luft',1],['Kunststofffolie',2.2],['Glas',7],['Keramik',1000]];
 
 /* 1 Kondensator */
-fm(FP,ET,KO,'Ein Kondensator speichert elektrische Ladung und Energie im elektrischen Feld zwischen zwei Platten. Über einen Widerstand lädt er sich nicht sofort, sondern nach einer e-Funktion: Nach der Zeitkonstante τ = R · C sind 63 % erreicht, nach 5 τ ist er praktisch voll. Die Kapazität C = Q / U sagt, wie viel Ladung je Volt hineinpasst.',
+fm(FP,ET2,KO,'Ein Kondensator speichert elektrische Ladung und Energie im elektrischen Feld zwischen zwei Platten. Über einen Widerstand lädt er sich nicht sofort, sondern nach einer e-Funktion: Nach der Zeitkonstante τ = R · C sind 63 % erreicht, nach 5 τ ist er praktisch voll. Die Kapazität C = Q / U sagt, wie viel Ladung je Volt hineinpasst.',
  [['v','Ansicht','sel',['Laden','Entladen','Plattenkondensator'],0],['U','U',1,24,1,'V',12],['R','R',1,100,1,'kΩ',10],['C','C',10,1000,10,'µF',100],['A','A',10,500,10,'cm²',100],['d','d',.1,5,.1,'mm',1],['er','Isolierstoff','sel',KOE.map(x=>x[0]+' (ε_r = '+String(x[1]).replace('.',',')+')'),0]],
  (s,t)=>{if(s.v==2){const er=KOE[s.er][1],Cf=d=>EPS*er*s.A*1e-4/(d*1e-3),C=Cf(s.d),Q=C*s.U,E=s.U/(s.d*1e-3),W=C*s.U*s.U/2;
    const gap=24+s.d*32,ph=70+Math.sqrt(s.A)*6.4,yc=180,x1=150-gap/2-10,x2=150+gap/2,pt=yc-ph/2,dep=16;
@@ -3699,7 +3700,7 @@ Object.assign(M[M.length-1],{test:1,knb:'v',vis:s=>s.v==2?['U','A','d','er']:['U
 
 /* 2 Spule */
 const KER=[['Luft',1],['Eisenkern',500]];
-fm(FP,ET,SPU,'Eine Spule baut mit dem Strom ein Magnetfeld auf. Jede Stromänderung induziert in ihr eine Spannung, die der Änderung entgegenwirkt (Lenzsche Regel). Deshalb steigt der Strom beim Einschalten verzögert an, mit der Zeitkonstante τ = L / R. Beim Ausschalten will die Spule den Strom weitertreiben: Ohne Freilaufdiode entsteht eine hohe Spannungsspitze.',
+fm(FP,ET2,SPU,'Eine Spule baut mit dem Strom ein Magnetfeld auf. Jede Stromänderung induziert in ihr eine Spannung, die der Änderung entgegenwirkt (Lenzsche Regel). Deshalb steigt der Strom beim Einschalten verzögert an, mit der Zeitkonstante τ = L / R. Beim Ausschalten will die Spule den Strom weitertreiben: Ohne Freilaufdiode entsteht eine hohe Spannungsspitze.',
  [['v','Ansicht','sel',['Einschalten','Ausschalten','Zylinderspule'],0],['U','U',1,24,1,'V',12],['R','R',1,100,1,'Ω',10],['L','L',.1,20,.1,'H',5],['fd','Freilaufdiode','sel',['mit','ohne'],0],['N','N',100,2000,50,'',500],['l','l',5,50,1,'cm',20],['dd','d',1,10,.5,'cm',4],['k','Kern','sel',KER.map(x=>x[0]+' (µ_r ≈ '+x[1]+')'),1]],
  (s,t)=>{if(s.v==2){const mr=KER[s.k][1],A=PI*(s.dd/100)**2/4,Lf=N=>MU0*mr*N*N*A/(s.l/100),L=Lf(s.N);
    const len=70+s.l*4.4,dia=24+s.dd*9,x0=150-len/2,yc=170,nw=Math.max(6,Math.min(44,Math.round(s.N/40)));let h='';
@@ -3737,7 +3738,7 @@ fm(FP,ET,SPU,'Eine Spule baut mit dem Strom ein Magnetfeld auf. Jede Stromänder
 Object.assign(M[M.length-1],{test:1,knb:'v',vis:s=>s.v==2?['N','l','dd','k']:s.v==1?['U','R','L','fd']:['U','R','L'],vis2:(s,U)=>{ELKS(U,'fd',s.v==1);ELKS(U,'k',s.v==2)}});
 
 /* 3 Wechselstrom */
-fm(FP,ET,WCL,'Am Wechselstrom haben Kondensator und Spule einen Blindwiderstand X. Beim Kondensator sinkt er mit der Frequenz (X_C = 1 / (2π · f · C)), bei der Spule steigt er (X_L = 2π · f · L). Strom und Spannung sind um 90° verschoben: Beim Kondensator eilt der Strom voraus, bei der Spule hinterher. Blindwiderstände nehmen im Mittel keine Leistung auf.',
+fm(FP,ET2,WCL,'Am Wechselstrom haben Kondensator und Spule einen Blindwiderstand X. Beim Kondensator sinkt er mit der Frequenz (X_C = 1 / (2π · f · C)), bei der Spule steigt er (X_L = 2π · f · L). Strom und Spannung sind um 90° verschoben: Beim Kondensator eilt der Strom voraus, bei der Spule hinterher. Blindwiderstände nehmen im Mittel keine Leistung auf.',
  [['b','Bauteil','sel',['Widerstand R','Kondensator C','Spule L'],1],['U','U',1,230,1,'V',230],['f','f',1,1000,1,'Hz',50],['R','R',10,1000,10,'Ω',100],['C','C',1,100,1,'µF',10],['L','L',.01,2,.01,'H',.5]],
  (s,t)=>{const b=s.b,w=2*PI*s.f,X=b==0?s.R:b==1?1/(w*s.C*1e-6):w*s.L,I=s.U/X,ph=b==0?0:b==1?PI/2:-PI/2,Tp=1/s.f,u0=s.U*Math.SQRT2,i0=I*Math.SQRT2;
   const tr=ELKT(WCL,{b:s.b},t),phi=2*PI*tr/4,ut=Math.sin(phi),it=Math.sin(phi+ph),amp=6+30*Math.max(0,Math.min(1,(Math.log10(I)+3)/4.4)),off=-amp*Math.cos(phi+ph);
@@ -3760,7 +3761,7 @@ Object.assign(M[M.length-1],{test:1,knb:'b',vis:s=>['U','f',['R','C','L'][s.b]]}
 
 /* 4 LC-Schwingkreis: Zeitverlauf numerisch (RK4), Startwert: C auf U₀ geladen */
 const LCSIM=(L,C,R,U0,tE,n)=>{let q=C*U0,i=0;const dt=tE/n,o=[[q,i]],fq=(q,i)=>[i,(-q/C-R*i)/L];for(let k=0;k<n;k++){const a=fq(q,i),b=fq(q+a[0]*dt/2,i+a[1]*dt/2),c=fq(q+b[0]*dt/2,i+b[1]*dt/2),d=fq(q+c[0]*dt,i+c[1]*dt);q+=dt/6*(a[0]+2*b[0]+2*c[0]+d[0]);i+=dt/6*(a[1]+2*b[1]+2*c[1]+d[1]);o.push([q,i])}return o};
-fm(FP,ET,LCS,'Im Schwingkreis pendelt die Energie zwischen dem elektrischen Feld des Kondensators und dem Magnetfeld der Spule hin und her. Die Eigenfrequenz ist f₀ = 1 / (2π · √(L · C)). Der Widerstand wandelt bei jeder Schwingung einen Teil der Energie in Wärme, die Schwingung klingt ab (Dämpfung). Wird der Kreis von außen mit f₀ angeregt, fließt der größte Strom: Resonanz.',
+fm(FP,ET2,LCS,'Im Schwingkreis pendelt die Energie zwischen dem elektrischen Feld des Kondensators und dem Magnetfeld der Spule hin und her. Die Eigenfrequenz ist f₀ = 1 / (2π · √(L · C)). Der Widerstand wandelt bei jeder Schwingung einen Teil der Energie in Wärme, die Schwingung klingt ab (Dämpfung). Wird der Kreis von außen mit f₀ angeregt, fließt der größte Strom: Resonanz.',
  [['v','Ansicht','sel',['Freie Schwingung','Resonanz'],0],['L','L',.1,5,.1,'H',1],['C','C',1,100,1,'µF',10],['R','R',0,200,5,'Ω',20],['U','U₀',1,24,1,'V',12],['f','f',1,200,1,'Hz',50]],
  (s,t)=>{const L=s.L,C=s.C*1e-6,w0=1/Math.sqrt(L*C),f0=w0/(2*PI),T0=1/f0,Re=Math.max(s.R,1),de=s.R/(2*L),Qf=Math.sqrt(L/C)/Re;
   if(s.v==1){const w=2*PI*s.f,XL=w*L,XC=1/(w*C),Z=Math.sqrt(Re*Re+(XL-XC)**2),I=s.U/Z,If=f=>s.U/Math.sqrt(Re*Re+(2*PI*f*L-1/(2*PI*f*C))**2);
@@ -3805,7 +3806,7 @@ const EKWT=(x,y,s,z=17)=>`<text x="${x}" y="${y}" text-anchor="middle" style="fo
 const EKMG=(x1,x2,y,hh,flip)=>{const w=(x2-x1)/2;return`<rect x="${x1}" y="${y-hh/2}" width="${w}" height="${hh}" fill="${flip?'var(--flow)':'var(--red)'}" stroke="var(--ink)" stroke-width="1.5"/><rect x="${x1+w}" y="${y-hh/2}" width="${w}" height="${hh}" fill="${flip?'var(--red)':'var(--flow)'}" stroke="var(--ink)" stroke-width="1.5"/><rect x="${x1}" y="${y-hh/2}" width="${2*w}" height="${hh}" fill="url(#g-cyl)"/>`+EKWT(x1+w/2,y+6,flip?'S':'N')+EKWT(x1+w*1.5,y+6,flip?'N':'S')};
 
 /* 1 Elektrisches Feld */
-fm(FP,ET,EFD,'Um jede Ladung herum gibt es ein elektrisches Feld. Es ist auch da, wenn gerade keine zweite Ladung darin sitzt, und es sagt, wohin eine positive Ladung gedrückt würde. Zwischen zwei Platten ist das Feld homogen: E = U / d. Die Kraft auf eine Ladung ist F = q · E. Feldlinien laufen von + nach −, je dichter, desto stärker das Feld.',
+fm(FP,ET2,EFD,'Um jede Ladung herum gibt es ein elektrisches Feld. Es ist auch da, wenn gerade keine zweite Ladung darin sitzt, und es sagt, wohin eine positive Ladung gedrückt würde. Zwischen zwei Platten ist das Feld homogen: E = U / d. Die Kraft auf eine Ladung ist F = q · E. Feldlinien laufen von + nach −, je dichter, desto stärker das Feld.',
  [['v','Ansicht','sel',['Plattenkondensator','Punktladungen'],0],['U','U',10,1000,10,'V',200],['d','d',1,20,.5,'mm',10],['q','q',-5,5,1,'nC',2],['Q','Q',1,10,1,'nC',4],['r','r',2,20,1,'cm',8],['pl','Ladungen','sel',['+ und −','+ und +','− und −'],0]],
  (s,t)=>{if(s.v==0){const E=s.U/(s.d*1e-3),q=s.q||1,qq=s.q==0?1:s.q,F=qq*1e-9*E,W=qq*1e-9*s.U,gap=70+s.d*8,x1=165-gap/2,x2=165+gap/2,n=Math.max(3,Math.min(13,Math.round(2+E/9000))),pt=60,ph=200;
    let h=ORBT(165,34,'E = '+nf(E/1000,3)+' V/mm = '+fmt(E,'V/m'),17,'middle','var(--ink)',800);
@@ -3837,7 +3838,7 @@ Object.assign(M[M.length-1],{test:1,knb:'v',vis:s=>s.v==0?['U','d','q']:['Q','r'
 
 /* 2 Magnetisches Feld */
 const EKKN=[['Luft',1],['Eisen',500]];
-fm(FP,ET,MFD,'Magnetfelder entstehen um Dauermagnete und um jeden Strom. Ihre Feldlinien sind immer geschlossen: außen von Nord nach Süd, innen zurück. Eine Kompassnadel stellt sich in Feldrichtung. Um einen geraden Leiter laufen die Linien im Kreis (Rechte-Hand-Regel), eine Spule bündelt sie wie ein Stabmagnet. Die Flussdichte B wird in Tesla gemessen.',
+fm(FP,ET2,MFD,'Magnetfelder entstehen um Dauermagnete und um jeden Strom. Ihre Feldlinien sind immer geschlossen: außen von Nord nach Süd, innen zurück. Eine Kompassnadel stellt sich in Feldrichtung. Um einen geraden Leiter laufen die Linien im Kreis (Rechte-Hand-Regel), eine Spule bündelt sie wie ein Stabmagnet. Die Flussdichte B wird in Tesla gemessen.',
  [['v','Ansicht','sel',['Stabmagnet','Gerader Leiter','Spule'],0],['w','Nadel',0,360,5,'°',40],['I','I',0,20,.5,'A',10],['dir','Richtung','sel',['nach oben','nach unten'],0],['r','r',1,10,.5,'cm',3],['N','N',10,1000,10,'',200],['l','l',5,50,1,'cm',20],['k','Kern','sel',EKKN.map(x=>x[0]),0]],
  (s,t)=>{if(s.v==0){const mx=165,my=180,hw=60,fld=(x,y)=>{let bx=0,by=0;[[mx-hw+6,1],[mx+hw-6,-1]].forEach(([cx,q])=>{const dx=x-cx,dy=y-my,d2=dx*dx+dy*dy+1;bx+=q*dx/Math.pow(d2,1.5);by+=q*dy/Math.pow(d2,1.5)});return[bx,by]},stop=(x,y)=>x<10||x>322||y<40||y>330||(Math.abs(x-mx)<hw+3&&Math.abs(y-my)<15);
    let h='';[0,1,2,3].forEach(k=>{const r=22+k*30,op=(1-k*.18).toFixed(2);[-1,1].forEach(sg=>{const y0=my+sg*12,yc=my+sg*(12+r*1.7);h+=`<path d="M${mx-hw-2} ${y0}C${mx-hw-2-r*1.15} ${yc} ${mx+hw+2+r*1.15} ${yc} ${mx+hw+2} ${y0}" fill="none" stroke="${VIO}" stroke-width="1.8" stroke-dasharray="6 4" opacity="${op}"/>`+EKAH(mx,my+sg*(12+r*1.27),0,VIO,5)})});
@@ -3882,7 +3883,7 @@ fm(FP,ET,MFD,'Magnetfelder entstehen um Dauermagnete und um jeden Strom. Ihre Fe
 Object.assign(M[M.length-1],{test:1,knb:'v',vis:s=>s.v==0?['w']:s.v==1?['I','dir','r']:['I','dir','N','l','k']});
 
 /* 3 Lorentzkraft & Induktion */
-fm(FP,ET,LOI,'Fließt Strom durch einen Leiter im Magnetfeld, wirkt auf ihn eine Kraft: F = B · I · l (Lorentzkraft). Darauf beruht jeder Motor. Umgekehrt entsteht in einem Leiter eine Spannung, wenn sich das Magnetfeld durch ihn ändert oder er sich im Feld bewegt: Induktion, u = N · ΔΦ / Δt. Darauf beruht jeder Generator. Beides ist dieselbe Physik, einmal vorwärts, einmal rückwärts.',
+fm(FP,ET2,LOI,'Fließt Strom durch einen Leiter im Magnetfeld, wirkt auf ihn eine Kraft: F = B · I · l (Lorentzkraft). Darauf beruht jeder Motor. Umgekehrt entsteht in einem Leiter eine Spannung, wenn sich das Magnetfeld durch ihn ändert oder er sich im Feld bewegt: Induktion, u = N · ΔΦ / Δt. Darauf beruht jeder Generator. Beides ist dieselbe Physik, einmal vorwärts, einmal rückwärts.',
  [['v','Ansicht','sel',['Leiterschaukel','Motor','Induktion','Generator'],0],['I','I',0,20,.5,'A',8],['B','B',.1,1,.05,'T',.5],['l','l',5,30,1,'cm',10],['dir','Strom','sel',['nach rechts','nach links'],0],['vm','Tempo',0,100,5,'%',50],['N','N',10,500,10,'',100],['n','n',60,3000,60,'1/min',600],['A','A',10,200,10,'cm²',50]],
  (s,t)=>{const v=s.v;
   if(v==0){const sg=s.dir==0?1:-1,F=s.B*s.I*s.l/100,ang=Math.min(.6,F*.55)*sg,my=170,mw=110,x0=165;let h=ORBT(165,34,'F = B · I · l = '+fmt(F,'N'),17,'middle','var(--ink)',800);
@@ -7216,7 +7217,7 @@ function lvAnw(n){const t=store.get('ll_lv',{})[topicOf(n)],ok=a=>!!a&&a.length>
 /* Ergebnis je Thema und Stufe merken (letzte fünf); auch Hausaufgaben (Anwenden) und Prüfungssimulation (Prüfungsniveau) */
 function lvAdd(n,l,ok){if(!n||!l)return;n=topicOf(n);const X=store.get('ll_lv',{}),t=X[n]||(X[n]={});(t[l]=t[l]||[]).push(ok?1:0);if(t[l].length>5)t[l].shift();store.set('ll_lv',X)}
 const STN={sicher:'sicher geübt',weg:'auf dem Weg',unsicher:'unsicher',wenig:'wenig Daten',neu:'neu'};
-function memW(n){if(n.startsWith('Mündlich'))return .8;const f=gfach(n),m=M.find(x=>x.name===n);if(f==='Physik')return m&&m.g==='Elektrotechnik'?1.6:1;return{Chemie:1.5,Statistik:1.3,Mathematik:1.3,Energie:.8,Sicherheit:.8,Umrechnen:.8}[f]||1}
+function memW(n){if(n.startsWith('Mündlich'))return .8;const f=gfach(n),m=M.find(x=>x.name===n);if(f==='Physik')return m&&(m.g===ET||m.g===ET2)?1.6:1;return{Chemie:1.5,Statistik:1.3,Mathematik:1.3,Energie:.8,Sicherheit:.8,Umrechnen:.8}[f]||1}
 function memUniv(){const s=new Set([...Object.keys(GEN),...Object.keys(STEPS),...MCQ.map(x=>x[0])]);return[...s]}
 function memWeak(){const M_=memGet();return Object.keys(M_.t).map(n=>{const t=M_.t[n],r=memRate(t);return{n,t,r,s:(1-r)*memW(n)*Math.min(1,t.n/6)}}).filter(x=>x.t.h.length>=3&&x.r<.8).sort((a,b)=>b.s-a.s)}
 function memDone(t){return!!t&&!!t.td&&t.td.d===mToday()&&t.td.n>=3}
@@ -8272,7 +8273,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=169,NEWS='Lernen-Menü: Der Knopf „Weiter mit …“ steht jetzt kleiner unten bei Nachschlagen, rechts neben Glossar und Formelsammlung, mit vollem Themennamen.';
+const APPV=170,NEWS='Elektrotechnik ist jetzt zweigeteilt: „Elektrotechnik I“ mit den bisherigen Grundlagen und „Elektrotechnik II“ mit den Vertiefungsthemen Felder, Lorentzkraft & Induktion, Kondensator, Spule, Wechselstrom und LC-Schwingkreis. Elektrotechnik II trägt das Abzeichen „Test“: nur Simulation, Erklärung, Formeln und Glossar, keine Aufgaben.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['24.10.2026',142,['Prüfungssimulation: 8 Rechenaufgaben und 2 Erläuterungsaufgaben (vorher 10 Rechenaufgaben). Gewichtung unverändert: Physik 60, Chemie 20, Statistik und Mathematik 20 Punkte. Erläuterungen bewerten die Teilnehmenden selbst mit dem Erwartungshorizont.','Lernstand: „sicher geübt“ verlangt zusätzlich zwei verschiedene Aufgabenarten (vorher nur 80 % richtig und Stufe Anwenden). Ältere Lernstände ohne Arten-Zählung behalten die alte Regel.']],

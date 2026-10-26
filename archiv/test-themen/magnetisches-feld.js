@@ -11,3 +11,8 @@ Object.assign(GEN,{
 FEH.push(
 ['Magnetisches Feld','Ein Kollege legt den Kompass neben eine Stromschiene, um Norden zu finden. Warum klappt das nicht?',['Die Schiene erzeugt ein eigenes Magnetfeld, das das Erdfeld überdeckt.','Kompasse funktionieren nur im Freien.','Stromschienen sind aus Kupfer und schirmen den Kompass ab.','Das klappt, Strom hat kein Magnetfeld.'],'Jeder Strom erzeugt ein Magnetfeld. Bei 100 A in 5 cm Abstand sind es 400 µT, achtmal das Erdfeld.']
 );
+BEW.push(
+['Magnetisches Feld','b','Ein Lasthebemagnet hebt ein Blechpaket. Erkläre, wie sein Magnetfeld entsteht, warum der Eisenkern so wichtig ist und was beim Abschalten des Stroms passiert.',
+ 'Im Hebemagnet fließt Strom durch eine Spule mit vielen Windungen. Jeder Strom erzeugt ein Magnetfeld, in der Spule addieren sich die Felder der Windungen: B = μ₀ · μ_r · N · I / l. Der Eisenkern hat ein sehr großes μ_r und verstärkt das Feld um das Hundert- bis Tausendfache, er bündelt die Feldlinien zum Blech. Wird der Strom abgeschaltet, bricht das Feld zusammen und die Last fällt; ein kleiner Restmagnetismus kann das Blech kurz halten. Deshalb haben Hebemagnete Sicherheitsvorschriften gegen Stromausfall.',
+ ['Strom in der Spule erzeugt das Feld','Windungen addieren sich: B ∝ N · I / l','Eisenkern mit großem μ_r verstärkt und bündelt','Ohne Strom kein Feld, Last fällt']]
+);
