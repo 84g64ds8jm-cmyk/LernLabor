@@ -8490,7 +8490,7 @@ function nav(){
  $('#bgr').setAttribute('fill','url(#p-'+(cur>=0?({Physik:'phys',Chemie:'chem',Statistik:'stat',Mathematik:'math',Umrechnen:'unit',Energie:'energy',Sicherheit:'safe'}[curF()]||'home'):'home')+')');
  $('#home').hidden=!hm;$('#app').hidden=cur<0;$('#practice').hidden=!prac;$('#sim').hidden=!SIMV;$('#mem').hidden=!MEMV;$('#ki').hidden=!KIV;if($('#doz'))$('#doz').hidden=!DOZV;if($('#hw'))$('#hw').hidden=!HWV;if($('#mc'))$('#mc').hidden=!MCV;if($('#gl'))$('#gl').hidden=!GLV;if($('#fsm'))$('#fsm').hidden=!FSV;$('#desc').hidden=cur<0;$('#gs').hidden=$('#ms').hidden=cur<0;if(cur<0){$('#fx').hidden=true;$('#erk').hidden=true;$('#tq').hidden=true}{const pr=$('#pred');if(pr)pr.hidden=cur<0||!pr.innerHTML}
  if(hm)homeView();
- {const bk=prac&&PBACK&&M[PBACK.i]?PBACK:null;['#pbk','#pbk2'].forEach((s,j)=>{const b=$(s);if(!b)return;b.hidden=!bk;if(bk){b.textContent=(j?'‹ Zurück zum Thema':'‹ Zurück zu '+M[bk.i].name);b.onclick=()=>{go(bk.i,bk.cx);scrollTo(0,0)}}})}
+ {const bk=prac&&PBACK&&M[PBACK.i]?PBACK:null;['#pbk','#pbk2'].forEach((s,j)=>{const b=$(s);if(!b)return;b.hidden=!bk||!j/* NAV-01: nur der untere Rückweg, mit Themennamen */;if(bk){b.textContent='‹ Zurück zu '+M[bk.i].name;b.onclick=()=>{go(bk.i,bk.cx);scrollTo(0,0)}}})}
  const last=FA.length+1;
  const dn=memDueCount(),simr=SIM&&!SIM.done;
  const L={0:'🏠 Startseite',[last]:'✏️ Üben',[last+1]:'🎓 Prüfungsaufgaben',[last+2]:'🗣️ Mündliche Prüfung',[last+3]:'⏱️ Prüfungssimulation'+(simr?' ●':''),[last+4]:'📈 Lernstand'+(dn?' ('+dn+')':''),[last+5]:'📝 Hausaufgaben',[last+6]:KIOK?'🤖 KI-Tutor':null,[last+7]:KIOK?'🎤 KI-Prüfer':null,[last+8]:DOZENT?'👩‍🏫 Kursübersicht':null,100:'📤 Lernfortschritt senden',108:'📅 Meine Kurstermine',109:'⚙️ Sonstiges',101:'⚖️ Impressum & Datenschutz',104:'🆕 Version '+APPV+' · Was ist neu',105:'🎨 Darstellung',106:'🧭 So funktioniert das Lernlabor',102:'🧮 Mathe-Check',103:'📖 Glossar',107:'✍️ Begründen & Skizzieren',110:'📘 Formelsammlung'};FA.forEach((f,i)=>L[i+1]=(IC[f]||'')+' '+f);{const W=LASTF._&&FA.includes(LASTF._)?fLast(LASTF._)[0]:-1;if(cur<0&&W>=0)L[111]='↩ Weiter: '+M[W].name}
@@ -9914,9 +9914,10 @@ const q=newQ;newQ=function(){const r=q.apply(this,arguments);if(nx){nx=false;con
 let t=0;const chk=()=>{clearTimeout(t);t=setTimeout(()=>{const ae=document.activeElement;if(!ae||ae===document.body||!vis(ae))fh()},250)};
 document.addEventListener('click',e=>{if(e.target.closest('button,a,[role=menuitem],summary'))chk()});document.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')chk()});addEventListener('popstate',chk)})();</script>
 <!-- UI-Audit NAV-01 -->
-<script>/* NAV-01: kommt die Übung aus dem Thema, reicht „‹ Zurück zu …“ oben; „Thema: … →“ nur bei gemischten Übungen */(()=>{const pr=document.getElementById('practice');if(!pr)return;
-const f=()=>{const g=document.getElementById('pgo'),b=document.getElementById('pbk');if(!g)return;const n=g.textContent.replace(/^Thema:\s*/,'').replace(/\s*→\s*$/,'').trim();const same=!!(b&&!b.hidden&&n&&b.textContent.includes(n));if(g.hidden!==same)g.hidden=same};
+<script>/* NAV-01: kommt die Übung aus dem Thema, reicht „‹ Zurück zu …“ unten; „Thema: … →“ nur bei Aufgaben aus anderen Themen */(()=>{const pr=document.getElementById('practice');if(!pr)return;
+const f=()=>{const g=document.getElementById('pgo'),b=document.getElementById('pbk2');if(b&&b.offsetParent&&b.dataset.t!==b.textContent+innerWidth){b.dataset.t=b.textContent+innerWidth;b.classList.remove('lang');if(b.offsetHeight>50)b.classList.add('lang')}if(!g)return;const n=g.textContent.replace(/^Thema:\s*/,'').replace(/\s*→\s*$/,'').trim();const same=!!(b&&!b.hidden&&n&&b.textContent.includes(n));if(g.hidden!==same)g.hidden=same};
 new MutationObserver(f).observe(pr,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});f()})();</script>
+<style>/* NAV-01: langer Themenname im unteren Rückweg darf umbrechen */#practice .pb #pbk2{white-space:normal;line-height:1.2;text-align:center}#practice .pb #pbk2.lang{flex:1 1 100%;font-size:14px}</style>
 <!-- UI-Audit A11Y-02 -->
 <script>/* A11Y-02: Einführung als echtes Dialogfenster: Tab bleibt im Fenster, Escape schließt überall, Hintergrund ist inaktiv */(()=>{
 document.addEventListener('keydown',e=>{const t=document.querySelector('div.tour');if(!t)return;
