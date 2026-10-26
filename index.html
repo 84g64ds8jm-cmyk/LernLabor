@@ -468,7 +468,7 @@ const KZERL=(m,adeg,nar,ex,mx=100,yN=244)=>{const al=rad(adeg),co=Math.cos(al),s
   h+=TC(ax-8,ay+Lg*.55,'F_G','t2','var(--ink)','end')+TC((ax+B[0])/2+8,(ay+B[1])/2-2,'F_N','t2','var(--ok)')+(FH/Gw>.03?TC((B[0]+Cc[0])/2+8,(B[1]+Cc[1])/2+12,'F_H','t2','var(--flow)'):'');
   const fx=nar?x0+130:x0+6,fy=nar?y0+26:y0+200,dy=nar?16:18,fl=[['F_G = m · g',`= ${nf(s.m)} kg · 9,81 m/s² = ${fmt(Gw,'N')}`,'var(--ink)'],['F_H = F_G · sin α',`= ${fmt(Gw,'N')} · sin ${nf(s.a,3)}° = ${fmt(FH,'N')}`,'var(--flow)'],['F_N = F_G · cos α',`= ${fmt(Gw,'N')} · cos ${nf(s.a,3)}° = ${fmt(FN,'N')}`,'var(--ok)']];
   fl.forEach(([f1,f2,col],i)=>{const g=nar?35:42;h+=TC(fx,fy+i*g,f1,'t1',col)+TC(fx,fy+i*g+dy,f2,'t2')});
-  (ex||(nar?['α zwischen F_G und F_N = Winkel der Ebene']:['α zwischen F_G','und F_N ist der','Winkel der Ebene'])).forEach((z,i)=>{h+=nar?TC(x0+6,y0+130+i*16,z,'t2'):TC(x0+150,y0+70+i*17,z,'t2')});
+  (ex||(nar?['α zwischen F_G und F_N = Winkel der Ebene']:['α zwischen F_G','und F_N ist der','Winkel der Ebene'])).forEach((z,i)=>{const c=/^Zugkraft/.test(z)?'var(--red)':'';h+=nar?TC(x0+6,y0+130+i*16,z,'t2',c):TC(x0+150,y0+70+i*17,z,'t2',c)});
   return h};
 const sub=['₁','₂','₃','₄'],pr=(a,b)=>a*b/(a+b);
 const sup=n=>String(n).replace('-','⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
@@ -2198,7 +2198,7 @@ fm(FP,MF,'Schiefe Ebene','Einfache Maschine: Auf der Rampe braucht man nur die K
  s=>{const Gw=s.m*G,sa=Math.min(s.h/s.l,1),F=Gw*sa,al=Math.asin(sa),nar=matchMedia('(max-width:599px)').matches,sc=Math.min(nar?90:80,(nar?350:290)/s.l,(nar?150:230)/s.h),x0=nar?20:24,yb=nar?176:270,dx=Math.sqrt(Math.max(s.l*s.l-s.h*s.h,.01))*sc,hh=Math.min(s.h,s.l)*sc,bx=x0+dx*.5,by=yb-hh*.5,adeg=al*180/PI,Fl=FLIN(F,500*G,16,90);
  /* Rampe links bzw. oben, Zerlegung von F_G im Kasten daneben bzw. darunter */
  const ex=nar?[`sin α = h / l = ${nf(s.h)} / ${nf(s.l)} → α = ${nf(adeg,3)}°`,'Zugkraft F = F_H (ohne Reibung)']:['sin α = h / l',`= ${nf(s.h)} / ${nf(s.l)} = ${nf(sa,3)}`,`α = ${nf(adeg,3)}°`,'Zugkraft F = F_H'];
- return{vb:nar?'0 0 400 364':'0 0 640 318',d:`<polygon points="${x0},${yb} ${x0+dx},${yb} ${x0+dx},${yb-hh}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${bx} ${by}) rotate(${-adeg})"><rect class="box" x="-22" y="-30" width="44" height="30" rx="3"/></g>`+AR(bx-12*Math.sin(al),by-12*Math.cos(al),Fl*Math.cos(al),-Fl*Math.sin(al),'var(--flow)','F',1)+T(x0+dx/2,yb+24,'l = '+nf(s.l)+' m, h = '+nf(s.h)+' m','t2','middle')+KZERL(s.m,adeg,nar,ex,500,206),
+ return{vb:nar?'0 0 400 364':'0 0 640 318',d:`<polygon points="${x0},${yb} ${x0+dx},${yb} ${x0+dx},${yb-hh}" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/><g transform="translate(${bx} ${by}) rotate(${-adeg})"><rect class="box" x="-22" y="-30" width="44" height="30" rx="3"/></g>`+AR(bx-12*Math.sin(al),by-12*Math.cos(al),Fl*Math.cos(al),-Fl*Math.sin(al),'var(--red)','F',1)+T(x0+dx/2,yb+24,'l = '+nf(s.l)+' m, h = '+nf(s.h)+' m','t2','middle')+KZERL(s.m,adeg,nar,ex,500,206),
  res:[[fmt(F,'N'),'Zugkraft F'],[fmt(Gw,'N'),'Gewichtskraft F_G'],['× '+nf(Gw/F),'Kraftersparnis']],rows:[['Arbeit F_G · h',fmt(Gw*s.h,'J')],['Arbeit F · l',fmt(F*s.l,'J')]],st:[['F = F_G · h / l',`${fmt(Gw,'N')} · ${nf(s.h)} / ${nf(s.l)} = ${fmt(F,'N')}`],['Goldene Regel der Mechanik','Was man an Kraft spart, muss man an Weg zugeben']]}});
 fm(FP,MF,'Gesetz von Hooke','Die Federkraft ist proportional zur Dehnung: F = D · Δl. In der gespannten Feder steckt die Spannenergie E = ½ · D · Δl².',
  [['D','D',70,2000,10,'N/m',200],['m','m',.1,6.6,.1,'kg',2],['l0','l₀',10,40,1,'cm',20]],
@@ -8547,7 +8547,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=176,NEWS='Kräftezerlegung (Seilkräfte): Die Kiste wirkt räumlich und wird mit der Masse größer, der Sportler beim Klimmzug wird mit der Körpermasse etwas kräftiger.';
+const APPV=177,NEWS='Schiefe Ebene: Die Zugkraft F ist jetzt rot gezeichnet, damit man sie nicht mit der blauen Hangabtriebskraft F_H verwechselt.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['24.10.2026',142,['Prüfungssimulation: 8 Rechenaufgaben und 2 Erläuterungsaufgaben (vorher 10 Rechenaufgaben). Gewichtung unverändert: Physik 60, Chemie 20, Statistik und Mathematik 20 Punkte. Erläuterungen bewerten die Teilnehmenden selbst mit dem Erwartungshorizont.','Lernstand: „sicher geübt“ verlangt zusätzlich zwei verschiedene Aufgabenarten (vorher nur 80 % richtig und Stufe Anwenden). Ältere Lernstände ohne Arten-Zählung behalten die alte Regel.']],
