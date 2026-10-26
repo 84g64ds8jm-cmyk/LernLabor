@@ -9917,5 +9917,13 @@ document.addEventListener('click',e=>{if(e.target.closest('button,a,[role=menuit
 <script>/* NAV-01: kommt die Übung aus dem Thema, reicht „‹ Zurück zu …“ oben; „Thema: … →“ nur bei gemischten Übungen */(()=>{const pr=document.getElementById('practice');if(!pr)return;
 const f=()=>{const g=document.getElementById('pgo'),b=document.getElementById('pbk');if(!g)return;const n=g.textContent.replace(/^Thema:\s*/,'').replace(/\s*→\s*$/,'').trim();const same=!!(b&&!b.hidden&&n&&b.textContent.includes(n));if(g.hidden!==same)g.hidden=same};
 new MutationObserver(f).observe(pr,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});f()})();</script>
+<!-- UI-Audit A11Y-02 -->
+<script>/* A11Y-02: Einführung als echtes Dialogfenster: Tab bleibt im Fenster, Escape schließt überall, Hintergrund ist inaktiv */(()=>{
+document.addEventListener('keydown',e=>{const t=document.querySelector('div.tour');if(!t)return;
+ if(e.key==='Escape'&&!t.contains(e.target)){e.preventDefault();t.querySelector('.tsk').click();return}
+ if(e.key!=='Tab')return;const f=[...t.querySelectorAll('button,a[href],input,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled&&!x.hidden&&x.offsetParent!==null);if(!f.length)return;
+ const i=f.indexOf(document.activeElement);if(e.shiftKey&&(i<=0)){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&(i<0||i===f.length-1)){e.preventDefault();f[0].focus()}},true);
+const sync=()=>{const on=!!document.querySelector('div.tour');document.querySelectorAll('body>main,body>footer,body>header').forEach(x=>{x.inert=on})};
+new MutationObserver(sync).observe(document.body,{childList:true});sync()})();</script>
 </body>
 </html>
