@@ -9859,5 +9859,13 @@ const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
  const n1=nav;nav=function(){const r=n1.apply(this,arguments);try{upTitle()}catch(e){}return r};
  addEventListener('hashchange',()=>setTimeout(upTitle,0));addEventListener('popstate',()=>setTimeout(upTitle,0));setTimeout(upTitle,0)})();</script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>{const had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&window.llUpdate)window.llUpdate()});navigator.serviceWorker.register('sw.js').then(r=>{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{})});setInterval(()=>r.update().catch(()=>{}),36e5)}).catch(()=>{})});</script>
+<!-- UI-Audit FN-01 -->
+<script>/* FN-01: Größe, „=“ und Wert nicht trennen (geschütztes Leerzeichen um = und ≈ in sichtbaren Texten) */
+(()=>{const RX=/ ([=≈]) /g,SKIP='SCRIPT,STYLE,TEXTAREA,INPUT,OPTION,svg,text,tspan';
+ const fix=root=>{if(!root||root.nodeType!==1&&root.nodeType!==3)return;if(root.nodeType===3){if(root.nodeValue.indexOf(' = ')>-1||root.nodeValue.indexOf(' ≈ ')>-1){const p=root.parentElement;if(p&&!p.closest(SKIP))root.nodeValue=root.nodeValue.replace(RX,' $1 ')}return}
+  if(root.closest&&root.closest(SKIP))return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;const L=[];while(n=w.nextNode())if(n.nodeValue.indexOf(' = ')>-1||n.nodeValue.indexOf(' ≈ ')>-1)L.push(n);L.forEach(fix)};
+ const m=document.querySelector('main')||document.body;fix(m);let q=new Set(),t=0;
+ new MutationObserver(ms=>{ms.forEach(x=>x.addedNodes.forEach(a=>q.add(a)));if(!t)t=requestAnimationFrame(()=>{t=0;const a=[...q];q.clear();a.forEach(fix)})}).observe(document.body,{childList:true,subtree:true})})();
+</script>
 </body>
 </html>
