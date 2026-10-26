@@ -494,18 +494,19 @@ const circ=m=>({g:'Elektrik',name:['Reihe','Parallel','Gemischt R₁+(R₂∥R�
   st.push(['I = U / R_ges',`${fmt(U,'V')} / ${F(Rg)} = ${fmt(I,'A')}`],['U_n = I_n · R_n, P = U · I',`P_ges = ${fmt(U*I,'W')}`]);
   const p=u.map((x,k)=>x*i[k]),P=U*I;
   const g=[
-   {r:[[200,80,'h'],[330,80,'h'],[460,80,'h']],d:[],s:[['M70 150V80H590V260H70V190',I]]},
-   {r:[[250,170,'v'],[370,170,'v'],[490,170,'v']],d:[[250,80],[370,80],[250,260],[370,260]],s:[['M70 150V80H250',I],['M250 80H370',i[1]+i[2]],['M370 80H490',i[2]],['M250 80V260',i[0]],['M370 80V260',i[1]],['M490 80V260',i[2]],['M490 260H370',i[2]],['M370 260H250',i[1]+i[2]],['M250 260H70V190',I]]},
+   {r:[[185,80,'h'],[330,80,'h'],[475,80,'h']],d:[],s:[['M70 150V80H590V260H70V190',I]]},
+   {r:[[220,170,'v'],[370,170,'v'],[520,170,'v']],d:[[220,80],[370,80],[220,260],[370,260]],s:[['M70 150V80H220',I],['M220 80H370',i[1]+i[2]],['M370 80H520',i[2]],['M220 80V260',i[0]],['M370 80V260',i[1]],['M520 80V260',i[2]],['M520 260H370',i[2]],['M370 260H220',i[1]+i[2]],['M220 260H70V190',I]]},
    {r:[[220,80,'h'],[380,170,'v'],[500,170,'v']],d:[[380,80],[380,260]],s:[['M70 150V80H380',I],['M380 80H500',i[2]],['M380 80V260',i[1]],['M500 80V260',i[2]],['M500 260H380',i[2]],['M380 260H70V190',I]]},
    {r:[[300,125,'v'],[300,215,'v'],[470,170,'v']],d:[[300,80],[300,260]],s:[['M70 150V80H300',I],['M300 80H470',i[2]],['M300 80V260',i[0]],['M470 80V260',i[2]],['M470 260H300',i[2]],['M300 260H70V190',I]]},
-   {r:[[170,80,'h'],[300,170,'v'],[420,170,'v'],[180,260,'h']],d:[[300,80],[300,260]],s:[['M70 150V80H300',I],['M300 80H420',i[2]],['M300 80V260',i[1]],['M420 80V260',i[2]],['M420 260H300',i[2]],['M300 260H70V190',I]]},
+   {r:[[170,80,'h'],[360,170,'v'],[480,170,'v'],[180,260,'h']],d:[[360,80],[360,260]],s:[['M70 150V80H360',I],['M360 80H480',i[2]],['M360 80V260',i[1]],['M480 80V260',i[2]],['M480 260H360',i[2]],['M360 260H70V190',I]]},
    {r:[[300,125,'v'],[300,215,'v'],[470,125,'v'],[470,215,'v']],d:[[300,80],[300,260]],s:[['M70 150V80H300',I],['M300 80H470',i[2]],['M300 80V260',i[0]],['M470 80V260',i[2]],['M470 260H300',i[2]],['M300 260H70V190',I]]}][m];
   let h=g.s.map(x=>`<path class="w" d="${x[0]}"/>`).join('')+g.s.map(x=>`<path class="fl" d="${x[0]}" style="animation-duration:${(11/(12+28*Math.log10(1+x[1]*1000))).toFixed(3)}s"/>`).join('')+g.d.map(d=>`<circle cx="${d[0]}" cy="${d[1]}" r="5" fill="var(--ink)"/>`).join('');
   h+=`<line x1="52" x2="88" y1="150" y2="150" stroke="var(--ink)" stroke-width="3"/><line x1="60" x2="80" y1="190" y2="190" stroke="var(--ink)" stroke-width="6"/>${T(96,146,'+','t2')}${T(96,186,fmt(U,'V'))}`;
+  /* Senkrechte Widerstände (v199): Beschriftung dreizeilig (Name, U, I); bei zwei Zweigen nebeneinander steht die des linken Zweigs links, damit kein Text zwischen den Zweigen liegt */
   g.r.forEach(([x,y,o],k)=>{const w=o=='h'?70:26,hh=o=='h'?26:52,q=`x="${x-w/2}" y="${y-hh/2}" width="${w}" height="${hh}" rx="4"`;
    h+=`<rect class="rb" ${q}/><rect class="ra" ${q} opacity="${(.12+.78*p[k]/P).toFixed(2)}"/><rect ${q} fill="none" stroke="var(--ink)" stroke-width="2"/>`;
    const l1=`R${sub[k]} ${fmt(R[k],'Ω')}`,l2=`${fmt(u[k],'V')} · ${fmt(i[k],'A')}`;
-   h+=o=='h'?(y>200?T(x,y-48,l1,'t1','middle')+T(x,y-30,l2,'t2','middle'):T(x,y-26,l1,'t1','middle')+T(x,y+40,l2,'t2','middle')):T(x+22,y-2,l1)+T(x+22,y+16,l2,'t2')});
+   h+=o=='h'?(y>200?T(x,y-48,l1,'t1','middle')+T(x,y-30,l2,'t2','middle'):T(x,y-26,l1,'t1','middle')+T(x,y+40,l2,'t2','middle')):(L=>T(L?x-22:x+22,y-8,l1,'t1',L?'end':'start')+T(L?x-22:x+22,y+10,fmt(u[k],'V'),'t2',L?'end':'start')+T(L?x-22:x+22,y+27,fmt(i[k],'A'),'t2',L?'end':'start'))((m==2||m==4)&&k==1)});
   return{vb:'0 0 640 300',svg:h,res:[[F(Rg),'R_ges'],[fmt(I,'A'),'I_ges'],[fmt(P,'W'),'P_ges']],th:['R','Wert','U','I','P'],rows:R.map((r,k)=>[`R${sub[k]}`,F(r),fmt(u[k],'V'),fmt(i[k],'A'),fmt(p[k],'W')]),st}}});
 [0,1,2,3,4,5].forEach(m=>M.push(circ(m)));
 /* Hydraulik, Ansicht „Pumpe & Ventile“ (v186): Handpumpe mit Saug- und Druckventil, Hubzylinder, Ablassventil. Zustand in s: mo (a = Automatik, 1 = ein Hub, x = Ablassen), t0 (Startzeit), H0 (Hubhöhe beim Start in cm) */
@@ -8718,7 +8719,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=198,NEWS='Schreibweise: In Rechnungen bleiben sin, cos, tan, lg und √ jetzt immer mit ihrem Wert in einer Zeile, zum Beispiel „sin 75°“ oder „cos α“. So bricht kein Lösungsweg mehr zwischen Funktion und Winkel um.';
+const APPV=199,NEWS='Schaltbilder: Bei parallelen Widerständen steht die Beschriftung jetzt in drei kurzen Zeilen und bei zwei Zweigen nach außen. So verdeckt kein Widerstand mehr die Werte des anderen.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['26.10.2026',196,['Zahleneingabe: Eine Zahl wie 1.250 (ein Punkt, genau drei Ziffern dahinter) wird nicht mehr automatisch gedeutet. Die App fragt „Meinst Du 1,25 oder 1250?“ und wertet erst nach der Korrektur (Üben, Hausaufgaben, Mathe-Check). In der Probeprüfung erscheint der Hinweis unter dem Feld; bleibt die Eingabe unklar, zählt sie nicht als richtig.']],
