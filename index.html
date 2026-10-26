@@ -9958,5 +9958,9 @@ const hits=()=>[...sr.querySelectorAll('.chip')].filter(x=>x.offsetParent!==null
 q.addEventListener('keydown',e=>{if(e.key==='ArrowDown'&&!sr.hidden){const h=hits();if(h[0]){e.preventDefault();h[0].focus()}}});
 sr.addEventListener('keydown',e=>{const h=hits(),k=h.indexOf(document.activeElement);if(k<0)return;
  if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();(h[k+1]||h[0]).focus()}else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();if(k===0)q.focus();else h[k-1].focus()}else if(e.key==='Escape'){e.preventDefault();q.focus()}})})();</script>
+<!-- UI-Audit FN-02 -->
+<style>/* FN-02: Indizes nie unter 11 px; Ergebniskacheln lieber untereinander als winzig */sub.sx{font-size:max(11px,.75em)}#res.r1{grid-template-columns:1fr!important}</style>
+<script>/* FN-02 */(()=>{let one=false;const fix=()=>{const r=document.getElementById('res');if(!r)return;if(!one&&[...r.querySelectorAll('b')].some(b=>{const f=parseFloat(b.style.fontSize);return f&&f<13}))one=true;r.classList.toggle('r1',one);if(one)r.querySelectorAll('b').forEach(b=>{b.style.fontSize='';b.style.whiteSpace=''})};
+const r=render;render=function(){const x=r.apply(this,arguments);fix();return x};const b=build;build=function(){one=false;const x=b.apply(this,arguments);fix();return x};fix()})();</script>
 </body>
 </html>
