@@ -21,6 +21,15 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
   ['Grundrechenregeln','Negative Zahlen'].forEach(k=>{if(!GEN[k])return;for(let i=0;i<20;i++){const x=GEN[k](mk(i*7919+1));if(Number.isInteger(x[1])){const t=x[4]||{};if(t.rel!=null||!(t.abs<=1e-6))bad.push('Toleranz: „'+k+'“ ganzzahlig, aber nicht exakt ('+JSON.stringify(t)+')')}}});
   if(tolOf(.0005,'mm',8).rel!==.0005||tolOf(undefined,'€',100).abs!==.5)bad.push('Toleranz: Zahl oder Geld falsch ausgewertet');
   M.forEach((m,i)=>{try{go(i);render();if(!document.title.startsWith(m.name+' · '))bad.push('Thema „'+m.name+'“: Seitentitel fehlt ('+document.title+')')}catch(e){bad.push('Thema „'+m.name+'“: '+e.message)}});cur=-1;prac=false;nav();
+  // Schaltbilder Elektrotechnik: Beschriftungen überlappen sich nicht, verdecken kein Widerstandssymbol und bleiben im Bild (v199)
+  {const ns='http://www.w3.org/2000/svg',sv=document.createElementNS(ns,'svg');sv.setAttribute('viewBox','0 0 640 300');sv.style.cssText='position:absolute;left:0;top:0;width:640px;height:300px';document.body.appendChild(sv);
+   const V=[1,7,33,99,100,333,999,1000],Us=[.5,1,9.5,12,20.5,47.5,48],bb=e=>{const b=e.getBBox();return{x0:b.x,x1:b.x+b.width,y0:b.y,y1:b.y+b.height}},ov=(a,b)=>a.x0<b.x1-1&&b.x0<a.x1-1&&a.y0<b.y1-1&&b.y0<a.y1-1;
+   ['Reihe','Parallel','Gemischt R₁+(R₂∥R₃)','Gemischt (R₁+R₂)∥R₃','Gemischt R₁+(R₂∥R₃)+R₄','Gemischt (R₁+R₂)∥(R₃+R₄)'].forEach(nm=>{const T=M.find(x=>x.name===nm);if(!T){bad.push('Schaltbild „'+nm+'“ fehlt');return}const r=mk(4711);
+    for(let k=0;k<600;k++){const s={U:Us[k%Us.length]};T.p.forEach(q=>{if(q[0]!=='U')s[q[0]]=V[Math.floor(r()*V.length)]});sv.innerHTML=T.f(s).svg;
+     const ts=[...sv.querySelectorAll('text')].map(e=>({t:e.textContent,...bb(e)})),rs=[...sv.querySelectorAll('rect[stroke]')].map(bb);
+     const f=ts.find((a,i)=>a.x0<0||a.x1>640||ts.some((b,j)=>j>i&&ov(a,b))||rs.some(q=>ov(a,q)));
+     if(f){bad.push('Schaltbild „'+nm+'“: Beschriftung „'+f.t+'“ überlappt oder ragt aus dem Bild ('+JSON.stringify(s)+')');break}}});
+   sv.remove()}
   // Fachliche Regeln
   const hint=[];
   [[3.3*0.35,'1,16'],[136.805,'136,81'],[1.005,'1,01'],[-2.675,'−2,68'],[-0.004,'0,00'],[1234.5,'1234,50']].forEach(([v,w])=>{if(nfe(v)!==w)bad.push('Geldrundung: nfe('+v+') ergibt '+nfe(v)+' statt '+w)});
