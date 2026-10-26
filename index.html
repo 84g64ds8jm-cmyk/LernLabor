@@ -9990,5 +9990,7 @@ document.addEventListener('input',e=>{if(e.target&&e.target.id==='pin')save()});
 .btns button.ubp{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700}.btns button.ubp:hover{background:color-mix(in srgb,var(--navy) 85%,#fff);border-color:var(--navy)}
 :root[data-theme="dark"] .btns button.ubp{background:var(--mint);color:var(--navy);border-color:var(--mint)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btns button.ubp{background:var(--mint);color:var(--navy);border-color:var(--mint)}}</style>
 <script>/* UI-03 */(()=>{const m=()=>{const b=document.querySelector('#btns>button');if(b&&/Üben/.test(b.textContent))b.classList.add('ubp')};const b=build;build=function(){const x=b.apply(this,arguments);m();return x};m()})();</script>
+<!-- UI-Audit LERNEN-WEITER -->
+<style>/* Lernen-Menü: „Weiter mit …“ so hoch wie ein Eintrag links, rechts mittig zwischen Glossar und Formelsammlung (Markus 26.10.) */#nm .nmn.w{align-items:center}#nm .nmn.w>[data-k="111"]{align-self:center;min-height:44px}</style>
 </body>
 </html>
