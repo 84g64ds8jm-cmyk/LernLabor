@@ -323,7 +323,7 @@ svg .tk{font-size:12px}
 }
 /* Knopfzeile unter den Reglern: eine Zeile, Seltenes unter „⋯ Mehr“ */
 .btns{gap:6px;align-items:center}.btns button{padding:6px 12px}
-.btns .more{position:relative}.btns .more>summary{list-style:none;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;min-height:36px;white-space:nowrap}.btns .more>summary::-webkit-details-marker{display:none}
+.btns .more{position:relative}.btns .mm.l{left:0;right:auto}.btns .more>summary{list-style:none;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;min-height:36px;white-space:nowrap}.btns .more>summary::-webkit-details-marker{display:none}
 .btns .more[open]>summary{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,var(--bg))}
 .btns .mm{position:absolute;right:0;top:calc(100% + 6px);z-index:30;display:flex;flex-direction:column;gap:2px;min-width:190px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)}
 .btns .mm button{border:0;background:none;text-align:left;justify-content:flex-start;width:100%;margin:0}
@@ -9468,10 +9468,13 @@ const build0=build;build=function(){probeBar();build0.apply(this,arguments);cons
  const n=store.get(NK,{})[m.name]||'';$('#notetx').value=n;note.classList.toggle('has',!!n.trim());note.open=false;
  const add=(l,fn,c)=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.onclick=fn;if(c)b.className=c;$('#btns').appendChild(b);return b};
  /* seltene Aktionen in „⋯ Mehr“, damit die Knöpfe in eine Zeile passen */
- const bx=$('#btns'),ub=[...bx.children].find(b=>b.textContent.startsWith('✏️')),fv=[...bx.children].find(b=>/Favorit$/.test(b.textContent));
+ const bx=$('#btns');bx.querySelectorAll('.more').forEach(x=>x.remove());/* CTL-02: nie doppelt */
+ const ub=[...bx.children].find(b=>b.textContent.startsWith('✏️')),fv=[...bx.children].find(b=>/Favorit$/.test(b.textContent));
  if(ub)bx.appendChild(ub);if(fv){bx.appendChild(fv);const fs=()=>{const on=FAV.includes(m.name);fv.innerHTML=(on?'★':'☆')+'<span class="lb"> Favorit</span>';fv.setAttribute('aria-pressed',on);fv.title=on?'Aus Favoriten entfernen':'Als Favorit merken'};fs();fv.onclick=()=>{toggleFav(m.name);fs()}}
  bx.classList.toggle('voll',bx.children.length>2);
  const mo=document.createElement('details');mo.className='more';mo.innerHTML='<summary aria-label="Weitere Aktionen" title="Teilen, QR-Code, Fehler melden">⋯<span class="lb"> Mehr</span></summary><div class="mm" role="menu"></div>';bx.appendChild(mo);
+ /* CTL-01: Menü öffnet zur Seite mit Platz */
+ mo.addEventListener('toggle',()=>{const mm=mo.lastChild;mm.classList.remove('l');if(!mo.open)return;const r=mm.getBoundingClientRect();if(r.left<8)mm.classList.add('l')});
  const mi=(l,fn,c)=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','menuitem');b.textContent=l;b.onclick=()=>{mo.open=false;fn()};if(c)b.className=c;mo.lastChild.appendChild(b)};
  mi('🔗 Teilen',()=>share(m.name,base()+'#thema/'+SN[cur]));mi('▦ QR-Code',()=>qrShow(m.name,base()+'#thema/'+SN[cur]));mi('⚑ Fehler melden',topicReport,'rep');
 };
