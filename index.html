@@ -9968,5 +9968,12 @@ const r=render;render=function(){const x=r.apply(this,arguments);fix();return x}
 .auf:not(.aufdone)>details>summary b{color:#0f766e}:root[data-theme="dark"] .auf:not(.aufdone)>details>summary b{color:var(--mint)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .auf:not(.aufdone)>details>summary b{color:var(--mint)}}
 #pred .predx{width:auto;display:inline-flex;font-size:1em;color:var(--ink);border:1px solid var(--line);border-style:solid;font-weight:600;gap:6px;padding:6px 14px;margin:2px 0 4px}#pred .predx span{font-size:.92em}#pred .predx:hover{border-color:var(--flow)}
 #pred .predx{font-size:0}#pred .predx span{font-size:15px}#pred .predx span::before{content:"▸ ";color:var(--flow)}</style>
+<!-- UI-Audit UI-05 -->
+<script>/* UI-05: am Laptop keine Leiste mit einem einzelnen Knopf in der letzten Zeile; die Leiste wird so schmal, dass sich die Knöpfe gleichmäßiger verteilen */(()=>{const mq=matchMedia('(min-width:900px)');
+const rows=el=>{const t=[...el.querySelectorAll(':scope>button')].filter(b=>b.offsetParent).map(b=>b.offsetTop),u=[...new Set(t)];return{n:u.length,last:t.filter(x=>x===Math.max(...u)).length}};
+const bal=el=>{if(!el)return;el.style.maxWidth='';if(!mq.matches||getComputedStyle(el).flexWrap!=='wrap')return;let r=rows(el);if(r.n<2||r.last>1)return;const n=r.n;let w=el.getBoundingClientRect().width,ok='';
+ for(let i=0;i<60;i++){w-=12;el.style.maxWidth=w+'px';r=rows(el);if(r.n>n)break;if(r.last>1){ok=w+'px';break}}el.style.maxWidth=ok};
+const run=()=>['gs','ms'].forEach(i=>bal(document.getElementById(i)));
+const b=build;build=function(){const x=b.apply(this,arguments);run();return x};let t=0;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(run,150)});run()})();</script>
 </body>
 </html>
