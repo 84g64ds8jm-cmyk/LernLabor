@@ -9984,5 +9984,10 @@ const q=newQ;newQ=function(){const x=q.apply(this,arguments);done=true;save();re
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='pin')save()});addEventListener('pagehide',save)})();</script>
 <!-- UI-Audit TXT-02 -->
 <style>/* TXT-02 */#pflt .fltc{color:var(--acc);font-weight:600;font-size:.92em;margin-left:4px;text-decoration:underline;text-underline-offset:2px}#pflt[open] .fltc{display:none}</style>
+<!-- UI-Audit UI-03 -->
+<style>/* UI-03 (Teil): „✏️ Üben“ unter den Werten sieht aus wie „✏️ Aufgaben zu diesem Thema üben“ oben (gleiche Aktion, gleiche Hauptfarbe) */
+.btns button.ubp{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700}.btns button.ubp:hover{background:color-mix(in srgb,var(--navy) 85%,#fff);border-color:var(--navy)}
+:root[data-theme="dark"] .btns button.ubp{background:var(--mint);color:var(--navy);border-color:var(--mint)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btns button.ubp{background:var(--mint);color:var(--navy);border-color:var(--mint)}}</style>
+<script>/* UI-03 */(()=>{const m=()=>{const b=document.querySelector('#btns>button');if(b&&/Üben/.test(b.textContent))b.classList.add('ubp')};const b=build;build=function(){const x=b.apply(this,arguments);m();return x};m()})();</script>
 </body>
 </html>
