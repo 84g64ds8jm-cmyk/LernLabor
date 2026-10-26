@@ -5,6 +5,7 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
  const b=await chromium.launch(process.env.CHROMIUM?{executablePath:process.env.CHROMIUM}:{});const p=await b.newPage();const errs=[];
  p.on('pageerror',e=>errs.push('Seitenfehler: '+e.message));p.on('console',m=>{if(m.type()==='error'&&!/serviceWorker|sw\.js/.test(m.text()))errs.push('Konsole: '+m.text())});
  await p.goto('file://'+path.resolve(__dirname,'../index.html'));await p.waitForTimeout(500);
+ await p.addScriptTag({path:path.resolve(__dirname,'einheiten-regel.js')});
  const r=await p.evaluate(()=>{const bad=[],N=40,ok=v=>typeof v==='number'&&isFinite(v),txt=v=>typeof v==='string'&&v.trim().length>0;
   const chk=(w,q,a,u,s)=>{if(!txt(q))bad.push(w+': Aufgabentext leer');if(!ok(a))bad.push(w+': Ergebnis keine Zahl ('+a+')');if(typeof u!=='string')bad.push(w+': Einheit fehlt');if(!Array.isArray(s)||!s.length)bad.push(w+': Lösungsweg leer')};
   let n=0;for(const k of Object.keys(GEN))for(let i=0;i<N;i++){try{const x=GEN[k](mk(i*7919+1));chk('Übung „'+k+'“',x[0],x[1],x[2],x[3]);n++}catch(e){bad.push('Übung „'+k+'“: '+e.message)}}
@@ -29,15 +30,18 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
   const CNT=/^(Windungen|Teile|Stück|Haushalte|Personen|Fahrten)$/,AVG=/Median|Quartil|Mittel|Durchschnitt|Standardabweichung|Spannweite|durchschnittlich|je Schicht im Mittel/i,cnt=(w,a,u,q)=>{if((CNT.test(String(u).trim())||/^Wie viele (Windungen|Haushalte|Teile|fehlerhafte|Stück|Fahrten)/.test(q||''))&&!AVG.test(q||'')&&ok(a)&&Math.abs(a-Math.round(a))>1e-9)hint.push(w+': Zählgröße nicht ganzzahlig, z. B. '+a+' '+u)};
   for(const k of Object.keys(GEN))for(let i=0;i<N;i++){try{const x=GEN[k](mk(i*7919+1));cnt('Übung „'+k+'“',x[1],x[2],x[0])}catch(e){}}
   EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{f(mk(i*31337+5)).steps.forEach(s=>cnt('Prüfungsaufgabe „'+k+'“',s[1],s[2],s[0]))}catch(e){}}});
-  // Einheiten in Zwischenschritten: Eine Größe, die in der Aufgabe mit Einheit steht (mind. 3 Zeichen oder mit Komma), braucht die Einheit auch beim Einsetzen
-  {const nz=s=>String(s).replace(/[  ]/g,'').replace(/(\d)\.(\d)/g,'$1,$2'),UT='(?:[kMmcdµμn]?(?:m|g|N|Pa|W|Wh|V|A|J|Ω|s|l|mol|Hz|t)|bar|kWh|min|h|K|°C|°|€|ct|U|1/)(?![A-Za-zäöüß])',EXC=/lg|⌊|· 10 N\/cm²|^m_Lösung = /;
-   const qn=q=>{const S=new Set,D=new Set,re=new RegExp('(?<![\\d,])(\\d+(?:,\\d+)?)(?![\\d,])(\\s?'+UT+')?','g');let m;while(m=re.exec(nz(q)))(m[2]?S:D).add(m[1]);D.forEach(v=>S.delete(v));return S};
-   const eu=(w,q,sol)=>{const S=qn(q);(sol||[]).forEach(l=>{l=nz(l);const sg=l.split(/ = /);if(sg.length<3||EXC.test(l))return;sg.slice(1,-1).forEach(g=>{const re=/(?<![\d,²³⁰-⁹A-Za-z_])(\d+(?:,\d+)?)(?![\d,²³⁰-⁹])/g;let m;while(m=re.exec(g)){const v=m[1],rest=g.slice(m.index+v.length),pre=g.slice(0,m.index);if(!(v.length>=3||v.includes(','))||!S.has(v))continue;if(/^\s?(?:[A-Za-zΩµμ°€%‰]|1\/)/.test(rest)||/^\s?[·/÷]\s?10[⁰-⁹⁻]/.test(rest))continue;if(pre.split('(').length>pre.split(')').length&&/^[^=]*?\)\s?(?:[A-Za-zΩµ°€]|1\/)/.test(rest))continue;bad.push(w+': Einsetz-Schritt ohne Einheit bei '+v+' („'+l.slice(0,90)+'“)')}})})};
-   for(const k of Object.keys(GEN))for(let i=0;i<N;i++){try{const x=GEN[k](mk(i*7919+1));eu('Übung „'+k+'“',x[0],x[3])}catch(e){}}
-   for(const k of Object.keys(STEPS))for(let i=0;i<N;i++){try{const d=STEPS[k](mk(i*104729+3));d.steps.forEach(s=>eu('Mehrschritt „'+k+'“',d.intro+' '+s[0],s[3]))}catch(e){}}
-   EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{const d=f(mk(i*31337+5));d.steps.forEach(s=>eu('Prüfungsaufgabe „'+k+'“',(d.intro||'')+' '+s[0],s[3]))}catch(e){}}});
-   PXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{const d=f(mk(i*31337+7));d.steps.forEach(s=>eu('Praxisaufgabe „'+k+'“',(d.intro||'')+' '+s[0],s[3]))}catch(e){}}});
-   HW.forEach(u=>(u.x?[...u.tasks,u.x]:u.tasks).forEach(t=>{if(t.typ==='num')for(let i=0;i<N;i++){try{const c=t.gen();eu('Hausaufgabe „'+t.name+'“',c.q,c.sol)}catch(e){}}}))}
+  // Einheiten in jedem Rechenschritt (v194): jede Zahl, die für eine Größe steht, trägt ihre Einheit, auch in Folgezeilen, Tipps, Hausaufgaben, Mathe-Check und im Rechenweg der Themen
+  {const E=window.__EU,eu=(w,q,sol,u,dm)=>E(q,sol,u,dm).forEach(([v,l])=>bad.push(w+': Zahl '+v+' ohne Einheit („'+String(l).slice(0,90)+'“)')),dz=s=>!s[2]||s[2]==='%'?[2,3,4].map(n=>nf(s[1],n)).concat(nf(s[1]),String(+(+s[1]).toPrecision(4)).replace('.',',')):[];
+   const ms=(w,d)=>{let q=d.intro||'';const dm=[];d.steps.forEach(s=>{q+=' '+s[0];eu(w,q,s[3],s[2],dm);if(s[5])eu(w+' (Tipp)',q,[s[5]],s[2]);dm.push(...dz(s))})};
+   for(const k of Object.keys(GEN))for(let i=0;i<N;i++){try{const x=GEN[k](mk(i*7919+1));eu('Übung „'+k+'“',x[0],x[3],x[2])}catch(e){}}
+   for(const k of Object.keys(STEPS))for(let i=0;i<N;i++){try{ms('Mehrschritt „'+k+'“',STEPS[k](mk(i*104729+3)))}catch(e){}}
+   EXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{ms('Prüfungsaufgabe „'+k+'“',f(mk(i*31337+5)))}catch(e){}}});
+   PXW.forEach(([k,f])=>{for(let i=0;i<N;i++){try{ms('Praxisaufgabe „'+k+'“',f(mk(i*31337+7)))}catch(e){}}});
+   HW.forEach(u=>(u.x?[...u.tasks,u.x]:u.tasks).forEach(t=>{if(t.typ==='num')for(let i=0;i<N;i++){try{const c=t.gen();eu('Hausaufgabe „'+t.name+'“',c.q,c.sol,c.u)}catch(e){}}}));
+   for(let sd=1;sd<=40;sd++)mcNew(sd).qs.forEach(x=>eu('Mathe-Check',x.q,(x.sol||[]).map(l=>String(l).replace(/:/g,'/')),x.u||''));
+   M.forEach(m=>{if(!m.f)return;for(let k=0;k<6;k++){const s={};(m.p||[]).forEach(p=>{if(p[2]==='sel'){s[p[0]]=k%p[3].length;return}if(p[2]==='txt'){s[p[0]]=p[6];return}const v=k?p[2]+(p[3]-p[2])*((k*37)%10)/10:p[6];s[p[0]]=Math.round(v/p[4])*p[4]});let o;try{o=m.f.call(m,s,0)}catch(e){continue}
+    const q=(m.p||[]).map(p=>p[1]+' = '+s[p[0]]+' '+(p[5]||'')).join('; ');(o&&o.st||[]).forEach(([a,v])=>{const L=a+' = '+v;if(/\d\s?(?:[A-Za-zΩµ°€]|1\/)/.test(String(v).replace(/[²³]/g,''))&&!/pH|Merk|\dx\b|x²/.test(L))eu('Rechenweg „'+m.name+'“',q,[L],'x')})}});
+   for(const k of Object.keys(GEN))for(let i=0;i<5;i++){try{const w=numMC(GEN[k](mk(i*7919+1)),mk(5)).why||'';if(/;\s?=|(?<!\S)(\S+ \S+) = \1$/.test(w))bad.push('Ankreuz-Ansicht „'+k+'“: „; =“ oder doppeltes Ergebnis („'+w.slice(-60)+'“)')}catch(e){}}}
   const hs={};hint.forEach(h=>{const k=h.split(':')[0];if(!hs[k])hs[k]=h});return{n,topics:M.length,bad:[...new Set(bad)],hint:Object.values(hs)}});
  // Stufen: Filter liefert nur Aufgaben der gewählten Stufe, Vorschlag nach zwei Fehlern, Karte im Lernstand
  errs.push(...await p.evaluate(()=>{const bad=[];try{const seen={};for(const l of [1,2,3]){openPractice('Alle',null,l);for(let i=0;i<60;i++){newQ();const c=PS.cur;if(lvOf(c)!==l)bad.push('Stufen: Stufe '+l+' liefert '+c.k+' „'+c.n+'“ mit Stufe '+lvOf(c));if(c.xp)seen.xp=1;if(!$('#pt .lvb'))bad.push('Stufen: Etikett fehlt')}}
