@@ -8890,7 +8890,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=205,NEWS='Neue Prüfungsaufgabe „Betonieren im 3. Stock“: Dichte des Frischbetons aus der Mischung, Ladung im Fahrmischer, Pumpzeit, Druck und Motorleistung der Betonpumpe und die Zeitreserve bis zum Ende der Verarbeitbarkeit, mit Skizze.';
+const APPV=204,NEWS='Neue Prüfungsaufgabe „Betonieren im 3. Stock“: Dichte des Frischbetons aus der Mischung, Ladung im Fahrmischer, Pumpzeit, Druck und Motorleistung der Betonpumpe und die Zeitreserve bis zum Ende der Verarbeitbarkeit, mit Skizze.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['26.10.2026',196,['Zahleneingabe: Eine Zahl wie 1.250 (ein Punkt, genau drei Ziffern dahinter) wird nicht mehr automatisch gedeutet. Die App fragt „Meinst Du 1,25 oder 1250?“ und wertet erst nach der Korrektur (Üben, Hausaufgaben, Mathe-Check). In der Probeprüfung erscheint der Hinweis unter dem Feld; bleibt die Eingabe unklar, zählt sie nicht als richtig.']],
