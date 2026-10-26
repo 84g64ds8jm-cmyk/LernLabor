@@ -8133,6 +8133,10 @@ function hwView(){const box=$('#hw');if(!box)return;const s=hwGet();
    if(p.querySelector('.hwki'))p.querySelector('.hwki').onclick=async()=>{const r=await KI.grade(p.querySelector('.hwkg'),{q:t.q,a:t.a},ta.value,3);if(r!==null)hwSet(t.id,{done:true,ok:r>=1.5,ki:r,txt:ta.value.slice(0,4000)})}}
   wrap.append(p)})}
 /* Dashboard */
+/* Test-Themen ausblenden: Standard ist die Version für Lernende. Unter Darstellung lässt sich die Testversion einschalten (ll_testv, nur auf diesem Gerät). Die Dozentenversion zeigt sie immer. Ausgeblendete Themen fehlen in Menüs, Suche, Glossar und Formelsammlung. */
+const TEST_SICHTBAR=(()=>{try{return JSON.parse(localStorage.getItem('ll_testv'))===true}catch(e){return false}})(),TWEG=new Set(TEST_SICHTBAR||DOZENT?[]:M.filter(m=>m.test||m.g===MDI).map(m=>m.name));
+for(let i=M.length-1;i>=0;i--)if(TWEG.has(M[i].name))M.splice(i,1);
+if(TWEG.size)Object.keys(XL).forEach(f=>Object.keys(XL[f]).forEach(g=>{if(!M.some(m=>m.F===f&&m.g===g))delete XL[f][g]}));
 const S=M.map(m=>Object.fromEntries(m.p.map(q=>[q[0],q[2]=='sel'?q[4]:q[2]=='txt'?q[3]:q[6]])));
 let cur=-1,fi=0,clock=0,play=!matchMedia('(prefers-reduced-motion:reduce)').matches,last=performance.now(),uid=0;
 /* ===== Simulation mit Auftrag: Zielwert erreichen, dann in einem Satz begründen ===== */
@@ -8565,7 +8569,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=182,NEWS='Prüfungsaufgaben: Neues Auswahlfeld nach Fach (Physik, Elektrotechnik, Chemie, Mathematik, Statistik). Mehrteilige Aufträge zeigen jetzt alle Teile, mit Stufe in Klammern.';
+const APPV=183,NEWS='Die Vertiefungsthemen zum Ausprobieren (Abzeichen „Test“) sind ausgeblendet. Wer sie trotzdem ansehen möchte, schaltet unter Darstellung auf „Testversion“.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['24.10.2026',142,['Prüfungssimulation: 8 Rechenaufgaben und 2 Erläuterungsaufgaben (vorher 10 Rechenaufgaben). Gewichtung unverändert: Physik 60, Chemie 20, Statistik und Mathematik 20 Punkte. Erläuterungen bewerten die Teilnehmenden selbst mit dem Erwartungshorizont.','Lernstand: „sicher geübt“ verlangt zusätzlich zwei verschiedene Aufgabenarten (vorher nur 80 % richtig und Stufe Anwenden). Ältere Lernstände ohne Arten-Zählung behalten die alte Regel.']],
@@ -8906,6 +8910,8 @@ const GLU=[
 ['W/m²','Watt je Quadratmeter','Bestrahlungsstärke','',''],
 ['Ω','Ohm','elektrischer Widerstand','1 Ω = 1 V / A','']
 ];
+/* Glossar: Einträge, die nur zu ausgeblendeten Test-Themen gehören, ebenfalls ausblenden */
+if(TWEG.size)[[GL,5],[GLB,3]].forEach(([a,k])=>{for(let i=a.length-1;i>=0;i--){const t=a[i][k]||[];if(t.length&&t.every(n=>TWEG.has(n)))a.splice(i,1);else if(t.length)a[i][k]=t.filter(n=>!TWEG.has(n))}});
 const GLGR={α:'Alpha',β:'Beta',γ:'Gamma',δ:'Delta',ε:'Epsilon',η:'Eta',θ:'Theta',ϑ:'Theta',λ:'Lambda',μ:'My (Mü)',ν:'Ny (Nü)',π:'Pi',ρ:'Rho',σ:'Sigma',τ:'Tau',φ:'Phi',ω:'Omega'};
 const GLFN={P:FP,C:FC,E:FE,S:FS,M:FM,X:FSI},GLAB='αβγδεζηθϑικλμνξοπρσςτυφχψω';
 let GLV=false,GLN=false,GLS={t:'z',q:'',f:''};
@@ -9498,6 +9504,10 @@ const memView0=memView;memView=function(){memView0.apply(this,arguments);const L
 const zA=()=>{const z=+store.get('ll_fs',1)||1;document.documentElement.style.setProperty('--z',z);$$('#dfs button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.z===z)))};
 $('#dbg').insertAdjacentHTML('afterend','<p>Schriftgröße</p><div class="dsg" id="dfs"><button type="button" data-z="1">Normal</button><button type="button" data-z="1.12">Groß</button><button type="button" data-z="1.25">Sehr groß</button></div>');
 $$('#dfs button').forEach(b=>b.onclick=()=>{store.set('ll_fs',+b.dataset.z);zA()});zA();
+/* Umschalter Version für Lernende / Testversion (lädt neu, weil die Themenliste beim Start entsteht) */
+if(!DOZENT){$('#dfs').insertAdjacentHTML('afterend','<p>Themen</p><div class="dsg" id="dtv"><button type="button" data-tv="0">Version für Lernende</button><button type="button" data-tv="1">Testversion</button></div><p class="sub">Die Testversion zeigt zusätzlich die Vertiefungen mit Abzeichen „Test“. Sie sind nur zum Ansehen da.</p>');
+ $$('#dtv button').forEach(b=>{b.setAttribute('aria-pressed',String((b.dataset.tv==='1')===TEST_SICHTBAR));b.onclick=()=>{if((b.dataset.tv==='1')===TEST_SICHTBAR)return;store.set('ll_testv',b.dataset.tv==='1');try{sessionStorage.setItem('ll_tvopen','1')}catch(e){}location.reload()}});
+ try{if(sessionStorage.getItem('ll_tvopen')){sessionStorage.removeItem('ll_tvopen');const d=$('#ftd');if(d){d.open=true;setTimeout(()=>d.scrollIntoView({block:'start'}),50)}}}catch(e){}}
 
 /* ---------- Darstellung: eigenes Symbol im Menüband ---------- */
 const meA=()=>{const k=store.get('ll_me','n'),[e,t]=meSym(),b=$('#fs [data-g="3"]');$$('#dme button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.me===k)));if(NG[3]){NG[3][0]=e;NG[3][1]=t}if(b){b.querySelector('.ni').textContent=e;b.querySelector('.ni+span').textContent=t}};
