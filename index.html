@@ -9900,5 +9900,18 @@ const b=build;build=function(){const r=b.apply(this,arguments);place();return r}
 <style>/* LRN-01 */#gs.one,#ms.one{display:none!important}</style>
 <script>/* LRN-01: Leiste mit nur einem Eintrag ausblenden, der Pfad über dem Titel nennt Gebiet und Thema schon */(()=>{const one=()=>['#gs','#ms'].forEach(s=>{const e=document.querySelector(s);if(e)e.classList.toggle('one',e.querySelectorAll('button').length===1)});
 const b=build;build=function(){const r=b.apply(this,arguments);one();return r};one()})();</script>
+<!-- UI-Audit A11Y-04 -->
+<style>/* A11Y-04 */.skipl{position:absolute;left:8px;top:-60px;z-index:9999;background:var(--card);color:var(--ink);border:2px solid var(--flow);border-radius:10px;padding:10px 16px;font-weight:700;text-decoration:none}.skipl:focus{top:8px}</style>
+<script>/* A11Y-04: Fokus bleibt nach „Nächste Aufgabe“ und Seitenwechsel im Inhalt, Sprunglink zum Inhalt */(()=>{
+const vis=e=>e&&e.offsetParent!==null&&!e.closest('[hidden]');
+const head=()=>{for(const s of ['#tht','#practice h2','#sim h2','#mem h2','#hw h2','#mc h2','#gl h2','#fsm h2','#doz h2','#ki h2','#home h2','main h2','h2']){const e=[...document.querySelectorAll(s)].find(vis);if(e)return e}};
+const fh=()=>{const h=head();if(!h)return false;if(!h.hasAttribute('tabindex'))h.setAttribute('tabindex','-1');h.focus({preventScroll:true});return true};
+const a=document.createElement('a');a.className='skipl';a.href='#';a.textContent='Zum Inhalt springen';a.onclick=e=>{e.preventDefault();const h=head();if(h){h.scrollIntoView({block:'start'});fh()}};document.body.prepend(a);
+/* Nächste Aufgabe: am Laptop gleich ins Antwortfeld, am Handy auf die Frage (keine Tastatur, die aufspringt) */
+let nx=false;document.addEventListener('click',e=>{if(e.target.closest('#pnx,#pag'))nx=true},true);
+const q=newQ;newQ=function(){const r=q.apply(this,arguments);if(nx){nx=false;const pin=document.getElementById('pin'),pq=document.getElementById('pq');if(matchMedia('(pointer:fine)').matches&&vis(pin))pin.focus({preventScroll:true});else if(vis(pq)){pq.setAttribute('tabindex','-1');pq.focus({preventScroll:true})}}return r};
+/* Seitenwechsel: wenn der Fokus auf dem Seitenkörper gelandet ist, auf die Überschrift der neuen Ansicht setzen */
+let t=0;const chk=()=>{clearTimeout(t);t=setTimeout(()=>{const ae=document.activeElement;if(!ae||ae===document.body||!vis(ae))fh()},250)};
+document.addEventListener('click',e=>{if(e.target.closest('button,a,[role=menuitem],summary'))chk()});document.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')chk()});addEventListener('popstate',chk)})();</script>
 </body>
 </html>
