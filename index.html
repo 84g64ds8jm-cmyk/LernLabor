@@ -9930,5 +9930,19 @@ new MutationObserver(sync).observe(document.body,{childList:true});sync()})();</
 #ms button::after{inset:-5px 0}#ms{padding-top:5px;padding-bottom:5px}#tq #tqb::after{inset:-9px -2px}
 .smst button,.simp,.simr,#legm{position:relative}.smst button::after,.simp::after,.simr::after,#legm::after{content:'';position:absolute;top:min(0px,calc(50% - 22px));bottom:min(0px,calc(50% - 22px));left:min(0px,calc(50% - 22px));right:min(0px,calc(50% - 22px))}
 label.sck{display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}label.sck>#sct{width:22px;height:22px;margin:0;accent-color:var(--acc)}</style>
+<!-- UI-Audit A11Y-03 -->
+<script>/* A11Y-03: Hauptmenü nach dem Menümuster: Fokus auf den ersten Eintrag, Pfeiltasten, Pos1/Ende, Tab schließt */(()=>{const nm=document.getElementById('nm'),fs=document.getElementById('fs');if(!nm||!fs)return;
+const items=()=>[...nm.querySelectorAll('[role=menuitem]')].filter(b=>!b.disabled&&b.offsetParent!==null);
+let kb=false;
+fs.addEventListener('keydown',e=>{const b=e.target.closest('button');if(!b)return;if(e.key==='Enter'||e.key===' ')kb=true;
+ if(e.key==='ArrowDown'&&b.getAttribute('aria-expanded')==='true'&&!nm.hidden){e.preventDefault();const i=items();if(i[0])i[0].focus()}});
+fs.addEventListener('click',()=>{if(!kb)return;kb=false;setTimeout(()=>{if(!nm.hidden){const i=items();if(i[0])i[0].focus()}},0)});
+nm.addEventListener('keydown',e=>{const i=items(),k=i.indexOf(document.activeElement);if(!i.length)return;
+ if(e.key==='ArrowDown'){e.preventDefault();i[(k+1)%i.length].focus()}else if(e.key==='ArrowUp'){e.preventDefault();i[(k-1+i.length)%i.length].focus()}
+ else if(e.key==='Home'){e.preventDefault();i[0].focus()}else if(e.key==='End'){e.preventDefault();i[i.length-1].focus()}
+ else if(e.key==='Tab'){const o=fs.querySelector('[aria-expanded=true]');nmClose();if(o){e.preventDefault();o.focus()}}});
+/* Untermenü (z. B. Sonstiges): Fokus bleibt im Menü */
+new MutationObserver(()=>{if(!nm.hidden&&(document.activeElement===document.body||!document.activeElement)&&nm.dataset.kf){const i=items();if(i[0])i[0].focus()}}).observe(nm,{childList:true});
+nm.addEventListener('focusin',()=>{nm.dataset.kf='1'});nm.addEventListener('pointerdown',()=>{delete nm.dataset.kf})})();</script>
 </body>
 </html>
