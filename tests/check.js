@@ -14,6 +14,9 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
   HW.forEach(u=>(u.x?[...u.tasks,u.x]:u.tasks).forEach(t=>{if(t.typ==='num')for(let i=0;i<N;i++){try{const c=t.gen();chk('Hausaufgabe „'+t.name+'“',c.q,c.a,c.u,c.sol);n++}catch(e){bad.push('Hausaufgabe „'+t.name+'“: '+e.message)}}}));
   MCQ.forEach(x=>{if(!txt(x[1])||!Array.isArray(x[2])||x[2].length<2||x[2].some(o=>!txt(o)))bad.push('Ankreuzfrage „'+x[0]+'“: Antworten oder Lösung fehlerhaft')});
   if(keyTxt(151.74,'',{dp:2})!=='151,74'||keyTxt(1094.8,'€',{})!=='1094,80 €')bad.push('Ergebnisanzeige: Stellen oder Cent falsch ('+keyTxt(151.74,'',{dp:2})+', '+keyTxt(1094.8,'€',{})+')');
+  [['0.125',.125],['0,125',.125],['1.250',1.25],['1.500',1500],['1,05·10³',1050],['1,5 · 10⁻⁵',1.5e-5],['2e3',2000],['3/4',.75],['1 1/2',1.5],['12 mm',12],['−4',-4]].forEach(([e,w])=>{const v=pnumFor(e,w);if(!(Math.abs(v-w)<=1e-12*Math.max(1,Math.abs(w))))bad.push('Zahleneingabe: „'+e+'“ ergibt '+v+' statt '+w)});
+  if(!isNaN(pnum('abc'))||!isNaN(pnum('')))bad.push('Zahleneingabe: Text ohne Zahl wird nicht abgelehnt');
+  ['Grundrechenregeln','Negative Zahlen'].forEach(k=>{if(!GEN[k])return;for(let i=0;i<20;i++){const x=GEN[k](mk(i*7919+1));if(Number.isInteger(x[1])){const t=x[4]||{};if(t.rel!=null||!(t.abs<=1e-6))bad.push('Toleranz: „'+k+'“ ganzzahlig, aber nicht exakt ('+JSON.stringify(t)+')')}}});
   if(tolOf(.0005,'mm',8).rel!==.0005||tolOf(undefined,'€',100).abs!==.5)bad.push('Toleranz: Zahl oder Geld falsch ausgewertet');
   M.forEach((m,i)=>{try{go(i);render();if(!document.title.startsWith(m.name+' · '))bad.push('Thema „'+m.name+'“: Seitentitel fehlt ('+document.title+')')}catch(e){bad.push('Thema „'+m.name+'“: '+e.message)}});cur=-1;prac=false;nav();
   // Fachliche Regeln
