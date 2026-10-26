@@ -9975,5 +9975,12 @@ const bal=el=>{if(!el)return;el.style.maxWidth='';if(!mq.matches||getComputedSty
  for(let i=0;i<60;i++){w-=12;el.style.maxWidth=w+'px';r=rows(el);if(r.n>n)break;if(r.last>1){ok=w+'px';break}}el.style.maxWidth=ok};
 const run=()=>['gs','ms'].forEach(i=>bal(document.getElementById(i)));
 const b=build;build=function(){const x=b.apply(this,arguments);run();return x};let t=0;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(run,150)});run()})();</script>
+<!-- UI-Audit NAV-04 -->
+<script>/* NAV-04: aktuelle Übungsaufgabe für diesen Tab merken; nach dem Neuladen steht dieselbe Aufgabe mit der begonnenen Eingabe da */(()=>{const K='ll_pcur';
+const rt=()=>{try{return window.llRoute?llRoute():location.hash}catch(e){return location.hash}};
+const save=()=>{try{const c=PS.cur;if(!c||PS.exam||c.k==='oral'||!prac){return}const j=JSON.stringify(c);if(JSON.stringify(JSON.parse(j))!==j)return;const p=document.getElementById('pin');sessionStorage.setItem(K,JSON.stringify({r:rt(),c:JSON.parse(j),v:p?p.value:''}))}catch(e){}};
+let done=false;const restore=()=>{if(done)return;try{const s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&&s.c&&s.r===rt()&&prac&&!PS.exam){done=true;PS.cur=s.c;renderQ();const p=document.getElementById('pin');if(p&&s.v)p.value=s.v}}catch(e){}};
+const q=newQ;newQ=function(){const x=q.apply(this,arguments);done=true;save();return x};restore();setTimeout(()=>{restore();done=true},0);
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='pin')save()});addEventListener('pagehide',save)})();</script>
 </body>
 </html>
