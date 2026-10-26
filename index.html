@@ -1728,11 +1728,13 @@ function PHS(s){
  /* Strahl: weiß bis zum Filter, dann farbig, hinter der Küvette schwächer */
  h+=`<path d="M70 ${y-6}L92 ${y-8}V${y+8}L70 ${y+6}Z" fill="#fde68a" opacity=".7"/><path d="M108 ${y-8}H${cx0}V${y+8}H108Z" fill="${col}" opacity=".85"/><path d="M${cx1} ${y-8}H272V${y+8}H${cx1}Z" fill="${col}" opacity="${(.85*T).toFixed(3)}"/>`;
  h+=`<ellipse cx="88" cy="${y}" rx="5" ry="20" fill="#bae6fd" opacity=".8" stroke="var(--ink)" stroke-width="1.2"/>`+BAR3(98,y-30,8,60,col,8,{op:.85});
- /* Küvette: Glas mit Lösung, Deckel */
- h+=BAR3(cx0,y-38,cw,78,MN,12,{op})+`<rect x="${cx0}" y="${y-56}" width="${cw}" height="18" fill="#e2e8f0" opacity=".5"/>`+`<path d="M${cx0} ${y-56}h${cw}l12 -12h-${cw}Z" fill="#94a3b8" stroke="var(--ink)" stroke-width="1.2"/><rect x="${cx0}" y="${y-56}" width="${cw}" height="96" fill="url(#g-glas)" stroke="var(--ink)" stroke-width="1.5"/><path d="M${cx0} ${y+44}h${cw}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3"/>`;
- h+=`<path d="M${cx0} ${y+52}h${cw}M${cx0} ${y+48}v8M${cx1} ${y+48}v8" stroke="var(--ink)" stroke-width="1.3"/>`;
+ /* Küvette: geschlossener Glasquader (Tiefe 10) mit Lösung und Deckel; Deckel bleibt unter der Oberkante des Sichtfensters (y = 108) */
+ const gt=y-44,gb=y+36;
+ h+=`<path d="M${cx0+10} ${gt-10}V${gb-10}H${cx1+10}M${cx0+10} ${gb-10}L${cx0} ${gb}" fill="none" stroke="var(--ink)" stroke-width="1" opacity=".45"/>`;
+ h+=BAR3(cx0,y-30,cw,66,MN,10,{op})+`<path d="M${cx1} ${gt}L${cx1+10} ${gt-10}V${gb-10}L${cx1} ${gb}Z" fill="#e2e8f0" opacity=".35" stroke="var(--ink)" stroke-width="1.3" stroke-linejoin="round"/><rect x="${cx0}" y="${gt}" width="${cw}" height="14" fill="#e2e8f0" opacity=".5"/><rect x="${cx0}" y="${gt}" width="${cw}" height="${gb-gt}" fill="url(#g-glas)" stroke="var(--ink)" stroke-width="1.5"/>`+`<path d="M${cx0} ${gt}L${cx0+10} ${gt-10}H${cx1+10}L${cx1} ${gt}Z" fill="#94a3b8" stroke="var(--ink)" stroke-width="1.3" stroke-linejoin="round"/><path d="M${cx0} ${gb+4}h${cw}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3"/>`;
+ h+=`<path d="M${cx0} ${y+46}h${cw}M${cx0} ${y+42}v8M${cx1} ${y+42}v8" stroke="var(--ink)" stroke-width="1.3"/>`;
  h+=BAR3(272,y-26,22,52,'#334155',10)+`<rect x="272" y="${y-8}" width="5" height="16" fill="#38bdf8"/>`;
- h+=ORBT(56,228,'Lampe',12,'middle','var(--mute)',700)+ORBT(102,228,'Filter',12,'middle','var(--mute)',700)+ORBT(200,228,'Küvette',12,'middle','var(--mute)',700)+ORBT(200,244,'d = '+String(d).replace('.',',')+' cm',12,'middle','var(--ink)',800)+ORBT(284,228,'Fotodiode',12,'middle','var(--mute)',700);
+ h+=ORBT(56,231,'Lampe',12,'middle','var(--mute)',700)+ORBT(102,231,'Filter',12,'middle','var(--mute)',700)+ORBT(200,231,'Küvette',12,'middle','var(--mute)',700)+ORBT(200,246,'d = '+String(d).replace('.',',')+' cm',12,'middle','var(--ink)',800)+ORBT(284,231,'Fotodiode',12,'middle','var(--mute)',700);
  /* Bedienfeld */
  h+=`<rect x="120" y="258" width="150" height="40" rx="6" fill="#0f172a" stroke="var(--ink)" stroke-width="1.5"/><text x="195" y="284" text-anchor="middle" style="font-size:18px;font-weight:800;fill:#4ade80">A = ${A.toFixed(3).replace('.',',')}</text>`+[36,66].map(x=>`<circle cx="${x}" cy="274" r="9" fill="#64748b" stroke="var(--ink)" stroke-width="1.3"/>`).join('')+`<text x="51" y="300" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#334155">${L[1]} nm</text>`;
  h+=ORBT(20,330,'I / I₀ = '+(T*100).toFixed(1).replace('.',',')+' %',16,'start','var(--ink)',700)+ORBT(20,358,'KMnO₄ schluckt grünes Licht',14,'start','var(--mute)',600);
