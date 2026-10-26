@@ -9880,5 +9880,9 @@ const tick=(()=>{let t=0;return()=>{const n=Date.now();if(n-t<45)return;t=n;
 <style>/* RES-03: Menüband auf sehr schmalen Handys einzeilig, alle Reiter gleich hoch */
 @media(max-width:359px){#fs button{font-size:11px;letter-spacing:-.01em;white-space:nowrap;padding:6px 1px}}
 </style>
+<!-- UI-Audit TXT-01 -->
+<script>/* TXT-01: kurzer Such-Platzhalter auf schmalen Bildschirmen, Beispiele bleiben im Titel */
+(()=>{const q=document.getElementById('q');if(!q)return;const L=q.placeholder,mq=matchMedia('(max-width:599px)'),ms=matchMedia('(max-width:359px)'),up=()=>{q.placeholder=ms.matches?'Suchen …':mq.matches?'Thema oder Formel …':L};q.title=L;up();mq.addEventListener('change',up);ms.addEventListener('change',up)})();
+</script>
 </body>
 </html>
