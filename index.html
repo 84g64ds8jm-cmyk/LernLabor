@@ -2116,7 +2116,7 @@ const MKLV=[
  ['Atom',1.5e-10,'Kohlenstoffatom, 0,15 nm',[MKT[0]-5.1e-8,MKT[1]],MKT,1e-9,null,(k,vb,W,t)=>W<9e-9?MKATM(k,vb,Math.min(1,(9e-9-W)/4e-9),t):'']];
 /* Reihenfolge für den Blickpunkt (groß → klein) */
 const MKFO=['Mensch','Hand','Ameise','Haar','Hornzellen','Bakterium','Virus','DNA','Atom'].map(n=>MKLV.find(o=>o[0]===n));
-const MKFR=o=>(o[0]==='Haar'?4:1.7)*o[1];
+const MKFR=o=>(o[0]==='Haar'?4:o[0]==='Atom'?4.5:1.7)*o[1];
 function MKZOOM(s,t,h){
  const z=s.z,W=3*10**(-z),WX=22,WY=52,WS=310,sc=WS/W,CX=WX+WS/2,CY=WY+WS/2;
  /* Blickpunkt gleitet logarithmisch von Ebene zu Ebene */
