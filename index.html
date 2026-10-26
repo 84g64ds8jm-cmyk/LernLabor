@@ -1907,23 +1907,6 @@ M.push({g:'Physik',name:'Welle-Teilchen-Dualismus',test:1,anim:1,desc:'Zusammenf
 const MKOB=[[4,.1],[10,.25],[40,.65],[100,1.25]],MKOK=[10,15],
  MKL=m=>{const u=m>=1?[1,'m']:m>=.01?[.01,'cm']:m>=1e-3?[1e-3,'mm']:m>=1e-6?[1e-6,'µm']:m>=1e-9?[1e-9,'nm']:[1e-12,'pm'];return String(+(m/u[0]).toPrecision(2)).replace('.',',')+' '+u[1]},
  MKN=v=>String(+v.toPrecision(3)).replace('.',',');
-/* Größenordnungen: Breite w und Höhe h in m, Zeichnung im Kasten (x links, y unten, Breite b, Höhe c in px) */
-const MKG=[
- ['Atom',1e-10,1e-10,'C-Atom, 0,1 nm',(x,y,b,c)=>`<circle cx="${x+b/2}" cy="${y-c/2}" r="${b/2}" fill="url(#g-glow)"/>`+BALL(x+b/2,y-c/2,b*.32,'#94a3b8',1)],
- ['DNA',2e-9,7e-9,'DNA-Strang, 2 nm breit',(x,y,b,c)=>{let p='',q='',r='';for(let i=0;i<=40;i++){const v=i/40,yy=y-v*c,a=v*Math.PI*4;p+=(i?'L':'M')+(x+b/2+b/2*Math.sin(a)).toFixed(1)+' '+yy.toFixed(1);q+=(i?'L':'M')+(x+b/2-b/2*Math.sin(a)).toFixed(1)+' '+yy.toFixed(1);if(i%3==1)r+=`M${(x+b/2+b/2*Math.sin(a)).toFixed(1)} ${yy.toFixed(1)}H${(x+b/2-b/2*Math.sin(a)).toFixed(1)}`}const w=Math.max(1,b*.12);return`<path d="${r}" stroke="#94a3b8" stroke-width="${w*.6}"/><path d="${p}" fill="none" stroke="#2563eb" stroke-width="${w}"/><path d="${q}" fill="none" stroke="#f97316" stroke-width="${w}"/>`}],
- ['Virus',1e-7,1e-7,'Grippevirus, 100 nm',(x,y,b,c)=>{let s='';for(let i=0;i<14;i++){const a=i/14*2*Math.PI;s+=`M${(x+b/2+b*.38*Math.cos(a)).toFixed(1)} ${(y-c/2+b*.38*Math.sin(a)).toFixed(1)}L${(x+b/2+b*.5*Math.cos(a)).toFixed(1)} ${(y-c/2+b*.5*Math.sin(a)).toFixed(1)}`}return`<path d="${s}" stroke="#7c3aed" stroke-width="${Math.max(1,b*.05)}" stroke-linecap="round"/>`+BALL(x+b/2,y-c/2,b*.38,'#a855f7',1)}],
- ['Bakterium',2e-6,8e-7,'Bakterium (E. coli), 2 µm',(x,y,b,c)=>{const g=`<path d="M${x+b} ${y-c/2}c${b*.15} ${-c*.6} ${b*.2} ${c*.6} ${b*.35} 0" fill="none" stroke="#15803d" stroke-width="${Math.max(1,c*.06)}"/>`;return g+`<rect x="${x}" y="${y-c}" width="${b}" height="${c}" rx="${c/2}" fill="#22c55e" stroke="var(--ink)" stroke-width="1.2"/><rect x="${x}" y="${y-c}" width="${b}" height="${c}" rx="${c/2}" fill="url(#g-cyl)"/>`}],
- ['Blutkörperchen',7.5e-6,7.5e-6,'rotes Blutkörperchen, 7,5 µm',(x,y,b,c)=>`<circle cx="${x+b/2}" cy="${y-c/2}" r="${b/2}" fill="#dc2626" stroke="var(--ink)" stroke-width="1.2"/><circle cx="${x+b/2}" cy="${y-c/2}" r="${b/2}" fill="url(#g-ball)"/><circle cx="${x+b*.52}" cy="${y-c*.48}" r="${b*.2}" fill="#7f1d1d" opacity=".35"/>`],
- ['Hautzelle',3e-5,2.4e-5,'Hautzelle, 30 µm',(x,y,b,c)=>`<path d="M${x+b*.1} ${y-c*.15}Q${x} ${y-c*.6} ${x+b*.25} ${y-c}L${x+b*.8} ${y-c*.92}Q${x+b} ${y-c*.5} ${x+b*.88} ${y-c*.1}Z" fill="#fbcfe8" stroke="var(--ink)" stroke-width="1.2"/>`+BALL(x+b*.5,y-c*.52,Math.min(b,c)*.16,'#7c3aed',1)],
- ['Haar',7e-5,3.2e-4,'Haar, 70 µm dick',(x,y,b,c)=>{let s='';for(let k=1;k<12;k++){const yy=y-c*k/12;s+=`M${x} ${(yy+b*.12).toFixed(1)}Q${x+b/2} ${(yy-b*.12).toFixed(1)} ${x+b} ${(yy+b*.12).toFixed(1)}`}return ROD(x,y-c,b,c,'#92400e',1.2)+`<path d="${s}" fill="none" stroke="#451a03" stroke-width="${Math.max(.6,b*.02)}" opacity=".6"/>`}],
- ['Ameise',6e-3,2.4e-3,'Ameise, 6 mm',(x,y,b,c)=>{let l='';const st=Math.max(1,b*.02);[.36,.48,.6].forEach((u,i)=>{l+=`M${x+b*u} ${y-c*.42}L${x+b*(u-.12+i*.08)} ${y}M${x+b*u} ${y-c*.42}L${x+b*(u+.06)} ${y-c*.05}`});l+=`M${x+b*.88} ${y-c*.6}Q${x+b*.95} ${y-c*1.05} ${x+b} ${y-c*.95}`;
-  return`<path d="${l}" fill="none" stroke="#431407" stroke-width="${st}" stroke-linecap="round"/>`+[[.2,.18,.3],[.5,.12,.22],[.82,.12,.2]].map(e=>`<ellipse cx="${x+b*e[0]}" cy="${y-c*.5}" rx="${b*e[1]}" ry="${c*e[2]}" fill="#7c2d12" stroke="var(--ink)" stroke-width="1"/><ellipse cx="${x+b*e[0]}" cy="${y-c*.5}" rx="${b*e[1]}" ry="${c*e[2]}" fill="url(#g-ball)"/>`).join('')}],
- ['Münze',.02325,.02325,'1-Euro-Münze, 23 mm',(x,y,b,c)=>`<ellipse cx="${x+b/2}" cy="${y-c/2}" rx="${b/2}" ry="${c/2}" fill="#d4a017" stroke="var(--ink)" stroke-width="1.2"/><ellipse cx="${x+b/2}" cy="${y-c/2}" rx="${b*.34}" ry="${c*.34}" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/><ellipse cx="${x+b/2}" cy="${y-c/2}" rx="${b/2}" ry="${c/2}" fill="url(#g-ball)"/>`],
- ['Smartphone',.072,.15,'Smartphone, 15 cm',(x,y,b,c)=>`<rect x="${x}" y="${y-c}" width="${b}" height="${c}" rx="${b*.14}" fill="#1e293b" stroke="var(--ink)" stroke-width="1.2"/><rect x="${x+b*.07}" y="${y-c*.95}" width="${b*.86}" height="${c*.9}" rx="${b*.08}" fill="#38bdf8" opacity=".85"/><rect x="${x+b*.07}" y="${y-c*.95}" width="${b*.3}" height="${c*.9}" fill="#fff" opacity=".18"/>`,.15],
- ['Mensch',1.1,1.8,'Mensch, 1,8 m',(x,y,b,c)=>{const m=x+b/2,u=c/18,st=`stroke="var(--ink)" stroke-width="1.2"`;return`<rect x="${m-2.2*u}" y="${y-9*u}" width="${1.9*u}" height="${9*u}" rx="${.6*u}" fill="#1e3a8a" ${st}/><rect x="${m+.3*u}" y="${y-9*u}" width="${1.9*u}" height="${9*u}" rx="${.6*u}" fill="#1e3a8a" ${st}/>`+
-  `<rect x="${m-5.4*u}" y="${y-15*u}" width="${1.7*u}" height="${6.6*u}" rx="${.8*u}" fill="#f59e0b" ${st}/><rect x="${m+3.7*u}" y="${y-15*u}" width="${1.7*u}" height="${6.6*u}" rx="${.8*u}" fill="#f59e0b" ${st}/>`+
-  `<rect x="${m-3.6*u}" y="${y-15.4*u}" width="${7.2*u}" height="${7*u}" rx="${1.4*u}" fill="#f59e0b" ${st}/><rect x="${m-3.6*u}" y="${y-15.4*u}" width="${7.2*u}" height="${7*u}" rx="${1.4*u}" fill="url(#g-cyl)"/>`+BALL(m,y-16.9*u,1.4*u,'#fcd34d',1.2)+`<path d="M${m-1.6*u} ${y-17.2*u}h${3.2*u}" stroke="#78350f" stroke-width="${.5*u}"/>`},1.8]];
-MKG.forEach(o=>{if(o[5]==null)o[5]=o[1]});
 function MIK(s,t){
  let h='';const ob=MKOB[s.ob],ok=MKOK[s.ok],V=ob[0]*ok,NA=ob[1];
  if(s.v==0){
@@ -2009,16 +1992,146 @@ function MIK(s,t){
   return{vb:'0 0 640 400',svg:h,res:[[V+'×','Gesamtvergrößerung'],[MKN(dA)+' µm','Auflösung d (Abbe)'],[st0[0],'Bewertung']],th:['Objektiv','NA','d bei '+l+' nm','nützlich bis'],
    rows:MKOB.map(o=>[o[0]+'×'+(o[0]==100?' (Öl)':''),MKN(o[1]),MKN(l/1000/(2*o[1]))+' µm',Math.round(1000*o[1])+'×']),
    st:[['V = V_Obj · V_Ok',`${ob[0]} · ${ok} = ${V}`],['d = λ / (2 · NA)',`${l} nm / (2 · ${MKN(NA)}) = ${MKN(dA*1000)} nm = ${MKN(dA)} µm`],['Auge','Das Auge trennt aus 25 cm Abstand etwa 0,2 mm. Im Mikroskop also 0,2 mm / V = '+MKN(dE)+' µm.'],['Nützliche Vergrößerung','500 · NA bis 1000 · NA. Darüber wird das Bild nur größer, nicht schärfer (leere Vergrößerung). Grenze des Lichtmikroskops: etwa 0,2 µm.'],['Ölimmersion','Öl zwischen Deckglas und Objektiv (n ≈ 1,5) erhöht die numerische Apertur NA = n · sin α auf bis zu 1,4.']]}}
- /* Größenordnungen: Bildbreite W = 2 · 10^(−z) m */
- const z=s.z,W=2*10**(-z),WX=22,WY=52,WS=310,sc=WS/W,base=WY+WS-16;
+ return MKZOOM(s,t,h)}
+/* Größenordnungen als durchgehende Fahrt (wie „Powers of Ten“): Mensch → Hand → Ameise auf dem Handrücken → Haare → Hornzellen → Staphylokokken → Bakteriophage → DNA → Atom.
+   Welt in Meter (y nach unten). Jede Ebene: Größe s, Blickpunkt F, eigener Ursprung o und Einheit u, Zeichnung in eigenen Einheiten, Hintergrund bg, wenn man „in ihr“ ist. */
+const MKA=[.0157,-.0145],MKHP=[MKA[0]+.0027,MKA[1]+.0009],MKPC=[MKHP[0]-9e-5,MKHP[1]+2e-5],MKC0=[MKPC[0]+3e-6,MKPC[1]-2e-6],MKT=[MKC0[0]+4.8e-7,MKC0[1]];
+const mkp=a=>a.map((p,i)=>(i?'L':'M')+(+p[0]).toFixed(3)+' '+(+p[1]).toFixed(3)).join(''),mkf=v=>(+v).toFixed(3);
+/* Mensch, Einheit 1,8 cm, Ursprung = Mitte des Handrückens der rechten Hand im Bild */
+function MKMAN(k,hd){const L=1.2/k,S=`stroke="#1f2937" stroke-width="${mkf(L)}" stroke-linejoin="round"`,sk='#e9b48f',sh='#3b6fb0',je='#27406a';
+ return`<ellipse cx="-17" cy="46.6" rx="14" ry="1.7" fill="#000" opacity=".16"/>`+
+ `<path d="M-26.2 -9L-17.4 -9L-18.4 43.6L-24.2 43.6Z" fill="${je}" ${S}/><path d="M-16.6 -9L-7.8 -9L-9.8 43.6L-15.6 43.6Z" fill="${je}" ${S}/><path d="M-26.2 -9L-17.4 -9L-18.4 43.6L-24.2 43.6ZM-16.6 -9L-7.8 -9L-9.8 43.6L-15.6 43.6Z" fill="url(#mkpS)"/>`+
+ `<path d="M-17.1 -6V40M-21 30Q-21.6 32 -21 34M-12.6 30Q-12 32 -12.6 34" stroke="#1b2d4d" stroke-width="${mkf(.8/k+.15)}" fill="none" opacity=".5"/>`+
+ `<path d="M-24.8 43Q-25.4 46.4 -21.4 46.4L-17.4 46.4Q-16.4 46.4 -17.1 43Z" fill="#2b2118" ${S}/><path d="M-16.5 43Q-17.1 46.4 -16 46.4L-12 46.4Q-8.4 46.4 -9.2 43Z" fill="#2b2118" ${S}/>`+
+ `<path d="M-29 -35.5Q-31.6 -22 -32.3 -7.5" stroke="#1f2937" stroke-width="${mkf(4.6+2*L)}" stroke-linecap="round" fill="none"/><path d="M-29 -35.5Q-31.6 -22 -32.3 -7.5" stroke="${sh}" stroke-width="4.6" stroke-linecap="round" fill="none"/>`+
+ `<path d="M-5 -35.5Q-2.4 -22 -1.3 -7.5" stroke="#1f2937" stroke-width="${mkf(4.6+2*L)}" stroke-linecap="round" fill="none"/><path d="M-5 -35.5Q-2.4 -22 -1.3 -7.5" stroke="${sh}" stroke-width="4.6" stroke-linecap="round" fill="none"/>`+
+ `<ellipse cx="-32.6" cy="-1.4" rx="2.2" ry="4.4" fill="${sk}" ${S}/>`+(hd?'':`<ellipse cx="0" cy="0" rx="2.3" ry="4.6" fill="${sk}" ${S}/><path d="M-1.8 -3Q-3.4 0 -2.8 2.2" stroke="#b97c5b" stroke-width="${mkf(1/k+.1)}" fill="none"/>`)+
+ `<path d="M-27.8 -37.5C-25 -40.4 -9 -40.4 -6.2 -37.5L-5.6 -24L-7.2 -8.5L-26.8 -8.5L-28.4 -24Z" fill="${sh}" ${S}/><path d="M-27.8 -37.5C-25 -40.4 -9 -40.4 -6.2 -37.5L-5.6 -24L-7.2 -8.5L-26.8 -8.5L-28.4 -24Z" fill="url(#mkpS)"/>`+
+ `<rect x="-26.8" y="-10.2" width="19.6" height="1.7" fill="#3a2a1a"/><rect x="-18.2" y="-10.4" width="2.4" height="2.1" fill="#c9a24a"/>`+
+ `<path d="M-19.3 -42.5H-14.7V-38.4Q-17 -37 -19.3 -38.4Z" fill="${sk}" ${S}/><path d="M-20.5 -38.8Q-17 -36.4 -13.5 -38.8" stroke="#2c5590" stroke-width="${mkf(1.1)}" fill="none"/>`+
+ `<ellipse cx="-21.4" cy="-46.4" rx=".9" ry="1.5" fill="${sk}" ${S}/><ellipse cx="-12.6" cy="-46.4" rx=".9" ry="1.5" fill="${sk}" ${S}/>`+
+ `<ellipse cx="-17" cy="-46.8" rx="4.5" ry="5.6" fill="${sk}" ${S}/><ellipse cx="-17" cy="-46.8" rx="4.5" ry="5.6" fill="url(#mkpS)" opacity=".6"/>`+
+ `<path d="M-21.6 -47.6C-22.6 -54.6 -11.4 -54.6 -12.4 -47.6C-13.2 -51.2 -20.8 -51.2 -21.6 -47.6Z" fill="#4a2f1d" ${S}/>`+
+ `<circle cx="-18.7" cy="-47" r=".5" fill="#2a1a12"/><circle cx="-15.3" cy="-47" r=".5" fill="#2a1a12"/><path d="M-19.6 -48.4H-17.9M-16.1 -48.4H-14.4" stroke="#4a2f1d" stroke-width=".35"/>`+
+ `<path d="M-17 -46.4L-17.5 -44.6H-16.6M-18.4 -43.3Q-17 -42.4 -15.6 -43.3" stroke="#a5694c" stroke-width=".3" fill="none" stroke-linecap="round"/>`}
+/* Hand, Einheit 2 mm, Ursprung = Mitte des Handrückens, Finger zeigen nach unten, Daumen zur Körperseite (links) */
+function MKHAND(k){const L=1.2/k,sk='#e9b48f',ln='#a8705a',S=`stroke="${ln}" stroke-width="${mkf(L)}" stroke-linejoin="round"`;
+ const F=[[13,6,15.4,33,7.6],[4.6,8,5.2,41,8.8],[-4,8,-4.6,45.5,9.4],[-12.4,6,-14.2,38.5,9]];
+ let h=`<path d="M-17 -95L17 -95L16 -40L-15 -40Z" fill="${sk}" ${S}/><path d="M-19 -100L19 -100L18 -56L-17 -56Z" fill="#3b6fb0" stroke="#1f2937" stroke-width="${mkf(L)}"/><path d="M-19 -100L19 -100L18 -56L-17 -56Z" fill="url(#mkpS)"/><path d="M-17.4 -60H18.2" stroke="#2c5590" stroke-width="2.2"/>`;
+ h+=`<path d="M-14 -26Q-23.5 -14 -26.5 2Q-27.6 9 -25.6 13.6" stroke="${ln}" stroke-width="${mkf(10+2*L)}" stroke-linecap="round" fill="none"/><path d="M-14 -26Q-23.5 -14 -26.5 2Q-27.6 9 -25.6 13.6" stroke="${sk}" stroke-width="10" stroke-linecap="round" fill="none"/>`+
+  `<path d="M-28.4 9.4Q-26 13.4 -23 11.6" stroke="#c99a80" stroke-width=".5" fill="#f2cdb7"/><path d="M-25.4 -6Q-22 -3 -20.6 -8" stroke="#c48a6a" stroke-width=".6" fill="none"/>`;
+ let fi='';F.forEach(([x1,y1,x2,y2,w])=>{const d=`M${x1} ${y1}L${x2} ${y2}`;h+=`<path d="${d}" stroke="${ln}" stroke-width="${mkf(w+2*L)}" stroke-linecap="round"/><path d="${d}" stroke="${sk}" stroke-width="${w}" stroke-linecap="round"/>`;
+  [.36,.68].forEach(f=>{const x=x1+(x2-x1)*f,y=y1+(y2-y1)*f;h+=`<path d="M${mkf(x-w*.3)} ${mkf(y-.4)}Q${mkf(x)} ${mkf(y+.9)} ${mkf(x+w*.3)} ${mkf(y-.4)}" stroke="#c48a6a" stroke-width=".55" fill="none"/>`});
+  const nx=x2-(x2-x1)*.1,ny=y2-(y2-y1)*.1;h+=`<rect x="${mkf(nx-w*.3)}" y="${mkf(ny-4)}" width="${mkf(w*.6)}" height="6.4" rx="${mkf(w*.28)}" fill="#f4d3c0" stroke="#c99a80" stroke-width=".5"/>`;
+  fi+=`<ellipse cx="${x1}" cy="${y1+.6}" rx="3" ry="1.4" fill="#d39474" opacity=".45"/>`});
+ h+=`<path d="M-15 -40C-17 -28 -20 -12 -19.6 2C-19.2 8 -16 10 -12 9.4L13 9.4C17 9.4 19.6 6 19.1 0C18.6 -14 16.6 -28 15 -40Z" fill="${sk}"/><path d="M-15 -40C-17 -28 -20 -12 -19.6 2C-19.2 6 -17.6 8 -16.6 8.6M15 -40C16.6 -28 18.6 -14 19.1 0C19.4 3.6 18.6 6 17.6 7.4" fill="none" ${S}/>`+fi;
+ h+=`<path d="M-15 -40C-17 -28 -20 -12 -19.6 2C-19.2 8 -16 10 -12 9.4L13 9.4C17 9.4 19.6 6 19.1 0C18.6 -14 16.6 -28 15 -40Z" fill="url(#mkpS)" opacity=".7"/>`;
+ h+=`<path d="M-7 -38Q-9 -18 -11.6 4M-1 -38Q-3 -16 -3.6 6M5 -38Q4 -16 4.8 6M10 -38Q11 -16 12.6 4" stroke="#d6a07e" stroke-width="1.1" fill="none" opacity=".55"/>`;
+ h+=`<path d="M-11 -34Q-6 -24 -9 -12Q-11 -4 -6 2M2 -36Q6 -26 2 -16Q0 -8 6 0M-9 -12Q-2 -14 2 -16" stroke="#7f96c0" stroke-width="1.1" fill="none" opacity=".13"/>`;
+ return h}
+/* Ameise (Draufsicht), Einheit 0,06 mm, Kopf zeigt nach +x */
+function MKANT(k){const L=1/k,c='#2b1a12',S=`stroke="#120a06" stroke-width="${mkf(L)}"`;let h='';
+ const LG=[[[14,3],[20,13],[30,20],[38,22.5]],[[6,4],[8,16],[0,28],[-6,35]],[[-1,4],[-10,15],[-26,26],[-37,30]]];
+ [1,-1].forEach(m=>LG.forEach(g=>{const P=g.map(p=>[p[0],p[1]*m]);[[0,2.4],[1,1.8],[2,1.1]].forEach(([i,w])=>{h+=`<path d="M${P[i][0]} ${P[i][1]}L${P[i+1][0]} ${P[i+1][1]}" stroke="#1d110b" stroke-width="${w}" stroke-linecap="round"/>`});
+  h+=`<circle cx="${P[1][0]}" cy="${P[1][1]}" r="1.3" fill="#3a2418"/><circle cx="${P[2][0]}" cy="${P[2][1]}" r="1" fill="#3a2418"/>`;
+  h+=`<path d="M32 ${5*m}L38.5 ${15*m}" stroke="#1d110b" stroke-width="1.3" stroke-linecap="round"/><path d="M38.5 ${15*m}Q45 ${15*m} 48 ${11*m}L52.5 ${6.5*m}" stroke="#1d110b" stroke-width="1" fill="none" stroke-linecap="round"/><ellipse cx="51.5" cy="${7.4*m}" rx="1.8" ry="1.1" transform="rotate(${-45*m} 51.5 ${7.4*m})" fill="#1d110b"/>`;
+  h+=`<path d="M34.5 ${3.4*m}Q41.5 ${5.4*m} 42 ${.8*m}L39.6 ${1.6*m}L39 ${.6*m}L37.2 ${1.8*m}Z" fill="#5a331c" ${S}/>`}));
+ const B=(cx,cy,rx,ry)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${c}" ${S}/><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#g-ball)" opacity=".55"/>`;
+ h+=B(-26,0,17,12.5)+`<path d="M-17 -11.5Q-14 0 -17 11.5M-24 -12.4Q-21 0 -24 12.4M-31 -12Q-28 0 -31 12M-37 -9.4Q-35 0 -37 9.4" stroke="#6b4a36" stroke-width=".7" fill="none" opacity=".75"/>`;
+ for(let i=0;i<26;i++){const a=i/26*2*Math.PI,x=-26+17*Math.cos(a),y=12.5*Math.sin(a);if(Math.cos(a)>.7)continue;h+=`<path d="M${mkf(x)} ${mkf(y)}l${mkf(Math.cos(a)*2.2)} ${mkf(Math.sin(a)*2.2)}" stroke="#4a3022" stroke-width=".35"/>`}
+ h+=B(-6.5,0,3,2.6)+B(-1.5,0,3.4,3.2)+B(4.6,0,4.6,3.9)+B(13,0,6.6,5.3);
+ h+=`<path d="M20 -7C24 -11.4 33 -11.4 35.2 -6C37.2 -2 37.2 2 35.2 6C33 11.4 24 11.4 20 7C18 4 18 -4 20 -7Z" fill="${c}" ${S}/><path d="M20 -7C24 -11.4 33 -11.4 35.2 -6C37.2 -2 37.2 2 35.2 6C33 11.4 24 11.4 20 7C18 4 18 -4 20 -7Z" fill="url(#g-ball)" opacity=".5"/>`;
+ h+=`<ellipse cx="28.6" cy="-7.6" rx="2.6" ry="1.8" fill="#0b0b0b"/><ellipse cx="28.6" cy="7.6" rx="2.6" ry="1.8" fill="#0b0b0b"/><circle cx="28" cy="-8.1" r=".6" fill="#fff" opacity=".7"/><circle cx="28" cy="7.1" r=".6" fill="#fff" opacity=".7"/>`;
+ return h}
+/* Haare und Hautfurchen, Einheit 1 µm, Ursprung beim Ameisen-Mittelpunkt */
+const MKHR=(()=>{const a=[[2500,-1500,2860,3400,74]];for(let i=0;i<34;i++){const x=-7500+15000*DSR(i+801),y=-7500+15000*DSR(i+851),an=(98+26*(DSR(i+901)-.5))*Math.PI/180,l=2600+3600*DSR(i+951);if(Math.hypot(x-2700,y-900)<900)continue;a.push([x,y,x+l*Math.cos(an),y+l*Math.sin(an),55+30*DSR(i+991)])}return a})();
+function MKHAIR(k,vb){let h='';const L=1/k;
+ /* Hautfurchen: zwei Scharen schräger Linien, sichtbar zwischen etwa 0,3 mm und 30 mm Bildbreite */
+ const sp=420,fo=Math.max(0,Math.min(1,(sp*k-6)/14))*Math.max(0,Math.min(1,(60-sp*k/10)/40));
+ if(fo>0){let d='';[[.62,1],[-.75,2]].forEach(([an,s])=>{const ca=Math.cos(an),sa=Math.sin(an),R=Math.hypot(vb[2]-vb[0],vb[3]-vb[1])/2+sp,cx=(vb[0]+vb[2])/2,cy=(vb[1]+vb[3])/2,q0=Math.floor((cx*-sa+cy*ca-R)/sp),q1=Math.ceil((cx*-sa+cy*ca+R)/sp);
+   for(let q=q0;q<=q1&&q-q0<120;q++){const o=q*sp+60*(DSR(q*7+s)-.5),px=-sa*o,py=ca*o,t0=(cx*ca+cy*sa)-R,t1=t0+2*R;d+=`M${mkf(px+ca*t0)} ${mkf(py+sa*t0)}L${mkf(px+ca*t1)} ${mkf(py+sa*t1)}`}});
+  h+=`<path d="${d}" stroke="#b9775a" stroke-width="${mkf(Math.max(14,1.4/k))}" opacity="${mkf(.45*fo)}" fill="none"/>`}
+ MKHR.forEach(([x1,y1,x2,y2,w],i)=>{const bd=i?.06:0,mx=(x1+x2)/2+(i%2?1:-1)*bd*(y2-y1),my=(y1+y2)/2+(i%2?-1:1)*bd*(x2-x1);if(Math.max(x1,x2,mx)<vb[0]-w||Math.min(x1,x2,mx)>vb[2]+w||Math.max(y1,y2,my)<vb[1]-w||Math.min(y1,y2,my)>vb[3]+w)return;
+  const d=`M${mkf(x1)} ${mkf(y1)}Q${mkf(mx)} ${mkf(my)} ${mkf(x2)} ${mkf(y2)}`,ll=Math.hypot(x2-x1,y2-y1),nx=-(y2-y1)/ll,ny=(x2-x1)/ll;
+  h+=`<ellipse cx="${mkf(x1)}" cy="${mkf(y1)}" rx="${mkf(w*.9)}" ry="${mkf(w*.6)}" fill="#8a5a40" opacity=".55"/><path d="${d}" stroke="#2f1d12" stroke-width="${mkf(w)}" stroke-linecap="round" fill="none"/><path d="${d}" stroke="#6b4428" stroke-width="${mkf(w*.62)}" stroke-linecap="round" fill="none"/><path d="${d}" transform="translate(${mkf(nx*w*.2)} ${mkf(ny*w*.2)})" stroke="#b08458" stroke-width="${mkf(w*.16)}" stroke-linecap="round" fill="none" opacity=".75"/>`;
+  /* Schuppenschicht (Kutikula) am Haar, erst ab etwa 18 px Haardicke */
+  if(w*k>18){const n=Math.floor(ll/9);let s='';for(let j=0;j<n;j++){const f=j/n,x=x1+(x2-x1)*f,y=y1+(y2-y1)*f;if(x<vb[0]-w||x>vb[2]+w||y<vb[1]-w||y>vb[3]+w)continue;const ox=(1-f)*f*2*(mx-(x1+x2)/2),oy=(1-f)*f*2*(my-(y1+y2)/2),cx=x+ox,cy=y+oy,j2=2*(DSR(j+i*999)-.5);
+   s+=`M${mkf(cx+nx*w*.48)} ${mkf(cy+ny*w*.48)}Q${mkf(cx+(x2-x1)/ll*(5+j2))} ${mkf(cy+(y2-y1)/ll*(5+j2))} ${mkf(cx-nx*w*.48)} ${mkf(cy-ny*w*.48)}`}h+=`<path d="${s}" stroke="#1f120a" stroke-width="${mkf(Math.max(.5,1.1*L))}" fill="none" opacity=".8"/>`}});
+ return h}
+/* Hornzellen (oberste Hautschicht), Einheit 1 µm, flache Schuppen ohne Zellkern, dachziegelartig überlappend */
+function MKCELL(k,vb){const a=34,b=a*.866,L=1/k,j0=Math.floor(vb[1]/b)-1,j1=Math.ceil(vb[3]/b)+1,i0=Math.floor(vb[0]/a)-1,i1=Math.ceil(vb[2]/a)+1;if((j1-j0)*(i1-i0)>1200)return'';let h='';
+ const col=['#f2d2b6','#efcaab','#f4d8bf','#ecc5a4'];
+ for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const r=DSR(i*73.1+j*19.7+3),q=DSR(i*11.3+j*91.7+5),cx=i*a+(j&1?a/2:0)+(i||j?12*(r-.5):0),cy=j*b+(i||j?12*(q-.5):0),ro=r*6;let p=[];
+  for(let m=0;m<6;m++){const an=ro+m*Math.PI/3,rr=20+8*(DSR(i*5+j*7+m)-.5);p.push([cx+rr*Math.cos(an),cy+rr*Math.sin(an)*.92])}
+  h+=`<path d="${mkp(p)}Z" fill="${col[(i*3+j*5&3+4)%4]}" stroke="#c08a6c" stroke-width="${mkf(Math.max(.35,1.3*L))}" stroke-linejoin="round"/><path d="${mkp(p.slice(2,5))}" stroke="#9c6a50" stroke-width="${mkf(Math.max(.5,2*L))}" fill="none" opacity=".45"/>`}
+ return`<g>${h}</g><rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]-vb[0]}" height="${vb[3]-vb[1]}" fill="url(#mkpC)" opacity=".35"/>`}
+/* Staphylokokken (Hautbakterien), Einheit 10 nm, Ursprung = Mitte der vorderen Kugel C0 */
+const MKCO=[[-200,-100,47],[-170,110,48],[-100,-140,46],[-30,-150,47],[-180,20,49],[-150,-60,47],[-75,150,48],[-120,48,48],[-60,-78,47],[-40,80,48],[-92,-10,49],[12,-96,47],[0,0,48]];
+function MKBAC(k){let h='';const L=1/k;
+ MKCO.forEach(([x,y,r],i)=>{const dk=i<MKCO.length-1?.18*(1-i/MKCO.length):0;h+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#d6a23a" stroke="#6b4a12" stroke-width="${mkf(Math.max(.15,1.2*L))}"/><circle cx="${x}" cy="${y}" r="${r}" fill="url(#g-ball)" opacity=".8"/>`+(dk?`<circle cx="${x}" cy="${y}" r="${r}" fill="#000" opacity="${mkf(dk)}"/>`:'')+(i%4==1?`<path d="M${x-r*.7} ${y+r*.7}Q${x} ${y+r*.2} ${x+r*.7} ${y-r*.7}" stroke="#8a6418" stroke-width="${mkf(Math.max(.2,1.2*L))}" fill="none" opacity=".6"/>`:'')});
+ /* Zellwand im Schnitt, wenn sie groß genug ist */
+ if(3.5*k>14){const n=Math.min(720,Math.round(2*Math.PI*48/1.2));let s='';for(let m=0;m<n;m++){const an=m/n*2*Math.PI;s+=`M${mkf(44.6*Math.cos(an))} ${mkf(44.6*Math.sin(an))}L${mkf(47.9*Math.cos(an))} ${mkf(47.9*Math.sin(an))}`}
+  h+=`<circle cx="0" cy="0" r="44.5" fill="#efe0b0"/><circle cx="0" cy="0" r="46.2" fill="none" stroke="#c99a3a" stroke-width="3.4"/><path d="${s}" stroke="#8a6418" stroke-width="${mkf(Math.max(.05,.8*L))}" opacity=".55"/><circle cx="0" cy="0" r="48" fill="none" stroke="#6b4a12" stroke-width="${mkf(Math.max(.08,1.2*L))}"/>`;
+  for(let m=0;m<60;m++){const rr=40*Math.sqrt(DSR(m+71)),an=2*Math.PI*DSR(m+171);h+=`<circle cx="${mkf(rr*Math.cos(an))}" cy="${mkf(rr*Math.sin(an))}" r="${mkf(.6+.6*DSR(m+271))}" fill="#c9b070" opacity=".6"/>`}}
+ return h}
+/* Bakteriophage (Virus, das Bakterien befällt), Einheit 1 nm, Ursprung = Schwanzspitze auf der Zellwand */
+function MKPHG(k){const L=1/k,S=`stroke="#2e2670" stroke-width="${mkf(Math.max(.2,1.1*L))}" stroke-linejoin="round"`;let h='';
+ [[9,58,52,2,82,1],[7,42,30,1,45,1.6],[9,58,52,2,82,-1],[7,42,30,1,45,-1.6]].forEach(([a,b,c,d,e,m])=>{h+=`<path d="M6 ${a*Math.sign(m)}L${b} ${c*Math.sign(m)}L${d} ${e*Math.sign(m)}" stroke="#4c43a8" stroke-width="${Math.abs(m)>1?1.6:2.2}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`});
+ h+=`<rect x="-30" y="-3.5" width="38" height="7" fill="#4c43a8" ${S}/>`;
+ h+=`<path d="M0 -13H8V13H0Z" fill="#3f3790" ${S}/>`+[-10,-5,0,5,10].map(y=>`<path d="M0 ${y}L-4 ${y+(y<0?-2:2)}" stroke="#3f3790" stroke-width="1.6" stroke-linecap="round"/>`).join('');
+ h+=`<rect x="8" y="-10" width="97" height="20" rx="2" fill="#6d63c9" ${S}/>`;let r='';for(let x=11;x<104;x+=4.1)r+=`M${mkf(x)} -10V10`;h+=`<path d="${r}" stroke="#4c43a8" stroke-width="${mkf(Math.max(.15,.9*L))}"/><rect x="8" y="-10" width="97" height="8" fill="#fff" opacity=".16"/>`;
+ h+=`<rect x="105" y="-15" width="6" height="30" rx="1.5" fill="#5a50b8" ${S}/>`;
+ const hd=[[111,0],[124,-38],[152,-43.5],[198,-43.5],[215,-30],[223,0],[215,30],[198,43.5],[152,43.5],[124,38]];
+ h+=`<path d="${mkp(hd)}Z" fill="#8f86e0" ${S}/><path d="M124 -38L140 -14H203L215 -30M140 -14L111 0M140 -14V14L111 0M140 14L124 38M140 14H203L215 30M203 -14L223 0L203 14V-14M152 -43.5L140 -14M198 -43.5L203 -14M152 43.5L140 14M198 43.5L203 14" stroke="#4c43a8" stroke-width="${mkf(Math.max(.2,1*L))}" fill="none"/>`;
+ h+=`<path d="M124 -38L140 -14H203L215 -30L198 -43.5H152Z" fill="#fff" opacity=".22"/><path d="M124 38L140 14H203L215 30L198 43.5H152Z" fill="#000" opacity=".14"/>`;
+ return h}
+/* DNA-Doppelhelix, Einheit 1 nm, Achse auf y = 0, läuft von der Schwanzspitze ins Bakterium (nach links) */
+const MKBP=['#22c55e','#ef4444','#eab308','#3b82f6'];
+function MKDNA(k,vb,op){const x0=Math.max(-170,vb[0]-2),x1=Math.min(-30,vb[2]+2);if(x1<=x0)return'';let h='';const ph=2*Math.PI/3.4,g=2.3;
+ if(k*2<8){let a='',b='';for(let x=x0;x<=x1;x+=.25){a+=(x>x0?'L':'M')+mkf(x)+' '+mkf(Math.sin(ph*x));b+=(x>x0?'L':'M')+mkf(x)+' '+mkf(Math.sin(ph*x+g))}return`<g opacity="${mkf(op)}"><path d="${a}" stroke="#2563eb" stroke-width=".6" fill="none"/><path d="${b}" stroke="#f97316" stroke-width=".6" fill="none"/></g>`}
+ const st=.06,seg=(f,cF,cB,w,front)=>{let s='';for(let x=x0;x<x1;x+=st){const z=Math.cos(ph*x+f);if((z>=0)!==front)continue;s+=`M${mkf(x)} ${mkf(Math.sin(ph*x+f))}L${mkf(x+st*1.05)} ${mkf(Math.sin(ph*(x+st)+f))}`}return`<path d="${s}" stroke="${front?cF:cB}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`};
+ h+=seg(0,'#2563eb','#1e3a8a',.62,false)+seg(g,'#f97316','#9a3412',.62,false);
+ for(let n=Math.ceil(x0/.34);n*.34<=x1;n++){const x=n*.34,ya=Math.sin(ph*x),yb=Math.sin(ph*x+g),c=Math.floor(DSR(n+31)*4),ym=(ya+yb)/2;h+=`<path d="M${mkf(x)} ${mkf(ya)}L${mkf(x)} ${mkf(ym)}" stroke="${MKBP[c]}" stroke-width=".24"/><path d="M${mkf(x)} ${mkf(ym)}L${mkf(x)} ${mkf(yb)}" stroke="${MKBP[c^1]}" stroke-width=".24"/>`}
+ h+=seg(0,'#2563eb','#1e3a8a',.62,true)+seg(g,'#f97316','#9a3412',.62,true);
+ return`<g opacity="${mkf(op)}">${h}</g>`}
+/* Atome im Rückgrat der DNA (Kalottenmodell) und das Kohlenstoffatom im Blickpunkt als Elektronenwolke */
+const MKEL={C:['#4b5563',.11],O:['#ef4444',.1],P:['#f59e0b',.13],N:['#3b82f6',.1]},MKCYC=['C','C','O','P','O','C'];
+function MKATM(k,vb,op,t){let h='';const ph=2*Math.PI/3.4,xf=-51,cl=Math.max(0,Math.min(1,(.0025*k-.6)/.8));const at=[];
+ for(let n=-40;n<=40;n++){const x=xf+n*.1;if(x<vb[0]-.3||x>vb[2]+.3)continue;const z=Math.cos(ph*x);if(z<-.25)continue;const e=MKCYC[((n%6)+6)%6];at.push([x,Math.sin(ph*x),z,e,n]);if(e==='P'){at.push([x,Math.sin(ph*x)-.15,z-.05,'O',n+.3]);at.push([x,Math.sin(ph*x)+.15,z-.05,'O',n+.6])}}
+ at.sort((a,b)=>a[2]-b[2]).forEach(([x,y,z,e,n])=>{const[c,r]=MKEL[e],rr=r*(.85+.15*z),foc=n===0;h+=`<g opacity="${mkf(foc?1-cl:1)}"><circle cx="${mkf(x)}" cy="${mkf(y)}" r="${mkf(rr)}" fill="${c}"/><circle cx="${mkf(x)}" cy="${mkf(y)}" r="${mkf(rr)}" fill="url(#g-ball)"/>`+(z<.3?`<circle cx="${mkf(x)}" cy="${mkf(y)}" r="${mkf(rr)}" fill="#000" opacity=".25"/>`:'')+`</g>`});
+ if(cl>0){const y=Math.sin(ph*xf);h+=`<g opacity="${mkf(cl)}"><circle cx="${xf}" cy="${mkf(y)}" r=".17" fill="url(#mkpE)"/>`;const f=Math.floor(t*6);for(let i=0;i<160;i++){const u=DSR(i+f*997),v=DSR(i*3+f*577+1),rr=.16*Math.sqrt(-Math.log(1-u*.98))*.55,an=2*Math.PI*v;h+=`<circle cx="${mkf(xf+rr*Math.cos(an))}" cy="${mkf(y+rr*Math.sin(an))}" r="${mkf(1.3/k)}" fill="#1d4ed8" opacity=".55"/>`}
+  h+=`<circle cx="${xf}" cy="${mkf(y)}" r="${mkf(2/k)}" fill="#dc2626"/></g>`}
+ return`<g opacity="${mkf(op)}">${h}</g>`}
+/* Ebenen: [Name, Größe s in m, Beschriftung, Blickpunkt F, Ursprung o, Einheit u, Hintergrund innen, Zeichnung] */
+const MKLV=[
+ ['Mensch',1.8,'Mensch, 1,8 m',[-.306,-.054],[0,0],.018,null,(k,vb,W)=>MKMAN(k,.18*k/.018>40)],
+ ['Hand',.18,'Hand, 18 cm',[0,.008],[0,0],.002,'#e9b48f',k=>MKHAND(k)],
+ ['Hornzellen',3e-5,'Hornzellen der Haut, 30 µm',MKPC,MKPC,1e-6,'#f0cdb0',(k,vb)=>MKCELL(k,vb),10],
+ ['Haar',7e-5,'Haar, 70 µm dick',MKHP,MKA,1e-6,null,(k,vb)=>MKHAIR(k,vb),1],
+ ['Ameise',.006,'Ameise, 6 mm',MKA,MKA,6e-5,null,k=>MKANT(k),0,-25],
+ ['Bakterium',1e-6,'Staphylokokken, 1 µm',[MKC0[0]-6e-7,MKC0[1]],MKC0,1e-8,'#efe0b0',k=>MKBAC(k)],
+ ['Virus',2.2e-7,'Bakteriophage (Virus), 0,2 µm',[MKT[0]+8e-8,MKT[1]],MKT,1e-9,null,k=>MKPHG(k)],
+ ['DNA',2e-9,'DNA-Doppelhelix, 2 nm',[MKT[0]-5.1e-8,MKT[1]],MKT,1e-9,null,(k,vb,W)=>MKDNA(k,vb,W<5e-9?Math.max(0,(W-1.8e-9)/3.2e-9):1)],
+ ['Atom',1.5e-10,'Kohlenstoffatom, 0,15 nm',[MKT[0]-5.1e-8,MKT[1]],MKT,1e-9,null,(k,vb,W,t)=>W<9e-9?MKATM(k,vb,Math.min(1,(9e-9-W)/4e-9),t):'']];
+/* Reihenfolge für den Blickpunkt (groß → klein) */
+const MKFO=['Mensch','Hand','Ameise','Haar','Hornzellen','Bakterium','Virus','DNA','Atom'].map(n=>MKLV.find(o=>o[0]===n));
+const MKFR=o=>(o[0]==='Haar'?4:1.7)*o[1];
+function MKZOOM(s,t,h){
+ const z=s.z,W=3*10**(-z),WX=22,WY=52,WS=310,sc=WS/W,CX=WX+WS/2,CY=WY+WS/2;
+ /* Blickpunkt gleitet logarithmisch von Ebene zu Ebene */
+ let cen=MKFO[0][3];for(let i=0;i<MKFO.length-1;i++){const a=MKFR(MKFO[i]),b=MKFR(MKFO[i+1]);if(W<=a&&W>b){let q=Math.log(a/W)/Math.log(a/b);q=q*q*(3-2*q);cen=[MKFO[i][3][0]+(MKFO[i+1][3][0]-MKFO[i][3][0])*q,MKFO[i][3][1]+(MKFO[i+1][3][1]-MKFO[i][3][1])*q]}else if(W<=b&&i==MKFO.length-2)cen=MKFO[i+1][3]}
+ let bg='#e6ecf2',body='',lab='',main=MKFO[0];
+ MKFO.forEach(o=>{if(MKFR(o)>=W)main=o});
+ MKLV.forEach(o=>{const[n,S,lb,F,O,u,bgi,dr,big,rot]=o,px=S*sc;if(px>(big?400:60)*WS){if(bgi)bg=bgi;return}if(px<1.2&&!big)return;
+  const k=sc*u,tx=CX+(O[0]-cen[0])*sc,ty=CY+(O[1]-cen[1])*sc,vb=[(WX-tx)/k,(WY-ty)/k,(WX+WS-tx)/k,(WY+WS-ty)/k];
+  const fin=Math.max(0,Math.min(1,big?(px-big)/(big+2):(px-1.2)/4));if(fin<=0)return;
+  body+=`<g opacity="${mkf(fin)}" transform="translate(${mkf(tx)} ${mkf(ty)}) scale(${k.toPrecision(6)})${rot?` rotate(${rot})`:''}">${dr(k,vb,W,t)}</g>`;
+  if(px>=22&&px<=2.4*WS){const ax=CX+(F[0]-cen[0])*sc,ay=CY+(F[1]-cen[1])*sc-Math.min(px/2,WS*.35)-10,hw=3.6*n.length+6;
+   if(ax>WX-px&&ax<WX+WS+px&&ay>WY-px)lab+=ORBT(Math.max(WX+hw,Math.min(WX+WS-hw,ax)),Math.max(WY+20,Math.min(WY+WS-34,ay)),n,14,'middle','#0f172a',800).replace('stroke:var(--card)','stroke:#ffffffd0')}});
+ if(W<1.2e-9)lab+=ORBT(CX,WY+WS-34,'Atomkern: in Wirklichkeit 100 000-mal kleiner',12,'middle','#7f1d1d',800).replace('stroke:var(--card)','stroke:#ffffffd0');
  h+=ORBT(20,32,'Größenordnungen: Bildbreite '+MKL(W),20,'start','var(--ink)',800);
- h+=`<defs><clipPath id="mkg"><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="10"/></clipPath></defs><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="10" fill="var(--card)" stroke="var(--line)" stroke-width="1.5"/>`;
- let X=0,obs='',lab='',main=null;const x0=-.06*W;
- MKG.forEach((o,i)=>{if(i)X+=MKG[i-1][1]*1.3;const b=o[1]*sc,c=o[2]*sc,px=WX+(X-x0)*sc;if(o[5]<=W*1.02)main=o;
-  if(b<1.2||px>WX+WS)return;const op=Math.max(0,Math.min(1,(3*W-o[1])/W));if(op<=0)return;
-  obs+=`<g opacity="${op.toFixed(2)}">`+o[4](px,base,b,c)+`</g>`;
-  if(b>=14&&op>.5){const ty=Math.max(WY+20,base-c-10),hw=3.9*o[0].length+4;lab+=ORBT(Math.max(WX+hw,Math.min(WX+WS-hw,px+b/2)),ty,o[0],13,'middle','var(--ink)',800)}});
- h+=`<g clip-path="url(#mkg)"><path d="M${WX} ${base}H${WX+WS}" stroke="var(--line)" stroke-width="2"/>${obs}${lab}</g>`;
+ h+=`<defs><clipPath id="mkg"><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="10"/></clipPath><linearGradient id="mkpS" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient><linearGradient id="mkpC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#7c4a32" stop-opacity=".5"/></linearGradient><radialGradient id="mkpE"><stop offset="0" stop-color="#93c5fd" stop-opacity=".9"/><stop offset=".6" stop-color="#60a5fa" stop-opacity=".35"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient></defs>`;
+ h+=`<g clip-path="url(#mkg)"><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" fill="${bg}"/>${body}${lab}</g><rect x="${WX}" y="${WY}" width="${WS}" height="${WS}" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5"/>`;
  {const mu=NICE(W/4),px=mu*sc;h+=`<rect x="${WX+12}" y="${WY+WS+12}" width="${px}" height="6" fill="var(--ink)"/>`+ORBT(WX+20+px,WY+WS+20,MKL(mu),14,'start','var(--ink)',800)}
  /* rechts: Leiter von 1 m bis 0,1 nm mit den Bereichen der Geräte */
  const LY=m=>70+(-Math.log10(m))*30,AX=414;
@@ -2026,13 +2139,13 @@ function MIK(s,t){
  ['1 m','10 cm','1 cm','1 mm','100 µm','10 µm','1 µm','100 nm','10 nm','1 nm','0,1 nm'].forEach((n,k)=>{h+=`<path d="M${AX-5} ${70+k*30}H${AX}" stroke="var(--ink)"/>`+ORBT(AX-8,75+k*30,n,13,'end','var(--mute)',700)});
  [['Auge',1e-4,2,'#16a34a'],['Lichtmikroskop',2e-7,1e-3,'#2563eb'],['Elektronenmikroskop',1e-10,1e-3,'#7c3aed']].forEach(([n,a,b2,c],k)=>{const x=AX+8+k*19,y1=Math.max(62,LY(b2)),y2=LY(a);h+=`<rect x="${x}" y="${y1}" width="16" height="${y2-y1}" rx="4" fill="${c}" opacity=".85"/><text x="${x+8}" y="${(y1+y2)/2}" transform="rotate(-90 ${x+8} ${(y1+y2)/2})" text-anchor="middle" dominant-baseline="central" style="font-size:11px;font-weight:800;fill:#fff">${n}</text>`});
  const wy=LY(W);h+=`<rect x="${AX-2}" y="${wy-3}" width="${222}" height="6" rx="3" fill="var(--amber)" opacity=".75"/>`;
- let py=0;MKG.slice().reverse().forEach(o=>{const y0=Math.max(66,LY(o[5])),y=Math.max(y0,py+16);py=y;h+=`<circle cx="${AX+66}" cy="${y0.toFixed(1)}" r="3" fill="var(--ink)"/>`+(y-y0>2?`<path d="M${AX+68} ${y0.toFixed(1)}L${AX+74} ${y.toFixed(1)}" stroke="var(--ink)" stroke-width="1"/>`:'')+ORBT(AX+76,y+5,o[3].split(',')[0].replace(/ \(.*\)/,'').replace('rotes ','')+' '+MKL(o[5]),13,'start','var(--ink)',700)});
- const dev=!main?'–':main[5]>=1e-4?'Auge':main[5]>=2e-7?'Lichtmikroskop':'Elektronenmikroskop';
- return{vb:'0 0 640 400',svg:h,res:[[MKL(W),'Bildbreite'],[main?main[0]+' ('+MKL(main[5])+')':'–','größtes ganzes Objekt'],[dev,'sichtbar mit']],th:['Objekt','Größe','in m','sichtbar mit'],
-  rows:MKG.slice().reverse().map(o=>[o[3].split(',')[0],MKL(o[5]),SCI(o[5],2)+' m',o[5]>=1e-4?'Auge':o[5]>=2e-7?'Lichtmikroskop':'Elektronenmikroskop']),
-  st:[['Einheiten','1 mm = 10⁻³ m, 1 µm = 10⁻⁶ m, 1 nm = 10⁻⁹ m. Jede Zoomstufe macht das Bild 10-mal kleiner.'],['Auge','Trennt etwa 0,1 mm: Haare (70 µm) sieht man gerade noch als Linie, Zellen nicht.'],['Lichtmikroskop','Grenze etwa 0,2 µm, weil sichtbares Licht 400 bis 700 nm Wellenlänge hat: Zellen, Blutkörperchen und Bakterien, aber keine Viren.'],['Elektronenmikroskop','Elektronen bei 100 kV haben λ ≈ 3,7 pm. Praktisch erreicht man 0,1 nm (TEM) bis 1 nm (REM): Viren, Moleküle, beim TEM sogar Atomreihen.']]}}
-M.push({g:'Physik',name:'Mikroskopie',test:1,anim:1,desc:'Ein Lichtmikroskop vergrößert in zwei Stufen: Das Objektiv erzeugt ein vergrößertes Zwischenbild, das Okular vergrößert es wie eine Lupe. Gesamtvergrößerung V = V_Obj · V_Ok. Wie fein man sehen kann, begrenzt die Wellenlänge des Lichts: d = λ / (2 · NA), also etwa 0,2 µm.',leg:'Aufbau: Lichtweg von der Lampe bis zum Auge, rechts der Strahlengang als Schema (nicht maßstäblich). Vergrößerung: Ausschnitt aus der Mitte des Sehfelds mit Haar, Blutkörperchen, Bakterien und Viren, unscharf nach Auflösung d. Größenordnungen: Zoom in Zehnerstufen vom Menschen bis zum Atom, rechts die Bereiche von Auge, Licht- und Elektronenmikroskop.',
- p:[['v','Ansicht','sel',['Aufbau & Strahlengang','Vergrößerung & Auflösung','Größenordnungen'],0],['ob','Objektiv','sel',MKOB.map(o=>o[0]+'× (NA '+MKN(o[1])+')'),1],['ok','Okular','sel',MKOK.map(o=>o+'×'),0],['l','Wellenlänge λ',400,700,10,'nm',550],['z','Zoomstufe',0,10,.1,'',0]],
+ let py=0;MKFO.forEach(o=>{const y0=Math.max(66,LY(o[1])),y=Math.max(y0,py+16);py=y;h+=`<circle cx="${AX+66}" cy="${y0.toFixed(1)}" r="3" fill="var(--ink)"/>`+(y-y0>2?`<path d="M${AX+68} ${y0.toFixed(1)}L${AX+74} ${y.toFixed(1)}" stroke="var(--ink)" stroke-width="1"/>`:'')+ORBT(AX+76,y+5,o[0]+' '+MKL(o[1]),13,'start',o===main?'var(--flow)':'var(--ink)',o===main?900:700)});
+ const dev=S=>S>=1e-4?'Auge':S>=2e-7?'Lichtmikroskop':'Elektronenmikroskop';
+ return{vb:'0 0 640 400',svg:h,res:[[MKL(W),'Bildbreite'],[main[0]+' ('+MKL(main[1])+')','im Blick'],[dev(main[1]),'sichtbar mit']],th:['Objekt','Größe','in m','sichtbar mit'],
+  rows:MKFO.map(o=>[o[2].split(',')[0],MKL(o[1]),SCI(o[1],2)+' m',dev(o[1])]),
+  st:[['Einheiten','1 mm = 10⁻³ m, 1 µm = 10⁻⁶ m, 1 nm = 10⁻⁹ m. Jede Zoomstufe macht das Bild 10-mal kleiner.'],['Die Fahrt','Vom Menschen auf seine Hand, zu einer Ameise auf dem Handrücken, zu den Haaren und Hornzellen der Haut, zu Bakterien auf einer Hautzelle, zu einem Virus, das ein Bakterium befällt und seine DNA hineinspritzt, bis zu einem Kohlenstoffatom der DNA.'],['Auge','Trennt etwa 0,1 mm: Haare (70 µm) sieht man gerade noch als Linie, Hautzellen nicht.'],['Lichtmikroskop','Grenze etwa 0,2 µm, weil sichtbares Licht 400 bis 700 nm Wellenlänge hat: Zellen und Bakterien, aber keine Viren.'],['Elektronenmikroskop','Elektronen bei 100 kV haben λ ≈ 3,7 pm. Praktisch erreicht man 0,1 nm (TEM) bis 1 nm (REM): Viren, DNA, beim TEM sogar einzelne Atomreihen.']]}}
+M.push({g:'Physik',name:'Mikroskopie',test:1,anim:1,desc:'Ein Lichtmikroskop vergrößert in zwei Stufen: Das Objektiv erzeugt ein vergrößertes Zwischenbild, das Okular vergrößert es wie eine Lupe. Gesamtvergrößerung V = V_Obj · V_Ok. Wie fein man sehen kann, begrenzt die Wellenlänge des Lichts: d = λ / (2 · NA), also etwa 0,2 µm.',leg:'Aufbau: Lichtweg von der Lampe bis zum Auge, rechts der Strahlengang als Schema (nicht maßstäblich). Vergrößerung: Ausschnitt aus der Mitte des Sehfelds mit Haar, Blutkörperchen, Bakterien und Viren, unscharf nach Auflösung d. Größenordnungen: Fahrt in Zehnerstufen vom Menschen über Hand, Ameise, Haar, Hornzellen, Bakterien, Virus und DNA bis zum Atom (wie der Film „Powers of Ten“), rechts die Bereiche von Auge, Licht- und Elektronenmikroskop. Formen nach Mikroskopaufnahmen vereinfacht, Farben sind Schaufarben.',
+ p:[['v','Ansicht','sel',['Aufbau & Strahlengang','Vergrößerung & Auflösung','Größenordnungen'],0],['ob','Objektiv','sel',MKOB.map(o=>o[0]+'× (NA '+MKN(o[1])+')'),1],['ok','Okular','sel',MKOK.map(o=>o+'×'),0],['l','Wellenlänge λ',400,700,10,'nm',550],['z','Zoomstufe',0,9.8,.1,'',0]],
  vis2:(o,UI)=>{const on={ob:o.v!=2,ok:o.v!=2,l:o.v==1,z:o.v==2};for(const k in on)(UI[k]||[]).forEach(e=>{const c=e.closest('.ctl');if(c)c.hidden=!on[k]})},
  f(s,t){return MIK(s,t)}});
 /* Neue Themen */
