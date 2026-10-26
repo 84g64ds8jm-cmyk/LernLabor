@@ -5041,9 +5041,9 @@ fm(FM,MR,'Runden und Überschlag','Gerundet wird erst am Ende. Ab einer 5 an der
    rows:[['gerundet: ganze Zahl',de(rn)],['auf Zehner',de(Math.round(ex/10)*10)],['auf Hunderter',de(Math.round(ex/100)*100)],['auf Tausender',de(Math.round(ex/1000)*1000)],['Beispiel: aufrunden','2,345 → 2,35 (ab 5 auf)'],['Beispiel: abrunden','2,344 → 2,34 (unter 5 ab)'],['Beispiel: Geld','136,805 € → 136,81 €']],
    st:[['Schritt 1: Überschlag',`${de(a)} ≈ ${de(ua)}, ${de(b)} ≈ ${de(ub)}, also etwa ${de(ue)}`],['Schritt 2: genau rechnen',`${de(a)} · ${de(b)} = ${de(+ex.toFixed(6))}`],['Schritt 3: vergleichen',Math.abs(dev)<60?'Gleiche Größenordnung: Das Ergebnis ist plausibel.':'Großer Unterschied: Überschlag oder Rechnung prüfen.'],['Schritt 4: erst jetzt runden',`auf eine ganze Zahl: ${de(rn)}`]]}},
  'a und b verschieben: Der Überschlag bleibt immer in derselben Größenordnung wie das genaue Ergebnis.',0);
-fm(FM,MGD,'Flächen und Körper','Die Fläche sagt, wie viel Platz eine Form in der Ebene braucht, das Volumen, wie viel Raum ein Körper füllt. Für Körper mit gleichem Querschnitt (Quader, Zylinder, Rohr, Prisma) gilt immer V = A · h. Mit der Dichte folgt daraus die Masse: m = ρ · V.',
- [['f','Form','sel',['Rechteck → Quader','Kreis → Zylinder','Kreisring → Rohr','Dreieck → Prisma'],1],['a','a bzw. D außen',10,200,5,'mm',80],['b','b, d innen / Höhe',5,150,5,'mm',50],['h','Länge h',10,1000,10,'mm',300]],
- s=>{const f=s.f,a=s.a,b=f==2?Math.min(s.b,a-5):s.b,h=s.h,A=f==0?a*b:f==1?PI/4*a*a:f==2?PI/4*(a*a-b*b):a*b/2,V=A*h,mS=V*7.85/1e6,sc=.8;
+fm(FM,MGD,'Flächen und Körper','Die Fläche sagt, wie viel Platz eine Form in der Ebene braucht, das Volumen, wie viel Raum ein Körper füllt. Für Körper mit gleichem Querschnitt (Quader, Zylinder, Rohr, Prisma) gilt immer V = A · h. Die Kugel ist anders gebaut: Ihr Schnitt durch die Mitte ist ein Kreis, ihr Volumen V = π · d³ / 6. Mit der Dichte folgt daraus die Masse: m = ρ · V.',
+ [['f','Form','sel',['Rechteck → Quader','Kreis → Zylinder','Kreisring → Rohr','Dreieck → Prisma','Kreis → Kugel'],1],['a','a bzw. D außen',10,200,5,'mm',80],['b','b, d innen / Höhe',5,150,5,'mm',50],['h','Länge h',10,1000,10,'mm',300]],
+ s=>{const f=s.f,a=s.a,b=f==2?Math.min(s.b,a-5):s.b,h=s.h,A=f==0?a*b:f==1||f==4?PI/4*a*a:f==2?PI/4*(a*a-b*b):a*b/2,V=f==4?PI*a**3/6:A*h,mS=V*7.85/1e6,sc=.8;
   // links die Fläche, rechts der Körper in Schrägbild (Stirnfläche wie die Fläche, Länge h verkürzt nach hinten: 1000 mm = 220 px)
   let d='';const cx=110,cy=190,bx=320,vl=Math.max(3,h*.22),vx=vl*.906,vy=-vl*.423,wx=-vy/vl,wy=vx/vl,P=(q,t='')=>q.map(([x,y])=>`${x.toFixed(1)},${y.toFixed(1)}`).join(' '),ST='stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"',
    CP=(x,y,r)=>`M${(x-r).toFixed(1)} ${y.toFixed(1)}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0Z`,
@@ -5058,6 +5058,14 @@ fm(FM,MGD,'Flächen und Körper','Die Fläche sagt, wie viel Platz eine Form in 
    pb.forEach((q,i)=>{const r=pb[(i+1)%pb.length],ex=r[0]-q[0],ey=r[1]-q[1],nx=ar>0?ey:-ey,ny=ar>0?-ex:ex;
     if(nx*vx+ny*vy>1e-6){const qd=[q,r,[r[0]+vx,r[1]+vy],[q[0]+vx,q[1]+vy]];d+=F3('M'+P(qd)+'Z',ny<0?.3:-.18,ST)}});
    d+=F3('M'+P(pb)+'Z',0,ST);
+  }else if(f==4){const g=ra*.3+16,ry=ra*.3,K=(pa,op)=>`<path d="${pa}" fill="var(--card)" opacity="${op}"/><path d="${pa}" fill="var(--flow)" opacity="${op*.5}"/><path d="${pa}" fill="url(#g-ball)" opacity="${op*.8}"/><path d="${pa}" fill="none" ${ST}/>`;
+   // Kugel als Schnittmodell: untere Hälfte mit der Schnittfläche, obere Hälfte abgehoben
+   d+=`<circle cx="${cx}" cy="${cy}" r="${ra}" fill="var(--flow)" opacity=".45" ${ST} stroke-width="2.5"/><line x1="${cx-ra}" x2="${cx+ra}" y1="${cy}" y2="${cy}" stroke="var(--ink)" stroke-dasharray="5 4"/>`+T(cx,cy-ra-10,'d = '+a+' mm','t2','middle');
+   d+=`<ellipse cx="${bx+3}" cy="${cy+ra+5}" rx="${ra+6}" ry="5" fill="url(#g-shad)"/>`+K(`M${bx-ra} ${cy}A${ra} ${ra} 0 0 0 ${bx+ra} ${cy}Z`,1)+
+    `<ellipse cx="${bx}" cy="${cy}" rx="${ra}" ry="${ry}" fill="var(--card)"/><ellipse cx="${bx}" cy="${cy}" rx="${ra}" ry="${ry}" fill="var(--flow)" opacity=".7" ${ST}/><line x1="${bx-ra}" x2="${bx+ra}" y1="${cy}" y2="${cy}" stroke="var(--ink)" stroke-dasharray="5 4"/>`+
+    K(`M${bx-ra} ${cy-g}A${ra} ${ra} 0 0 1 ${bx+ra} ${cy-g}A${ra} ${ry} 0 0 1 ${bx-ra} ${cy-g}Z`,.55)+
+    `<line x1="${bx}" x2="${bx}" y1="${cy-g+ry+3}" y2="${cy-ry-3}" stroke="var(--mute)" stroke-width="1.5" stroke-dasharray="3 3"/>`+
+    T(bx+ra+12,cy+5,'Schnittfläche A','t2')+T(bx,cy+ra+26,'Kugel: Länge h zählt hier nicht','t3','middle');
   }else{const rl=f==2?rb:0,X2=bx+vx,Y2=cy+vy,tn=[[bx+ra*wx,cy+ra*wy],[X2+ra*wx,Y2+ra*wy],[X2-ra*wx,Y2-ra*wy],[bx-ra*wx,cy-ra*wy]];
    d+=f==1?`<circle cx="${cx}" cy="${cy}" r="${ra}" fill="var(--flow)" opacity=".45" ${ST} stroke-width="2.5"/><line x1="${cx-ra}" x2="${cx+ra}" y1="${cy}" y2="${cy}" stroke="var(--ink)" stroke-dasharray="5 4"/>`+T(cx,cy-ra-10,'d = '+a+' mm','t2','middle')
     :`<circle cx="${cx}" cy="${cy}" r="${ra}" fill="var(--flow)" opacity=".45" ${ST} stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="${rb}" fill="var(--bg)" ${ST}/>`+T(cx,cy+ra+20,'D = '+a+' mm, d = '+b+' mm','t2','middle');
@@ -5067,19 +5075,19 @@ fm(FM,MGD,'Flächen und Körper','Die Fläche sagt, wie viel Platz eine Form in 
    d+=F3(CP(bx,cy,ra)+(rl?CP(bx,cy,rl):''),0,ST+' fill-rule="evenodd"')+(rl?`<path d="${CP(bx,cy,rl)}" fill="url(#g-fk)" opacity=".5" transform="rotate(180 ${bx} ${cy})"/>`:'');
   }
   // Maßlinie h entlang der Körperkante
-  const fr=f==0?[[bx-w/2,cy-hh/2],[bx+w/2,cy-hh/2],[bx+w/2,cy+hh/2],[bx-w/2,cy+hh/2]]:f==3?[[bx-w/2,cy+hh/2],[bx+w/2,cy+hh/2],[bx-w/6,cy-hh/2]]:[[bx+ra*wx,cy+ra*wy]],
+  if(f!=4){const fr=f==0?[[bx-w/2,cy-hh/2],[bx+w/2,cy-hh/2],[bx+w/2,cy+hh/2],[bx-w/2,cy+hh/2]]:f==3?[[bx-w/2,cy+hh/2],[bx+w/2,cy+hh/2],[bx-w/6,cy-hh/2]]:[[bx+ra*wx,cy+ra*wy]],
    pp=fr.reduce((m,q)=>q[0]*wx+q[1]*wy>m[0]*wx+m[1]*wy+1e-6?q:m),o1=12,o2=26,L1=[pp[0]+wx*o2,pp[1]+wy*o2],L2=[L1[0]+vx,L1[1]+vy],ux=vx/vl,uy=vy/vl,
    ah=(q,s)=>`<polygon points="${P([q,[q[0]+s*ux*9+wx*3.5,q[1]+s*uy*9+wy*3.5],[q[0]+s*ux*9-wx*3.5,q[1]+s*uy*9-wy*3.5]])}" fill="var(--ink)"/>`,
    mx=(L1[0]+L2[0])/2,my=(L1[1]+L2[1])/2,ang=(Math.atan2(vy,vx)*180/PI).toFixed(1),RT=(x,y,t,c)=>`<text class="${c}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" transform="rotate(${ang} ${x.toFixed(1)} ${y.toFixed(1)})">${t}</text>`;
-  d+=`<path d="M${P([[pp[0]+wx*4,pp[1]+wy*4],[pp[0]+wx*(o2+6),pp[1]+wy*(o2+6)]])}M${P([[pp[0]+vx+wx*4,pp[1]+vy+wy*4],[pp[0]+vx+wx*(o2+6),pp[1]+vy+wy*(o2+6)]])}M${P([L1,L2])}" stroke="var(--ink)" stroke-width="1.2" fill="none"/>`+ah(L1,1)+ah(L2,-1)+(L2[0]<455?T(L2[0]+12,L2[1]+16,'h = '+h+' mm','t2')+T(L2[0]+12,L2[1]+32,'Länge verkürzt gezeichnet','t3'):RT(mx+wx*17,my+wy*17,'h = '+h+' mm','t2')+RT(mx+wx*32,my+wy*32,'Länge verkürzt gezeichnet','t3'));
+  d+=`<path d="M${P([[pp[0]+wx*4,pp[1]+wy*4],[pp[0]+wx*(o2+6),pp[1]+wy*(o2+6)]])}M${P([[pp[0]+vx+wx*4,pp[1]+vy+wy*4],[pp[0]+vx+wx*(o2+6),pp[1]+vy+wy*(o2+6)]])}M${P([L1,L2])}" stroke="var(--ink)" stroke-width="1.2" fill="none"/>`+ah(L1,1)+ah(L2,-1)+(L2[0]<455?T(L2[0]+12,L2[1]+16,'h = '+h+' mm','t2')+T(L2[0]+12,L2[1]+32,'Länge verkürzt gezeichnet','t3'):RT(mx+wx*17,my+wy*17,'h = '+h+' mm','t2')+RT(mx+wx*32,my+wy*32,'Länge verkürzt gezeichnet','t3'));}
   // Pfeil von der Fläche zum Körper
   const ae=bx-Math.max(f==0||f==3?w/2:ra,0)-10,as=cx+Math.max(f==0||f==3?w/2:ra,0)+10+(f==0?0:0);
-  if(ae-as>26)d+=`<line x1="${as}" x2="${ae-8}" y1="${cy}" y2="${cy}" stroke="var(--mute)" stroke-width="2"/><polygon points="${ae},${cy} ${ae-10},${cy-5} ${ae-10},${cy+5}" fill="var(--mute)"/>`+T((as+ae)/2,cy-8,'· h','t2','middle');
-  const FA=['A = a · b','A = π · d² / 4','A = π · (D² − d²) / 4','A = g · h_D / 2'][f];
-  d+=T(20,346,'Querschnitt','t2')+T(20,372,FA,'t1')+T(236,346,'Körper','t2')+T(236,372,'V = A · h','t1')+T(400,346,'Aus Stahl (ρ = 7,85 g/cm³):','t2')+T(400,372,'m = '+nf(mS,3)+' kg','t1');
+  if(ae-as>26)d+=`<line x1="${as}" x2="${ae-8}" y1="${cy}" y2="${cy}" stroke="var(--mute)" stroke-width="2"/><polygon points="${ae},${cy} ${ae-10},${cy-5} ${ae-10},${cy+5}" fill="var(--mute)"/>`+T((as+ae)/2,cy-8,f==4?'':'· h','t2','middle');
+  const FA=['A = a · b','A = π · d² / 4','A = π · (D² − d²) / 4','A = g · h_D / 2','A = π · d² / 4'][f];
+  d+=T(20,346,'Querschnitt','t2')+T(20,372,FA,'t1')+T(236,346,'Körper','t2')+T(236,372,f==4?'V = π · d³ / 6':'V = A · h','t1')+T(400,346,'Aus Stahl (ρ = 7,85 g/cm³):','t2')+T(400,372,'m = '+nf(mS,3)+' kg','t1');
   return{vb:'0 0 640 386',d,res:[[nf(A)+' mm²','Fläche A'],[nf(V/1000)+' cm³','Volumen V'],[nf(V/1e6,3)+' l','in Liter'],[nf(mS,3)+' kg','Masse aus Stahl']],
-   rows:[['Rechteck','A = a · b'],['Kreis','A = π · d² / 4 = π · r²'],['Kreisring (Rohr)','A = π · (D² − d²) / 4'],['Dreieck','A = g · h / 2'],['Körper','V = A · h'],['Einheiten','1 cm³ = 1000 mm³, 1 l = 1 dm³ = 1 000 000 mm³']],
-   st:[['Schritt 1: Fläche',`${FA} = ${nf(A)} mm²`],['Schritt 2: Volumen',`V = ${nf(A)} mm² · ${h} mm = ${nf(V)} mm³ = ${nf(V/1000)} cm³`],['Schritt 3: Masse',`m = 7,85 g/cm³ · ${nf(V/1000)} cm³ = ${nf(mS*1000)} g = ${nf(mS,3)} kg`],['Achtung','Beim Kreis den Durchmesser nicht ohne Viertel einsetzen: π · d² ist viermal zu groß.']]}},
+   rows:[['Rechteck','A = a · b'],['Kreis','A = π · d² / 4 = π · r²'],['Kreisring (Rohr)','A = π · (D² − d²) / 4'],['Dreieck','A = g · h / 2'],['Körper','V = A · h'],['Kugel','V = π · d³ / 6 = ⅔ · A · d'],['Einheiten','1 cm³ = 1000 mm³, 1 l = 1 dm³ = 1 000 000 mm³']],
+   st:[['Schritt 1: Fläche',`${FA} = ${nf(A)} mm²`],['Schritt 2: Volumen',f==4?`V = π · d³ / 6 = π · (${a} mm)³ / 6 = ${nf(V)} mm³ = ${nf(V/1000)} cm³`:`V = ${nf(A)} mm² · ${h} mm = ${nf(V)} mm³ = ${nf(V/1000)} cm³`],['Schritt 3: Masse',`m = 7,85 g/cm³ · ${nf(V/1000)} cm³ = ${nf(mS*1000)} g = ${nf(mS,3)} kg`],f==4?['Merke','Die Kugel hat ⅔ des Volumens eines Zylinders mit gleichem d und der Höhe h = d: V = ⅔ · A · d.']:['Achtung','Beim Kreis den Durchmesser nicht ohne Viertel einsetzen: π · d² ist viermal zu groß.']]}},
  'Oben die Form wählen. Die Länge h macht aus der Fläche einen Körper.',0);
 fm(FM,MGD,'Messreihe auswerten','Echte Messwerte liegen nie genau auf einer Geraden. Man zeichnet eine Ausgleichsgerade, die möglichst nah an allen Punkten liegt. Ihre Steigung ist die gesuchte Größe: bei einer Feder die Federkonstante D = F / Δl, beim Widerstand R = U / I. Aus jedem Messpunkt einzeln gerechnet, streuen die Werte. Der Mittelwert ist die beste Schätzung, die Spannweite zeigt die Messunsicherheit.',
  [['m','Messung','sel',['Feder: F über Δl','Widerstand: U über I'],0],['k','Steigung D bzw. R',1,50,1,'',8],['e','Streuung',0,20,1,'%',6],['z','neue Werte',1,9,1,'',3]],
