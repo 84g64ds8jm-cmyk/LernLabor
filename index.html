@@ -9962,5 +9962,11 @@ sr.addEventListener('keydown',e=>{const h=hits(),k=h.indexOf(document.activeElem
 <style>/* FN-02: Indizes nie unter 11 px; Ergebniskacheln lieber untereinander als winzig */sub.sx{font-size:max(11px,.75em)}#res.r1{grid-template-columns:1fr!important}</style>
 <script>/* FN-02 */(()=>{let one=false;const fix=()=>{const r=document.getElementById('res');if(!r)return;if(!one&&[...r.querySelectorAll('b')].some(b=>{const f=parseFloat(b.style.fontSize);return f&&f<13}))one=true;r.classList.toggle('r1',one);if(one)r.querySelectorAll('b').forEach(b=>{b.style.fontSize='';b.style.whiteSpace=''})};
 const r=render;render=function(){const x=r.apply(this,arguments);fix();return x};const b=build;build=function(){one=false;const x=b.apply(this,arguments);fix();return x};fix()})();</script>
+<!-- UI-Audit UI-04 -->
+<style>/* UI-04: „Vermute zuerst“ (Frage, blau) und „Auftrag“ (Aufgabe, Fachfarbe) unterscheidbar; „Antworten zeigen“ als normaler Nebenknopf */
+.auf:not(.aufdone){background:color-mix(in srgb,var(--mint) 11%,var(--card));border-color:color-mix(in srgb,var(--mint) 45%,var(--line));border-left-color:#14b8a6}
+.auf:not(.aufdone)>details>summary b{color:#0f766e}:root[data-theme="dark"] .auf:not(.aufdone)>details>summary b{color:var(--mint)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .auf:not(.aufdone)>details>summary b{color:var(--mint)}}
+#pred .predx{width:auto;display:inline-flex;font-size:1em;color:var(--ink);border:1px solid var(--line);border-style:solid;font-weight:600;gap:6px;padding:6px 14px;margin:2px 0 4px}#pred .predx span{font-size:.92em}#pred .predx:hover{border-color:var(--flow)}
+#pred .predx{font-size:0}#pred .predx span{font-size:15px}#pred .predx span::before{content:"▸ ";color:var(--flow)}</style>
 </body>
 </html>
