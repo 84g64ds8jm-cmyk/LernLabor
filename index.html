@@ -10338,6 +10338,132 @@ Object.assign(EIN,{
   f:(k,t)=>EMRK(k,t,EKRT(40,70,80,'( )','var(--amber)')+EKRT(40,120,80,'x²')+EKRT(40,170,80,'· :')+EKRT(130,170,80,'+ −')+T(110,245,'von oben nach unten','ein2','middle'),'Kla · Po · Pu · Stri','20 + 6 · 24 = 164')}
 ]});
 
+/* Paket Mathematik 2. Hilfen: Bruchbalken, Zahlenstrahl, Punktwolke */
+const EBRU=(x,y,w,h,n,m,c='var(--flow)')=>{let s='';for(let i=0;i<n;i++)s+=`<rect x="${(x+i*w/n).toFixed(1)}" y="${y}" width="${(w/n).toFixed(1)}" height="${h}" fill="${i<m?c:'var(--card)'}" opacity="${i<m?.8:1}" stroke="var(--ink)" stroke-width="1.5"/>`;return s};
+const EZST=(x,y,w,a,b,marks=[],st=1,ls=1)=>{const sc=w/(b-a);let s=`<line x1="${x-10}" y1="${y}" x2="${x+w+10}" y2="${y}" stroke="var(--ink)" stroke-width="2.5"/><polygon points="${x+w+10},${y} ${x+w},${y-5} ${x+w},${y+5}" fill="var(--ink)"/>`;for(let v=a;v<=b;v+=st){const px=x+(v-a)*sc;s+=`<line x1="${px.toFixed(1)}" y1="${y-6}" x2="${px.toFixed(1)}" y2="${y+6}" stroke="var(--ink)" stroke-width="${v==0?3:1.5}"/>`;if((v/st)%ls==0)s+=T(px.toFixed(1),y+26,v<0?'−'+(-v):String(v),'ein2','middle')}marks.forEach(([v,c,l])=>{const px=x+(v-a)*sc;s+=BALL(px,y,8,c,1.5)+(l?T(px,y-18,l,'ein1','middle'):'')});return s};
+const EPKT=(x0,y0,W,H,pts,sx,sy,c='var(--red)')=>pts.map(([px,py])=>BALL(x0+px*sx,y0-py*sy,5,c,1.2)).join('');
+Object.assign(EIN,{
+'Bruchrechnung':[
+ {d:11,t:'Ein Rohrstück ist drei Viertel Meter lang. Der Nenner 4 sagt: das Ganze in vier gleiche Teile geteilt. Der Zähler 3 sagt: drei davon.',
+  s:'Ein Rohrstück ist drei Viertel Meter lang. Der Nenner 4 sagt: das Ganze in vier gleiche Teile geteilt. Der Zähler 3 sagt: drei davon.',
+  f:(k,t)=>EBRU(40,100,400,46,4,3)+T(40,86,'1 m = das Ganze','ein2')+T(240,180,'3 / 4 m = 0,75 m','ein1','middle')+T(240,214,'Zähler: wie viele Teile','ein2','middle')+T(240,240,'Nenner: in wie viele Teile geteilt','ein2','middle')},
+ {d:11,t:'Erweitern und Kürzen ändern den Wert nicht: Zähler und Nenner mit derselben Zahl malnehmen oder teilen. 6 / 8 ist dasselbe wie 3 / 4.',
+  s:'Erweitern und Kürzen ändern den Wert nicht: Zähler und Nenner mit derselben Zahl malnehmen oder teilen. 6 Achtel ist dasselbe wie 3 Viertel.',
+  f:(k,t)=>EBRU(40,70,400,36,8,6)+T(40,58,'6 / 8','ein1')+EBRU(40,130,400,36,4,3)+T(40,118,'3 / 4','ein1')+T(240,205,'6 / 8 = 3 / 4: gleich lang','ein1','middle')+T(240,235,'Kürzen: Zähler und Nenner durch 2','ein2','middle')},
+ {d:11,t:'Addieren geht nur bei gleichem Nenner. 1 / 2 + 1 / 3: Beide auf Sechstel erweitern: 3 / 6 + 2 / 6 = 5 / 6. Nur die Zähler werden addiert.',
+  s:'Addieren geht nur bei gleichem Nenner. Ein Halb plus ein Drittel: Beide auf Sechstel erweitern: 3 Sechstel plus 2 Sechstel gleich 5 Sechstel. Nur die Zähler werden addiert.',
+  f:(k,t)=>{const o=EINQ(k/.7);return EBRU(40,60,180,30,o>.5?6:2,o>.5?3:1)+T(130,112,o>.5?'3 / 6':'1 / 2','ein1','middle')+T(240,82,'+','ein1','middle')+EBRU(260,60,180,30,o>.5?6:3,o>.5?2:1,'var(--ok)')+T(350,112,o>.5?'2 / 6':'1 / 3','ein1','middle')+(o>.9?EBRU(40,150,400,36,6,5,'var(--amber)')+T(240,215,'= 5 / 6','ein1','middle')+T(240,245,'gleicher Nenner, Zähler addieren','ein2','middle'):'')}},
+ {d:11,t:'Multiplizieren ist einfacher: Zähler mal Zähler, Nenner mal Nenner. 2 / 3 · 3 / 4 = 6 / 12 = 1 / 2. Teilen heißt mit dem Kehrwert malnehmen: 3 / 4 : 1 / 2 = 3 / 4 · 2 / 1 = 6 / 4 = 1,5.',
+  s:'Multiplizieren ist einfacher: Zähler mal Zähler, Nenner mal Nenner. 2 Drittel mal 3 Viertel gleich 6 Zwölftel gleich ein Halb. Teilen heißt mit dem Kehrwert malnehmen: 3 Viertel durch ein Halb gleich 3 Viertel mal 2 gleich 1,5.',
+  f:k=>EFX(k,[['a/b · c/d = (a·c) / (b·d)','h'],['2/3 · 3/4 = 6/12 = 1/2','m'],['a/b : c/d = a/b · d/c','h'],['3/4 : 1/2 = 3/4 · 2/1 = 6/4 = 1,5','r']],['Teilen = mal Kehrwert'])},
+ {d:13,t:'Alles zusammen: Erweitern und Kürzen ändern nichts. Plus und Minus nur mit gleichem Nenner. Mal: Zähler mal Zähler, Nenner mal Nenner. Geteilt: mal Kehrwert. 3 / 4 m sind 0,75 m.',
+  s:'Alles zusammen: Erweitern und Kürzen ändern nichts. Plus und Minus nur mit gleichem Nenner. Mal: Zähler mal Zähler, Nenner mal Nenner. Geteilt: mal Kehrwert. 3 Viertel Meter sind 0,75 Meter.',
+  f:k=>EFX(k,[['6/8 = 3/4 (gekürzt)','m'],['1/2 + 1/3 = 3/6 + 2/6 = 5/6','m'],['2/3 · 3/4 = 6/12 = 1/2','m'],['3/4 m = 3 m : 4 = 0,75 m','r']],['Bruch in Dezimalzahl: Zähler durch Nenner'])},
+ {d:9,t:'Merke: Nenner teilt, Zähler zählt. Addieren nur mit gleichem Nenner, Multiplizieren oben mal oben und unten mal unten, Dividieren mal Kehrwert.',
+  s:'Merke: Nenner teilt, Zähler zählt. Addieren nur mit gleichem Nenner, Multiplizieren oben mal oben und unten mal unten, Dividieren mal Kehrwert.',
+  f:(k,t)=>EMRK(k,t,EBRU(30,110,180,36,4,3)+T(120,175,'3 / 4','ein1','middle'),'gleicher Nenner','bei + und −')}
+],
+'Funktionen: Gerade & Parabel':[
+ {d:11,t:'Ein Auftrag kostet 80 € Rüstkosten plus 2,50 € je Teil. Die Kosten hängen von der Stückzahl x ab: K = 2,5 · x + 80. Das ist eine Funktion, ihr Bild eine Gerade.',
+  s:'Ein Auftrag kostet 80 Euro Rüstkosten plus 2,50 Euro je Teil. Die Kosten hängen von der Stückzahl x ab: K gleich 2,5 mal x plus 80. Das ist eine Funktion, ihr Bild eine Gerade.',
+  f:(k,t)=>{const o=EINQ(k/.8);return EAX(60,230,220,180,'x (Teile)','K in €')+`<line x1="60" y1="${230-80*.9}" x2="${(60+200*o).toFixed(1)}" y2="${(230-(80+2.5*50*o)*.9).toFixed(1)}" stroke="var(--red)" stroke-width="3"/>`+T(50,235-80*.9,'80','ein2','end')+T(360,100,'K = 2,5 · x + 80','ein1','middle')+T(360,140,'x = 10: K = 105 €','ein2','middle')+T(360,168,'x = 40: K = 180 €','ein2','middle')+T(360,205,'jedes x → genau ein K','ein2','middle')}},
+ {d:11,t:'Gerade y = m · x + b: b ist der Startwert auf der y-Achse, hier 80 €. m ist die Steigung: Wächst x um 1, wächst y um m, hier 2,50 € je Teil.',
+  s:'Gerade y gleich m mal x plus b: b ist der Startwert auf der y-Achse, hier 80 Euro. m ist die Steigung: Wächst x um 1, wächst y um m, hier 2,50 Euro je Teil.',
+  f:(k,t)=>EAX(60,230,220,180,'x','y')+`<line x1="60" y1="158" x2="260" y2="46" stroke="var(--red)" stroke-width="3"/><path d="M120 124H200V79" fill="none" stroke="var(--ok)" stroke-width="2.5" stroke-dasharray="5 4"/>`+BALL(60,158,6,'var(--amber)',1.5)+T(50,163,'b','ein1','end')+T(160,146,'Δx = 1','ein2','middle')+T(206,108,'Δy = m','ein2')+T(370,80,'y = m · x + b','ein1','middle')+T(370,120,'b: Schnitt y-Achse','ein2','middle')+T(370,150,'m: Steigung = Δy / Δx','ein2','middle')+T(370,195,'m = 2,5 €/Teil','ein1','middle')+T(370,225,'b = 80 €','ein1','middle')},
+ {d:11,t:'Steigung aus zwei Punkten: Bei 10 Teilen 105 €, bei 40 Teilen 180 €. m = (y₂ − y₁) / (x₂ − x₁) = (180 − 105) / (40 − 10) = 75 € / 30 = 2,50 € je Teil.',
+  s:'Steigung aus zwei Punkten: Bei 10 Teilen 105 Euro, bei 40 Teilen 180 Euro. m gleich y2 minus y1 durch x2 minus x1 gleich 75 Euro durch 30 gleich 2,50 Euro je Teil.',
+  f:k=>EFX(k,[['m = (y₂ − y₁) / (x₂ − x₁)','h'],['m = (180 € − 105 €) / (40 − 10)','m'],['m = 75 € / 30 = 2,50 €/Teil','r']],['b = y − m · x = 105 € − 2,5 · 10 € = 80 €'])},
+ {d:11,t:'Die Parabel y = a · x² ist gekrümmt: Verdoppelt sich x, vervierfacht sich y. So wächst der Bremsweg mit der Geschwindigkeit. Ihr tiefster Punkt ist der Scheitel, bei y = a·x² + b·x + c liegt er bei x = −b / (2a).',
+  s:'Die Parabel y gleich a mal x Quadrat ist gekrümmt: Verdoppelt sich x, vervierfacht sich y. So wächst der Bremsweg mit der Geschwindigkeit. Ihr tiefster Punkt ist der Scheitel, bei y gleich a x Quadrat plus b x plus c liegt er bei x gleich minus b durch 2 a.',
+  f:(k,t)=>{const o=EINQ(k/.8);let d='';for(let i=0;i<=40;i++){const x=-5+10*i/40*o,y=.5*x*x;d+=(i?'L':'M')+(160+x*20).toFixed(1)+' '+(230-y*12).toFixed(1)}return EAX(60,230,220,180,'x','y')+`<path d="${d}" fill="none" stroke="var(--red)" stroke-width="3"/>`+BALL(160,230,6,'var(--amber)',1.5)+T(160,255,'Scheitel','ein2','middle')+T(370,80,'y = a · x²','ein1','middle')+T(370,116,'x = 2 → y = 4a','ein2','middle')+T(370,142,'x = 4 → y = 16a','ein2','middle')+T(370,185,'Scheitel bei','ein2','middle')+T(370,213,ESB('x','S')+' = −b / (2a)','ein1','middle')}},
+ {d:13,t:'Alles zusammen: Gerade y = m · x + b, Steigung m = Δy / Δx = 2,5 €/Teil, Achsenabschnitt b = 80 €. Bei 100 Teilen: K = 2,5 · 100 + 80 = 330 €. Parabel y = a·x² + b·x + c, Scheitel bei x = −b/(2a).',
+  s:'Alles zusammen: Gerade y gleich m x plus b, Steigung 2,5 Euro je Teil, Achsenabschnitt 80 Euro. Bei 100 Teilen: K gleich 330 Euro. Parabel y gleich a x Quadrat plus b x plus c, Scheitel bei x gleich minus b durch 2 a.',
+  f:k=>EFX(k,[['y = m · x + b','h'],['m = 75 € / 30 Teile = 2,5 €/Teil, b = 80 €','m'],['K(100) = 2,5 €/Teil · 100 + 80 € = 330 €','r'],['Parabel: '+ESB('x','S')+' = −b / (2a)','m']],['Gerade: gleichmäßig, Parabel: immer steiler'])},
+ {d:9,t:'Merke: Gerade y = m·x + b, m ist die Steigung, b der Schnitt mit der y-Achse. Die Parabel wächst mit x², ihr Scheitel liegt bei x = −b / (2a).',
+  s:'Merke: Gerade y gleich m x plus b, m ist die Steigung, b der Schnitt mit der y-Achse. Die Parabel wächst mit x Quadrat, ihr Scheitel liegt bei x gleich minus b durch 2 a.',
+  f:(k,t)=>EMRK(k,t,EAX(40,220,180,150,'x','y')+`<line x1="40" y1="170" x2="200" y2="90" stroke="var(--red)" stroke-width="3"/><path d="M70 100Q130 330 190 100" fill="none" stroke="var(--flow)" stroke-width="3"/>`,'y = m · x + b','m = Δy / Δx')}
+],
+'Negative Zahlen':[
+ {d:11,t:'Morgens zeigt das Thermometer −5 °C, mittags +3 °C. Um wie viel ist es wärmer geworden? Negative Zahlen liegen auf dem Zahlenstrahl links von der Null.',
+  s:'Morgens zeigt das Thermometer minus 5 Grad, mittags plus 3 Grad. Um wie viel ist es wärmer geworden? Negative Zahlen liegen auf dem Zahlenstrahl links von der Null.',
+  f:(k,t)=>EZST(60,150,360,-8,6,[[-5,'var(--flow)','−5 °C'],[3,'var(--red)','+3 °C']],1,5)+T(240,60,'kälter ←   0   → wärmer','ein2','middle')+T(240,230,'Unterschied = ?','ein1','middle')},
+ {d:11,t:'Plus heißt nach rechts, Minus nach links. Von −5 bis +3 sind es 5 Schritte bis zur Null und 3 weiter: 8 Schritte. Als Rechnung: 3 − (−5) = 3 + 5 = 8 K.',
+  s:'Plus heißt nach rechts, Minus nach links. Von minus 5 bis plus 3 sind es 5 Schritte bis zur Null und 3 weiter: 8 Schritte. Als Rechnung: 3 minus minus 5 gleich 3 plus 5 gleich 8 Kelvin.',
+  f:(k,t)=>{const o=EINQ(k/.7),p=-5+8*o;return EZST(60,150,360,-8,6,[[-5,'var(--flow)',''],[3,'var(--red)',''],[p,'var(--amber)','']],1,5)+AR(60+3*360/14,110,8*360/14*o,0,'var(--ok)')+T(240,96,'8 Schritte nach rechts','ein2','middle')+T(240,225,'3 − (−5) = 3 + 5 = 8 K','ein1','middle')+T(240,252,'minus minus = plus','ein2','middle')}},
+ {d:11,t:'Die Regeln: a − (−b) = a + b und a + (−b) = a − b. Beim Malnehmen: Minus mal Minus gibt Plus, Minus mal Plus gibt Minus. (−3) · (−4) = 12, aber (−3) · 4 = −12.',
+  s:'Die Regeln: a minus minus b gleich a plus b, und a plus minus b gleich a minus b. Beim Malnehmen: Minus mal Minus gibt Plus, Minus mal Plus gibt Minus. Minus 3 mal minus 4 gleich 12, aber minus 3 mal 4 gleich minus 12.',
+  f:k=>EFX(k,[['a − (−b) = a + b,  a + (−b) = a − b','m'],['(−a) · (−b) = a · b','h'],['(−3) · (−4) = 12,  (−3) · 4 = −12','m'],['gleiche Vorzeichen: +, verschiedene: −','m']],['Gilt genauso beim Teilen'])},
+ {d:11,t:'Ein Konto steht bei −120 €. Es gehen 200 € ein: −120 + 200 = +80 €. Danach eine Abbuchung von 100 €: 80 − 100 = −20 €. Wieder im Minus.',
+  s:'Ein Konto steht bei minus 120 Euro. Es gehen 200 Euro ein: minus 120 plus 200 gleich plus 80 Euro. Danach eine Abbuchung von 100 Euro: 80 minus 100 gleich minus 20 Euro. Wieder im Minus.',
+  f:(k,t)=>{const o=EINQ(k/.8),v=o<.5?-120+200*o*2:80-100*(o-.5)*2;return EZST(60,150,360,-150,250,[[v,'var(--amber)',(v<0?'−':'')+Math.abs(Math.round(v/10)*10)+' €']],50,2)+T(240,60,'Kontostand','ein1','middle')+T(240,225,o<.5?'−120 € + 200 € = +80 €':'80 € − 100 € = −20 €','ein1','middle')}},
+ {d:13,t:'Alles zusammen: Temperaturunterschied 3 − (−5) = 8 K. Minus mal Minus gibt Plus: (−3) · (−4) = 12. Konto: −120 + 200 − 100 = −20 €. Minus vor der Klammer dreht alle Vorzeichen: −(a − b) = −a + b.',
+  s:'Alles zusammen: Temperaturunterschied 8 Kelvin. Minus mal Minus gibt Plus. Konto: minus 120 plus 200 minus 100 gleich minus 20 Euro. Minus vor der Klammer dreht alle Vorzeichen.',
+  f:k=>EFX(k,[['3 °C − (−5 °C) = 8 K','m'],['(−3) · (−4) = 12','m'],['−120 € + 200 € − 100 € = −20 €','m'],['−(a − b) = −a + b','r']],['Zahlenstrahl im Kopf: links kleiner, rechts größer'])},
+ {d:9,t:'Merke: Minus minus gibt plus, auch beim Malnehmen. Auf dem Zahlenstrahl ist links immer kleiner: −5 ist kleiner als −2.',
+  s:'Merke: Minus minus gibt plus, auch beim Malnehmen. Auf dem Zahlenstrahl ist links immer kleiner: minus 5 ist kleiner als minus 2.',
+  f:(k,t)=>EMRK(k,t,EZST(30,180,180,-4,4,[[-3,'var(--flow)',''],[2,'var(--red)','']],1,2),'− (−b) = + b','(−)·(−) = +')}
+],
+'Runden und Überschlag':[
+ {d:11,t:'Sieben Teile zu je 3,49 € kosten 24,43 €. Die Dichte von Stahl steht mit 7,85 g/cm³ in der Tabelle, der Taschenrechner zeigt 13,5648 kg. Wie viele Stellen sind sinnvoll?',
+  s:'Sieben Teile zu je 3,49 Euro kosten 24,43 Euro. Die Dichte von Stahl steht mit 7,85 Gramm je Kubikzentimeter in der Tabelle, der Taschenrechner zeigt 13,5648 Kilogramm. Wie viele Stellen sind sinnvoll?',
+  f:(k,t)=>`<rect x="50" y="70" width="380" height="60" rx="8" fill="#1f2a36" stroke="var(--ink)" stroke-width="2"/><text x="415" y="112" text-anchor="end" style="font-size:30px;font-weight:700;fill:#9fe3a0;font-family:ui-monospace,monospace">13,5648</text>`+T(240,170,'Taschenrechner: alle Stellen','ein2','middle')+T(240,215,'7 · 3,49 € = 24,43 €','ein1','middle')+T(240,245,'Wie genau ist sinnvoll?','ein1','middle')},
+ {d:11,t:'Die Regel: Ab einer 5 an der ersten weggelassenen Stelle wird aufgerundet, darunter abgerundet. 13,5648 auf eine Nachkommastelle: die nächste Ziffer ist 6, also 13,6.',
+  s:'Die Regel: Ab einer 5 an der ersten weggelassenen Stelle wird aufgerundet, darunter abgerundet. 13,5648 auf eine Nachkommastelle: die nächste Ziffer ist 6, also 13,6.',
+  f:(k,t)=>{const o=EINQ(k/.6);return`<text x="110" y="120" style="font-size:44px;font-weight:800">13,5</text><text x="200" y="120" style="font-size:44px;font-weight:800;fill:var(--red)">6</text><text x="228" y="120" style="font-size:44px;font-weight:800;opacity:.35">48</text>`+(o>.5?`<rect x="196" y="82" width="32" height="48" rx="6" fill="none" stroke="var(--red)" stroke-width="3"/>`+T(300,112,'6 ≥ 5: aufrunden','ein2'):'')+(o>.9?`<text x="110" y="210" style="font-size:44px;font-weight:800;fill:var(--ok)">13,6</text>`+T(215,210,'kg','ein1'):'')+T(240,250,'0 bis 4 ab, 5 bis 9 auf','ein2','middle')}},
+ {d:11,t:'Wie viele Stellen? Geld auf Cent, also zwei Nachkommastellen: 24,43 €. Technische Werte so genau wie die Messung: Mit 7,85 g/cm³ sind drei gültige Ziffern sinnvoll, 13,6 kg.',
+  s:'Wie viele Stellen? Geld auf Cent, also zwei Nachkommastellen: 24,43 Euro. Technische Werte so genau wie die Messung: Mit 7,85 Gramm je Kubikzentimeter sind drei gültige Ziffern sinnvoll, 13,6 Kilogramm.',
+  f:k=>EFX(k,[['Geld: 2 Nachkommastellen','h'],['7 · 3,49 € = 24,43 €','m'],['Technik: so genau wie die Messung','h'],['7,85 g/cm³ → 3 Ziffern: 13,6 kg','r']],['13,5648 kg täuscht Genauigkeit vor'])},
+ {d:11,t:'Vor dem Rechnen überschlagen: 38 · 21 ist etwa 40 · 20 = 800. Der Taschenrechner sagt 798, passt. Zeigt er 7 980, ist ein Komma verrutscht. Zwischenergebnisse nicht runden, erst am Ende.',
+  s:'Vor dem Rechnen überschlagen: 38 mal 21 ist etwa 40 mal 20 gleich 800. Der Taschenrechner sagt 798, passt. Zeigt er 7980, ist ein Komma verrutscht. Zwischenergebnisse nicht runden, erst am Ende.',
+  f:k=>EFX(k,[['38 · 21 ≈ 40 · 20 = 800','h'],['Rechner: 798 ✓   (7 980 wäre falsch)','m'],['Zwischenwerte nicht runden:','h'],['1/3 · 3 = 1, aber 0,33 · 3 = 0,99','r']],['Überschlag fängt Tippfehler'])},
+ {d:13,t:'Alles zusammen: Ab 5 aufrunden. Geld auf Cent, Technik auf die Genauigkeit der Messung. Vorher überschlagen, Zwischenergebnisse mit allen Stellen weiterrechnen, erst das Ergebnis runden.',
+  s:'Alles zusammen: Ab 5 aufrunden. Geld auf Cent, Technik auf die Genauigkeit der Messung. Vorher überschlagen, Zwischenergebnisse mit allen Stellen weiterrechnen, erst das Ergebnis runden.',
+  f:k=>EFX(k,[['13,5648 kg → 13,6 kg (Ziffer 6: auf)','m'],['24,43 € (Cent), 13,6 kg (3 Ziffern)','m'],['Überschlag: 38 · 21 ≈ 800','m'],['erst am Ende runden','r']],['Rundungsregel: 0–4 ab, 5–9 auf'])},
+ {d:9,t:'Merke: Ab 5 wird aufgerundet. Erst am Ende runden, vorher mit allen Stellen rechnen. Ein Überschlag zeigt, ob das Ergebnis überhaupt stimmen kann.',
+  s:'Merke: Ab 5 wird aufgerundet. Erst am Ende runden, vorher mit allen Stellen rechnen. Ein Überschlag zeigt, ob das Ergebnis überhaupt stimmen kann.',
+  f:(k,t)=>EMRK(k,t,`<text x="30" y="140" style="font-size:36px;font-weight:800">13,5</text><text x="105" y="140" style="font-size:36px;font-weight:800;fill:var(--red)">6</text><text x="30" y="200" style="font-size:36px;font-weight:800;fill:var(--ok)">→ 13,6</text>`,'ab 5 aufrunden','erst am Ende')}
+],
+'Flächen und Körper':[
+ {d:11,t:'Ein Stahlrohr: Außendurchmesser 60 mm, Innendurchmesser 50 mm, Länge 2 m. Wie schwer ist es? Dafür brauchen wir die Querschnittsfläche, das Volumen und die Dichte.',
+  s:'Ein Stahlrohr: Außendurchmesser 60 Millimeter, Innendurchmesser 50 Millimeter, Länge 2 Meter. Wie schwer ist es? Dafür brauchen wir die Querschnittsfläche, das Volumen und die Dichte.',
+  f:(k,t)=>`<rect x="60" y="100" width="220" height="90" fill="#8a96a1" opacity=".6" stroke="var(--ink)" stroke-width="2"/><ellipse cx="280" cy="145" rx="22" ry="45" fill="#b0bac4" stroke="var(--ink)" stroke-width="2"/><ellipse cx="280" cy="145" rx="17" ry="37" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><ellipse cx="60" cy="145" rx="22" ry="45" fill="#b0bac4" stroke="var(--ink)" stroke-width="2"/>`+T(170,80,'L = 2 m','ein1','middle')+T(400,120,'D = 60 mm','ein1','middle')+T(400,150,'d = 50 mm','ein1','middle')+T(240,235,'Masse m = ?','ein1','middle')},
+ {d:11,t:'Flächen der Grundformen: Rechteck a · b, Kreis π · d² / 4, Dreieck g · h / 2. Ein Ring ist ein großer Kreis minus ein kleiner: A = π · (D² − d²) / 4.',
+  s:'Flächen der Grundformen: Rechteck a mal b, Kreis Pi mal d Quadrat durch 4, Dreieck g mal h durch 2. Ein Ring ist ein großer Kreis minus ein kleiner: A gleich Pi mal Klammer D Quadrat minus d Quadrat durch 4.',
+  f:(k,t)=>`<rect x="40" y="60" width="90" height="60" fill="var(--flow)" opacity=".5" stroke="var(--ink)" stroke-width="2"/><circle cx="215" cy="90" r="34" fill="var(--ok)" opacity=".5" stroke="var(--ink)" stroke-width="2"/><polygon points="290,124 380,124 335,56" fill="var(--amber)" opacity=".5" stroke="var(--ink)" stroke-width="2"/>`+T(85,150,'a · b','ein1','middle')+T(215,150,'π · d² / 4','ein1','middle')+T(335,150,'g · h / 2','ein1','middle')+`<circle cx="110" cy="215" r="36" fill="#8a96a1" opacity=".6" stroke="var(--ink)" stroke-width="2"/><circle cx="110" cy="215" r="30" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>`+T(300,210,'Ring: A = π · (D² − d²) / 4','ein1','middle')+T(300,240,'groß minus klein','ein2','middle')},
+ {d:11,t:'Querschnitt des Rohrs: A = π · (D² − d²) / 4. Eingesetzt: D² − d² = 3 600 mm² − 2 500 mm² = 1 100 mm², mal π, durch 4: A = 863,9 mm².',
+  s:'Querschnitt des Rohrs: A gleich Pi mal Klammer D Quadrat minus d Quadrat durch 4 gleich Pi mal 1100 Quadratmillimeter durch 4 gleich 863,9 Quadratmillimeter.',
+  f:k=>EFX(k,[['A = π · (D² − d²) / 4','h'],['A = π · (3 600 − 2 500) mm² / 4','m'],['A = 863,9 mm²','r']],['erst quadrieren, dann subtrahieren'])},
+ {d:11,t:'Volumen bei gleichem Querschnitt: V = A · L. Einheiten angleichen: 2 m = 2 000 mm. V = 863,9 mm² · 2 000 mm = 1 727 800 mm³. Das sind 1,728 dm³, denn 1 dm³ = 10⁶ mm³.',
+  s:'Volumen bei gleichem Querschnitt: V gleich A mal L. Einheiten angleichen: 2 Meter sind 2000 Millimeter. V gleich 863,9 Quadratmillimeter mal 2000 Millimeter gleich 1727800 Kubikmillimeter. Das sind 1,728 Kubikdezimeter, denn ein Kubikdezimeter sind 10 hoch 6 Kubikmillimeter.',
+  f:k=>EFX(k,[['V = A · L','h'],['V = 863,9 mm² · 2 000 mm = 1 727 800 mm³','m'],['V = 1,728 dm³','r']],['1 dm³ = 1 000 000 mm³ = 1 Liter'])},
+ {d:13,t:'Alles zusammen: A = 863,9 mm², V = 1,728 dm³, Masse m = ρ · V = 7,85 kg/dm³ · 1,728 dm³ = 13,6 kg. Fläche mal Länge gibt Volumen, Volumen mal Dichte gibt Masse.',
+  s:'Alles zusammen: A gleich 863,9 Quadratmillimeter, V gleich 1,728 Kubikdezimeter, Masse m gleich Rho mal V gleich 7,85 Kilogramm je Kubikdezimeter mal 1,728 Kubikdezimeter gleich 13,6 Kilogramm.',
+  f:k=>EFX(k,[['A = π · (60² − 50²) mm² / 4 = 863,9 mm²','m'],['V = 863,9 mm² · 2 000 mm = 1,728 dm³','m'],['m = ρ · V','h'],['m = 7,85 kg/dm³ · 1,728 dm³ = 13,6 kg','r']],['Fläche → Volumen → Masse'])},
+ {d:9,t:'Merke: Körper mit gleichem Querschnitt: V = A · h. Masse gleich Dichte mal Volumen. Einheiten vorher angleichen, 1 dm³ sind eine Million mm³.',
+  s:'Merke: Körper mit gleichem Querschnitt: V gleich A mal h. Masse gleich Dichte mal Volumen. Einheiten vorher angleichen, ein Kubikdezimeter sind eine Million Kubikmillimeter.',
+  f:(k,t)=>EMRK(k,t,`<rect x="40" y="110" width="150" height="70" fill="#8a96a1" opacity=".6" stroke="var(--ink)" stroke-width="2"/><ellipse cx="190" cy="145" rx="16" ry="35" fill="#b0bac4" stroke="var(--ink)" stroke-width="2"/><ellipse cx="190" cy="145" rx="12" ry="28" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/>`,'V = A · h','m = ρ · V')}
+],
+'Messreihe auswerten':[
+ {d:11,t:'Eine Feder wird belastet und die Verlängerung gemessen: bei 10, 20, 30 und 40 mm wurden 5,2 N, 9,8 N, 15,3 N und 19,9 N abgelesen. Wie groß ist die Federkonstante?',
+  s:'Eine Feder wird belastet und die Verlängerung gemessen: bei 10, 20, 30 und 40 Millimetern wurden 5,2, 9,8, 15,3 und 19,9 Newton abgelesen. Wie groß ist die Federkonstante?',
+  f:(k,t)=>EAX(60,230,230,180,'Δl in mm','F in N')+EPKT(60,230,230,180,[[10,5.2],[20,9.8],[30,15.3],[40,19.9]],4.6,7.5)+[10,20,30,40].map(v=>T(60+v*4.6,250,String(v),'ein2','middle')).join('')+T(380,90,'Messwerte','ein1','middle')+T(380,120,'streuen etwas','ein2','middle')+T(380,170,'D = F / Δl = ?','ein1','middle')},
+ {d:11,t:'Echte Messwerte liegen nie genau auf einer Linie. Man legt eine Ausgleichsgerade so, dass die Punkte möglichst gleichmäßig darüber und darunter liegen. Einzelne Punkte nicht verbinden.',
+  s:'Echte Messwerte liegen nie genau auf einer Linie. Man legt eine Ausgleichsgerade so, dass die Punkte möglichst gleichmäßig darüber und darunter liegen. Einzelne Punkte nicht verbinden.',
+  f:(k,t)=>{const o=EINQ(k/.7);return EAX(60,230,230,180,'Δl in mm','F in N')+`<line x1="60" y1="230" x2="${(60+230*o).toFixed(1)}" y2="${(230-150*o).toFixed(1)}" stroke="var(--red)" stroke-width="3"/>`+EPKT(60,230,230,180,[[10,5.2],[20,9.8],[30,15.3],[40,19.9]],4.6,7.5)+T(395,60,'Ausgleichs-','ein1','middle')+T(395,86,'gerade','ein1','middle')+T(395,120,'durch die Mitte','ein2','middle')+T(395,146,'der Punktwolke','ein2','middle')+T(395,184,'nicht Punkt','ein2','middle')+T(395,208,'zu Punkt','ein2','middle')}},
+ {d:11,t:'Die Steigung der Geraden ist die gesuchte Größe. Zwei weit auseinanderliegende Punkte auf der Geraden ablesen: bei 40 mm etwa 20 N. D = ΔF / Δl = 20 N / 40 mm = 0,5 N/mm.',
+  s:'Die Steigung der Geraden ist die gesuchte Größe. Zwei weit auseinanderliegende Punkte auf der Geraden ablesen: bei 40 Millimetern etwa 20 Newton. D gleich Delta F durch Delta l gleich 20 Newton durch 40 Millimeter gleich 0,5 Newton je Millimeter.',
+  f:k=>EFX(k,[['D = ΔF / Δl (Steigung)','h'],['D = (20 N − 0 N) / (40 mm − 0 mm)','m'],['D = 0,5 N/mm','r']],['Punkte auf der Geraden nehmen, nicht Messpunkte'])},
+ {d:11,t:'Wiederholt man eine Messung, streuen die Werte: 19,9 N, 20,1 N und 20,0 N. Der Mittelwert ist die Summe durch die Anzahl: 60,0 N / 3 = 20,0 N. Die Spannweite ist 20,1 − 19,9 = 0,2 N.',
+  s:'Wiederholt man eine Messung, streuen die Werte: 19,9, 20,1 und 20,0 Newton. Der Mittelwert ist die Summe durch die Anzahl: 60 Newton durch 3 gleich 20,0 Newton. Die Spannweite ist 0,2 Newton.',
+  f:k=>EFX(k,[['x̄ = Σx / n','h'],['x̄ = (19,9 + 20,1 + 20,0) N / 3 = 20,0 N','m'],['R = 20,1 N − 19,9 N = 0,2 N','r']],['Ausreißer prüfen, bevor man mittelt'])},
+ {d:13,t:'Alles zusammen: Punkte eintragen, Ausgleichsgerade legen, Steigung ablesen: D = 20 N / 40 mm = 0,5 N/mm. Wiederholte Messungen mitteln: 20,0 N. Genauso bestimmt man R = U / I aus einer Messreihe.',
+  s:'Alles zusammen: Punkte eintragen, Ausgleichsgerade legen, Steigung ablesen: D gleich 0,5 Newton je Millimeter. Wiederholte Messungen mitteln: 20,0 Newton. Genauso bestimmt man R gleich U durch I aus einer Messreihe.',
+  f:k=>EFX(k,[['Punkte → Ausgleichsgerade → Steigung','m'],['D = 20 N / 40 mm = 0,5 N/mm','m'],['x̄ = 60,0 N / 3 = 20,0 N','m'],['R = U / I genauso aus U-I-Messreihe','r']],['Steigung = Kennwert der Messreihe'])},
+ {d:9,t:'Merke: Messwerte streuen. Ausgleichsgerade durch die Punktwolke, ihre Steigung ist der Kennwert. Mehrfach messen und mitteln.',
+  s:'Merke: Messwerte streuen. Ausgleichsgerade durch die Punktwolke, ihre Steigung ist der Kennwert. Mehrfach messen und mitteln.',
+  f:(k,t)=>EMRK(k,t,EAX(40,220,180,150,'Δl','F')+`<line x1="40" y1="220" x2="200" y2="100" stroke="var(--red)" stroke-width="3"/>`+EPKT(40,220,180,150,[[1,.8],[2,1.4],[3,2.3],[4,2.9]],40,30),'D = ΔF / Δl','Gerade, nicht Zickzack')}
+]});
+
 let einP=null;
 function einShow(n){const w=$('#ein'),S=EIN[n];if(einP)einP.stop();einP=null;if(!w)return;w.innerHTML='';w.hidden=!S;if(!S)return;
  const tot=S.reduce((a,x)=>a+x.d,0),mm=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
