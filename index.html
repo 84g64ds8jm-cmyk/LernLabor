@@ -8753,7 +8753,7 @@ const EHYD=(y1,y2,o={})=>{let h=`<rect class="fluid" x="100" y="${y1+12}" width=
  if(o.F2)h+=AR(330,236,0,-Math.min(o.F2,236-y2-16),'var(--flow)')+T(345,226,'F₂','ein1');
  return h};
 /* Stromkreis: Batterie links, Widerstand oben, Strommesser rechts; Ladungen laufen mit der Geschwindigkeit ~ I */
-const ECIR=(t,U,R,I)=>{const P=[[40,50],[260,50],[260,220],[40,220]],len=880;
+const ECIR=(t,U,R,I)=>{const len=780;
  let h=`<path d="M40 50H150M210 50H260V220H40V150M40 130V50" class="w"/>`;
  for(let i=0;i<14;i++){let d=((i/14)*len+t*60*I)%len;let x,y;if(d<220){x=40+d;y=50}else if(d<390){x=260;y=50+d-220}else if(d<610){x=260-(d-390);y=220}else{x=40;y=220-(d-610)}
   if(!(x==40&&y>128&&y<152))h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="var(--amber)" stroke="var(--ink)" stroke-width="1"/>`}
@@ -8880,9 +8880,9 @@ Object.assign(EIN,{
   f:k=>{const p=14*EINQ(k/.8);return EPHS(30,110,420,p)+T(30+420*p/14,74,'pH '+nf(Math.round(p*2)/2,3),'ein1','middle')+T(30,200,'sauer','ein1')+T(240,200,'neutral','ein1','middle')+T(450,200,'alkalisch','ein1','end')}},
  {d:12,t:'Säuren geben Protonen (H⁺) ab. In Wasser entstehen dabei H₃O⁺-Ionen. Je mehr davon, desto saurer die Lösung.',
   s:'Säuren geben Protonen ab. In Wasser entstehen dabei H 3 O plus Ionen. Je mehr davon, desto saurer die Lösung.',
-  f:k=>{const a=EINQ((k-.2)/.5),hx=140+(270-140)*a,hy=110-40*Math.sin(a*PI);
+  f:k=>{const a=EINQ((k-.2)/.5),hx=130+(330-130)*a,hy=110-38*Math.sin(a*PI)-38*a*a;
    return EMOL(90,110,26,'#7cc47f','Cl')+EMOL(hx,hy,15,'#ffffff','H')+EMOL(330,110,24,'#e05a4f','O')+EMOL(300,150,15,'#ffffff','H')+EMOL(360,150,15,'#ffffff','H')+
-    T(90,190,a>.95?'Cl⁻':'HCl','ein1','middle')+T(330,210,a>.95?'H₃O⁺':'H₂O','ein1','middle')+(a>.95?'':AR(170,60,90,0,'var(--red)','H⁺',1))+T(240,256,'HCl + H₂O → H₃O⁺ + Cl⁻','ein2','middle')}},
+    T(90,190,a>.95?'Cl⁻':'HCl','ein1','middle')+T(330,210,a>.95?'H₃O⁺':'H₂O','ein1','middle')+(a>.95?'':AR(150,40,110,0,'var(--red)','H⁺',1))+T(240,256,'HCl + H₂O → H₃O⁺ + Cl⁻','ein2','middle')}},
  {d:11,t:'Jeder pH-Schritt bedeutet Faktor 10: pH 3 ist zehnmal so sauer wie pH 4 und hundertmal so sauer wie pH 5.',
   s:'Jeder pH Schritt bedeutet Faktor 10. pH 3 ist zehnmal so sauer wie pH 4 und hundertmal so sauer wie pH 5.',
   f:k=>T(20,34,'Anteil H₃O⁺-Ionen','ein2')+[[5,1],[4,10],[3,100]].map(([p,f],i)=>{const g=EINQ((k-i*.18)/.4),y=60+i*64,w=3+3*f*g;return T(20,y+24,'pH '+p,'ein1')+BAR3(90,y,w,30,EPHC(p),8)+(g>.8?T(104+w,y+24,'× '+f,'ein1'):'')}).join('')},
@@ -8892,6 +8892,348 @@ Object.assign(EIN,{
  {d:9,t:'Merke: Unter pH 7 sauer, pH 7 neutral, über pH 7 alkalisch. Jeder Schritt ist Faktor 10.',
   s:'Merke: Unter pH 7 sauer, pH 7 neutral, über pH 7 alkalisch. Jeder Schritt ist Faktor 10.',
   f:(k,t)=>EMRK(k,t,EPHS(10,110,200,7)+T(110,80,'neutral','ein2','middle'),'pH 7 = neutral','jeder Schritt: Faktor 10')}
+]});
+/* Zwei Pfeile Gewichtskraft (rot, nach unten) und Auftrieb (blau, nach oben) an einem Körper */
+const EFGA=(x,y,Lg,La)=>(Lg?AR(x-14,y,0,Lg,'var(--red)')+T(x-22,y+Lg/2+6,ESB('F','G'),'ein1','end'):'')+(La?AR(x+14,y,0,-La,'var(--flow)')+T(x+22,y-La/2+6,ESB('F','A'),'ein1'):'');
+/* Wasserbecken (Innenmaße), Wasserstand wy */
+const EBEC=(x,y,w,h,wy=0)=>`<rect class="fluid" x="${x}" y="${y+wy}" width="${w}" height="${h-wy}"/><path class="wall" d="M${x} ${y-6}V${y+h}H${x+w}V${y-6}"/>`;
+/* Kiste (Quader) mit Beschriftung */
+const EKIS=(x,y,w,h,l)=>BAR3(x,y,w,h,'#b89a6a',10)+(l?T(x+w/2,y+h/2+6,l,'ein1','middle'):'');
+/* Reihenschaltung mit zwei Widerständen, Ladungen laufen mit I */
+const ESER=(t,I,o={})=>{const len=760;let h=`<path d="M40 50H110M170 50H230M290 50V220H40V150M40 130V50" class="w"/>`;
+ if(I>0)for(let i=0;i<14;i++){let d=((i/14)*len+t*60*I)%len,x,y;if(d<250){x=40+d;y=50}else if(d<420){x=290;y=50+d-250}else if(d<670){x=290-(d-420);y=220}else{x=40;y=220-(d-670)}
+  if(!(x==40&&y>128&&y<152)&&!(y==50&&((x>110&&x<170)||(x>230&&x<290))))h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="var(--amber)" stroke="var(--ink)" stroke-width="1"/>`}
+ h+=`<rect x="110" y="38" width="60" height="24" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/><rect x="230" y="38" width="60" height="24" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>`+T(140,28,o.r1||'R₁','ein1','middle')+T(260,28,o.r2||'R₂','ein1','middle');
+ h+=`<path d="M22 130H58M30 150H50" stroke="var(--ink)" stroke-width="4"/>`+T(68,150,o.u||'U','ein1');
+ if(o.u1)h+=`<path d="M110 80v-8M170 80v-8M110 76H170" stroke="var(--red)" stroke-width="2"/>`+T(140,100,o.u1,'ein1','middle')+`<path d="M230 80v-8M290 80v-8M230 76H290" stroke="var(--red)" stroke-width="2"/>`+T(260,100,o.u2,'ein1','middle');
+ return h};
+/* Teilchengitter: n × m Kugeln mit Abstand d, Zittern mit Amplitude a */
+const EGIT=(x,y,n,m,d,a,t,c='var(--wire)')=>{let h='';for(let i=0;i<n;i++)for(let j=0;j<m;j++)h+=BALL(x+i*d+a*Math.sin(t*9+i*1.7+j*2.3),y+j*d+a*Math.cos(t*8+i*2.1+j),7,c,1.2);return h};
+Object.assign(EIN,{
+'Druck':[
+ {d:11,t:'Beim Tauchen drückt es auf die Ohren, und je tiefer, desto stärker. Das Wasser über Dir hat Gewicht.',
+  s:'Beim Tauchen drückt es auf die Ohren, und je tiefer, desto stärker. Das Wasser über Dir hat Gewicht.',
+  f:k=>{const a=EINQ(k/.8),y=70+150*a;let h=EBEC(60,60,200,190)+`<ellipse cx="160" cy="${y.toFixed(1)}" rx="14" ry="18" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.5"/>`;
+   const L=6+40*a;h+=AR(160-30-L,y,L,0,'var(--flow)')+AR(160+30+L,y,-L,0,'var(--flow)');
+   h+=T(300,80,'Tiefe h = '+(10*a).toFixed(0)+' m','ein1')+T(300,120,'Druck steigt','ein2');for(let i=0;i<4;i++)h+=`<path d="M300 ${150+i*18}h${(20+40*i*a).toFixed(0)}" stroke="var(--flow)" stroke-width="8" opacity=".6"/>`;return h}},
+ {d:11,t:'Druck ist Kraft pro Fläche: p = F / A. Die Einheit ist Pascal, 1 Pa = 1 N/m². 100 000 Pa sind 1 bar.',
+  s:'Druck ist Kraft pro Fläche, p gleich F durch A. Die Einheit ist Pascal, 1 Pascal ist 1 Newton pro Quadratmeter. 100 000 Pascal sind 1 bar.',
+  f:k=>{const a=EINQ(k/.5);return BAR3(60,160,180,30,'var(--wire)',12)+T(150,215,'Fläche A','ein2','middle')+AR(150,60,0,80*a,'var(--red)')+T(166,100,'F','ein1')+
+   `<text x="270" y="100" style="font-size:26px;font-weight:800">p = F / A</text>`+T(270,140,'1 Pa = 1 N/m²','ein1')+T(270,172,'1 bar = 100 000 Pa','ein1')+T(270,204,'1 bar = 10 N/cm²','ein2')}},
+ {d:11,t:'Im Wasser kommt der Druck vom Gewicht der Säule darüber: p = ρ · g · h. Nur die Tiefe zählt, nicht die Form des Gefäßes.',
+  s:'Im Wasser kommt der Druck vom Gewicht der Säule darüber: p gleich Rho mal g mal h. Nur die Tiefe zählt, nicht die Form des Gefäßes.',
+  f:k=>{const a=EINQ(k/.6);let h=`<rect class="fluid" x="60" y="70" width="60" height="160"/><rect class="fluid" x="120" y="190" width="100" height="40"/><rect class="fluid" x="220" y="70" width="180" height="160"/><path class="wall" d="M60 64V230H400V64M120 64V190H220V64"/>`;
+   h+=`<rect x="75" y="70" width="30" height="${(160*a).toFixed(0)}" fill="var(--flow)" opacity=".5" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/>`+T(90,40,'Säule','ein2','middle');
+   if(a>.9)h+=T(240,258,'gleiche Tiefe h, gleicher Druck p','ein1','middle')+`<circle cx="90" cy="215" r="6" fill="var(--red)"/><circle cx="310" cy="215" r="6" fill="var(--red)"/>`;
+   return h+T(310,40,'p = ρ · g · h','ein1','middle')}},
+ {d:11,t:'Faustregel: Alle 10 m Wassertiefe kommt rund 1 bar dazu. In 30 m Tiefe wirken also etwa 3 bar zusätzlich zum Luftdruck.',
+  s:'Faustregel: Alle 10 Meter Wassertiefe kommt rund 1 bar dazu. In 30 Metern Tiefe wirken also etwa 3 bar zusätzlich zum Luftdruck.',
+  f:k=>[[0,0],[10,1],[20,2],[30,3]].map(([hh,b],i)=>{const g=EINQ((k-i*.15)/.4),y=50+i*52;return T(20,y+22,hh+' m','ein1')+BAR3(90,y,20+80*b*g,28,'var(--flow)',8)+(g>.9?T(120+80*b,y+22,b?'+ '+b+' bar':'Luftdruck 1 bar','ein1'):'')}).join('')},
+ {d:13,t:'Alles zusammen: p = ρ · g · h. Beispiel: 10 m Wasser ergeben 1000 kg/m³ · 9,81 m/s² · 10 m = 98 100 Pa, also rund 1 bar.',
+  s:'Alles zusammen: p gleich Rho mal g mal h. 10 Meter Wasser ergeben 1000 Kilogramm pro Kubikmeter mal 9,81 Meter pro Sekundequadrat mal 10 Meter, das sind 98 100 Pascal, also rund 1 bar.',
+  f:k=>EFX(k,[['p = ρ · g · h','h'],['p = 1000 kg/m³ · 9,81 m/s² · 10 m','m'],['p = 98 100 Pa ≈ 0,98 bar','r']],['ρ: Dichte in kg/m³','g = 9,81 m/s²','h: Tiefe in m'])},
+ {d:9,t:'Merke: Je tiefer, desto mehr Druck, 1 bar je 10 m Wasser. Die Gefäßform ist egal, nur die Tiefe zählt.',
+  s:'Merke: Je tiefer, desto mehr Druck, 1 bar je 10 Meter Wasser. Die Gefäßform ist egal, nur die Tiefe zählt.',
+  f:(k,t)=>EMRK(k,t,EBEC(30,60,180,180)+[1,2,3].map(i=>AR(120-30-14*i,60+45*i,14*i,0,'var(--flow)')+AR(120+30+14*i,60+45*i,-14*i,0,'var(--flow)')).join('')+T(120,262,'Druck wächst mit der Tiefe','ein2','middle'),'p = ρ · g · h','10 m Wasser ≈ 1 bar')}
+],
+'Auftrieb und Dichte':[
+ {d:11,t:'Ein Stahlschiff schwimmt, eine Stahlkugel sinkt. Es kommt nicht auf das Material an, sondern auf das verdrängte Wasser.',
+  s:'Ein Stahlschiff schwimmt, eine Stahlkugel sinkt. Es kommt nicht auf das Material an, sondern auf das verdrängte Wasser.',
+  f:k=>{const a=EINQ(k/.8);let h=EBEC(40,80,400,170,30);
+   h+=`<path d="M100 110 L120 160 H230 L250 110 Z" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+T(175,105,'Schiff','ein2','middle');
+   h+=BALL(340,120+100*a,18,'#8a96a1')+T(385,135+100*a,'Kugel','ein2');return h}},
+ {d:11,t:'Taucht ein Körper ein, verdrängt er Wasser. Das verdrängte Wasser drückt zurück: Der Auftrieb F_A ist so groß wie dessen Gewichtskraft.',
+  s:'Taucht ein Körper ein, verdrängt er Wasser. Das verdrängte Wasser drückt zurück. Der Auftrieb F A ist so groß wie dessen Gewichtskraft.',
+  f:k=>{const a=EINQ(k/.7),y=60+110*a,wy=40-18*a;let h=EBEC(40,70,200,180,wy);h+=EKIS(100,y,80,60,'');
+   if(a>.95)h+=EFGA(140,90,0,70);h+=`<path d="M250 ${(110+wy).toFixed(0)}h20" stroke="var(--red)" stroke-width="2"/><path d="M250 110h20" stroke="var(--red)" stroke-width="2" stroke-dasharray="3 3"/>`;
+   h+=T(280,100,'Wasser steigt um','ein2')+T(280,130,'das Körpervolumen','ein1')+(a>.95?T(280,190,ESB('F','A')+' = Gewicht','ein1')+T(280,218,'dieses Wassers','ein1'):'');
+   return h}},
+ {d:11,t:'F_A = ρ_Fl · g · V. Je mehr Volumen eintaucht und je dichter die Flüssigkeit, desto größer der Auftrieb.',
+  s:'F A gleich Rho der Flüssigkeit mal g mal V. Je mehr Volumen eintaucht und je dichter die Flüssigkeit, desto größer der Auftrieb.',
+  f:k=>{const a=EINQ(k/.6);let h=EBEC(30,70,170,180,30)+EKIS(75,130,80,60,'V');h+=EFGA(115,160,60*a,60*a);
+   return h+`<text x="220" y="110" style="font-size:22px;font-weight:800">F<tspan baseline-shift="sub" style="font-size:70%">A</tspan> = ρ<tspan baseline-shift="sub" style="font-size:70%">Fl</tspan> · g · V</text>`+T(220,150,ESB('ρ','Fl')+': Dichte der Flüssigkeit','ein2')+T(220,180,'V: eingetauchtes Volumen','ein2')+T(220,210,'Wasser: 1 dm³ → 9,81 N','ein1')}},
+ {d:11,t:'Dichte vergleichen: Ist der Körper leichter als Wasser (ρ < 1 kg/dm³), schwimmt er. Gleich dicht schwebt er, dichter sinkt er.',
+  s:'Dichte vergleichen: Ist der Körper leichter als Wasser, schwimmt er. Gleich dicht schwebt er, dichter sinkt er.',
+  f:k=>{const a=EINQ(k/.7);let h=EBEC(30,70,420,160,30);
+   [['Holz 0,6',100,30+ -8*a,'schwimmt'],['Wasser 1,0',240,30+50*a,'schwebt'],['Stahl 7,8',380,30+110*a,'sinkt']].forEach(([n,x,dy,z])=>{h+=BALL(x,80+dy,22,n[0]=='H'?'#b89a6a':n[0]=='W'?'var(--flow)':'#8a96a1')+T(x,40,n,'ein1','middle')+(a>.9?T(x,258,z,'ein1','middle'):'')});return h}},
+ {d:13,t:'Alles zusammen: F_A = ρ_Fl · g · V. Beispiel: 10 dm³ unter Wasser ergeben 1000 kg/m³ · 9,81 m/s² · 0,01 m³ = 98,1 N.',
+  s:'Alles zusammen: F A gleich Rho mal g mal V. 10 Kubikdezimeter unter Wasser ergeben 1000 Kilogramm pro Kubikmeter mal 9,81 mal 0,01 Kubikmeter, das sind 98,1 Newton.',
+  f:k=>EFX(k,[[ESB('F','A')+' = '+ESB('ρ','Fl')+' · g · V','h'],[ESB('F','A')+' = 1000 kg/m³ · 9,81 m/s² · 0,01 m³','m'],[ESB('F','A')+' = 98,1 N','r']],['10 dm³ = 0,01 m³','Der Körper wird um 98,1 N leichter'])},
+ {d:9,t:'Merke: Auftrieb = Gewichtskraft des verdrängten Wassers. Leichter als Wasser schwimmt, dichter sinkt.',
+  s:'Merke: Auftrieb gleich Gewichtskraft des verdrängten Wassers. Leichter als Wasser schwimmt, dichter sinkt.',
+  f:(k,t)=>EMRK(k,t,EBEC(30,70,200,180,30)+EKIS(90,120,80,60,'')+EFGA(130,150,50,50),ESB('F','A')+' = '+ESB('ρ','Fl')+' · g · V','ρ < ρ(Wasser) → schwimmt')}
+],
+'Kraftgesetz F = m · a':[
+ {d:11,t:'Ein leerer Einkaufswagen kommt leicht in Fahrt, ein voller nur langsam. Gleiche Kraft, andere Beschleunigung.',
+  s:'Ein leerer Einkaufswagen kommt leicht in Fahrt, ein voller nur langsam. Gleiche Kraft, andere Beschleunigung.',
+  f:k=>{const a=EINQ(k/.9),w=(x,y,l,v)=>BAR3(x,y,70,40,v?'#b89a6a':'var(--card)',10)+`<circle cx="${x+15}" cy="${y+48}" r="7" fill="var(--ink)"/><circle cx="${x+55}" cy="${y+48}" r="7" fill="var(--ink)"/>`+T(x+35,y-8,l,'ein2','middle');
+   return `<path d="M20 125H460M20 235H460" stroke="var(--line)" stroke-width="2"/>`+w(40+300*a*a,70,'leer',0)+AR(30+300*a*a,90,-30,0,'var(--red)')+T(14+300*a*a,84,'F','ein1','middle')+w(40+75*a*a,180,'voll',1)+AR(30+75*a*a,200,-30,0,'var(--red)')+T(14+75*a*a,194,'F','ein1','middle')}},
+ {d:11,t:'Doppelte Kraft, doppelte Beschleunigung: a wächst proportional zu F.',
+  s:'Doppelte Kraft, doppelte Beschleunigung. a wächst proportional zu F.',
+  f:k=>{const a=EINQ(k/.9);return [[1,'F','a'],[2,'2 F','2 a']].map(([n,lf,la],i)=>{const y=70+i*110,x=120+60*n*a*a;return `<path d="M20 ${y+55}H460" stroke="var(--line)" stroke-width="2"/>`+EKIS(x,y,60,45,'m')+AR(x-10-30*n,y+22,30*n,0,'var(--red)')+T(x-16-30*n,y+28,lf,'ein1','end')+T(x+80,y+28,la,'ein1')}).join('')}},
+ {d:11,t:'Doppelte Masse, halbe Beschleunigung: a ist umgekehrt proportional zu m.',
+  s:'Doppelte Masse, halbe Beschleunigung. a ist umgekehrt proportional zu m.',
+  f:k=>{const a=EINQ(k/.9);return [[1,'m','a'],[2,'2 m','a / 2']].map(([n,lm,la],i)=>{const y=70+i*110,x=120+120/n*a*a;return `<path d="M20 ${y+55}H460" stroke="var(--line)" stroke-width="2"/>`+EKIS(x,y-(n-1)*25,60,45+(n-1)*25,lm)+AR(x-40,y+22,30,0,'var(--red)')+T(x-46,y+28,'F','ein1','end')+T(x+80,y+28,la,'ein1')}).join('')}},
+ {d:11,t:'Nur die Nettokraft beschleunigt: Reibung zieht dagegen. F_netto = F − F_R.',
+  s:'Nur die Nettokraft beschleunigt. Reibung zieht dagegen. F netto gleich F minus F R.',
+  f:k=>{const a=EINQ(k/.5);return `<path d="M20 175H460" stroke="var(--line)" stroke-width="2"/>`+EKIS(200,120,80,55,'m')+AR(150,147,50,0,'var(--red)')+T(144,153,'F = 200 N','ein1','end')+AR(300,147,-40*a,0,'var(--red)')+(a>.5?T(310,153,ESB('F','R')+' = 50 N','ein1'):'')+
+   (k>.5?T(240,60,ESB('F','netto')+' = 200 N − 50 N = 150 N','ein1','middle'):'')}},
+ {d:13,t:'Alles zusammen: F = m · a, umgestellt a = F / m. Beispiel: 200 N auf 20 kg ergeben 10 m/s².',
+  s:'Alles zusammen: F gleich m mal a, umgestellt a gleich F durch m. 200 Newton auf 20 Kilogramm ergeben 10 Meter pro Sekundequadrat.',
+  f:k=>EFX(k,[['F = m · a','h'],['a = F / m','h'],['a = 200 N / 20 kg','m'],['a = 10 m/s²','r']],['F in N, m in kg, a in m/s²','1 N = 1 kg · m/s²'])},
+ {d:9,t:'Merke: Mehr Kraft gibt mehr Beschleunigung, mehr Masse gibt weniger. 1 N beschleunigt 1 kg um 1 m/s².',
+  s:'Merke: Mehr Kraft gibt mehr Beschleunigung, mehr Masse gibt weniger. 1 Newton beschleunigt 1 Kilogramm um 1 Meter pro Sekundequadrat.',
+  f:(k,t)=>EMRK(k,t,`<path d="M10 165H205" stroke="var(--line)" stroke-width="2"/>`+EKIS(70,110,60,45,'1 kg')+AR(26,132,40,0,'var(--red)')+T(30,100,'1 N','ein1')+AR(134,132,40,0,'var(--flow)')+T(136,100,'1 m/s²','ein1'),'F = m · a','a = F / m')}
+],
+'Arbeit & Leistung':[
+ {d:11,t:'Du schiebst eine Kiste mit 200 N über 10 m. Kraft mal Weg ist die Arbeit, die Du verrichtest.',
+  s:'Du schiebst eine Kiste mit 200 Newton über 10 Meter. Kraft mal Weg ist die Arbeit, die Du verrichtest.',
+  f:k=>{const a=EINQ(k/.9),x=60+280*a;return `<path d="M20 185H460" stroke="var(--line)" stroke-width="2"/>`+EKIS(x,130,70,55,'')+AR(x-50,157,40,0,'var(--red)')+T(x-56,163,'F = 200 N','ein1','end')+
+   `<path d="M60 215v10M${(x+0).toFixed(0)} 215v10M60 220H${(x).toFixed(0)}" stroke="var(--flow)" stroke-width="2"/>`+T((60+x)/2,245,'s = '+(10*a).toFixed(1).replace('.',',')+' m','ein1','middle')}},
+ {d:11,t:'W = F · s. Im Kraft-Weg-Diagramm ist die Arbeit die Fläche unter der Kurve: 200 N · 10 m = 2000 J.',
+  s:'W gleich F mal s. Im Kraft Weg Diagramm ist die Arbeit die Fläche unter der Kurve. 200 Newton mal 10 Meter sind 2000 Joule.',
+  f:k=>{const a=EINQ(k/.7),x0=70,y0=220,W=300,H=120;let h=`<path d="M${x0} ${y0-H-20}V${y0}H${x0+W+30}" fill="none" stroke="var(--ink)" stroke-width="2"/>`+T(x0-8,y0-H+6,'200 N','ein2','end')+T(x0+W,y0+24,'10 m','ein2','middle')+T(x0+W+34,y0+6,'s','ein2')+T(x0+10,y0-H-24,'F','ein2');
+   h+=`<rect x="${x0}" y="${y0-H}" width="${(W*a).toFixed(1)}" height="${H}" fill="var(--amber)" opacity=".7" stroke="var(--ink)" stroke-width="1.5"/>`;if(a>.9)h+=T(x0+W/2,y0-H/2+8,'W = 2000 J','ein1','middle');return h}},
+ {d:11,t:'Nur die Kraft in Wegrichtung zählt. Ziehst Du schräg nach oben, wirkt nur der Anteil F · cos α.',
+  s:'Nur die Kraft in Wegrichtung zählt. Ziehst Du schräg nach oben, wirkt nur der Anteil F mal Kosinus Alpha.',
+  f:k=>{const al=EINQ(k/.6)*35,r=al*PI/180,L=110;let h=`<path d="M20 195H460" stroke="var(--line)" stroke-width="2"/>`+EKIS(120,140,70,55,'');const x=190,y=167;
+   h+=AR(x,y,L*Math.cos(r),-L*Math.sin(r),'var(--red)')+T(x+L*Math.cos(r)+10,y-L*Math.sin(r),'F','ein1');if(al>3)h+=AR(x,y,L*Math.cos(r),0,'var(--flow)')+T(x+10,y+26,'F · cos α','ein1')+`<path d="M${x+40} ${y}A40 40 0 0 0 ${(x+40*Math.cos(r)).toFixed(1)} ${(y-40*Math.sin(r)).toFixed(1)}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`+T(x+48,y-12,'α = '+Math.round(al)+'°','ein2');
+   return h+T(300,80,'W = F · s · cos α','ein1')}},
+ {d:11,t:'Leistung ist Arbeit pro Zeit: P = W / t. Die gleiche Arbeit in der halben Zeit heißt doppelte Leistung.',
+  s:'Leistung ist Arbeit pro Zeit, P gleich W durch t. Die gleiche Arbeit in der halben Zeit heißt doppelte Leistung.',
+  f:k=>{const a=Math.min(1,k/.8);return [[10,'10 s','200 W'],[20,'20 s','100 W']].map(([tt,lt,lp],i)=>{const y=60+i*110,f=Math.min(1,a*20/tt);return T(20,y-10,'2000 J in '+lt,'ein2')+BAR3(20,y,300*f,30,'var(--amber)',8)+(f>=1?T(340,y+22,'P = '+lp,'ein1'):'')}).join('')}},
+ {d:13,t:'Alles zusammen: W = F · s = 200 N · 10 m = 2000 J. Leistung P = W / t = 2000 J / 10 s = 200 W.',
+  s:'Alles zusammen: W gleich F mal s gleich 200 Newton mal 10 Meter gleich 2000 Joule. Leistung P gleich W durch t gleich 2000 Joule durch 10 Sekunden gleich 200 Watt.',
+  f:k=>EFX(k,[['W = F · s = 200 N · 10 m = 2000 J','m'],['P = W / t','h'],['P = 2000 J / 10 s','m'],['P = 200 W','r']],['1 J = 1 N·m = 1 W·s','1 kWh = 3,6 MJ'])},
+ {d:9,t:'Merke: Arbeit ist Kraft mal Weg, Leistung ist Arbeit pro Zeit. 1 J = 1 N·m, 1 W = 1 J/s.',
+  s:'Merke: Arbeit ist Kraft mal Weg, Leistung ist Arbeit pro Zeit. 1 Joule ist 1 Newtonmeter, 1 Watt ist 1 Joule pro Sekunde.',
+  f:(k,t)=>EMRK(k,t,`<path d="M20 175H220" stroke="var(--line)" stroke-width="2"/>`+EKIS(100,120,60,55,'')+AR(50,147,40,0,'var(--red)')+T(70,110,'F','ein1')+`<path d="M100 200H160" stroke="var(--flow)" stroke-width="3"/>`+T(130,225,'s','ein1','middle'),'W = F · s','P = W / t')}
+],
+'Wärmeausdehnung':[
+ {d:11,t:'Brücken haben Dehnungsfugen und Schienen Lücken: Im Sommer wird Stahl länger, im Winter kürzer.',
+  s:'Brücken haben Dehnungsfugen und Schienen Lücken. Im Sommer wird Stahl länger, im Winter kürzer.',
+  f:k=>{const a=EINQ(k/.8),g=22-16*a;let h=BAR3(30,150,200-g/2,22,'#8a96a1',8)+BAR3(230+g/2,150,200,22,'#8a96a1',8);
+   h+=`<path d="M60 200H400" stroke="var(--line)" stroke-width="6"/>`+T(230,120,'Fuge '+(g).toFixed(0)+' mm','ein1','middle')+T(240,250,a<.5?'Winter: kalt, kurz':'Sommer: warm, lang','ein1','middle');return h}},
+ {d:11,t:'Wird es wärmer, schwingen die Teilchen stärker und brauchen mehr Platz. Der ganze Körper wird länger.',
+  s:'Wird es wärmer, schwingen die Teilchen stärker und brauchen mehr Platz. Der ganze Körper wird länger.',
+  f:(k,t)=>{const a=EINQ(k/.8);return T(120,40,'kalt','ein1','middle')+EGIT(50,70,7,3,22,.6,t)+T(340,40,'warm','ein1','middle')+EGIT(265,70,7,3,22+3*a,.6+2.5*a,t,'var(--amber)')+
+   `<path d="M50 150H${(50+6*22).toFixed(0)}" stroke="var(--ink)" stroke-width="2"/><path d="M265 150H${(265+6*(22+3*a)).toFixed(0)}" stroke="var(--red)" stroke-width="2"/>`+T(116,172,'L₀','ein2','middle')+T(340,172,'L₀ + ΔL','ein2','middle')+T(240,230,'ΔL ist klein, aber bei langen Bauteilen spürbar','ein2','middle')}},
+ {d:11,t:'ΔL hängt vom Stoff ab: Der Ausdehnungskoeffizient α ist bei Aluminium fast doppelt so groß wie bei Stahl.',
+  s:'Delta L hängt vom Stoff ab. Der Ausdehnungskoeffizient Alpha ist bei Aluminium fast doppelt so groß wie bei Stahl.',
+  f:k=>T(20,30,'α in 10⁻⁶ je K','ein2')+[['Stahl',12],['Kupfer',17],['Aluminium',23]].map(([n,al],i)=>{const g=EINQ((k-i*.15)/.45),y=60+i*62;return T(20,y+22,n,'ein2')+BAR3(120,y,al*12*g,30,i?'var(--wire)':'var(--amber)',8)+(g>.9?T(134+al*12,y+22,String(al),'ein1'):'')}).join('')},
+ {d:11,t:'Außerdem zählen Länge und Temperaturunterschied: Doppelte Länge oder doppeltes ΔT geben doppeltes ΔL. Flüssigkeiten dehnen sich viel stärker aus.',
+  s:'Außerdem zählen Länge und Temperaturunterschied. Doppelte Länge oder doppeltes Delta T geben doppeltes Delta L. Flüssigkeiten dehnen sich viel stärker aus.',
+  f:k=>{const a=EINQ(k/.6);let h='';[[1,'L₀, ΔT',1],[2,'2 · L₀',2],[1,'2 · ΔT',2]].forEach(([L,n,f],i)=>{const y=50+i*50;h+=T(20,y+16,n,'ein2')+BAR3(120,y,85*L,18,'#8a96a1',6)+BAR3(120+85*L,y,22*f*a,18,'var(--red)',6)+(a>.9?T(150+85*L+22*f,y+16,f+' · ΔL','ein1'):'')});
+   return h+ETHM(440,40,170,20+70*a,0)+T(440,236,'Flüssigkeit','ein2','middle')}},
+ {d:13,t:'Alles zusammen: ΔL = α · L₀ · ΔT. Beispiel: 10 m Stahl um 50 K wärmer werden 12 · 10⁻⁶ 1/K · 10 m · 50 K = 6 mm länger.',
+  s:'Alles zusammen: Delta L gleich Alpha mal L null mal Delta T. 10 Meter Stahl, um 50 Kelvin wärmer, werden 6 Millimeter länger.',
+  f:k=>EFX(k,[['ΔL = α · L₀ · ΔT','h'],['ΔL = 12 · 10⁻⁶ 1/K · 10 m · 50 K','m'],['ΔL = 0,006 m = 6 mm','r']],['α: Ausdehnungskoeffizient in 1/K','L₀: Ausgangslänge in m','ΔT: Temperaturänderung in K'])},
+ {d:9,t:'Merke: Länger wird es mit Stoff, Länge und Temperaturunterschied. Darum braucht Stahl Fugen und Schienen Lücken.',
+  s:'Merke: Länger wird es mit Stoff, Länge und Temperaturunterschied. Darum braucht Stahl Fugen und Schienen Lücken.',
+  f:(k,t)=>EMRK(k,t,BAR3(20,120,160,20,'#8a96a1',8)+BAR3(180,120,30,20,'var(--red)',8)+T(100,160,'L₀','ein2','middle')+T(195,160,'ΔL','ein2','middle'),'ΔL = α · L₀ · ΔT','Stahl: α = 12 · 10⁻⁶ 1/K')}
+],
+'Reihe':[
+ {d:11,t:'Alte Lichterkette: Eine Lampe fällt aus, alle sind dunkel. In der Reihenschaltung gibt es nur einen Weg für den Strom.',
+  s:'Alte Lichterkette: Eine Lampe fällt aus, alle sind dunkel. In der Reihenschaltung gibt es nur einen Weg für den Strom.',
+  f:(k,t)=>{const off=k>.55;let h=`<path d="M30 140H450" class="w"/>`;for(let i=0;i<5;i++){const x=70+i*90,on=!off;h+=`<circle cx="${x}" cy="140" r="20" fill="${on?'var(--amber)':'var(--card)'}" stroke="var(--ink)" stroke-width="2.5"/>`+(i==2&&off?`<path d="M${x-10} 130l20 20M${x+10} 130l-20 20" stroke="var(--red)" stroke-width="3"/>`:'')}
+   return h+T(240,60,off?'eine Lampe defekt, Kreis unterbrochen':'alle leuchten','ein1','middle')+T(240,220,off?'kein Strom mehr, alle aus':'ein Strompfad','ein2','middle')}},
+ {d:11,t:'Der Strom I ist überall gleich: Was durch R₁ fließt, fließt auch durch R₂.',
+  s:'Der Strom I ist überall gleich. Was durch R eins fließt, fließt auch durch R zwei.',
+  f:(k,t)=>ESER(t,1)+T(330,120,'I = 0,4 A','ein1')+T(330,150,'überall gleich','ein2')},
+ {d:11,t:'Die Spannung teilt sich auf: U = U₁ + U₂. Der größere Widerstand bekommt den größeren Anteil.',
+  s:'Die Spannung teilt sich auf. U gleich U eins plus U zwei. Der größere Widerstand bekommt den größeren Anteil.',
+  f:(k,t)=>ESER(t,1,{r1:'10 Ω',r2:'20 Ω',u:'12 V',u1:'4 V',u2:'8 V'})+T(330,150,'U = U₁ + U₂','ein1')+T(330,180,'12 V = 4 V + 8 V','ein2')},
+ {d:11,t:'Die Widerstände addieren sich: R_ges = R₁ + R₂. Jeder weitere Widerstand macht den Gesamtwiderstand größer.',
+  s:'Die Widerstände addieren sich. R gesamt gleich R eins plus R zwei. Jeder weitere Widerstand macht den Gesamtwiderstand größer.',
+  f:k=>{const a=EINQ(k/.5),b=EINQ((k-.3)/.5);return T(20,60,'R₁ = 10 Ω','ein2')+BAR3(150,40,100*a,28,'var(--wire)',8)+T(20,120,'R₂ = 20 Ω','ein2')+BAR3(150,100,200*a,28,'var(--wire)',8)+T(20,200,ESB('R','ges'),'ein1')+BAR3(150,180,100*b,28,'var(--amber)',8,{s:0})+BAR3(150+100*b,180,200*b,28,'var(--amber)',8)+(b>.9?T(450,166,ESB('R','ges')+' = 30 Ω','ein1','end'):'')}},
+ {d:13,t:'Alles zusammen: R_ges = 10 Ω + 20 Ω = 30 Ω. Strom I = 12 V / 30 Ω = 0,4 A. An R₁: U₁ = 0,4 A · 10 Ω = 4 V.',
+  s:'Alles zusammen: R gesamt gleich 10 Ohm plus 20 Ohm gleich 30 Ohm. Strom I gleich 12 Volt durch 30 Ohm gleich 0,4 Ampere. An R eins: U eins gleich 0,4 Ampere mal 10 Ohm gleich 4 Volt.',
+  f:k=>EFX(k,[[ESB('R','ges')+' = R₁ + R₂ = 10 Ω + 20 Ω = 30 Ω','m'],['I = U / '+ESB('R','ges')+' = 12 V / 30 Ω = 0,4 A','m'],['U₁ = I · R₁ = 0,4 A · 10 Ω = 4 V','m'],['U₂ = 0,4 A · 20 Ω = 8 V','r']],['Probe: 4 V + 8 V = 12 V'])},
+ {d:9,t:'Merke: In Reihe ist der Strom überall gleich, die Spannungen addieren sich, die Widerstände addieren sich.',
+  s:'Merke: In Reihe ist der Strom überall gleich, die Spannungen addieren sich, die Widerstände addieren sich.',
+  f:(k,t)=>EMRK(k,t,`<g transform="translate(-20 20) scale(.72)">${ESER(t,1)}</g>`,ESB('R','ges')+' = R₁ + R₂','I gleich, U teilt sich auf')}
+],
+'Elektrische Arbeit & Leistung':[
+ {d:11,t:'Ein Wasserkocher hängt an 230 V und zieht 8,7 A. Wie viel Leistung ist das, und was kostet das Kochen?',
+  s:'Ein Wasserkocher hängt an 230 Volt und zieht 8,7 Ampere. Wie viel Leistung ist das, und was kostet das Kochen?',
+  f:(k,t)=>{let h=EGL(70,80,110,150,{lv:100});for(let b=0;b<6;b++){const y=225-((t*50+b*31)%110);h+=`<circle cx="${(90+b*14).toFixed(0)}" cy="${y.toFixed(0)}" r="${3+b%2}" fill="none" stroke="var(--flow)" stroke-width="1.5" opacity=".8"/>`}
+   h+=`<rect x="60" y="232" width="130" height="14" rx="4" fill="var(--ink)"/><path d="M190 240H250V140H300" stroke="var(--ink)" stroke-width="3" fill="none"/><rect x="300" y="125" width="30" height="30" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/>`;
+   return h+T(350,100,'U = 230 V','ein1')+T(350,140,'I = 8,7 A','ein1')+T(350,190,'P = ?','ein1')}},
+ {d:11,t:'Leistung ist Spannung mal Strom: P = U · I. 230 V · 8,7 A = 2000 W = 2 kW.',
+  s:'Leistung ist Spannung mal Strom. P gleich U mal I. 230 Volt mal 8,7 Ampere sind 2000 Watt, also 2 Kilowatt.',
+  f:k=>{const a=EINQ(k/.6);return BAR3(60,80,120*a,30,'var(--flow)',8)+T(60,70,'U = 230 V','ein2')+BAR3(60,150,120*a,30,'var(--amber)',8)+T(60,140,'I = 8,7 A','ein2')+`<text x="240" y="130" style="font-size:26px;font-weight:800">P = U · I</text>`+(a>.9?T(240,170,'= 230 V · 8,7 A','ein1')+`<text x="240" y="210" style="font-size:24px;font-weight:800;fill:var(--ok)">= 2000 W = 2 kW</text>`:'')}},
+ {d:11,t:'Arbeit ist Leistung mal Zeit: W = P · t. Der Zähler misst in Kilowattstunden: 1 kW eine Stunde lang ist 1 kWh.',
+  s:'Arbeit ist Leistung mal Zeit, W gleich P mal t. Der Zähler misst in Kilowattstunden. 1 Kilowatt eine Stunde lang ist 1 Kilowattstunde.',
+  f:k=>{const a=Math.min(1,k/.85),kwh=6*a;let h=`<rect x="40" y="60" width="200" height="110" rx="10" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/><rect x="60" y="80" width="160" height="44" rx="4" fill="var(--bg)" stroke="var(--ink)" stroke-width="1.5"/>`;
+   h+=`<text x="212" y="112" text-anchor="end" style="font-size:26px;font-weight:800">${kwh.toFixed(1).replace('.',',')} kWh</text>`+T(140,155,'Stromzähler','ein2','middle');
+   return h+T(280,90,'P = 2 kW','ein1')+T(280,125,'t = '+(3*a).toFixed(1).replace('.',',')+' h','ein1')+T(280,170,'W = P · t','ein1')+T(280,210,'1 kWh = 3,6 MJ','ein2')}},
+ {d:11,t:'Abgerechnet wird je Kilowattstunde, zum Beispiel 35 ct/kWh. Energie sparen heißt: weniger Leistung oder kürzere Zeit.',
+  s:'Abgerechnet wird je Kilowattstunde, zum Beispiel 35 Cent pro Kilowattstunde. Energie sparen heißt weniger Leistung oder kürzere Zeit.',
+  f:k=>[['Wasserkocher 2 kW, 3 h',6,'2,10 €'],['LED-Lampe 10 W, 3 h',.03,'0,01 €'],['Heizlüfter 2 kW, 8 h',16,'5,60 €']].map(([n,w,c],i)=>{const g=EINQ((k-i*.15)/.45),y=56+i*66;return T(20,y-10,n,'ein2')+BAR3(20,y,Math.max(2,14*w*g),26,'var(--amber)',8)+(g>.9?T(40+14*w,y+20,(w<1?'0,03':String(w))+' kWh → '+c,'ein1'):'')}).join('')},
+ {d:13,t:'Alles zusammen: P = U · I = 230 V · 8,7 A = 2 kW. W = P · t = 2 kW · 3 h = 6 kWh. Kosten: 6 kWh · 0,35 €/kWh = 2,10 €.',
+  s:'Alles zusammen: P gleich U mal I gleich 2 Kilowatt. W gleich P mal t gleich 2 Kilowatt mal 3 Stunden gleich 6 Kilowattstunden. Kosten: 6 Kilowattstunden mal 35 Cent sind 2 Euro 10.',
+  f:k=>EFX(k,[['P = U · I = 230 V · 8,7 A = 2 kW','m'],['W = P · t = 2 kW · 3 h = 6 kWh','m'],['Kosten = 6 kWh · 0,35 €/kWh','m'],['Kosten = 2,10 €','r']],['1 kWh = 1000 W · 3600 s = 3,6 MJ'])},
+ {d:9,t:'Merke: P = U · I, W = P · t. Die Kilowattstunde ist die Einheit der Stromrechnung.',
+  s:'Merke: P gleich U mal I, W gleich P mal t. Die Kilowattstunde ist die Einheit der Stromrechnung.',
+  f:(k,t)=>EMRK(k,t,`<rect x="30" y="80" width="180" height="90" rx="10" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/><text x="120" y="135" text-anchor="middle" style="font-size:26px;font-weight:800">6,0 kWh</text>`+T(120,200,'Zähler','ein2','middle'),'P = U · I','W = P · t in kWh')}
+],
+'Reaktionsgleichungen & Mol':[
+ {d:11,t:'Knallgas: Wasserstoff und Sauerstoff reagieren zu Wasser. Die Atome werden nur neu sortiert, keines geht verloren.',
+  s:'Knallgas: Wasserstoff und Sauerstoff reagieren zu Wasser. Die Atome werden nur neu sortiert, keines geht verloren.',
+  f:k=>{const a=EINQ((k-.3)/.5),H=(x,y)=>EMOL(x,y,13,'#ffffff','H'),O=(x,y)=>EMOL(x,y,20,'#e05a4f','O'),L=(x0,y0,x1,y1)=>[x0+(x1-x0)*a,y0+(y1-y0)*a];
+   const P=[L(60,90,300,70),L(90,90,340,70),L(60,170,300,190),L(90,170,340,190),L(190,110,320,100),L(190,150,320,160)];
+   return H(...P[0])+H(...P[1])+H(...P[2])+H(...P[3])+O(...P[4])+O(...P[5])+T(100,240,a<.5?'2 H₂ + O₂':'','ein1','middle')+T(330,240,a>.5?'2 H₂O':'','ein1','middle')+AR(230,240,30,0,'var(--ink)')}},
+ {d:11,t:'Ausgleichen heißt zählen: links 4 H und 2 O, rechts 4 H und 2 O. Erst dann stimmt die Gleichung.',
+  s:'Ausgleichen heißt zählen. Links 4 H und 2 O, rechts 4 H und 2 O. Erst dann stimmt die Gleichung.',
+  f:k=>{const a=k>.5;return `<text x="240" y="70" text-anchor="middle" style="font-size:28px;font-weight:800">${a?'2 ':''}H₂ + O₂ → ${a?'2 ':''}H₂O</text>`+T(120,130,'links','ein2','middle')+T(360,130,'rechts','ein2','middle')+
+   T(120,165,'H: '+(a?4:2),'ein1','middle')+T(120,200,'O: 2','ein1','middle')+T(360,165,'H: '+(a?4:2),'ein1','middle')+T(360,200,'O: '+(a?2:1),'ein1','middle')+`<text x="240" y="250" text-anchor="middle" style="font-size:18px;font-weight:700;fill:${a?'var(--ok)':'var(--red)'}">${a?'✓ ausgeglichen':'✗ O stimmt nicht'}</text>`}},
+ {d:11,t:'Chemiker zählen in Mol: 1 mol sind 6,022 · 10²³ Teilchen. Die molare Masse M steht im Periodensystem, Wasser hat 18 g/mol.',
+  s:'Chemiker zählen in Mol. 1 Mol sind 6,022 mal 10 hoch 23 Teilchen. Die molare Masse M steht im Periodensystem, Wasser hat 18 Gramm pro Mol.',
+  f:k=>{const a=EINQ(k/.6);return EGL(25,70,90,140,{lv:90*a})+T(70,248,'1 mol Wasser','ein2','middle')+T(140,90,'1 mol = 6,022 · 10²³ Teilchen','ein1')+T(140,130,'M(H) = 1 g/mol, M(O) = 16 g/mol','ein2')+T(140,160,'M(H₂O) = 2 · 1 + 16 = 18 g/mol','ein1')+(a>.9?T(140,210,'1 mol Wasser wiegt 18 g','ein1'):'')}},
+ {d:11,t:'n = m / M verbindet Waage und Teilchenzahl: 36 g Wasser sind 2 mol, 9 g sind 0,5 mol.',
+  s:'n gleich m durch M verbindet Waage und Teilchenzahl. 36 Gramm Wasser sind 2 Mol, 9 Gramm sind 0,5 Mol.',
+  f:k=>[[9,.5],[18,1],[36,2]].map(([m,n],i)=>{const g=EINQ((k-i*.15)/.45),y=56+i*64;return T(20,y+20,m+' g','ein1')+BAR3(90,y,150*n*g,28,'var(--flow)',8)+(g>.9?T(104+150*n,y+20,nf(n)+' mol','ein1'):'')}).join('')+T(20,250,'n = m / M mit M = 18 g/mol','ein2')},
+ {d:13,t:'Alles zusammen: 2 H₂ + O₂ → 2 H₂O. Stoffmenge n = m / M. Beispiel: 36 g Wasser / 18 g/mol = 2 mol.',
+  s:'Alles zusammen: 2 H 2 plus O 2 ergibt 2 H 2 O. Stoffmenge n gleich m durch M. 36 Gramm Wasser durch 18 Gramm pro Mol sind 2 Mol.',
+  f:k=>EFX(k,[['2 H₂ + O₂ → 2 H₂O','h'],['n = m / M','h'],['n = 36 g / 18 g/mol','m'],['n = 2 mol','r']],['n: Stoffmenge in mol','m: Masse in g','M: molare Masse in g/mol'])},
+ {d:9,t:'Merke: Atome zählen, bis links und rechts gleich viel steht. Mit n = m / M rechnest Du Gramm in Mol um.',
+  s:'Merke: Atome zählen, bis links und rechts gleich viel steht. Mit n gleich m durch M rechnest Du Gramm in Mol um.',
+  f:(k,t)=>EMRK(k,t,EMOL(110,110,20,'#e05a4f','O')+EMOL(90,145,13,'#ffffff','H')+EMOL(130,145,13,'#ffffff','H')+T(110,200,'H₂O: 18 g/mol','ein1','middle'),'n = m / M','Masse links = Masse rechts')}
+],
+'Korrosion':[
+ {d:11,t:'Ein Stahlblech an feuchter Luft rostet. Korrosion ist eine Redoxreaktion zwischen Metall, Wasser und Sauerstoff.',
+  s:'Ein Stahlblech an feuchter Luft rostet. Korrosion ist eine Redoxreaktion zwischen Metall, Wasser und Sauerstoff.',
+  f:(k,t)=>{const a=EINQ(k/.9);let h=BAR3(60,150,360,40,'#8a96a1',12);for(let i=0;i<9;i++){const o=Math.min(1,Math.max(0,(a*9-i)));h+=`<ellipse cx="${90+i*40}" cy="${150+(i%3)*8}" rx="${14*o}" ry="${7*o}" fill="#b5651d" opacity=".85"/>`}
+   h+=`<path d="M150 100q10 -20 20 0q-10 20 -20 0" fill="var(--flow)" opacity=".6"/>`+T(185,100,'H₂O','ein2')+EMOL(300,95,10,'#e05a4f','')+EMOL(318,95,10,'#e05a4f','')+T(335,100,'O₂','ein2');return h+T(240,240,'Stahl + Wasser + Sauerstoff → Rost','ein1','middle')}},
+ {d:11,t:'Oxidation: Das Eisen gibt Elektronen ab und geht als Fe²⁺ in Lösung. Diese Stelle ist die Anode.',
+  s:'Oxidation: Das Eisen gibt Elektronen ab und geht als Eisen zwei plus in Lösung. Diese Stelle ist die Anode.',
+  f:k=>{const a=EINQ((k-.2)/.5);let h=BAR3(40,170,400,40,'#8a96a1',12)+`<path d="M120 170q60 -70 160 0z" fill="var(--flow)" opacity=".3"/>`;
+   h+=EMOL(200,170-40*a,14,'var(--amber)','Fe')+(a>.1?T(222,146-40*a,'Fe²⁺','ein1'):'')+EMOL(150-30*a,185,7,'var(--flow)','',1)+EMOL(250+30*a,185,7,'var(--flow)','',1)+T(240,235,'2 e⁻ bleiben im Metall','ein2','middle');
+   return h+T(240,50,'Fe → Fe²⁺ + 2 e⁻','ein1','middle')+T(240,76,'Oxidation an der Anode','ein2','middle')}},
+ {d:11,t:'Reduktion: Sauerstoff und Wasser nehmen die Elektronen auf und bilden OH⁻. Mit Fe²⁺ entsteht daraus Rost.',
+  s:'Reduktion: Sauerstoff und Wasser nehmen die Elektronen auf und bilden Hydroxid-Ionen. Mit Eisen zwei plus entsteht daraus Rost.',
+  f:k=>{const a=EINQ((k-.2)/.5);let h=BAR3(40,170,400,40,'#8a96a1',12)+`<path d="M120 170q60 -70 160 0z" fill="var(--flow)" opacity=".3"/>`;
+   h+=EMOL(300,120,10,'#e05a4f','')+EMOL(318,120,10,'#e05a4f','')+T(336,126,'O₂','ein2')+EMOL(260-60*a,185,7,'var(--flow)','',1)+EMOL(280-40*a,185,7,'var(--flow)','',1);
+   if(a>.9)h+=T(170,150,'OH⁻','ein1')+T(230,150,'OH⁻','ein1')+`<ellipse cx="200" cy="166" rx="40" ry="10" fill="#b5651d"/>`+T(200,245,'Rost: Fe₂O₃ · n H₂O','ein1','middle');
+   return h+T(240,50,'O₂ + 2 H₂O + 4 e⁻ → 4 OH⁻','ein1','middle')+T(240,76,'Reduktion an der Kathode','ein2','middle')}},
+ {d:11,t:'Das unedlere Metall opfert sich: Zink auf Stahl korrodiert zuerst und schützt das Eisen, auch an Kratzern.',
+  s:'Das unedlere Metall opfert sich. Zink auf Stahl korrodiert zuerst und schützt das Eisen, auch an Kratzern.',
+  f:k=>{const a=EINQ(k/.7);let h=BAR3(60,170,360,40,'#8a96a1',12)+BAR3(60,154,150,16,'#c9d1d9',6)+BAR3(270,154,150,16,'#c9d1d9',6)+T(135,146,'Zink','ein2','middle')+T(345,146,'Zink','ein2','middle')+T(240,200,'Stahl','ein1','middle');
+   h+=T(240,146,'Kratzer','ein2','middle')+`<path d="M210 170h60" stroke="var(--red)" stroke-width="3"/>`;
+   if(a>.3)h+=AR(200,130,-40*a,-30*a,'var(--amber)')+T(150,90,'Zn → Zn²⁺ + 2 e⁻','ein1','middle')+T(240,245,'Fe bleibt geschützt (Opferanode)','ein1','middle');
+   return h+T(240,40,'unedel  Mg Al Zn Fe Ni Sn Cu Ag Au  edel','ein2','middle')}},
+ {d:13,t:'Alles zusammen: Fe → Fe²⁺ + 2 e⁻ (Oxidation) und O₂ + 2 H₂O + 4 e⁻ → 4 OH⁻ (Reduktion). Gesamt: 4 Fe + 3 O₂ + 2n H₂O → 2 Fe₂O₃ · n H₂O.',
+  s:'Alles zusammen: Eisen wird oxidiert, Sauerstoff mit Wasser reduziert. Gesamt: 4 Fe plus 3 O 2 plus Wasser ergibt Rost.',
+  f:k=>EFX(k,[['Oxidation: Fe → Fe²⁺ + 2 e⁻','m'],['Reduktion: O₂ + 2 H₂O + 4 e⁻ → 4 OH⁻','m'],['4 Fe + 3 O₂ + 2n H₂O → 2 Fe₂O₃ · n H₂O','r']],['Rost braucht Wasser UND Sauerstoff','Salz beschleunigt (leitfähig)'])},
+ {d:9,t:'Merke: Rost braucht Wasser und Sauerstoff. Schutz: Lack, Fett, Verzinken oder eine Opferanode aus unedlerem Metall.',
+  s:'Merke: Rost braucht Wasser und Sauerstoff. Schutz: Lack, Fett, Verzinken oder eine Opferanode aus unedlerem Metall.',
+  f:(k,t)=>EMRK(k,t,BAR3(20,120,180,34,'#8a96a1',10)+BAR3(20,108,180,12,'#c9d1d9',6)+T(110,100,'Zinkschicht','ein2','middle')+T(110,190,'Stahl geschützt','ein1','middle'),'Me → Meⁿ⁺ + n e⁻','unedler rostet zuerst')}
+],
+'Dreisatz (proportional & umgekehrt)':[
+ {d:11,t:'3 Paletten Material kosten 240 €. Was kosten 7 Paletten? Das ist ein Dreisatz.',
+  s:'3 Paletten Material kosten 240 Euro. Was kosten 7 Paletten? Das ist ein Dreisatz.',
+  f:k=>{const a=EINQ(k/.8);let h='';for(let i=0;i<3;i++)h+=EKIS(40+i*60,120,46,40,'');h+=T(100,190,'3 Paletten','ein1','middle')+T(100,216,'240 €','ein1','middle');
+   const n=Math.round(7*a);for(let i=0;i<n;i++)h+=EKIS(240+(i%4)*52,i<4?80:130,40,36,'');return h+T(340,190,'7 Paletten','ein1','middle')+T(340,216,'? €','ein1','middle')}},
+ {d:11,t:'Schritt 1: Auf die Einheit schließen. 3 Paletten kosten 240 €, also kostet 1 Palette 240 € / 3 = 80 €.',
+  s:'Schritt 1: Auf die Einheit schließen. 3 Paletten kosten 240 Euro, also kostet 1 Palette 240 Euro durch 3 gleich 80 Euro.',
+  f:k=>{const a=k>.4;return T(80,80,'3 Paletten','ein1','middle')+T(240,80,'→','ein1','middle')+T(380,80,'240 €','ein1','middle')+AR(80,100,0,50,'var(--flow)')+T(40,130,': 3','ein1','end')+AR(380,100,0,50,'var(--flow)')+T(420,130,': 3','ein1')+
+   (a?T(80,180,'1 Palette','ein1','middle')+T(240,180,'→','ein1','middle')+`<text x="380" y="180" text-anchor="middle" style="font-size:22px;font-weight:800;fill:var(--ok)">80 €</text>`:'')}},
+ {d:11,t:'Schritt 2: Hochrechnen auf den gesuchten Wert. 7 Paletten kosten 7 · 80 € = 560 €.',
+  s:'Schritt 2: Hochrechnen auf den gesuchten Wert. 7 Paletten kosten 7 mal 80 Euro gleich 560 Euro.',
+  f:k=>{const a=k>.4;return T(80,80,'1 Palette','ein1','middle')+T(240,80,'→','ein1','middle')+T(380,80,'80 €','ein1','middle')+AR(80,100,0,50,'var(--flow)')+T(40,130,'· 7','ein1','end')+AR(380,100,0,50,'var(--flow)')+T(420,130,'· 7','ein1')+
+   (a?T(80,180,'7 Paletten','ein1','middle')+T(240,180,'→','ein1','middle')+`<text x="380" y="180" text-anchor="middle" style="font-size:22px;font-weight:800;fill:var(--ok)">560 €</text>`:'')+T(240,240,'proportional: mehr Paletten, mehr Geld','ein2','middle')}},
+ {d:11,t:'Umgekehrt proportional: 4 Pumpen leeren ein Becken in 6 h. Mehr Pumpen, weniger Zeit. 1 Pumpe bräuchte 4 · 6 h = 24 h, 3 Pumpen 24 h / 3 = 8 h.',
+  s:'Umgekehrt proportional: 4 Pumpen leeren ein Becken in 6 Stunden. Mehr Pumpen, weniger Zeit. 1 Pumpe bräuchte 4 mal 6 Stunden, also 24 Stunden, 3 Pumpen 24 Stunden durch 3, also 8 Stunden.',
+  f:k=>{const a=EINQ(k/.7);return [[4,6],[1,24],[3,8]].map(([p,hh],i)=>{const g=Math.min(1,Math.max(0,(a*3-i)));const y=50+i*66;return T(20,y+20,p+(p>1?' Pumpen':' Pumpe'),'ein1')+BAR3(150,y,hh*11*g,28,'var(--flow)',8)+(g>.9?T(164+hh*11,y+20,hh+' h','ein1'):'')}).join('')+T(240,250,'· 4 bei der Zeit, : 4 bei den Pumpen','ein2','middle')}},
+ {d:13,t:'Alles zusammen, proportional: 240 € / 3 = 80 € je Palette, 7 · 80 € = 560 €. Umgekehrt: 4 · 6 h = 24 h, 24 h / 3 = 8 h.',
+  s:'Alles zusammen. Proportional: 240 Euro durch 3 gleich 80 Euro je Palette, 7 mal 80 Euro gleich 560 Euro. Umgekehrt: 4 mal 6 Stunden gleich 24 Stunden, 24 Stunden durch 3 gleich 8 Stunden.',
+  f:k=>EFX(k,[['proportional: 240 € / 3 = 80 € je Palette','m'],['7 · 80 € = 560 €','r'],['umgekehrt: 4 · 6 h = 24 Pumpenstunden','m'],['24 h / 3 = 8 h','r']],['Immer erst auf 1 schließen, dann hochrechnen'])},
+ {d:9,t:'Merke: Erst auf 1 schließen, dann hochrechnen. Proportional: mehr gibt mehr. Umgekehrt: mehr gibt weniger.',
+  s:'Merke: Erst auf 1 schließen, dann hochrechnen. Proportional: mehr gibt mehr. Umgekehrt: mehr gibt weniger.',
+  f:(k,t)=>EMRK(k,t,T(110,90,'3 → 240 €','ein1','middle')+AR(110,100,0,30,'var(--flow)')+T(110,160,'1 → 80 €','ein1','middle')+AR(110,170,0,30,'var(--flow)')+T(110,230,'7 → 560 €','ein1','middle'),'erst : dann ·','auf 1 schließen')}
+]});
+/* Ladungen auf Leitungsstücken: segs = [[x1,y1,x2,y2,I]], Geschwindigkeit ~ I, Abstand 30 */
+const EDOT=(t,segs)=>segs.map(([x1,y1,x2,y2,I])=>{const L=Math.hypot(x2-x1,y2-y1),n=Math.max(1,Math.floor(L/30)),ux=(x2-x1)/L,uy=(y2-y1)/L;let h='';
+ for(let j=0;j<n;j++){const d=((j*L/n)+t*60*I)%L;h+=`<circle cx="${(x1+ux*d).toFixed(1)}" cy="${(y1+uy*d).toFixed(1)}" r="${I>0?4.5:0}" fill="var(--amber)" stroke="var(--ink)" stroke-width="1"/>`}return h}).join('');
+const EBAT=(x,y,u)=>`<path d="M${x-18} ${y-10}H${x+18}M${x-10} ${y+10}H${x+10}" stroke="var(--ink)" stroke-width="4"/>`+T(x+28,y+10,u,'ein1');
+const ERB=(x,y,v,l,c='var(--card)')=>(v?`<rect x="${x-12}" y="${y-30}" width="24" height="60" fill="${c}" stroke="var(--ink)" stroke-width="2.5"/>`+T(x+20,y+6,l,'ein1'):`<rect x="${x-30}" y="${y-12}" width="60" height="24" fill="${c}" stroke="var(--ink)" stroke-width="2.5"/>`+T(x,y-20,l,'ein1','middle'));
+/* Parallelschaltung: zwei Zweige bei x = 180 und 300 */
+const EPAR=(t,I1,I2,o={})=>{const I=I1+I2;let h=`<path d="M40 50H260V220H40V150M40 130V50M160 50V220" class="w"/>`;
+ h+=EDOT(t,[[40,50,160,50,I],[160,50,260,50,I2],[160,50,160,110,I1],[160,150,160,220,I1],[260,50,260,110,I2],[260,150,260,220,I2],[260,220,160,220,I2],[160,220,40,220,I],[40,220,40,150,I],[40,130,40,50,I]]);
+ h+=ERB(160,130,1,o.r1||'R₁')+ERB(260,130,1,o.r2||'R₂')+EBAT(40,140,o.u||'U');
+ if(o.i1)h+=T(140,100,o.i1,'ein2','end')+T(240,100,o.i2,'ein2','end')+T(100,40,o.i,'ein2','middle');return h};
+/* Gemischt: R₁ in Reihe, dann R₂ ∥ R₃ */
+const EMIX=(t,I,I2,I3,o={})=>{let h=`<path d="M40 50H100M160 50H320V220H40V150M40 130V50M200 50V220" class="w"/>`;
+ h+=EDOT(t,[[40,50,100,50,I],[160,50,200,50,I],[200,50,320,50,I3],[200,50,200,110,I2],[200,150,200,220,I2],[320,50,320,110,I3],[320,150,320,220,I3],[320,220,200,220,I3],[200,220,40,220,I],[40,220,40,150,I],[40,130,40,50,I]]);
+ h+=ERB(130,50,0,o.r1||'R₁')+ERB(200,130,1,o.r2||'R₂')+ERB(320,130,1,o.r3||'R₃')+EBAT(40,140,o.u||'U');
+ if(o.i)h+=T(60,40,o.i,'ein2')+T(170,100,o.i2,'ein2','end')+T(290,100,o.i3,'ein2','end');return h};
+/* Leitung: Quelle links, Verbraucher rechts, zwei Adern */
+const ELTG=(x0,x1,y,o={})=>{let h=`<rect x="${x0-50}" y="${y-30}" width="50" height="90" rx="6" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>`+T(x0-25,y+20,o.q||'230 V','ein2','middle');
+ h+=`<path d="M${x0} ${y}H${x1}M${x0} ${y+30}H${x1}" stroke="#c8743a" stroke-width="${o.w||8}" stroke-linecap="round"/><path d="M${x0} ${y}H${x1}M${x0} ${y+30}H${x1}" stroke="var(--ink)" stroke-width="${(o.w||8)+2.5}" fill="none" opacity=".35"/><path d="M${x0} ${y}H${x1}M${x0} ${y+30}H${x1}" stroke="#c8743a" stroke-width="${o.w||8}" stroke-linecap="round"/>`;
+ h+=`<rect x="${x1}" y="${y-30}" width="60" height="90" rx="6" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/><circle cx="${x1+30}" cy="${y+15}" r="16" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`+T(x1+30,y+21,'M','ein1','middle');
+ if(o.l)h+=`<path d="M${x0} ${y+70}v8M${x1} ${y+70}v8M${x0} ${y+74}H${x1}" stroke="var(--flow)" stroke-width="2"/>`+T((x0+x1)/2,y+98,o.l,'ein1','middle');return h};
+Object.assign(EIN,{
+'Leitungswiderstand':[
+ {d:11,t:'Auf der Baustelle hängt die Maschine an einer langen Kabeltrommel. Am Ende kommt weniger Spannung an, und das Kabel wird warm.',
+  s:'Auf der Baustelle hängt die Maschine an einer langen Kabeltrommel. Am Ende kommt weniger Spannung an, und das Kabel wird warm.',
+  f:k=>{const a=EINQ(k/.8);return ELTG(100,340,90,{l:'50 m'})+T(240,40,'Kabeltrommel 50 m','ein1','middle')+(a>.5?T(370,220,'nur '+(230-7*a).toFixed(0)+' V','ein1','middle')+T(220,220,'Kabel wird warm','ein2','middle'):'')}},
+ {d:11,t:'Jede Leitung hat einen Widerstand: R = ρ · l / A. Der spezifische Widerstand ρ hängt vom Material ab, Kupfer: 0,0178 Ω·mm²/m.',
+  s:'Jede Leitung hat einen Widerstand. R gleich Rho mal l durch A. Der spezifische Widerstand Rho hängt vom Material ab. Kupfer: 0,0178 Ohm Quadratmillimeter pro Meter.',
+  f:k=>{const a=EINQ(k/.6);return `<path d="M40 110H${(40+300*a).toFixed(0)}" stroke="#c8743a" stroke-width="22" stroke-linecap="butt"/><ellipse cx="${(40+300*a).toFixed(0)}" cy="110" rx="7" ry="11" fill="#e0a070" stroke="var(--ink)" stroke-width="1.5"/>`+(a>.9?T(190,150,'l','ein1','middle')+T(380,116,'A','ein1'):'')+
+   `<text x="40" y="60" style="font-size:24px;font-weight:800">R = ρ · l / A</text>`+T(40,200,'ρ Kupfer = 0,0178 Ω·mm²/m','ein1')+T(40,230,'ρ Aluminium = 0,028 Ω·mm²/m','ein2')+T(40,258,'ρ = Widerstand von 1 m Draht mit 1 mm²','ein2')}},
+ {d:11,t:'Doppelte Länge, doppelter Widerstand. Doppelter Querschnitt, halber Widerstand. Darum nimmt man für lange Wege dicke Adern.',
+  s:'Doppelte Länge, doppelter Widerstand. Doppelter Querschnitt, halber Widerstand. Darum nimmt man für lange Wege dicke Adern.',
+  f:k=>{const a=EINQ(k/.6);return [['l, A',1,8],['2 · l',2,8],['2 · A',.5,16]].map(([n,f,w],i)=>{const y=60+i*70;return T(20,y+8,n,'ein1')+`<path d="M100 ${y}H${(100+80*(n[0]=='2'&&n[4]=='l'?2:1)).toFixed(0)}" stroke="#c8743a" stroke-width="${w}" stroke-linecap="round"/>`+BAR3(290,y-12,Math.max(2,60*f*a),24,'var(--wire)',8)+(a>.9?T(300+60*f,y+6,f==1?'R':f==2?'2 R':'R / 2','ein1'):'')}).join('')+T(350,40,'Widerstand','ein2','middle')}},
+ {d:11,t:'Fließt Strom, fällt an der Leitung Spannung ab: ΔU = I · R_L. Und sie wird warm: P_V = I² · R_L. Hin- und Rückleiter zählen beide.',
+  s:'Fließt Strom, fällt an der Leitung Spannung ab. Delta U gleich I mal R L. Und sie wird warm. P V gleich I Quadrat mal R L. Hin- und Rückleiter zählen beide.',
+  f:k=>{const a=EINQ(k/.6);return ELTG(100,340,70,{l:'l = 2 · 50 m = 100 m'})+(a>.5?`<path d="M110 50v-10M330 50v-10M110 44H330" stroke="var(--red)" stroke-width="2"/>`+T(220,34,'ΔU = I · '+ESB('R','L'),'ein1','middle')+T(240,222,ESB('P','V')+' = I² · '+ESB('R','L')+' (Wärme)','ein1','middle'):'')}},
+ {d:13,t:'Alles zusammen: 100 m Kupfer mit 2,5 mm²: R_L = 0,0178 Ω·mm²/m · 100 m / 2,5 mm² = 0,71 Ω. Bei 10 A: ΔU = 7,1 V, P_V = 71 W.',
+  s:'Alles zusammen: 100 Meter Kupfer mit 2,5 Quadratmillimeter: R L gleich 0,71 Ohm. Bei 10 Ampere fallen 7,1 Volt ab, und 71 Watt werden zu Wärme.',
+  f:k=>EFX(k,[[ESB('R','L')+' = ρ · l / A','h'],[ESB('R','L')+' = 0,0178 Ω·mm²/m · 100 m / 2,5 mm² = 0,71 Ω','m'],['ΔU = 10 A · 0,71 Ω = 7,1 V','m'],[ESB('P','V')+' = (10 A)² · 0,71 Ω = 71 W','r']],['l: Hin- und Rückleiter zusammen'])},
+ {d:9,t:'Merke: Lang und dünn heißt viel Widerstand. Spannungsfall und Wärme wachsen mit dem Strom, darum dicke Adern für lange Wege.',
+  s:'Merke: Lang und dünn heißt viel Widerstand. Spannungsfall und Wärme wachsen mit dem Strom, darum dicke Adern für lange Wege.',
+  f:(k,t)=>EMRK(k,t,`<path d="M20 100H210" stroke="#c8743a" stroke-width="6" stroke-linecap="round"/><path d="M20 170H210" stroke="#c8743a" stroke-width="18" stroke-linecap="round"/>`+T(115,130,'dünn: viel R','ein2','middle')+T(115,210,'dick: wenig R','ein2','middle'),'R = ρ · l / A','ΔU = I · '+ESB('R','L'))}
+],
+'Parallel':[
+ {d:11,t:'Steckdosenleiste: Jedes Gerät bekommt die volle Spannung, und fällt eines aus, laufen die anderen weiter.',
+  s:'Steckdosenleiste: Jedes Gerät bekommt die volle Spannung, und fällt eines aus, laufen die anderen weiter.',
+  f:(k,t)=>{const off=k>.55;let h=`<path d="M40 60H440M40 200H440" class="w"/>`;[120,240,360].forEach((x,i)=>{const on=!(off&&i==1);h+=`<path d="M${x} 60V200" class="w"/><circle cx="${x}" cy="130" r="20" fill="${on?'var(--amber)':'var(--card)'}" stroke="var(--ink)" stroke-width="2.5"/>`+(on?'':`<path d="M${x-10} 120l20 20M${x+10} 120l-20 20" stroke="var(--red)" stroke-width="3"/>`)});
+   return h+T(240,30,off?'eine defekt, die anderen leuchten':'alle an derselben Spannung','ein1','middle')+T(240,245,'jeder Zweig hat seinen eigenen Weg','ein2','middle')}},
+ {d:11,t:'An jedem Zweig liegt dieselbe Spannung U. Das ist der Unterschied zur Reihenschaltung.',
+  s:'An jedem Zweig liegt dieselbe Spannung U. Das ist der Unterschied zur Reihenschaltung.',
+  f:(k,t)=>EPAR(t,.6,.4,{u:'12 V',r1:'20 Ω',r2:'30 Ω'})+T(345,120,'U₁ = U₂','ein1')+T(345,150,'= 12 V','ein1')+T(345,180,'an jedem Zweig','ein2')},
+ {d:11,t:'Der Strom teilt sich auf: I = I₁ + I₂. Durch den kleineren Widerstand fließt der größere Strom.',
+  s:'Der Strom teilt sich auf. I gleich I eins plus I zwei. Durch den kleineren Widerstand fließt der größere Strom.',
+  f:(k,t)=>EPAR(t,.6,.4,{u:'12 V',r1:'20 Ω',r2:'30 Ω',i1:'0,6 A',i2:'0,4 A',i:'1 A'})+T(345,120,'I = I₁ + I₂','ein1')+T(345,150,'1 A =','ein2')+T(345,176,'0,6 A + 0,4 A','ein2')},
+ {d:11,t:'Der Gesamtwiderstand ist kleiner als der kleinste Zweig: 1/R_ges = 1/R₁ + 1/R₂. Jeder weitere Zweig macht ihn kleiner.',
+  s:'Der Gesamtwiderstand ist kleiner als der kleinste Zweig. 1 durch R gesamt gleich 1 durch R eins plus 1 durch R zwei. Jeder weitere Zweig macht ihn kleiner.',
+  f:k=>{const a=EINQ(k/.5),b=EINQ((k-.3)/.5);return T(20,60,'R₁ = 20 Ω','ein2')+BAR3(150,40,200*a,28,'var(--wire)',8)+T(20,120,'R₂ = 30 Ω','ein2')+BAR3(150,100,300*a,28,'var(--wire)',8)+T(20,200,ESB('R','ges'),'ein1')+BAR3(150,180,120*b,28,'var(--amber)',8)+(b>.9?T(290,200,'12 Ω < 20 Ω','ein1'):'')}},
+ {d:13,t:'Alles zusammen: I₁ = 12 V / 20 Ω = 0,6 A, I₂ = 12 V / 30 Ω = 0,4 A, I = 1 A. R_ges = 12 V / 1 A = 12 Ω.',
+  s:'Alles zusammen: I eins gleich 12 Volt durch 20 Ohm gleich 0,6 Ampere, I zwei gleich 0,4 Ampere, I gleich 1 Ampere. R gesamt gleich 12 Volt durch 1 Ampere gleich 12 Ohm.',
+  f:k=>EFX(k,[['I₁ = U / R₁ = 12 V / 20 Ω = 0,6 A','m'],['I₂ = U / R₂ = 12 V / 30 Ω = 0,4 A','m'],['I = I₁ + I₂ = 1 A','m'],[ESB('R','ges')+' = U / I = 12 V / 1 A = 12 Ω','r']],['Probe: 1/'+'20 + 1/30 = 1/12'])},
+ {d:9,t:'Merke: Parallel ist die Spannung überall gleich, die Ströme addieren sich, der Gesamtwiderstand wird kleiner.',
+  s:'Merke: Parallel ist die Spannung überall gleich, die Ströme addieren sich, der Gesamtwiderstand wird kleiner.',
+  f:(k,t)=>EMRK(k,t,`<g transform="translate(-10 20) scale(.7)">${EPAR(t,.6,.4)}</g>`,'1/'+ESB('R','ges')+' = 1/R₁ + 1/R₂','U gleich, I teilt sich auf')}
+],
+'Gemischt R₁+(R₂∥R₃)':[
+ {d:11,t:'In der Praxis sind Schaltungen gemischt: Hier liegt R₁ in Reihe vor zwei parallelen Widerständen R₂ und R₃.',
+  s:'In der Praxis sind Schaltungen gemischt. Hier liegt R eins in Reihe vor zwei parallelen Widerständen R zwei und R drei.',
+  f:(k,t)=>EMIX(t,1.2,.72,.48,{u:'24 V',r1:'8 Ω',r2:'20 Ω',r3:'30 Ω'})},
+ {d:11,t:'Schritt 1: Den Parallelteil zusammenfassen. R₂ und R₃ ergeben R₂₃ = R₂ · R₃ / (R₂ + R₃) = 12 Ω.',
+  s:'Schritt 1: Den Parallelteil zusammenfassen. R zwei und R drei ergeben R zwei drei gleich R zwei mal R drei durch R zwei plus R drei, das sind 12 Ohm.',
+  f:(k,t)=>{const a=k>.5;return (a?`<path d="M40 50H100M160 50H260V220H40V150M40 130V50" class="w"/>`+ERB(130,50,0,'8 Ω')+ERB(260,130,1,'R₂₃ = 12 Ω','var(--amber)')+EBAT(40,140,'24 V'):EMIX(0,0,0,0,{u:'24 V',r1:'8 Ω',r2:'20 Ω',r3:'30 Ω'})+`<rect x="180" y="90" width="170" height="80" rx="8" fill="none" stroke="var(--amber)" stroke-width="3" stroke-dasharray="6 4"/>`)+T(240,250,'R₂₃ = 20 Ω · 30 Ω / 50 Ω = 12 Ω','ein1','middle')}},
+ {d:11,t:'Schritt 2: Jetzt ist es eine Reihenschaltung. R_ges = R₁ + R₂₃ = 8 Ω + 12 Ω = 20 Ω, also I = 24 V / 20 Ω = 1,2 A.',
+  s:'Schritt 2: Jetzt ist es eine Reihenschaltung. R gesamt gleich R eins plus R zwei drei gleich 8 Ohm plus 12 Ohm gleich 20 Ohm, also I gleich 24 Volt durch 20 Ohm gleich 1,2 Ampere.',
+  f:(k,t)=>`<path d="M40 50H100M160 50H260V220H40V150M40 130V50" class="w"/>`+EDOT(t,[[40,50,100,50,1.2],[160,50,260,50,1.2],[260,50,260,110,1.2],[260,150,260,220,1.2],[260,220,40,220,1.2],[40,220,40,150,1.2],[40,130,40,50,1.2]])+ERB(130,50,0,'8 Ω')+ERB(260,130,1,'12 Ω','var(--amber)')+EBAT(40,140,'24 V')+T(340,120,ESB('R','ges')+' = 20 Ω','ein1')+T(340,160,'I = 1,2 A','ein1')},
+ {d:11,t:'Schritt 3: Zurück in die Zweige. An R₁ fallen 9,6 V ab, am Parallelteil 14,4 V. Daraus folgen I₂ = 0,72 A und I₃ = 0,48 A.',
+  s:'Schritt 3: Zurück in die Zweige. An R eins fallen 9,6 Volt ab, am Parallelteil 14,4 Volt. Daraus folgen I zwei gleich 0,72 Ampere und I drei gleich 0,48 Ampere.',
+  f:(k,t)=>EMIX(t,1.2,.72,.48,{u:'24 V',r1:'9,6 V',r2:'20 Ω',r3:'30 Ω',i:'1,2 A',i2:'0,72 A',i3:'0,48 A'})+T(260,254,'14,4 V am Parallelteil','ein1','middle')},
+ {d:13,t:'Alles zusammen: R₂₃ = 12 Ω, R_ges = 20 Ω, I = 1,2 A. U₁ = 1,2 A · 8 Ω = 9,6 V, U₂₃ = 24 V − 9,6 V = 14,4 V, I₂ = 14,4 V / 20 Ω = 0,72 A.',
+  s:'Alles zusammen: R zwei drei gleich 12 Ohm, R gesamt gleich 20 Ohm, I gleich 1,2 Ampere. U eins gleich 9,6 Volt, U zwei drei gleich 14,4 Volt, I zwei gleich 0,72 Ampere.',
+  f:k=>EFX(k,[['R₂₃ = 20 Ω · 30 Ω / (20 Ω + 30 Ω) = 12 Ω','m'],[ESB('R','ges')+' = 8 Ω + 12 Ω = 20 Ω, I = 24 V / 20 Ω = 1,2 A','m'],['U₁ = 1,2 A · 8 Ω = 9,6 V, U₂₃ = 24 V − 9,6 V = 14,4 V','m'],['I₂ = 14,4 V / 20 Ω = 0,72 A, I₃ = 0,48 A','r']],['Probe: 0,72 A + 0,48 A = 1,2 A'])},
+ {d:9,t:'Merke: Erst den Parallelteil zu einem Widerstand zusammenfassen, dann in Reihe addieren, dann zurück in die Zweige rechnen.',
+  s:'Merke: Erst den Parallelteil zu einem Widerstand zusammenfassen, dann in Reihe addieren, dann zurück in die Zweige rechnen.',
+  f:(k,t)=>EMRK(k,t,`<g transform="translate(-10 20) scale(.7)">${EMIX(t,1.2,.72,.48)}</g>`,'R₂₃ → '+ESB('R','ges')+' → I','dann zurück in die Zweige')}
 ]});
 let einP=null;
 function einShow(n){const w=$('#ein'),S=EIN[n];if(einP)einP.stop();einP=null;if(!w)return;w.innerHTML='';w.hidden=!S;if(!S)return;
