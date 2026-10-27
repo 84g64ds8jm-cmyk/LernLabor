@@ -8569,7 +8569,7 @@ function aufShow(n){let b=$('#auf');const A=AUF[n];if(n!=='Hydraulik')window.PRO
  if(!b){b=document.createElement('div');b.id='auf';b.className='pred auf';$('#ein').after(b)}
  const D=store.get('ll_auf',{})[n]||{};b.hidden=false;b.dataset.n=n;b.dataset.ok=D.ok?'1':'';
  /* Erledigt: schmale Leiste, aufgeklappt nur Auftrag, eigene Begründung und Musterantwort */
- b.classList.toggle('aufdone',!!D.ok);
+ b.classList.toggle('aufdone',!!D.ok);b.classList.remove('aufok','aufflash');b.dataset.fl='';
  if(D.ok){const dt=/^\d{4}-\d\d-\d\d$/.test(D.d||'')?' · '+(+D.d.slice(8))+'.'+(+D.d.slice(5,7))+'.':'';
   b.innerHTML=`<details><summary><span class="okt">✓ Auftrag geschafft</span><small>${dt}</small></summary><p>${A.t}</p><p><b>Frage:</b> ${A.q}</p>${D.txt?`<p><b>Deine Begründung:</b> ${rEsc(D.txt)}</p>`:''}<p><b>Musterantwort:</b> ${A.a}</p><p><button type="button" class="chip" data-ar>↺ Nochmal versuchen</button></p></details>`;
   b.querySelector('[data-ar]').onclick=()=>{const X=store.get('ll_auf',{});delete X[n];store.set('ll_auf',X);AUFAUTO[n]=0;Object.assign(S[cur],A.st);aufShow(n);build();b.querySelector('details').open=true};
@@ -8582,7 +8582,7 @@ function aufShow(n){let b=$('#auf');const A=AUF[n];if(n!=='Hydraulik')window.PRO
  if(!D.ok&&!AUFAUTO[n]&&aufFix(A,S[cur]).length){AUFAUTO[n]=2;Object.assign(S[cur],A.st);build();return}AUFAUTO[n]=1;
  aufTick()}
 function aufTick(){const b=$('#auf');if(!b||b.hidden||cur<0||b.dataset.n!==M[cur].name||!b.querySelector('.aufst'))return;const n=b.dataset.n,A=AUF[n],s=S[cur],fx=aufFix(A,s),ok=!fx.length&&A.ok(s),st=b.querySelector('.aufst'),hi=b.querySelector('.aufhi');
- st.className='aufst '+(ok?'okt':'');st.textContent=(ok?'✓ Erreicht: ':'Noch nicht erreicht: ')+A.v(s)+(ok?'':' · Ziel: '+A.z);
+ st.className='aufst '+(ok?'okt':'');if(ok&&!b.classList.contains('aufok')&&b.dataset.fl){b.classList.remove('aufflash');void b.offsetWidth;b.classList.add('aufflash')}b.classList.toggle('aufok',ok);b.dataset.fl='1';st.textContent=(ok?'✓ Erreicht: ':'Noch nicht erreicht: ')+A.v(s)+(ok?'':' · Ziel: '+A.z);
  hi.innerHTML=fx.length?`⚠️ Für den Auftrag ${fx.length>1?'müssen':'muss'} ${fx.map(k=>`<b>${aufLab(k)} = ${aufVal(k,A.st[k])}</b>`).join(', ')} bleiben (gerade ${fx.map(k=>aufVal(k,s[k])).join(', ')}). Tippe auf „Startwerte einstellen“.`:ok?'':(AUFAUTO[n]===2?'Die Regler stehen jetzt auf den Startwerten des Auftrags. ':'')+'💡 '+A.h(s)+' Tipp: Du kannst den Wert auch direkt ins Zahlenfeld tippen.';hi.hidden=!hi.innerHTML;
  b.querySelector('.aufw').hidden=!ok&&!b.dataset.ok;
  if(ok&&!b.dataset.ok){b.dataset.ok='1';b.querySelector('.aufdn').hidden=false;const X=store.get('ll_auf',{});if(!(X[n]&&X[n].ok)){X[n]=Object.assign(X[n]||{},{ok:1,d:mToday()});store.set('ll_auf',X);memRec(n,true,null,'auf')}}}
@@ -9277,7 +9277,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=207,NEWS='Brüche mit großen Zahlen korrigiert: In „209,1 kJ / 60 s“ und ähnlichen Rechnungen steht jetzt die ganze Zahl im Zähler. Zahlen wie 10310 N oder 96485 C/mol werden ohne Leerzeichen geschrieben, damit niemand 209 · 100 liest.';
+const APPV=208,NEWS='Aufträge in den Simulationen: Der Kasten ist jetzt indigo, solange der Auftrag offen ist, und wird erst grün, wenn Du das Ziel erreichst.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['27.10.2026',207,['Brüche mit Tausendergruppen: Bei Zahlen mit Tausender-Leerzeichen vor einem Bruch stand nur die letzte Dreiergruppe im Zähler (z. B. „100 J“ statt der ganzen Wärmemenge in Joule), das sah wie Faktor 100 aus. Jetzt steht die ganze Zahl im Zähler (auch bei 96485 C/mol, 12 000 N / 60 mm², 42 000 kJ/kg / 3600 s/h).','Wärmekapazität, Musterantwort zum Auftrag: Q = 1 kg · 4182 J/(kg·K) · 50 K = 209,1 kJ; P = 209,1 kJ / 60 s ≈ 3,5 kW (vorher gerundet „≈ 209 kJ“ und im Bruch in Joule).','Zahlen mit fünf Stellen, die nicht auf 000 enden, stehen ohne Leerzeichen (10310 N, 83800 kJ, 87600 MWh, 96485 C/mol), damit sie sich nicht wie zwei Zahlen lesen.']],
@@ -10533,8 +10533,12 @@ sr.addEventListener('keydown',e=>{const h=hits(),k=h.indexOf(document.activeElem
 const r=render;render=function(){const x=r.apply(this,arguments);fix();return x};const b=build;build=function(){one=false;const x=b.apply(this,arguments);fix();return x};fix()})();</script>
 <!-- UI-Audit UI-04 -->
 <style>/* UI-04: „Vermute zuerst“ (Frage, blau) und „Auftrag“ (Aufgabe, Fachfarbe) unterscheidbar; „Antworten zeigen“ als normaler Nebenknopf */
-.auf:not(.aufdone){background:color-mix(in srgb,var(--mint) 11%,var(--card));border-color:color-mix(in srgb,var(--mint) 45%,var(--line));border-left-color:#14b8a6}
-.auf:not(.aufdone)>details>summary b{color:#0f766e}:root[data-theme="dark"] .auf:not(.aufdone)>details>summary b{color:var(--mint)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .auf:not(.aufdone)>details>summary b{color:var(--mint)}}
+/* Auftrag offen: Indigo (klar neben dem Vermuten-Blau); erst beim Erreichen wird der ganze Kasten grün (.aufok, aufTick) und leuchtet kurz auf */
+.auf{--aufc:#4f46e5;--auft:#4338ca;--aufa:8%}:root[data-theme="dark"] .auf{--aufc:#818cf8;--auft:#a5b4fc;--aufa:12%}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .auf{--aufc:#818cf8;--auft:#a5b4fc;--aufa:12%}}
+#auf.aufok{--aufc:var(--ok);--auft:#166c47;--aufa:13%}:root[data-theme="dark"] #auf.aufok{--auft:var(--ok)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #auf.aufok{--auft:var(--ok)}}
+.auf:not(.aufdone){background:color-mix(in srgb,var(--aufc) var(--aufa),var(--card));border-color:color-mix(in srgb,var(--aufc) 40%,var(--line));border-left-color:var(--aufc);transition:background-color .35s,border-color .35s}
+.auf:not(.aufdone)>details>summary b{color:var(--auft);transition:color .35s}
+.auf.aufflash{animation:aufflash .7s ease-out}@keyframes aufflash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 55%,transparent)}100%{box-shadow:0 0 0 14px transparent}}@media (prefers-reduced-motion:reduce){.auf.aufflash{animation:none}.auf:not(.aufdone),.auf:not(.aufdone)>details>summary b{transition:none}}
 #pred .predx{width:auto;display:inline-flex;font-size:1em;color:var(--ink);border:1px solid var(--line);border-style:solid;font-weight:600;gap:6px;padding:6px 14px;margin:2px 0 4px}#pred .predx span{font-size:.92em}#pred .predx:hover{border-color:var(--flow)}
 #pred .predx{font-size:0}#pred .predx span{font-size:15px}#pred .predx span::before{content:"▸ ";color:var(--flow)}</style>
 <!-- UI-Audit UI-05 -->
