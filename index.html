@@ -9478,6 +9478,213 @@ Object.assign(EIN,{
   f:(k,t)=>EMRK(k,t,`<g transform="translate(-20 20) scale(.7)">${EBOL(60,100,{F:40})}</g>`,'τ = F / S','p = F / (d · t)')}
 ]});
 
+/* Paket Bewegung & Energie. Hilfen: Auto, Achsen, Figur, Pendelmasse */
+const ECAR=(x,y,col='#b89a6a',lab='')=>`<g transform="translate(${x.toFixed(1)} ${y})"><path d="M0 22V8h12l8-10h26l10 10h16v14z" fill="${col}" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="24" r="6" fill="var(--ink)"/><circle cx="56" cy="24" r="6" fill="var(--ink)"/></g>`+(lab?T(x+36,y-8,lab,'ein2','middle'):'');
+const EAX=(x0,y0,w,h,lx,ly)=>`<path d="M${x0} ${y0-h}V${y0}H${x0+w}" fill="none" stroke="var(--ink)" stroke-width="2"/>`+T(x0+w+4,y0+6,lx,'ein2')+T(x0-6,y0-h+4,ly,'ein2','end');
+const EFIG=(x,y,s=1,arms=0)=>`<g transform="translate(${x.toFixed(1)} ${y}) scale(${s})"><circle cx="0" cy="-54" r="9" fill="var(--amber)" stroke="var(--ink)" stroke-width="2"/><path d="M0 -44V-8M0 -8l-10 30M0 -8l10 30M0 -36l${arms?-6:-22} ${arms?-16:14}M0 -36l${arms?6:22} ${arms?-16:14}" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round"/></g>`;
+const EBOK=(x,y)=>BAR3(x,y,30,22,'var(--amber)',4)+BAR3(x+2,y-10,26,10,'#8a96a1',3);
+Object.assign(EIN,{
+'Gleichförmige Bewegung':[
+ {d:11,t:'Zwei Fahrzeuge auf der Landstraße: A fährt 50 m voraus, B ist doppelt so schnell. Beide halten ihr Tempo, keines beschleunigt.',
+  s:'Zwei Fahrzeuge auf der Landstraße: A fährt 50 Meter voraus, B ist doppelt so schnell. Beide halten ihr Tempo, keines beschleunigt.',
+  f:k=>{const a=Math.min(1,k/.9);return `<path d="M20 120H460M20 180H460" stroke="var(--line)" stroke-width="3"/>`+ECAR(140+150*a,92,'#8a96a1','A: 5 m/s')+ECAR(30+300*a,152,'#b89a6a','B: 10 m/s')+T(240,222,'Vorsprung 50 m','ein2','middle')+T(240,250,'beide gleichförmig','ein2','middle')}},
+ {d:11,t:'Gleichförmig heißt: In jeder Sekunde der gleiche Weg. Die Geschwindigkeit ist v = s / t, und 10 m/s sind 36 km/h.',
+  s:'Gleichförmig heißt: In jeder Sekunde der gleiche Weg. Die Geschwindigkeit ist v gleich s durch t, und 10 Meter pro Sekunde sind 36 Kilometer pro Stunde.',
+  f:k=>{const a=EINQ(k/.8);let h=`<path d="M20 120H460" stroke="var(--line)" stroke-width="3"/>`;for(let i=0;i<5;i++)h+=`<path d="M${60+i*90} 112V128" stroke="var(--ink)" stroke-width="2"/>`+T(60+i*90,150,i+' s','ein2','middle');
+   return h+ECAR(40+360*a,92,'#b89a6a')+T(240,200,'je Sekunde 10 m','ein1','middle')+T(240,232,'v = s / t = 10 m/s = 36 km/h','ein1','middle')}},
+ {d:11,t:'Im Zeit-Weg-Diagramm ist das eine Gerade. Je steiler, desto schneller: Die Steigung ist die Geschwindigkeit.',
+  s:'Im Zeit-Weg-Diagramm ist das eine Gerade. Je steiler, desto schneller: Die Steigung ist die Geschwindigkeit.',
+  f:k=>{const a=EINQ(k/.8),x0=60,y0=230,W=300,H=170;let h=EAX(x0,y0,W,H,'t','s');
+   h+=`<path d="M${x0} ${y0}L${x0+W*a} ${y0-H*a}" stroke="var(--red)" stroke-width="3"/><path d="M${x0} ${y0}L${x0+W*a} ${y0-H*.5*a}" stroke="var(--flow)" stroke-width="3"/>`;
+   if(a>.9)h+=T(x0+W-20,y0-H+8,'B: 10 m/s','ein1','end')+T(x0+W+6,y0-H*.5+6,'A: 5 m/s','ein1');return h+T(200,258,'Steigung = v','ein2','middle')}},
+ {d:11,t:'Wann holt B ein? A startet bei 50 m: s_A = 50 m + 5 m/s · t. B startet bei 0: s_B = 10 m/s · t. Die Geraden schneiden sich.',
+  s:'Wann holt B ein? A startet bei 50 Metern: s A gleich 50 Meter plus 5 Meter pro Sekunde mal t. B startet bei null: s B gleich 10 Meter pro Sekunde mal t. Die Geraden schneiden sich.',
+  f:k=>{const a=EINQ(k/.7),x0=60,y0=230,W=280,H=170,sx=W/14,sy=H/140;let h=EAX(x0,y0,W,H,'t in s','s in m');
+   h+=`<path d="M${x0} ${y0-50*sy}L${x0+14*sx*a} ${y0-(50+70)*sy*a-50*sy*(1-a)}" stroke="var(--flow)" stroke-width="3"/><path d="M${x0} ${y0}L${x0+14*sx*a} ${y0-140*sy*a}" stroke="var(--red)" stroke-width="3"/>`;
+   if(a>.9)h+=`<circle cx="${x0+10*sx}" cy="${y0-100*sy}" r="6" fill="var(--ok)"/><path d="M${x0+10*sx} ${y0-100*sy}V${y0}" stroke="var(--ok)" stroke-width="1.5" stroke-dasharray="4 4"/>`+T(x0+10*sx,y0+22,'10 s','ein1','middle')+T(x0-8,y0-100*sy+6,'100 m','ein2','end')+T(x0-8,y0-50*sy+6,'50 m','ein2','end');
+   return h+T(400,120,'A','ein1')+T(400,60,'B','ein1')}},
+ {d:13,t:'Alles zusammen: s_A = s_B heißt 50 m + 5 m/s · t = 10 m/s · t, also 50 m = 5 m/s · t. Das gibt t = 10 s, und beide sind bei 100 m.',
+  s:'Alles zusammen: s A gleich s B heißt 50 Meter plus 5 Meter pro Sekunde mal t gleich 10 Meter pro Sekunde mal t, also 50 Meter gleich 5 Meter pro Sekunde mal t. Das gibt t gleich 10 Sekunden, und beide sind bei 100 Metern.',
+  f:k=>EFX(k,[['50 m + 5 m/s · t = 10 m/s · t','m'],['50 m = 5 m/s · t','m'],['t = 50 m / 5 m/s = 10 s','r'],['s = 10 m/s · 10 s = 100 m','r']],['Einholzeit = Vorsprung / Geschwindigkeitsunterschied'])},
+ {d:9,t:'Merke: Gleichförmig heißt v konstant, s = v · t. Im Diagramm eine Gerade, die Steigung ist v.',
+  s:'Merke: Gleichförmig heißt v konstant, s gleich v mal t. Im Diagramm eine Gerade, die Steigung ist v.',
+  f:(k,t)=>EMRK(k,t,EAX(40,200,170,120,'t','s')+`<path d="M40 200L200 90" stroke="var(--red)" stroke-width="3"/>`,'s = v · t','v = s / t')}
+],
+'Beschleunigung & Bremsen':[
+ {d:11,t:'Ein Auto fährt 10 m/s, also 36 km/h. Der Fahrer bremst gleichmäßig mit 2 m/s². Wie lange und wie weit, bis es steht?',
+  s:'Ein Auto fährt 10 Meter pro Sekunde, also 36 Kilometer pro Stunde. Der Fahrer bremst gleichmäßig mit 2 Meter pro Sekunde Quadrat. Wie lange und wie weit, bis es steht?',
+  f:k=>{const a=Math.min(1,k/.9),s=1-(1-a)*(1-a);return `<path d="M20 150H460" stroke="var(--line)" stroke-width="3"/>`+`<path d="M${60+320*s-40} 152H${60+320*s}" stroke="var(--ink)" stroke-width="3" opacity="${(a*.8).toFixed(2)}"/>`+ECAR(60+320*s,122,'#b89a6a')+T(60,100,'v₀ = 10 m/s','ein1')+T(60,130,'a = −2 m/s²','ein2')+T(240,210,'Bremsweg?','ein1','middle')}},
+ {d:11,t:'Beschleunigung ist die Änderung der Geschwindigkeit je Sekunde: a = Δv / Δt. Beim Bremsen ist a negativ, die Geschwindigkeit sinkt jede Sekunde um 2 m/s.',
+  s:'Beschleunigung ist die Änderung der Geschwindigkeit je Sekunde: a gleich Delta v durch Delta t. Beim Bremsen ist a negativ, die Geschwindigkeit sinkt jede Sekunde um 2 Meter pro Sekunde.',
+  f:k=>{const a=EINQ(k/.8),x0=60,y0=220,W=250,H=160;let h=EAX(x0,y0,W,H,'t in s','')+T(x0+10,y0-H+6,'v in m/s','ein2');
+   h+=`<path d="M${x0} ${y0-H}L${x0+W*a} ${y0-H*(1-a)}" stroke="var(--red)" stroke-width="3"/>`;for(let i=0;i<=5;i++)h+=T(x0+i*W/5,y0+22,i,'ein2','middle');
+   return h+T(x0-8,y0-H+6,'10','ein2','end')+T(390,90,'a = Δv / Δt','ein1','middle')+T(390,122,'= −10 m/s / 5 s','ein2','middle')+T(390,150,'= −2 m/s²','ein1','middle')}},
+ {d:11,t:'Der Weg ist die Fläche unter der v-t-Linie. Beim Bremsen bis zum Stand ist das ein Dreieck: s = ½ · v₀ · t.',
+  s:'Der Weg ist die Fläche unter der v t Linie. Beim Bremsen bis zum Stand ist das ein Dreieck: s gleich ein halb v null mal t.',
+  f:k=>{const a=EINQ(k/.7),x0=60,y0=220,W=250,H=160;let h=EAX(x0,y0,W,H,'t','v');
+   h+=`<polygon points="${x0},${y0} ${x0+W*a},${y0} ${x0},${y0-H}" fill="var(--amber)" opacity=".7"/><path d="M${x0} ${y0-H}L${x0+W} ${y0}" stroke="var(--red)" stroke-width="3"/>`;
+   if(a>.9)h+=T(x0+70,y0-40,'s','ein1','middle');return h+T(390,100,'s = ½ · v₀ · t','ein1','middle')+T(390,132,'Fläche = Weg','ein2','middle')}},
+ {d:11,t:'Doppelte Geschwindigkeit, vierfacher Bremsweg: Im Weg steckt v². Aus 25 m bei 36 km/h werden 100 m bei 72 km/h.',
+  s:'Doppelte Geschwindigkeit, vierfacher Bremsweg: Im Weg steckt v Quadrat. Aus 25 Metern bei 36 Kilometern pro Stunde werden 100 Meter bei 72 Kilometern pro Stunde.',
+  f:k=>[['36 km/h',25],['72 km/h',100]].map(([l,s],i)=>{const g=EINQ((k-i*.3)/.5),y=70+i*90;return T(20,y+22,l,'ein1')+BAR3(120,y,s*2.4*g,30,i?'var(--red)':'var(--amber)',8)+(g>.9?T(130+s*2.4,y+22,s+' m','ein1'):'')}).join('')+T(20,250,'s = v² / (2 · a)','ein2')},
+ {d:13,t:'Alles zusammen: Bremszeit t = v₀ / a = 10 m/s / 2 m/s² = 5 s. Bremsweg s = ½ · v₀ · t = ½ · 10 m/s · 5 s = 25 m.',
+  s:'Alles zusammen: Bremszeit t gleich v null durch a gleich 10 Meter pro Sekunde durch 2 Meter pro Sekunde Quadrat gleich 5 Sekunden. Bremsweg s gleich ein halb v null mal t gleich 25 Meter.',
+  f:k=>EFX(k,[['t = v₀ / a = 10 m/s / 2 m/s² = 5 s','m'],['s = ½ · v₀ · t','h'],['s = ½ · 10 m/s · 5 s','m'],['s = 25 m','r']],['Probe: s = v₀² / (2a) = 100 / 4 m = 25 m'])},
+ {d:9,t:'Merke: v = v₀ + a · t und s = v₀ · t + ½ · a · t². Bremsen ist Beschleunigen mit negativem a.',
+  s:'Merke: v gleich v null plus a mal t und s gleich v null mal t plus ein halb a t Quadrat. Bremsen ist Beschleunigen mit negativem a.',
+  f:(k,t)=>EMRK(k,t,EAX(40,200,170,120,'t','v')+`<path d="M40 90L200 200" stroke="var(--red)" stroke-width="3"/>`,'v = v₀ + a · t','s = v₀ · t + ½ · a · t²')}
+],
+'Freier Fall (mit Luftwiderstand)':[
+ {d:11,t:'Im Vakuum fallen Feder und Kugel gleich schnell. Die Gewichtskraft ist zwar verschieden, aber auch die Trägheit, und beides kürzt sich: a = g.',
+  s:'Im Vakuum fallen Feder und Kugel gleich schnell. Die Gewichtskraft ist zwar verschieden, aber auch die Trägheit, und beides kürzt sich: a gleich g.',
+  f:k=>{const a=Math.min(1,k/.9),y=40+190*a*a;return EGL(80,30,120,220)+`<path d="M130 ${y}q-8 -14 -4 -26q8 10 4 26q10 -12 14 -4q-8 10 -14 4" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.5"/>`+`<circle cx="170" cy="${y}" r="12" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+T(215,245,'Vakuum','ein2')+T(340,110,'a = g = 9,81 m/s²','ein1','middle')+T(340,145,'für alle Körper','ein2','middle')}},
+ {d:11,t:'Die Geschwindigkeit wächst gleichmäßig: v = g · t. Der Weg wächst mit t²: s = ½ · g · t². Nach 1, 2, 3 Sekunden: 5 m, 20 m, 44 m.',
+  s:'Die Geschwindigkeit wächst gleichmäßig: v gleich g mal t. Der Weg wächst mit t Quadrat: s gleich ein halb g t Quadrat. Nach 1, 2, 3 Sekunden: 5 Meter, 20 Meter, 44 Meter.',
+  f:k=>{const a=EINQ(k/.8);let h=`<path d="M60 30V250" stroke="var(--line)" stroke-width="2"/>`;[0,1,2,3].forEach(i=>{const y=30+i*i*24,g=EINQ((a-i*.25)/.25);if(g>0)h+=`<circle cx="60" cy="${y}" r="7" fill="var(--ink)" opacity="${g.toFixed(2)}"/>`+T(78,y+6,i+' s: '+[0,5,20,44][i]+' m','ein2')});
+   return h+T(320,90,'v = g · t','ein1','middle')+T(320,130,'s = ½ · g · t²','ein1','middle')+T(320,170,'nach 3 s: v = 29 m/s','ein2','middle')}},
+ {d:11,t:'In Luft bremst der Luftwiderstand F_W = ½ · ρ · c_w · A · v². Er wächst mit dem Quadrat der Geschwindigkeit: doppelt so schnell, viermal so stark.',
+  s:'In Luft bremst der Luftwiderstand. Er wächst mit dem Quadrat der Geschwindigkeit: doppelt so schnell, viermal so stark.',
+  f:k=>{const a=EINQ(k/.8),x0=60,y0=220,W=240,H=160;let h=EAX(x0,y0,W,H,'v','')+T(x0-6,y0-H+4,ESB('F','W'),'ein2','end');
+   let d=`M${x0} ${y0}`;for(let i=1;i<=20;i++){const x=i/20*a;d+=`L${x0+W*x} ${y0-H*x*x}`}h+=`<path d="${d}" fill="none" stroke="var(--red)" stroke-width="3"/>`;
+   return h+T(380,90,ESB('F','W')+' ~ v²','ein1','middle')+T(380,124,'ρ: Luftdichte','ein2','middle')+T(380,150,ESB('c','w')+': Form, A: Fläche','ein2','middle')}},
+ {d:11,t:'Irgendwann ist der Luftwiderstand so groß wie die Gewichtskraft: Dann fällt der Körper gleichförmig mit Grenzgeschwindigkeit. Die Feder sofort, die Kugel erst spät.',
+  s:'Irgendwann ist der Luftwiderstand so groß wie die Gewichtskraft: Dann fällt der Körper gleichförmig mit Grenzgeschwindigkeit. Die Feder sofort, die Kugel erst spät.',
+  f:k=>{const a=Math.min(1,k/.9);let h='';const yf=40+60*a,yk=40+170*a*a;h+=`<path d="M100 ${yf}q-8 -14 -4 -26q8 10 4 26q10 -12 14 -4q-8 10 -14 4" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.5"/>`+AR(110,yf-10,0,-30,'var(--flow)')+AR(110,yf,0,30,'var(--red)')+T(80,yf+6,'gleich','ein2','end');
+   h+=`<circle cx="220" cy="${yk}" r="12" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+AR(220,yk-12,0,-20*a,'var(--flow)')+AR(220,yk+12,0,40,'var(--red)');
+   return h+T(380,90,ESB('F','W')+' = '+ESB('F','G'),'ein1','middle')+T(380,124,'→ v konstant','ein1','middle')+T(380,158,'Grenzgeschwindigkeit','ein2','middle')+T(380,184,'Feder ≈ 1 m/s','ein2','middle')+T(380,208,'Kugel ≈ 30 m/s','ein2','middle')}},
+ {d:13,t:'Alles zusammen, ohne Luft: Aus 30 m Höhe ist t = √(2 · h / g) = √(2 · 30 m / 9,81 m/s²) = 2,47 s und v = g · t = 24,3 m/s, also 87 km/h.',
+  s:'Alles zusammen, ohne Luft: Aus 30 Metern Höhe ist t gleich Wurzel aus 2 h durch g gleich 2,47 Sekunden und v gleich g mal t gleich 24,3 Meter pro Sekunde, also 87 Kilometer pro Stunde.',
+  f:k=>EFX(k,[['h = ½ · g · t²  →  t = √(2 · h / g)','h'],['t = √(2 · 30 m / 9,81 m/s²) = 2,47 s','m'],['v = g · t = 9,81 m/s² · 2,47 s','m'],['v = 24,3 m/s ≈ 87 km/h','r']],['mit Luft etwas langsamer, je nach Form und Masse'])},
+ {d:9,t:'Merke: Ohne Luft v = g · t und s = ½ · g · t². Mit Luft bremst F_W ~ v², bis die Grenzgeschwindigkeit erreicht ist.',
+  s:'Merke: Ohne Luft v gleich g mal t und s gleich ein halb g t Quadrat. Mit Luft bremst der Luftwiderstand proportional v Quadrat, bis die Grenzgeschwindigkeit erreicht ist.',
+  f:(k,t)=>EMRK(k,t,`<path d="M60 40V230" stroke="var(--line)" stroke-width="2"/>`+[0,1,2,3].map(i=>`<circle cx="60" cy="${40+i*i*20}" r="6" fill="var(--ink)"/>`).join('')+`<circle cx="160" cy="100" r="10" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+AR(160,88,0,-30,'var(--flow)')+AR(160,112,0,30,'var(--red)'),'v = g · t','s = ½ · g · t²')}
+],
+'Kreisbewegung':[
+ {d:11,t:'Ein Kettenkarussell: Der Sitz hängt 4 m von der Achse und macht 15 Umdrehungen pro Minute. Wie schnell fliegt man da?',
+  s:'Ein Kettenkarussell: Der Sitz hängt 4 Meter von der Achse und macht 15 Umdrehungen pro Minute. Wie schnell fliegt man da?',
+  f:(k,t)=>{const w=t*1.57,x=150+90*Math.cos(w),y=140+36*Math.sin(w);return `<ellipse cx="150" cy="140" rx="90" ry="36" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="6 5"/><path d="M150 60V140" stroke="var(--ink)" stroke-width="4"/><circle cx="150" cy="140" r="5" fill="var(--ink)"/>`+`<path d="M150 70L${x.toFixed(1)} ${(y-20).toFixed(1)}" stroke="var(--ink)" stroke-width="1.5"/>`+EFIG(x,y+20,.5)+T(360,110,'r = 4 m','ein1','middle')+T(360,142,'n = 15 U/min','ein1','middle')+T(360,176,'= 0,25 1/s','ein2','middle')}},
+ {d:11,t:'Je Umlauf legt der Sitz den Kreisumfang 2 · π · r zurück. Mit n Umläufen je Sekunde ist die Bahngeschwindigkeit v = 2 · π · r · n.',
+  s:'Je Umlauf legt der Sitz den Kreisumfang 2 Pi r zurück. Mit n Umläufen je Sekunde ist die Bahngeschwindigkeit v gleich 2 Pi r n.',
+  f:k=>{const a=EINQ(k/.8),R=80,cx=140,cy=145,w=a*2*PI;let d=`M${cx+R} ${cy}`;for(let i=1;i<=40;i++){const p=w*i/40;d+=`L${(cx+R*Math.cos(p)).toFixed(1)} ${(cy+R*Math.sin(p)).toFixed(1)}`}
+   return `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="2"/><path d="${d}" fill="none" stroke="var(--red)" stroke-width="4"/><path d="M${cx} ${cy}H${cx+R}" stroke="var(--ink)" stroke-width="1.5"/>`+T(cx+R/2,cy-6,'r','ein2','middle')+`<circle cx="${(cx+R*Math.cos(w)).toFixed(1)}" cy="${(cy+R*Math.sin(w)).toFixed(1)}" r="7" fill="var(--ink)"/>`+T(360,100,'Umfang = 2 · π · r','ein2','middle')+T(360,134,'= 25,1 m','ein1','middle')+T(360,174,'v = 2 · π · r · n','ein1','middle')+T(360,206,'= 25,1 m · 0,25 1/s = 6,3 m/s','ein2','middle')}},
+ {d:11,t:'Die Geschwindigkeit zeigt immer tangential, geradeaus. Damit der Sitz auf dem Kreis bleibt, muss ihn ständig eine Beschleunigung zur Mitte ziehen: a_z = v² / r.',
+  s:'Die Geschwindigkeit zeigt immer tangential, geradeaus. Damit der Sitz auf dem Kreis bleibt, muss ihn ständig eine Beschleunigung zur Mitte ziehen: a z gleich v Quadrat durch r.',
+  f:(k,t)=>{const R=80,cx=140,cy=145,w=t*1.2,x=cx+R*Math.cos(w),y=cy+R*Math.sin(w);return `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="var(--ink)"/>`+AR(x,y,-55*Math.sin(w),55*Math.cos(w),'var(--red)')+AR(x,y,-45*Math.cos(w),-45*Math.sin(w),'var(--ok)')+T(360,100,'v: tangential','ein1','middle')+`<rect x="262" y="86" width="14" height="4" fill="var(--red)"/>`+T(360,140,ESB('a','z')+': zur Mitte','ein1','middle')+`<rect x="262" y="126" width="14" height="4" fill="var(--ok)"/>`+T(360,180,ESB('a','z')+' = v² / r','ein1','middle')}},
+ {d:11,t:'Die Kraft dafür heißt Zentripetalkraft: F_z = m · v² / r. Sie zieht die Kette. Reißt sie, fliegt der Sitz geradeaus weg, nicht nach außen.',
+  s:'Die Kraft dafür heißt Zentripetalkraft: F z gleich m mal v Quadrat durch r. Sie zieht die Kette. Reißt sie, fliegt der Sitz geradeaus weg, nicht nach außen.',
+  f:k=>{const a=Math.min(1,k/.9),R=80,cx=140,cy=145,w=-PI/2,fl=a>.5?(a-.5)*2:0,x=cx+R*Math.cos(w)+fl*220,y=cy+R*Math.sin(w);return `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/>`+(fl?'':`<path d="M${cx} ${cy}L${x} ${y}" stroke="var(--ink)" stroke-width="1.5"/>`+AR(x,y,0,50,'var(--ok)')+T(x+10,y+40,ESB('F','z'),'ein1'))+`<circle cx="${x.toFixed(1)}" cy="${y}" r="8" fill="var(--ink)"/>`+(fl?T(240,40,'Kette gerissen: geradeaus!','ein1','middle'):'')+T(240,240,ESB('F','z')+' = m · v² / r','ein1','middle')}},
+ {d:13,t:'Alles zusammen: v = 2 · π · 4 m · 0,25 1/s = 6,3 m/s. a_z = v² / r = (6,3 m/s)² / 4 m = 9,9 m/s², also fast 1 g. Je kg Masse sind das 9,9 N Kettenkraft.',
+  s:'Alles zusammen: v gleich 2 Pi mal 4 Meter mal 0,25 pro Sekunde gleich 6,3 Meter pro Sekunde. a z gleich v Quadrat durch r gleich 9,9 Meter pro Sekunde Quadrat, also fast 1 g. Je Kilogramm Masse sind das 9,9 Newton Kettenkraft.',
+  f:k=>EFX(k,[['n = 15 U/min = 0,25 1/s','m'],['v = 2 · π · r · n = 2 · π · 4 m · 0,25 1/s = 6,3 m/s','m'],[ESB('a','z')+' = v² / r = (6,3 m/s)² / 4 m = 9,9 m/s²','r'],[ESB('F','z')+' = m · '+ESB('a','z')+' = 1 kg · 9,9 m/s² = 9,9 N','m']],['ω = 2 · π · n = 1,57 1/s, v = ω · r'])},
+ {d:9,t:'Merke: v = 2 · π · r · n, Zentripetalbeschleunigung a_z = v² / r. Die Kraft zur Mitte hält den Körper auf der Bahn.',
+  s:'Merke: v gleich 2 Pi r n, Zentripetalbeschleunigung a z gleich v Quadrat durch r. Die Kraft zur Mitte hält den Körper auf der Bahn.',
+  f:(k,t)=>EMRK(k,t,`<circle cx="120" cy="150" r="60" fill="none" stroke="var(--line)" stroke-width="2"/><circle cx="120" cy="90" r="7" fill="var(--ink)"/>`+AR(120,90,50,0,'var(--red)')+AR(120,90,0,40,'var(--ok)'),'v = 2 · π · r · n',ESB('a','z')+' = v² / r')}
+],
+'Eiskunstlauf: Drehen & Gleiten':[
+ {d:11,t:'Eine Eiskunstläuferin zeigt drei Dinge auf einmal: die Pirouette, das lange Ausgleiten und den Bogen, in dem sie sich nach innen legt.',
+  s:'Eine Eiskunstläuferin zeigt drei Dinge auf einmal: die Pirouette, das lange Ausgleiten und den Bogen, in dem sie sich nach innen legt.',
+  f:k=>{const a=Math.min(1,k/.9);return `<path d="M20 230H460" stroke="var(--flow)" stroke-width="3" opacity=".4"/>`+EFIG(80,230,1,1)+T(80,255,'Pirouette','ein2','middle')+EFIG(170+120*a,230,1,0)+T(240,255,'Gleiten','ein2','middle')+`<g transform="rotate(-18 400 230)">${EFIG(400,230,1,0)}</g>`+T(400,255,'Bogen','ein2','middle')}},
+ {d:11,t:'Pirouette: Zieht sie die Arme an, wird der Radius kleiner und die Drehung schneller. Der Drehimpuls bleibt erhalten, halber Radius heißt vierfache Drehzahl.',
+  s:'Pirouette: Zieht sie die Arme an, wird der Radius kleiner und die Drehung schneller. Der Drehimpuls bleibt erhalten, halber Radius heißt vierfache Drehzahl.',
+  f:(k,t)=>{const a=EINQ(k/.7),r=40-22*a,w=t*(2+6*a);return `<ellipse cx="130" cy="150" rx="${r.toFixed(1)}" ry="${(r*.4).toFixed(1)}" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 4"/>`+EFIG(130,200,1,a>.5?1:0)+`<circle cx="${(130+r*Math.cos(w)).toFixed(1)}" cy="${(150+r*.4*Math.sin(w)).toFixed(1)}" r="5" fill="var(--red)"/>`+T(330,90,'Arme außen: 1,5 U/s','ein2','middle')+T(330,124,'Arme angezogen: 6 U/s','ein1','middle')+T(330,170,'r halb → n vierfach','ein1','middle')+T(330,204,'Drehimpuls bleibt','ein2','middle')}},
+ {d:11,t:'Gleiten: Stahl auf Eis hat μ ≈ 0,01. Mit 6 m/s gleitet sie darum über 180 m weit, bevor die Reibung sie stoppt.',
+  s:'Gleiten: Stahl auf Eis hat Mü etwa 0,01. Mit 6 Metern pro Sekunde gleitet sie darum über 180 Meter weit, bevor die Reibung sie stoppt.',
+  f:k=>{const a=Math.min(1,k/.9),s=1-(1-a)*(1-a);return `<path d="M20 200H460" stroke="var(--flow)" stroke-width="3" opacity=".4"/>`+EFIG(60+340*s,200,.9,0)+AR(60+340*s-10,170,-30,0,'var(--red)')+T(240,70,ESB('F','R')+' = μ · m · g = 0,01 · 55 kg · 9,81 m/s² = 5,4 N','ein2','middle')+T(240,104,'a = μ · g ≈ 0,1 m/s²','ein1','middle')+T(240,250,'s = v² / (2 · a) = 36 / 0,2 m ≈ 180 m','ein1','middle')}},
+ {d:11,t:'Bogen: Mit 5 m/s auf 8 m Radius braucht sie eine Zentripetalkraft F_z = m · v² / r = 172 N. Die holt sie sich, indem sie sich 18° nach innen legt.',
+  s:'Bogen: Mit 5 Metern pro Sekunde auf 8 Metern Radius braucht sie eine Zentripetalkraft von 172 Newton. Die holt sie sich, indem sie sich 18 Grad nach innen legt.',
+  f:k=>{const a=EINQ(k/.7),al=18*a;return `<path d="M20 230H300" stroke="var(--flow)" stroke-width="3" opacity=".4"/><g transform="rotate(${(-al).toFixed(1)} 150 230)">${EFIG(150,230,1.2,0)}</g>`+AR(150,170,-70*a,0,'var(--ok)')+(a>.5?T(70,160,ESB('F','z'),'ein1','end'):'')+T(380,90,ESB('F','z')+' = m · v² / r','ein1','middle')+T(380,124,'= 55 kg · (5 m/s)² / 8 m','ein2','middle')+T(380,156,'= 172 N','ein1','middle')+T(380,200,'tan α = v² / (g · r)','ein2','middle')+T(380,232,'α = 18°','ein1','middle')}},
+ {d:13,t:'Alles zusammen: F_z = 55 kg · (5 m/s)² / 8 m = 172 N. Neigung tan α = v² / (g · r) = 25 / 78,5 = 0,32, also α = 18°. Beim Gleiten: s = v² / (2 · μ · g) ≈ 180 m.',
+  s:'Alles zusammen: F z gleich 55 Kilogramm mal 5 Meter pro Sekunde zum Quadrat durch 8 Meter gleich 172 Newton. Neigung Tangens Alpha gleich v Quadrat durch g r gleich 0,32, also 18 Grad. Beim Gleiten: s gleich v Quadrat durch 2 Mü g, etwa 180 Meter.',
+  f:k=>EFX(k,[[ESB('F','z')+' = m · v² / r = 55 kg · (5 m/s)² / 8 m = 172 N','m'],['tan α = v² / (g · r) = 25 / 78,5 = 0,32 → α = 18°','r'],['Gleiten: a = μ · g = 0,01 · 9,81 m/s² ≈ 0,1 m/s²','m'],['s = v² / (2 · a) = 36 / 0,2 m ≈ 180 m','r']],['Pirouette: r halb → Drehzahl vierfach'])},
+ {d:9,t:'Merke: Pirouette: Radius klein, Drehung schnell. Bogen: F_z = m · v² / r, Neigung tan α = v² / (g · r). Eis: μ winzig, langes Gleiten.',
+  s:'Merke: Pirouette: Radius klein, Drehung schnell. Bogen: F z gleich m v Quadrat durch r, Neigung Tangens Alpha gleich v Quadrat durch g r. Eis: Mü winzig, langes Gleiten.',
+  f:(k,t)=>EMRK(k,t,`<path d="M20 210H220" stroke="var(--flow)" stroke-width="3" opacity=".4"/><g transform="rotate(-18 120 210)">${EFIG(120,210,1.1,0)}</g>`+AR(120,150,-50,0,'var(--ok)'),ESB('F','z')+' = m · v² / r','tan α = v² / (g · r)')}
+],
+'Sinus & Kosinus':[
+ {d:11,t:'Eine 10 m lange Leiter lehnt mit 40° an der Wand. Wie hoch reicht sie, wie weit steht der Fuß ab? Genau dafür gibt es Sinus und Kosinus.',
+  s:'Eine 10 Meter lange Leiter lehnt mit 40 Grad an der Wand. Wie hoch reicht sie, wie weit steht der Fuß ab? Genau dafür gibt es Sinus und Kosinus.',
+  f:k=>{const a=EINQ(k/.8),al=40*PI/180,L=230,x0=60,y0=212,x1=x0+L*Math.cos(al),y1=y0-L*Math.sin(al);return `<path d="M${x1+6} 30V${y0}H20" fill="none" stroke="var(--ink)" stroke-width="4"/><path d="M${x0} ${y0}L${x1.toFixed(1)} ${y1.toFixed(1)}M${x0+8} ${y0-6}L${(x1+8).toFixed(1)} ${(y1-6).toFixed(1)}" stroke="#b89a6a" stroke-width="5"/>`+`<path d="M${x0+40} ${y0}A40 40 0 0 0 ${(x0+40*Math.cos(al)).toFixed(1)} ${(y0-40*Math.sin(al)).toFixed(1)}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`+T(x0+48,y0-10,'40°','ein2')+T(150,120,'c = 10 m','ein1')+(a>.5?AR(x1+30,y0,0,-(y0-y1),'var(--red)')+T(x1+40,(y0+y1)/2,'Höhe a?','ein1')+AR(x0,y0+22,x1-x0,0,'var(--flow)')+T((x0+x1)/2,y0+44,'Abstand b?','ein1','middle'):'')+T(380,60,'Hypotenuse c','ein2','middle')}},
+ {d:11,t:'Im rechtwinkligen Dreieck: Sinus ist Gegenkathete durch Hypotenuse, Kosinus ist Ankathete durch Hypotenuse. Also a = c · sin α und b = c · cos α.',
+  s:'Im rechtwinkligen Dreieck: Sinus ist Gegenkathete durch Hypotenuse, Kosinus ist Ankathete durch Hypotenuse. Also a gleich c mal Sinus Alpha und b gleich c mal Kosinus Alpha.',
+  f:k=>{const a=EINQ(k/.6),al=40*PI/180,L=220,x0=40,y0=230,x1=x0+L*Math.cos(al),y1=y0-L*Math.sin(al);return `<polygon points="${x0},${y0} ${x1.toFixed(1)},${y0} ${x1.toFixed(1)},${y1.toFixed(1)}" fill="var(--amber)" opacity=".25" stroke="var(--ink)" stroke-width="2"/><path d="M${x1-14} ${y0}V${y0-14}H${x1}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`+T(x0+44,y0-10,'α','ein1')+T((x0+x1)/2-10,(y0+y1)/2-12,'c','ein1','end')+T(x1+10,(y0+y1)/2+6,'a','ein1')+T((x0+x1)/2,y0+24,'b','ein1','middle')+(a>.3?T(330,70,'sin α = a / c','ein1')+T(330,100,'Gegenkathete','ein2'):'')+(a>.7?T(330,150,'cos α = b / c','ein1')+T(330,180,'Ankathete','ein2'):'')+T(330,230,'a = c · sin α','ein2')+T(330,256,'b = c · cos α','ein2')}},
+ {d:11,t:'Am Einheitskreis mit Radius 1 sieht man es direkt: Die Höhe des Punktes ist sin α, seine Breite ist cos α. Beide liegen zwischen −1 und +1.',
+  s:'Am Einheitskreis mit Radius 1 sieht man es direkt: Die Höhe des Punktes ist Sinus Alpha, seine Breite ist Kosinus Alpha. Beide liegen zwischen minus 1 und plus 1.',
+  f:(k,t)=>{const R=90,cx=130,cy=140,w=t*.9,x=cx+R*Math.cos(w),y=cy-R*Math.sin(w);return `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="2"/><path d="M${cx-R-10} ${cy}H${cx+R+10}M${cx} ${cy-R-10}V${cy+R+10}" stroke="var(--line)" stroke-width="1.5"/><path d="M${cx} ${cy}L${x.toFixed(1)} ${y.toFixed(1)}" stroke="var(--ink)" stroke-width="2"/><path d="M${x.toFixed(1)} ${cy}V${y.toFixed(1)}" stroke="var(--red)" stroke-width="4"/><path d="M${cx} ${cy}H${x.toFixed(1)}" stroke="var(--flow)" stroke-width="4"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="var(--ink)"/>`+T(300,90,'Höhe = sin α','ein1')+`<rect x="276" y="80" width="14" height="4" fill="var(--red)"/>`+T(300,130,'Breite = cos α','ein1')+`<rect x="276" y="120" width="14" height="4" fill="var(--flow)"/>`+T(300,180,'α = '+Math.round(((w*180/PI)%360+360)%360)+'°','ein2')+T(300,210,'sin α = '+String(Math.round(Math.sin(w)*100)/100).replace('.',','),'ein2')+T(300,236,'cos α = '+String(Math.round(Math.cos(w)*100)/100).replace('.',','),'ein2')}},
+ {d:11,t:'Trägt man beide über dem Winkel auf, entstehen zwei Wellen. Der Kosinus ist der um 90° verschobene Sinus. Das ist die Grundform jeder Schwingung und jeder Wechselspannung.',
+  s:'Trägt man beide über dem Winkel auf, entstehen zwei Wellen. Der Kosinus ist der um 90 Grad verschobene Sinus. Das ist die Grundform jeder Schwingung und jeder Wechselspannung.',
+  f:k=>{const a=EINQ(k/.8),x0=50,y0=140,W=380,A=70;let ds=`M${x0} ${y0}`,dc=`M${x0} ${y0-A}`;for(let i=1;i<=100;i++){const p=i/100*a,w=p*2*PI;ds+=`L${(x0+W*p).toFixed(1)} ${(y0-A*Math.sin(w)).toFixed(1)}`;dc+=`L${(x0+W*p).toFixed(1)} ${(y0-A*Math.cos(w)).toFixed(1)}`}
+   return `<path d="M${x0} ${y0}H${x0+W}" stroke="var(--line)" stroke-width="1.5"/>`+[0,90,180,270,360].map((g,i)=>`<path d="M${x0+W*i/4} ${y0-4}V${y0+4}" stroke="var(--ink)" stroke-width="1.5"/>`+T(x0+W*i/4,y0+A+40,g+'°','ein2','middle')).join('')+`<path d="${ds}" fill="none" stroke="var(--red)" stroke-width="3"/><path d="${dc}" fill="none" stroke="var(--flow)" stroke-width="3"/>`+T(x0+W,y0-A-12,'sin','ein1','end')+`<rect x="${x0+W-50}" y="${y0-A-18}" width="14" height="4" fill="var(--red)"/>`+T(x0+W,y0+A+12,'cos','ein1','end')+`<rect x="${x0+W-50}" y="${y0+A+6}" width="14" height="4" fill="var(--flow)"/>`}},
+ {d:13,t:'Alles zusammen: Höhe a = 10 m · sin 40° = 10 m · 0,643 = 6,43 m. Abstand b = 10 m · cos 40° = 10 m · 0,766 = 7,66 m. Probe: 6,43² + 7,66² = 100, passt zu c².',
+  s:'Alles zusammen: Höhe a gleich 10 Meter mal Sinus 40 Grad gleich 6,43 Meter. Abstand b gleich 10 Meter mal Kosinus 40 Grad gleich 7,66 Meter. Probe: 6,43 Quadrat plus 7,66 Quadrat gleich 100, passt zu c Quadrat.',
+  f:k=>EFX(k,[['a = c · sin α = 10 m · sin 40° = 10 m · 0,643','m'],['a = 6,43 m','r'],['b = c · cos α = 10 m · cos 40° = 10 m · 0,766','m'],['b = 7,66 m','r']],['Probe: a² + b² = 41,3 m² + 58,7 m² = 100 m² = c²'])},
+ {d:9,t:'Merke: sin α = Gegenkathete / Hypotenuse, cos α = Ankathete / Hypotenuse. Taschenrechner auf DEG stellen.',
+  s:'Merke: Sinus Alpha gleich Gegenkathete durch Hypotenuse, Kosinus Alpha gleich Ankathete durch Hypotenuse. Taschenrechner auf DEG stellen.',
+  f:(k,t)=>EMRK(k,t,`<polygon points="30,210 200,210 200,90" fill="var(--amber)" opacity=".25" stroke="var(--ink)" stroke-width="2"/>`+T(60,200,'α','ein1')+T(210,156,'a','ein1')+T(115,232,'b','ein1','middle')+T(100,140,'c','ein1','end'),'sin α = a / c','cos α = b / c')}
+],
+'Schwingung':[
+ {d:11,t:'Eine Masse hängt an einer Feder. Einmal angestoßen, pendelt sie auf und ab: eine Schwingung. Wie schnell, hängt von Feder und Masse ab.',
+  s:'Eine Masse hängt an einer Feder. Einmal angestoßen, pendelt sie auf und ab: eine Schwingung. Wie schnell, hängt von Feder und Masse ab.',
+  f:(k,t)=>{const x=40*Math.sin(t*4.47),L=120+x;return `<path d="M100 30H180" stroke="var(--ink)" stroke-width="5"/>`+EFED(140,30,L)+BAR3(115,30+L+8,50,36,'#8a96a1',8)+T(140,30+L+32,'1 kg','ein1','middle')+`<path d="M220 110h20M220 190h20M230 110V190" stroke="var(--line)" stroke-width="1.5"/><path d="M220 150h20" stroke="var(--ink)" stroke-width="2"/>`+T(248,156,'Ruhelage','ein2')+T(370,70,'D = 20 N/m','ein1','middle')+T(370,104,'m = 1 kg','ein1','middle')+T(370,236,'Amplitude A = 20 cm','ein2','middle')}},
+ {d:11,t:'Die Amplitude A ist der größte Ausschlag aus der Ruhelage. Die Periodendauer T ist die Zeit für ein volles Hin und Her. Die Frequenz f = 1 / T zählt die Schwingungen je Sekunde.',
+  s:'Die Amplitude A ist der größte Ausschlag aus der Ruhelage. Die Periodendauer T ist die Zeit für ein volles Hin und Her. Die Frequenz f gleich 1 durch T zählt die Schwingungen je Sekunde.',
+  f:k=>{const a=EINQ(k/.8),x0=50,y0=140,W=380,A=70;let d=`M${x0} ${y0}`;for(let i=1;i<=100;i++){const p=i/100*a;d+=`L${(x0+W*p).toFixed(1)} ${(y0-A*Math.sin(p*4*PI)).toFixed(1)}`}
+   return `<path d="M${x0} ${y0}H${x0+W}" stroke="var(--line)" stroke-width="1.5"/><path d="${d}" fill="none" stroke="var(--red)" stroke-width="3"/>`+AR(x0+W/8,y0,0,-A,'var(--ok)')+T(x0+W/8+8,y0-A/2+6,'A','ein1')+`<path d="M${x0} ${y0+A+14}H${x0+W/2}" stroke="var(--flow)" stroke-width="2"/><path d="M${x0} ${y0+A+8}v12M${x0+W/2} ${y0+A+8}v12" stroke="var(--flow)" stroke-width="2"/>`+T(x0+W/4,y0+A+40,'T = 1,41 s','ein1','middle')+T(x0+W*.75,y0+A+40,'f = 1 / T = 0,71 Hz','ein2','middle')+T(x0+W,y0-A-8,'t','ein2','end')}},
+ {d:11,t:'Der Ort folgt einer Sinuskurve: x(t) = A · sin(ω · t). ω ist die Kreisfrequenz, ω = 2 · π · f. Die Geschwindigkeit ist in der Mitte am größten, an den Umkehrpunkten null.',
+  s:'Der Ort folgt einer Sinuskurve: x von t gleich A mal Sinus Omega t. Omega ist die Kreisfrequenz, Omega gleich 2 Pi f. Die Geschwindigkeit ist in der Mitte am größten, an den Umkehrpunkten null.',
+  f:(k,t)=>{const w=t*4.47,x0=250,y0=140,W=200,A=60,x=40*Math.sin(w),L=110+x;let d=`M${x0} ${y0}`;for(let i=1;i<=60;i++){const p=i/60;d+=`L${(x0+W*p).toFixed(1)} ${(y0-A*Math.sin(w-p*4*PI)).toFixed(1)}`}
+   return `<path d="M70 30H130" stroke="var(--ink)" stroke-width="4"/>`+EFED(100,30,L,6,10)+BAR3(80,30+L+6,40,28,'#8a96a1',6)+`<path d="M160 ${(30+L+20).toFixed(1)}H${x0}" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>`+`<path d="M${x0} ${y0}H${x0+W}" stroke="var(--line)" stroke-width="1.5"/><path d="${d}" fill="none" stroke="var(--red)" stroke-width="3"/><circle cx="${x0}" cy="${(y0-A*Math.sin(w)).toFixed(1)}" r="6" fill="var(--ink)"/>`+T(350,236,'x(t) = A · sin(ω · t)','ein1','middle')+T(350,262,'ω = 2 · π · f','ein2','middle')}},
+ {d:11,t:'Das Tempo bestimmen Feder und Masse: ω = √(D / m). Eine steife Feder schwingt schnell, eine schwere Masse langsam. Die Amplitude ändert daran nichts.',
+  s:'Das Tempo bestimmen Feder und Masse: Omega gleich Wurzel aus D durch m. Eine steife Feder schwingt schnell, eine schwere Masse langsam. Die Amplitude ändert daran nichts.',
+  f:(k,t)=>[['steife Feder',8,36,'#8a96a1'],['schwere Masse',2.2,56,'#5a6670']].map(([l,w,s,c],i)=>{const x=90+i*170,d=30*Math.sin(t*w),L=90+d;return `<path d="M${x-30} 40H${x+30}" stroke="var(--ink)" stroke-width="4"/>`+EFED(x,40,L,6,i?10:7)+BAR3(x-s/2,40+L+6,s,s*.7,c,6)+T(x,250,l,'ein2','middle')}).join('')+T(400,110,'ω = √(D / m)','ein1','middle')+T(400,150,'T = 2 · π · √(m / D)','ein2','middle')},
+ {d:13,t:'Alles zusammen: ω = √(D / m) = √(20 N/m / 1 kg) = 4,47 1/s. f = ω / (2 · π) = 0,71 Hz, T = 1 / f = 1,41 s. Mit A = 20 cm ist x(t) = 20 cm · sin(4,47 1/s · t).',
+  s:'Alles zusammen: Omega gleich Wurzel aus 20 Newton pro Meter durch 1 Kilogramm gleich 4,47 pro Sekunde. f gleich Omega durch 2 Pi gleich 0,71 Hertz, T gleich 1 durch f gleich 1,41 Sekunden.',
+  f:k=>EFX(k,[['ω = √(D / m) = √(20 N/m / 1 kg) = 4,47 1/s','m'],['f = ω / (2 · π) = 4,47 1/s / 6,28 = 0,71 Hz','r'],['T = 1 / f = 1 / 0,71 Hz = 1,41 s','r'],['x(t) = 20 cm · sin(4,47 1/s · t)','m']],['1 N/m / 1 kg = 1 1/s², die Wurzel gibt 1/s'])},
+ {d:9,t:'Merke: x(t) = A · sin(ω · t), ω = √(D / m) = 2 · π · f, T = 1 / f. Steif oder leicht: schnell. Weich oder schwer: langsam.',
+  s:'Merke: x von t gleich A Sinus Omega t, Omega gleich Wurzel aus D durch m gleich 2 Pi f, T gleich 1 durch f. Steif oder leicht: schnell. Weich oder schwer: langsam.',
+  f:(k,t)=>EMRK(k,t,`<path d="M20 150H220" stroke="var(--line)" stroke-width="1.5"/><path d="${(()=>{let d='M20 150';for(let i=1;i<=50;i++)d+=`L${20+4*i} ${(150-50*Math.sin(i/50*4*PI)).toFixed(1)}`;return d})()}" fill="none" stroke="var(--red)" stroke-width="3"/>`,'ω = √(D / m)','T = 1 / f = 2 · π / ω')}
+],
+'Energieformen & Erhaltung':[
+ {d:11,t:'Eine Kugel von 2 kg liegt 10 m hoch auf einer Rampe. Sie rollt los: Je tiefer sie kommt, desto schneller wird sie. Lageenergie wird zu Bewegungsenergie.',
+  s:'Eine Kugel von 2 Kilogramm liegt 10 Meter hoch auf einer Rampe. Sie rollt los: Je tiefer sie kommt, desto schneller wird sie. Lageenergie wird zu Bewegungsenergie.',
+  f:k=>{const a=Math.min(1,k/.9),s=a*a,x=60+320*s,y=60+160*s;return `<path d="M60 60Q200 60 300 180Q360 230 460 230" fill="none" stroke="var(--ink)" stroke-width="4"/>`+`<circle cx="${x.toFixed(1)}" cy="${(y-14).toFixed(1)}" r="14" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+T(60,40,'h = 10 m, m = 2 kg','ein1')+T(460,80,'oben: Lageenergie','ein2','end')+T(460,110,'unten: Bewegungsenergie','ein2','end')}},
+ {d:11,t:'Lageenergie: E_pot = m · g · h. Doppelte Höhe, doppelte Energie. Bei 2 kg und 10 m sind das 2 kg · 9,81 m/s² · 10 m = 196 J.',
+  s:'Lageenergie: E pot gleich m g h. Doppelte Höhe, doppelte Energie. Bei 2 Kilogramm und 10 Metern sind das 196 Joule.',
+  f:k=>{const a=EINQ(k/.8);return `<path d="M40 240H260" stroke="var(--ink)" stroke-width="3"/>`+BAR3(60,240-180*a,20,180*a,'#8a96a1',4)+`<circle cx="70" cy="${(240-180*a-16).toFixed(0)}" r="14" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+AR(110,240,0,-180*a,'var(--red)')+T(122,240-90*a,'h','ein1')+T(360,90,ESB('E','pot')+' = m · g · h','ein1','middle')+T(360,126,'= 2 kg · 9,81 m/s² · 10 m','ein2','middle')+T(360,158,'= 196 J','ein1','middle')+(a>.9?T(360,200,'oben: 196 J','ein2','middle'):'')}},
+ {d:11,t:'Bewegungsenergie: E_kin = ½ · m · v². Doppelte Geschwindigkeit, vierfache Energie. Darum sind schnelle Fahrzeuge so gefährlich.',
+  s:'Bewegungsenergie: E kin gleich ein halb m v Quadrat. Doppelte Geschwindigkeit, vierfache Energie. Darum sind schnelle Fahrzeuge so gefährlich.',
+  f:k=>[['v',1],['2 v',4]].map(([l,n],i)=>{const g=EINQ((k-i*.3)/.5),y=70+i*90;return `<circle cx="50" cy="${y+15}" r="14" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+AR(70,y+15,30*n,0,'var(--red)')+T(70+30*n+8,y+21,l,'ein1')+BAR3(190,y,50*n*g,30,'var(--amber)',8)+(g>.9?T(200+50*n,y+22,n+' · E','ein1'):'')}).join('')+T(240,250,ESB('E','kin')+' = ½ · m · v²','ein1','middle')},
+ {d:11,t:'Ohne Reibung bleibt die Summe gleich: Was an Lageenergie verschwindet, kommt als Bewegungsenergie dazu. Mit Reibung wird ein Teil zu Wärme, die Summe aller Formen bleibt trotzdem.',
+  s:'Ohne Reibung bleibt die Summe gleich: Was an Lageenergie verschwindet, kommt als Bewegungsenergie dazu. Mit Reibung wird ein Teil zu Wärme, die Summe aller Formen bleibt trotzdem.',
+  f:k=>{const a=EINQ(k/.8),H=160;return `<path d="M40 230H440" stroke="var(--ink)" stroke-width="2"/>`+BAR3(80,230-H*(1-a),60,H*(1-a),'var(--flow)',8)+T(110,250,ESB('E','pot'),'ein1','middle')+BAR3(200,230-H*a,60,H*a,'var(--red)',8)+T(230,250,ESB('E','kin'),'ein1','middle')+BAR3(320,230-H,60,H,'var(--amber)',8)+T(350,250,'Summe','ein1','middle')+T(350,56,'196 J','ein2','middle')+T(110,56,Math.round(196*(1-a))+' J','ein2','middle')+T(230,56,Math.round(196*a)+' J','ein2','middle')}},
+ {d:13,t:'Alles zusammen: Oben E_pot = 196 J. Unten steckt alles in E_kin = ½ · m · v², also v = √(2 · g · h) = √(2 · 9,81 m/s² · 10 m) = 14 m/s. Die Masse kürzt sich heraus.',
+  s:'Alles zusammen: Oben E pot gleich 196 Joule. Unten steckt alles in E kin gleich ein halb m v Quadrat, also v gleich Wurzel aus 2 g h gleich 14 Meter pro Sekunde. Die Masse kürzt sich heraus.',
+  f:k=>EFX(k,[[ESB('E','pot')+' = m · g · h = 2 kg · 9,81 m/s² · 10 m = 196 J','m'],['m · g · h = ½ · m · v²  →  v = √(2 · g · h)','h'],['v = √(2 · 9,81 m/s² · 10 m) = √(196 m²/s²)','m'],['v = 14 m/s','r']],['bei 4 m Höhe: '+ESB('E','pot')+' = 78 J, '+ESB('E','kin')+' = 118 J'])},
+ {d:9,t:'Merke: E_pot = m · g · h, E_kin = ½ · m · v². Energie geht nicht verloren, sie wechselt nur die Form.',
+  s:'Merke: E pot gleich m g h, E kin gleich ein halb m v Quadrat. Energie geht nicht verloren, sie wechselt nur die Form.',
+  f:(k,t)=>EMRK(k,t,`<path d="M30 60Q120 60 160 160Q190 210 220 210" fill="none" stroke="var(--ink)" stroke-width="3"/><circle cx="40" cy="48" r="10" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/><circle cx="200" cy="196" r="10" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/>`+AR(215,196,40,0,'var(--red)'),ESB('E','pot')+' = m · g · h',ESB('E','kin')+' = ½ · m · v²')}
+],
+'Arbeit, Energie & Leistung (Übersicht)':[
+ {d:11,t:'Zwei Personen tragen je 15 kg Bücher drei Meter hoch die Treppe hinauf. A braucht 20 s, B rennt in 6 s. Wer hat mehr geleistet?',
+  s:'Zwei Personen tragen je 15 Kilogramm Bücher drei Meter hoch die Treppe hinauf. A braucht 20 Sekunden, B rennt in 6 Sekunden. Wer hat mehr geleistet?',
+  f:k=>{const a=Math.min(1,k/.9);let st='';for(let i=0;i<6;i++)st+=`<path d="M${80+i*50} ${230-i*30}h50v-30" fill="none" stroke="var(--ink)" stroke-width="3"/>`;const pA=Math.min(1,a*.4),pB=Math.min(1,a*1.3);
+   return st+EFIG(100+260*pA,230-150*pA,.8)+EBOK(80+260*pA,180-150*pA)+T(100+260*pA,282-150*pA,'A: 20 s','ein2','middle')+EFIG(150+260*pB,230-150*pB,.8)+EBOK(130+260*pB,180-150*pB)+T(150+260*pB,282-150*pB,'B: 6 s','ein2','middle')+T(60,60,'15 kg, h = 3 m','ein1')}},
+ {d:11,t:'Energie ist der Vorrat: Wie viel steckt drin? Lageenergie, Bewegungsenergie, Wärme, chemische Energie im Treibstoff, elektrische Energie im Akku. Einheit Joule.',
+  s:'Energie ist der Vorrat: Wie viel steckt drin? Lageenergie, Bewegungsenergie, Wärme, chemische Energie im Treibstoff, elektrische Energie im Akku. Einheit Joule.',
+  f:k=>[['Lage','m · g · h'],['Bewegung','½ · m · v²'],['Wärme','m · c · ΔT'],['chemisch','Treibstoff'],['elektrisch','U · I · t']].map(([n,f],i)=>{const g=EINQ((k-i*.15)/.3),x=30+(i%3)*150,y=i<3?60:150;return `<g opacity="${g.toFixed(2)}"><rect x="${x}" y="${y}" width="130" height="70" rx="10" fill="var(--card)" stroke="var(--amber)" stroke-width="2"/>`+T(x+65,y+28,n,'ein1','middle')+T(x+65,y+54,f,'ein2','middle')+'</g>'}).join('')+T(240,255,'Energie: der Vorrat, in J','ein1','middle')},
+ {d:11,t:'Arbeit ist die Energie, die bei einem Vorgang übertragen wird: W = F · s = ΔE. Beim Heben: W = m · g · h = 15 kg · 9,81 m/s² · 3 m = 441 J, für beide gleich.',
+  s:'Arbeit ist die Energie, die bei einem Vorgang übertragen wird: W gleich F mal s gleich Delta E. Beim Heben: W gleich m g h gleich 441 Joule, für beide gleich.',
+  f:k=>{const a=EINQ(k/.8);return `<path d="M60 230H200" stroke="var(--ink)" stroke-width="3"/>`+EBOK(100,230-150*a-22)+AR(160,230,0,-150*a,'var(--red)')+T(172,230-75*a,'h = 3 m','ein1')+AR(90,230-150*a-10,0,-40,'var(--ok)')+T(100,230-150*a-50,'F = m · g','ein2')+T(360,90,'W = F · s = ΔE','ein1','middle')+T(360,126,'= m · g · h','ein2','middle')+T(360,158,'= 15 kg · 9,81 m/s² · 3 m','ein2','middle')+T(360,192,'= 441 J','ein1','middle')+(a>.9?T(360,230,'A und B: gleiche Arbeit','ein2','middle'):'')}},
+ {d:11,t:'Leistung ist das Tempo: P = W / t. A: 441 J / 20 s = 22 W. B: 441 J / 6 s = 74 W. Gleiche Arbeit, aber B leistet mehr als das Dreifache.',
+  s:'Leistung ist das Tempo: P gleich W durch t. A: 441 Joule durch 20 Sekunden gleich 22 Watt. B: 441 Joule durch 6 Sekunden gleich 74 Watt. Gleiche Arbeit, aber B leistet mehr als das Dreifache.',
+  f:k=>[['A: 20 s',22],['B: 6 s',74]].map(([l,P],i)=>{const g=EINQ((k-i*.3)/.5),y=70+i*90;return T(20,y+22,l,'ein1')+BAR3(120,y,P*3.5*g,30,i?'var(--red)':'var(--amber)',8)+(g>.9?T(130+P*3.5,y+22,'P = '+P+' W','ein1'):'')}).join('')+T(240,250,'P = W / t, Einheit W = J/s','ein1','middle')},
+ {d:13,t:'Alles zusammen: W = m · g · h = 15 kg · 9,81 m/s² · 3 m = 441 J. P_A = 441 J / 20 s = 22 W, P_B = 441 J / 6 s = 74 W.',
+  s:'Alles zusammen: W gleich m g h gleich 441 Joule. P A gleich 441 Joule durch 20 Sekunden gleich 22 Watt, P B gleich 441 Joule durch 6 Sekunden gleich 74 Watt.',
+  f:k=>EFX(k,[['W = m · g · h = 15 kg · 9,81 m/s² · 3 m = 441 J','m'],[ESB('P','A')+' = W / t = 441 J / 20 s = 22 W','r'],[ESB('P','B')+' = W / t = 441 J / 6 s = 74 W','r'],['1 W = 1 J/s, 1 kWh = 3,6 MJ','m']],['Energie: Vorrat · Arbeit: übertragen · Leistung: je Zeit'])},
+ {d:9,t:'Merke: Energie ist der Vorrat, Arbeit die übertragene Energie W = F · s, Leistung das Tempo P = W / t.',
+  s:'Merke: Energie ist der Vorrat, Arbeit die übertragene Energie W gleich F mal s, Leistung das Tempo P gleich W durch t.',
+  f:(k,t)=>EMRK(k,t,[['Energie','J'],['Arbeit','J'],['Leistung','W']].map(([n,u],i)=>`<rect x="30" y="${60+i*60}" width="190" height="46" rx="8" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>`+T(45,60+i*60+30,n,'ein1')+T(205,60+i*60+30,u,'ein2','end')).join(''),'W = F · s = ΔE','P = W / t')}
+]});
+
 let einP=null;
 function einShow(n){const w=$('#ein'),S=EIN[n];if(einP)einP.stop();einP=null;if(!w)return;w.innerHTML='';w.hidden=!S;if(!S)return;
  const tot=S.reduce((a,x)=>a+x.d,0),mm=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
