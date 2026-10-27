@@ -9685,6 +9685,157 @@ Object.assign(EIN,{
   f:(k,t)=>EMRK(k,t,[['Energie','J'],['Arbeit','J'],['Leistung','W']].map(([n,u],i)=>`<rect x="30" y="${60+i*60}" width="190" height="46" rx="8" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>`+T(45,60+i*60+30,n,'ein1')+T(205,60+i*60+30,u,'ein2','end')).join(''),'W = F · s = ΔE','P = W / t')}
 ]});
 
+/* Paket Wärme, Gase, Hydraulik. Hilfen: Gasteilchen, Zylinder mit Kolben, Wärmekurve */
+const EGAS=(x,y,w,h,n,t,sp=1,c='var(--flow)')=>{let s='';for(let i=0;i<n;i++){const px=x+8+((i*37+t*40*sp*(1+i%3))%(w-16)),py=y+8+((i*53+t*30*sp*(1+(i+1)%3))%(h-16));s+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4" fill="${c}" stroke="var(--ink)" stroke-width="1"/>`}return s};
+const EZYL=(x,y,w,h,pos,o={})=>`<path d="M${x+w} ${y}H${x}V${y+h}H${x+w}" fill="${o.fill||'var(--card)'}" stroke="var(--ink)" stroke-width="3"/><rect x="${(x+w*pos).toFixed(1)}" y="${y+3}" width="12" height="${h-6}" fill="#8a96a1" stroke="var(--ink)" stroke-width="2"/><path d="M${(x+w*pos+12).toFixed(1)} ${y+h/2}H${x+w+40}" stroke="var(--ink)" stroke-width="6"/>`;
+const EKRV=(x0,y0,W,H,a,segs,o={})=>{let d='',x=x0,y=y0,tot=segs.reduce((s,q)=>s+q[0],0),acc=0,h='';segs.forEach(([dt,dT],i)=>{const x2=x+W*dt/tot,y2=y-H*dT;const f=Math.min(1,Math.max(0,(a*tot-acc)/dt));if(f>0){d+=(d?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+'L'+(x+(x2-x)*f).toFixed(1)+' '+(y+(y2-y)*f).toFixed(1);if(o.lab&&f>=1&&o.lab[i])h+=T((x+x2)/2,(y+y2)/2-16,o.lab[i],'ein2','middle')}acc+=dt;x=x2;y=y2});return EAX(x0,y0,W,H,o.lx||'t',o.ly||'T')+`<path d="${d}" fill="none" stroke="var(--red)" stroke-width="3"/>`+h};
+Object.assign(EIN,{
+'Aggregatzustand':[
+ {d:11,t:'Ein Eiswürfel im Topf auf der Herdplatte: Er schmilzt zu Wasser, das Wasser wird heiß und verdampft. Dreimal derselbe Stoff, drei Zustände.',
+  s:'Ein Eiswürfel im Topf auf der Herdplatte: Er schmilzt zu Wasser, das Wasser wird heiß und verdampft. Dreimal derselbe Stoff, drei Zustände.',
+  f:(k,t)=>{const a=Math.min(1,k/.9);let h=EPLT(80,230,160,1,t)+`<path d="M90 230V140H230V230" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+   if(a<.4)h+=BAR3(135,180-100*a,50,46,'#cfe4f5',8)+T(160,250-30*0,'','ein2');else h+=`<rect class="fluid" x="92" y="${(228-50*Math.min(1,(a-.4)/.3)).toFixed(1)}" width="136" height="${(50*Math.min(1,(a-.4)/.3)).toFixed(1)}"/>`;
+   if(a>.7)h+=[0,1,2].map(i=>`<circle cx="${130+i*30}" cy="${(120-60*((a-.7)/.3)-i*8).toFixed(1)}" r="${6+i*2}" fill="var(--line)" opacity=".7"/>`).join('');
+   return h+T(360,100,a<.4?'fest':a<.7?'flüssig':'gasförmig','ein1','middle')+T(360,134,'Eis → Wasser → Dampf','ein2','middle')}},
+ {d:11,t:'Im Teilchenmodell: Fest sitzen die Teilchen auf festen Plätzen und zittern nur. Flüssig rutschen sie aneinander vorbei. Gasförmig fliegen sie frei und weit auseinander.',
+  s:'Im Teilchenmodell: Fest sitzen die Teilchen auf festen Plätzen und zittern nur. Flüssig rutschen sie aneinander vorbei. Gasförmig fliegen sie frei und weit auseinander.',
+  f:(k,t)=>{let h='';[['fest',0],['flüssig',1],['gasförmig',2]].forEach(([n,i])=>{const x=30+i*150;h+=`<rect x="${x}" y="60" width="120" height="140" rx="6" fill="none" stroke="var(--line)" stroke-width="2"/>`+T(x+60,230,n,'ein1','middle');
+   if(i==0)h+=EGIT(x+25,85,4,4,24,1.5,t);else if(i==1){for(let j=0;j<14;j++)h+=BALL(x+18+(j%5)*22+6*Math.sin(t*2+j),130+Math.floor(j/5)*22+4*Math.cos(t*2.5+j*1.3),7,'var(--flow)',1.2)}else h+=EGAS(x,60,120,140,7,t,1.5)});return h}},
+ {d:11,t:'Heizt man gleichmäßig, steigt die Temperatur nicht immer: Beim Schmelzen bleibt sie bei 0 °C, beim Sieden bei 100 °C, bis alles umgewandelt ist.',
+  s:'Heizt man gleichmäßig, steigt die Temperatur nicht immer: Beim Schmelzen bleibt sie bei 0 Grad, beim Sieden bei 100 Grad, bis alles umgewandelt ist.',
+  f:k=>{const a=EINQ(k/.9);return EKRV(60,230,380,170,a,[[1,.1],[2,0],[3,.5],[6,0],[1,.1]],{lx:'Zeit',ly:'T',lab:['','schmilzt','','siedet','']})+T(52,230-170*.1+4,'0 °C','ein2','end')+T(52,230-170*.6+4,'100 °C','ein2','end')}},
+ {d:11,t:'Warum? Die zugeführte Energie löst während des Umwandelns die Bindungen zwischen den Teilchen, statt sie schneller zu machen. Erst danach steigt die Temperatur weiter.',
+  s:'Warum? Die zugeführte Energie löst während des Umwandelns die Bindungen zwischen den Teilchen, statt sie schneller zu machen. Erst danach steigt die Temperatur weiter.',
+  f:(k,t)=>{const a=EINQ(k/.8);let h=EQAR(100,250,170,t,3)+EGIT(60,90,4,3,26,1.5+2*a,t);
+   return h+AR(190,130,50,0,'var(--ok)')+(a>.5?[0,1,2,3,4,5,6,7].map(j=>BALL(270+(j%4)*28+8*Math.sin(t*2+j),100+Math.floor(j/4)*28+6*Math.cos(t*2.2+j),7,'var(--flow)',1.2)).join(''):'')+T(330,200,'Energie löst Bindungen','ein1','middle')+T(330,230,'Temperatur bleibt','ein2','middle')}},
+ {d:13,t:'Alles zusammen für 1 kg Wasser: Erwärmen von 0 auf 100 °C braucht Q = m · c · ΔT = 1 kg · 4,19 kJ/(kg·K) · 100 K = 419 kJ. Schmelzen braucht 334 kJ, Verdampfen sogar 2257 kJ.',
+  s:'Alles zusammen für 1 Kilogramm Wasser: Erwärmen von 0 auf 100 Grad braucht Q gleich m c Delta T gleich 419 Kilojoule. Schmelzen braucht 334 Kilojoule, Verdampfen sogar 2257 Kilojoule.',
+  f:k=>EFX(k,[['Erwärmen: Q = m · c · ΔT','h'],['Q = 1 kg · 4,19 kJ/(kg·K) · 100 K','m'],['Q = 419 kJ','r'],['Schmelzen 334 kJ, Verdampfen 2257 kJ je kg','m']],['Verdampfen: über fünfmal so viel wie Erwärmen'])},
+ {d:9,t:'Merke: Fest, flüssig, gasförmig. Beim Schmelzen und Sieden bleibt die Temperatur konstant, die Energie steckt in der Umwandlung.',
+  s:'Merke: Fest, flüssig, gasförmig. Beim Schmelzen und Sieden bleibt die Temperatur konstant, die Energie steckt in der Umwandlung.',
+  f:(k,t)=>EMRK(k,t,EKRV(30,210,190,140,1,[[1,.1],[2,0],[3,.5],[6,0],[1,.1]],{}),'T bleibt konstant','beim Schmelzen und Sieden')}
+],
+'Schmelz- & Verdampfungswärme':[
+ {d:11,t:'Der Wasserkocher bringt einen Liter in wenigen Minuten zum Kochen. Aber bis er leer gekocht ist, dauert es fünfmal so lang. Verdampfen frisst Energie.',
+  s:'Der Wasserkocher bringt einen Liter in wenigen Minuten zum Kochen. Aber bis er leer gekocht ist, dauert es fünfmal so lang. Verdampfen frisst Energie.',
+  f:(k,t)=>{const a=Math.min(1,k/.9);return EPLT(90,230,140,1,t)+`<path d="M100 230V110H220V230" fill="none" stroke="var(--ink)" stroke-width="3"/><rect class="fluid" x="102" y="${(140+60*Math.max(0,(a-.5)*2)).toFixed(1)}" width="116" height="${(88-60*Math.max(0,(a-.5)*2)).toFixed(1)}"/>`+(a>.3?[0,1,2].map(i=>`<circle cx="${140+i*25}" cy="${(90-30*((t*.5+i/3)%1)).toFixed(1)}" r="${5+i}" fill="var(--line)" opacity=".7"/>`).join(''):'')+T(350,90,'kochen: 3 min','ein1','middle')+T(350,124,'leer kochen: 17 min','ein1','middle')+T(350,160,'P = 2 kW, 1 kg Wasser','ein2','middle')}},
+ {d:11,t:'Schmelzwärme: Um 1 kg Eis bei 0 °C zu Wasser von 0 °C zu machen, braucht man 334 kJ. Die Temperatur ändert sich nicht: Q = m · q.',
+  s:'Schmelzwärme: Um 1 Kilogramm Eis bei 0 Grad zu Wasser von 0 Grad zu machen, braucht man 334 Kilojoule. Die Temperatur ändert sich nicht: Q gleich m mal q.',
+  f:(k,t)=>{const a=EINQ(k/.8);return BAR3(60,120-60*(1-a),70,60*(1-a)+2,'#cfe4f5',8)+`<rect class="fluid" x="60" y="${(200-70*a).toFixed(1)}" width="70" height="${(70*a).toFixed(1)}"/>`+EQAR(95,255,210,t,2)+T(95,50,'0 °C','ein1','middle')+AR(150,150,40,0,'var(--ok)')+T(330,90,'Q = m · q','ein1','middle')+T(330,124,'q = 334 kJ/kg','ein1','middle')+T(330,160,'1 kg Eis → 334 kJ','ein2','middle')+T(330,190,'Temperatur bleibt 0 °C','ein2','middle')}},
+ {d:11,t:'Verdampfungswärme: 1 kg Wasser bei 100 °C zu Dampf braucht 2257 kJ. Das ist mehr als fünfmal so viel wie das Aufheizen von 0 auf 100 °C.',
+  s:'Verdampfungswärme: 1 Kilogramm Wasser bei 100 Grad zu Dampf braucht 2257 Kilojoule. Das ist mehr als fünfmal so viel wie das Aufheizen von 0 auf 100 Grad.',
+  f:k=>[['Schmelzen',334],['Erwärmen 0 → 100 °C',419],['Verdampfen',2257]].map(([l,q],i)=>{const g=EINQ((k-i*.2)/.45),y=50+i*66;return T(20,y-8,l,'ein2')+BAR3(20,y,q*.15*g,26,i==2?'var(--red)':'var(--amber)',8)+(g>.9?T(30+q*.15,y+19,q+' kJ','ein1'):'')}).join('')+T(20,256,'je 1 kg Wasser','ein2')},
+ {d:11,t:'Von −10 °C Eis bis 120 °C Dampf gibt es fünf Abschnitte: Eis erwärmen, schmelzen, Wasser erwärmen, verdampfen, Dampf erwärmen. Die Plateaus sind die Umwandlungen.',
+  s:'Von minus 10 Grad Eis bis 120 Grad Dampf gibt es fünf Abschnitte: Eis erwärmen, schmelzen, Wasser erwärmen, verdampfen, Dampf erwärmen. Die Plateaus sind die Umwandlungen.',
+  f:k=>{const a=EINQ(k/.9);return EKRV(70,230,380,180,a,[[21,.07],[334,0],[419,.69],[2257,0],[40,.14]],{lx:'Q',ly:'T',lab:['','','','2257 kJ','']})+T(62,230+4,'−10','ein2','end')+T(62,230-180*.07+4,'0 °C','ein2','end')+T(62,230-180*.76+4,'100 °C','ein2','end')+T(62,230-180*.9+4,'120','ein2','end')}},
+ {d:13,t:'Alles zusammen für 1 kg: Eis 21 kJ + Schmelzen 334 kJ + Wasser 419 kJ + Verdampfen 2257 kJ + Dampf 40 kJ = 3071 kJ. Mit 2 kW dauert das t = 3071 kJ / 2 kW = 1536 s ≈ 26 min.',
+  s:'Alles zusammen für 1 Kilogramm: Eis 21 plus Schmelzen 334 plus Wasser 419 plus Verdampfen 2257 plus Dampf 40 gleich 3071 Kilojoule. Mit 2 Kilowatt dauert das 1536 Sekunden, etwa 26 Minuten.',
+  f:k=>EFX(k,[['Eis: 1 kg · 2,1 kJ/(kg·K) · 10 K = 21 kJ','m'],['+ 334 kJ + 419 kJ + 2257 kJ + 40 kJ = 3071 kJ','m'],['t = Q / P = 3071 kJ / 2 kW','h'],['t = 1536 s ≈ 26 min','r']],['c: Eis 2,1 · Wasser 4,19 · Dampf 2,0 kJ/(kg·K)'])},
+ {d:9,t:'Merke: Umwandeln kostet Energie ohne Temperaturänderung: Q = m · q. Wasser: Schmelzen 334 kJ/kg, Verdampfen 2257 kJ/kg.',
+  s:'Merke: Umwandeln kostet Energie ohne Temperaturänderung: Q gleich m mal q. Wasser: Schmelzen 334, Verdampfen 2257 Kilojoule pro Kilogramm.',
+  f:(k,t)=>EMRK(k,t,EKRV(30,210,190,140,1,[[21,.07],[334,0],[419,.69],[2257,0],[40,.14]],{lx:'Q',ly:'T'}),'Q = m · q','q: 334 bzw. 2257 kJ/kg')}
+],
+'Mischungstemperatur':[
+ {d:11,t:'Badewanne: 1 kg Wasser mit 80 °C und 2 kg mit 20 °C werden gemischt. Welche Temperatur kommt heraus? Nicht einfach die Mitte, denn vom kalten Wasser ist mehr da.',
+  s:'Badewanne: 1 Kilogramm Wasser mit 80 Grad und 2 Kilogramm mit 20 Grad werden gemischt. Welche Temperatur kommt heraus? Nicht einfach die Mitte, denn vom kalten Wasser ist mehr da.',
+  f:k=>{const a=EINQ(k/.8);return EGL(40,60,80,160,{lv:60})+T(80,50,'1 kg, 80 °C','ein2','middle')+EGL(150,60,100,160,{lv:110})+T(200,50,'2 kg, 20 °C','ein2','middle')+AR(130,150,-0,0,'')+`<g opacity="${a.toFixed(2)}">`+EGL(300,60,120,160,{lv:150})+T(360,50,'3 kg, ? °C','ein1','middle')+'</g>'+AR(262,150,30,0,'var(--ok)')}},
+ {d:11,t:'Richmannsche Mischungsregel: Die Wärme, die das warme Wasser abgibt, nimmt das kalte Wasser auf. Nichts geht verloren: Q_ab = Q_auf.',
+  s:'Richmannsche Mischungsregel: Die Wärme, die das warme Wasser abgibt, nimmt das kalte Wasser auf. Nichts geht verloren: Q ab gleich Q auf.',
+  f:(k,t)=>{const a=EINQ(k/.8);return ETHM(70,50,150,80-40*a)+T(70,240,'warm','ein2','middle')+ETHM(190,50,150,20+20*a)+T(190,240,'kalt','ein2','middle')+EQAR(130,200,80,t,2)+T(370,100,ESB('Q','ab')+' = '+ESB('Q','auf'),'ein1','middle')+T(370,136,'m₁ · c · (T₁ − '+ESB('T','m')+')','ein2','middle')+T(370,166,'= m₂ · c · ('+ESB('T','m')+' − T₂)','ein2','middle')}},
+ {d:11,t:'Bild: Die Mischtemperatur liegt wie ein Schwerpunkt zwischen beiden. Die größere Masse zieht sie zu sich: 2 kg kalt gegen 1 kg warm, also näher an 20 °C.',
+  s:'Bild: Die Mischtemperatur liegt wie ein Schwerpunkt zwischen beiden. Die größere Masse zieht sie zu sich: 2 Kilogramm kalt gegen 1 Kilogramm warm, also näher an 20 Grad.',
+  f:k=>{const a=EINQ(k/.8),x0=60,x1=420,xm=x0+(x1-x0)*(1/3);return `<path d="M${x0} 160H${x1}" stroke="var(--ink)" stroke-width="4"/>`+T(x0,190,'20 °C','ein1','middle')+T(x1,190,'80 °C','ein1','middle')+BAR3(x0-25,100,50,50,'var(--flow)',8)+T(x0,132,'2 kg','ein1','middle')+BAR3(x1-20,120,40,30,'var(--red)',6)+T(x1,142,'1 kg','ein1','middle')+`<polygon points="${(x0+(xm-x0)*a).toFixed(1)},165 ${(x0+(xm-x0)*a-14).toFixed(1)},195 ${(x0+(xm-x0)*a+14).toFixed(1)},195" fill="var(--ok)"/>`+(a>.9?T(xm,224,ESB('T','m')+' = 40 °C','ein1','middle'):'')+T(240,60,'näher an der größeren Masse','ein2','middle')}},
+ {d:11,t:'Die Formel: T_m = (m₁ · c₁ · T₁ + m₂ · c₂ · T₂) / (m₁ · c₁ + m₂ · c₂). Bei gleichem Stoff kürzt sich c heraus, es bleibt ein gewichteter Mittelwert.',
+  s:'Die Formel: T m gleich m 1 c 1 T 1 plus m 2 c 2 T 2, geteilt durch m 1 c 1 plus m 2 c 2. Bei gleichem Stoff kürzt sich c heraus, es bleibt ein gewichteter Mittelwert.',
+  f:k=>{const a=EINQ(k/.6);return `<text x="240" y="90" text-anchor="middle" style="font-size:22px;font-weight:800">${ESB('T','m')} = (m₁ · c₁ · T₁ + m₂ · c₂ · T₂) / (m₁ · c₁ + m₂ · c₂)</text>`+`<g opacity="${a.toFixed(2)}">`+T(240,150,'gleicher Stoff, c kürzt sich:','ein2','middle')+`<text x="240" y="195" text-anchor="middle" style="font-size:24px;font-weight:800">${ESB('T','m')} = (m₁ · T₁ + m₂ · T₂) / (m₁ + m₂)</text>`+'</g>'+T(240,245,'gewichteter Mittelwert','ein2','middle')}},
+ {d:13,t:'Alles zusammen: T_m = (1 kg · 80 °C + 2 kg · 20 °C) / (1 kg + 2 kg) = (80 + 40) kg·°C / 3 kg = 40 °C. Probe: warm gibt 40 K ab, kalt nimmt 20 K auf, bei doppelter Masse.',
+  s:'Alles zusammen: T m gleich 1 Kilogramm mal 80 Grad plus 2 Kilogramm mal 20 Grad, geteilt durch 3 Kilogramm, gleich 40 Grad. Probe: warm gibt 40 Kelvin ab, kalt nimmt 20 Kelvin auf, bei doppelter Masse.',
+  f:k=>EFX(k,[[ESB('T','m')+' = (m₁ · T₁ + m₂ · T₂) / (m₁ + m₂)','h'],[ESB('T','m')+' = (1 kg · 80 °C + 2 kg · 20 °C) / 3 kg','m'],[ESB('T','m')+' = 120 kg·°C / 3 kg = 40 °C','r'],['Probe: 1 kg · 40 K = 2 kg · 20 K ✓','m']],['Temperaturdifferenzen in K oder °C: gleich groß'])},
+ {d:9,t:'Merke: Abgegebene Wärme = aufgenommene Wärme. T_m ist der mit m · c gewichtete Mittelwert.',
+  s:'Merke: Abgegebene Wärme gleich aufgenommene Wärme. T m ist der mit m c gewichtete Mittelwert.',
+  f:(k,t)=>EMRK(k,t,ETHM(60,60,140,80,0)+ETHM(120,60,140,20,0)+AR(140,130,30,0,'var(--ok)')+ETHM(200,60,140,40,0)+T(130,232,'80 °C + 20 °C → 40 °C','ein2','middle'),ESB('Q','ab')+' = '+ESB('Q','auf'),ESB('T','m')+' = Σ m·c·T / Σ m·c')}
+],
+'Gasgesetze':[
+ {d:11,t:'Eine Luftpumpe mit zugehaltenem Ausgang: Drückt man den Kolben auf die Hälfte, braucht es doppelt so viel Kraft. Der Druck hat sich verdoppelt.',
+  s:'Eine Luftpumpe mit zugehaltenem Ausgang: Drückt man den Kolben auf die Hälfte, braucht es doppelt so viel Kraft. Der Druck hat sich verdoppelt.',
+  f:(k,t)=>{const a=EINQ(k/.8),pos=.9-.45*a;return EZYL(40,90,260,90,pos)+EGAS(40,90,260*pos,90,12,t,1+a)+AR(300+40+20+60,135,-60,0,'var(--red)')+T(420,120,'F','ein1','middle')+T(170,230,'V = 2 L → 1 L','ein1','middle')+T(170,258,'p = 1 bar → 2 bar','ein1','middle')}},
+ {d:11,t:'Boyle-Mariotte: Bei gleicher Temperatur ist p · V konstant. Halbes Volumen, doppelter Druck. Die Teilchen stoßen auf halber Fläche doppelt so oft an.',
+  s:'Boyle Mariotte: Bei gleicher Temperatur ist p mal V konstant. Halbes Volumen, doppelter Druck. Die Teilchen stoßen auf halber Fläche doppelt so oft an.',
+  f:k=>{const a=EINQ(k/.8),x0=60,y0=220,W=240,H=160;let d='';for(let i=1;i<=40;i++){const x=.25+.75*i/40*a;d+=(d?'L':'M')+(x0+W*x).toFixed(1)+' '+(y0-H*.25/x).toFixed(1)}return EAX(x0,y0,W,H,'V','p')+`<path d="${d}" fill="none" stroke="var(--red)" stroke-width="3"/>`+T(400,90,'p · V = konst.','ein1','middle')+T(400,124,'T gleich','ein2','middle')+T(400,160,'p₁ · V₁ = p₂ · V₂','ein1','middle')}},
+ {d:11,t:'Erwärmt man das Gas bei festem Volumen, steigt der Druck: Die Teilchen werden schneller. Dabei zählt die absolute Temperatur in Kelvin: p / T = konstant.',
+  s:'Erwärmt man das Gas bei festem Volumen, steigt der Druck: Die Teilchen werden schneller. Dabei zählt die absolute Temperatur in Kelvin: p durch T gleich konstant.',
+  f:(k,t)=>{const a=EINQ(k/.8);return EZYL(40,70,180,100,.95,{})+EGAS(40,70,170,100,12,t,1+2*a)+EPLT(50,200,160,1,t)+ETHM(290,60,120,20+40*a)+T(400,110,'p / T = konst.','ein1','middle')+T(400,146,'T in Kelvin!','ein1','middle')+T(400,180,'20 °C = 293 K','ein2','middle')+T(400,206,'60 °C = 333 K','ein2','middle')}},
+ {d:11,t:'Alles in einer Gleichung: p₁ · V₁ / T₁ = p₂ · V₂ / T₂. Damit rechnet man jeden Zustand in jeden anderen um. Temperaturen immer in Kelvin: T = ϑ + 273.',
+  s:'Alles in einer Gleichung: p 1 V 1 durch T 1 gleich p 2 V 2 durch T 2. Damit rechnet man jeden Zustand in jeden anderen um. Temperaturen immer in Kelvin: T gleich Theta plus 273.',
+  f:k=>{const a=EINQ(k/.6);return `<text x="240" y="80" text-anchor="middle" style="font-size:26px;font-weight:800">p₁ · V₁ / T₁ = p₂ · V₂ / T₂</text>`+`<g opacity="${a.toFixed(2)}">`+T(240,130,'T gleich: p₁ · V₁ = p₂ · V₂','ein2','middle')+T(240,160,'V gleich: p₁ / T₁ = p₂ / T₂','ein2','middle')+T(240,190,'p gleich: V₁ / T₁ = V₂ / T₂','ein2','middle')+'</g>'+T(240,240,'T in K = ϑ in °C + 273','ein1','middle')}},
+ {d:13,t:'Alles zusammen: 2 L Luft bei 1 bar und 20 °C werden auf 1 L zusammengedrückt: p₂ = p₁ · V₁ / V₂ = 1 bar · 2 L / 1 L = 2 bar. Erwärmt auf 60 °C: p₂ = 2 bar · 333 K / 293 K = 2,27 bar.',
+  s:'Alles zusammen: 2 Liter Luft bei 1 bar und 20 Grad werden auf 1 Liter zusammengedrückt: p 2 gleich 1 bar mal 2 Liter durch 1 Liter gleich 2 bar. Erwärmt auf 60 Grad: p 2 gleich 2 bar mal 333 Kelvin durch 293 Kelvin gleich 2,27 bar.',
+  f:k=>EFX(k,[['T gleich: p₂ = p₁ · V₁ / V₂','h'],['p₂ = 1 bar · 2 L / 1 L = 2 bar','r'],['dann 60 °C: p₃ = p₂ · T₃ / T₂','h'],['p₃ = 2 bar · 333 K / 293 K = 2,27 bar','r']],['Absolutdruck: 1 bar Luft, nicht 0 bar Überdruck'])},
+ {d:9,t:'Merke: p · V / T = konstant, T in Kelvin. Zusammendrücken erhöht den Druck, Erwärmen auch.',
+  s:'Merke: p V durch T gleich konstant, T in Kelvin. Zusammendrücken erhöht den Druck, Erwärmen auch.',
+  f:(k,t)=>EMRK(k,t,EZYL(30,90,150,80,.5)+EGAS(30,90,75,80,8,t,1.5),'p₁·V₁/T₁ = p₂·V₂/T₂','T = ϑ + 273 K')}
+],
+'Gasdichte (Normzustand → Betrieb)':[
+ {d:11,t:'Im Datenblatt steht die Dichte von Luft für den Normzustand: 1,293 kg/m³ bei 0 °C und 1013 mbar. Im Betrieb herrschen aber 15 °C und 1050 mbar. Wie dicht ist die Luft dann?',
+  s:'Im Datenblatt steht die Dichte von Luft für den Normzustand: 1,293 Kilogramm pro Kubikmeter bei 0 Grad und 1013 Millibar. Im Betrieb herrschen aber 15 Grad und 1050 Millibar. Wie dicht ist die Luft dann?',
+  f:(k,t)=>{const a=EINQ(k/.8);return `<rect x="40" y="70" width="150" height="150" rx="8" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`+EGAS(40,70,150,150,14,t,1)+T(115,50,'Normzustand','ein1','middle')+T(115,245,'0 °C, 1013 mbar','ein2','middle')+`<rect x="290" y="70" width="150" height="150" rx="8" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`+EGAS(290,70,150,150,14,t,1.3)+T(365,50,'Betrieb','ein1','middle')+T(365,245,'15 °C, 1050 mbar','ein2','middle')+T(240,150,'ρ = ?','ein1','middle')}},
+ {d:11,t:'Mehr Druck presst dieselbe Masse in weniger Raum: Die Dichte steigt proportional zum Druck. ρ ~ p.',
+  s:'Mehr Druck presst dieselbe Masse in weniger Raum: Die Dichte steigt proportional zum Druck. Rho proportional p.',
+  f:(k,t)=>{const a=EINQ(k/.8),pos=.95-.45*a;return EZYL(40,80,240,100,pos)+EGAS(40,80,240*pos,100,14,t,1)+AR(380,130,-60*a,0,'var(--red)')+T(380,116,'p','ein1','middle')+T(240,230,'gleiche Masse, weniger Volumen','ein2','middle')+T(240,258,'ρ = m / V ~ p','ein1','middle')}},
+ {d:11,t:'Wärme dehnt das Gas aus: Bei gleichem Druck wird es dünner. Die Dichte sinkt mit der absoluten Temperatur: ρ ~ 1 / T, in Kelvin.',
+  s:'Wärme dehnt das Gas aus: Bei gleichem Druck wird es dünner. Die Dichte sinkt mit der absoluten Temperatur: Rho proportional 1 durch T, in Kelvin.',
+  f:(k,t)=>{const a=EINQ(k/.8),pos=.5+.4*a;return EZYL(40,70,240,100,pos)+EGAS(40,70,240*pos,100,12,t,1+a)+EPLT(50,200,220,1,t)+ETHM(360,50,130,0+50*a)+T(240,250,'ρ ~ 1 / T','ein1','middle')+T(400,220,'T in K','ein2','middle')}},
+ {d:11,t:'Beides zusammen: ρ₂ = ρ₁ · (p₂ / p₁) · (T₁ / T₂). Druck im Zähler, Temperatur im Nenner. Normzustand: 273 K und 1013 mbar.',
+  s:'Beides zusammen: Rho 2 gleich Rho 1 mal p 2 durch p 1 mal T 1 durch T 2. Druck im Zähler, Temperatur im Nenner. Normzustand: 273 Kelvin und 1013 Millibar.',
+  f:k=>{const a=EINQ(k/.6);return `<text x="240" y="90" text-anchor="middle" style="font-size:26px;font-weight:800">ρ₂ = ρ₁ · (p₂ / p₁) · (T₁ / T₂)</text>`+`<g opacity="${a.toFixed(2)}">`+T(240,140,'mehr Druck → dichter','ein2','middle')+T(240,170,'wärmer → dünner','ein2','middle')+'</g>'+T(240,225,'Norm: 273,15 K, 1013 mbar','ein1','middle')+T(240,255,'ρ₁ Luft = 1,293 kg/m³','ein2','middle')}},
+ {d:13,t:'Alles zusammen: ρ₂ = 1,293 kg/m³ · (1050 mbar / 1013 mbar) · (273 K / 288 K) = 1,293 · 1,037 · 0,948 kg/m³ = 1,27 kg/m³. Etwas dünner als im Normzustand, die Wärme überwiegt.',
+  s:'Alles zusammen: Rho 2 gleich 1,293 mal 1050 durch 1013 mal 273 durch 288 Kilogramm pro Kubikmeter gleich 1,27 Kilogramm pro Kubikmeter. Etwas dünner als im Normzustand, die Wärme überwiegt.',
+  f:k=>EFX(k,[['T₂ = 15 °C + 273 K = 288 K','m'],['ρ₂ = ρ₁ · (p₂ / p₁) · (T₁ / T₂)','h'],['ρ₂ = 1,293 kg/m³ · (1050 / 1013) · (273 / 288)','m'],['ρ₂ = 1,293 · 1,037 · 0,948 kg/m³','m'],['ρ₂ = 1,27 kg/m³','r']],['Verhältnisse: Einheiten kürzen sich heraus'])},
+ {d:9,t:'Merke: ρ₂ = ρ₁ · p₂/p₁ · T₁/T₂. Temperaturen in Kelvin, Druck absolut.',
+  s:'Merke: Rho 2 gleich Rho 1 mal p 2 durch p 1 mal T 1 durch T 2. Temperaturen in Kelvin, Druck absolut.',
+  f:(k,t)=>EMRK(k,t,`<rect x="40" y="80" width="80" height="120" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/>`+EGAS(40,80,80,120,10,t,1)+`<rect x="140" y="80" width="80" height="120" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/>`+EGAS(140,80,80,120,6,t,1.3),'ρ₂ = ρ₁ · p₂/p₁ · T₁/T₂','T in Kelvin')}
+],
+'Hydraulische Leistung & Volumenstrom':[
+ {d:11,t:'Eine Hebebühne: Die Pumpe schiebt 2 Liter Öl je Minute mit 60 bar in den Zylinder. Wie viel Kraft hebt er, wie schnell, und welche Leistung steckt dahinter?',
+  s:'Eine Hebebühne: Die Pumpe schiebt 2 Liter Öl je Minute mit 60 bar in den Zylinder. Wie viel Kraft hebt er, wie schnell, und welche Leistung steckt dahinter?',
+  f:k=>{const a=EINQ(k/.9),y=200-60*a;return `<rect class="fluid" x="200" y="${y+12}" width="80" height="${240-y-12}"/><path class="wall" d="M200 100V240H280V100"/><rect class="pst" x="203" y="${y}" width="74" height="12"/>`+BAR3(180,y-40,120,40,'var(--wire)',10)+T(240,y-14,'Last','ein2','middle')+`<path d="M60 230H200" stroke="var(--ink)" stroke-width="3"/>`+`<circle cx="60" cy="230" r="22" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>`+T(60,236,'P','ein1','middle')+T(60,180,'Pumpe','ein2','middle')+T(140,256,'60 bar, 2 l/min','ein2','middle')+T(390,120,'F = ?','ein1','middle')+T(390,152,'v = ?','ein1','middle')+T(390,184,'P = ?','ein1','middle')}},
+ {d:11,t:'Der Volumenstrom Q ist das Volumen je Zeit, hier 2 l/min. Durch den Zylinderquerschnitt A ergibt sich die Hubgeschwindigkeit: v = Q / A.',
+  s:'Der Volumenstrom Q ist das Volumen je Zeit, hier 2 Liter pro Minute. Durch den Zylinderquerschnitt A ergibt sich die Hubgeschwindigkeit: v gleich Q durch A.',
+  f:(k,t)=>{const a=EINQ(k/.8);return `<path d="M40 120H200" stroke="var(--flow)" stroke-width="16" opacity=".5"/>`+EDOT(t,[[200,120,40,120,2]])+T(120,100,'Q = 2 l/min','ein1','middle')+`<rect class="fluid" x="200" y="80" width="${(60+60*a).toFixed(0)}" height="80"/><path class="wall" d="M200 80H340M200 160H340"/><rect class="pst" x="${(260+60*a).toFixed(0)}" y="82" width="12" height="76"/>`+AR(272+60*a+10,120,40,0,'var(--ok)')+T(362,106,'v','ein1')+T(240,220,'Q = V / t = 2 l/min = 3,33 · 10⁻⁵ m³/s','ein2','middle')+T(240,252,'v = Q / A','ein1','middle')}},
+ {d:11,t:'Die hydraulische Leistung ist Volumenstrom mal Druck: P_hyd = Q · p. Praktisch: 1 l/min bei 1 bar sind 1,67 W. 2 l/min bei 60 bar sind also 200 W.',
+  s:'Die hydraulische Leistung ist Volumenstrom mal Druck: P hyd gleich Q mal p. Praktisch: 1 Liter pro Minute bei 1 bar sind 1,67 Watt. 2 Liter pro Minute bei 60 bar sind also 200 Watt.',
+  f:k=>{const a=EINQ(k/.6);return `<text x="240" y="80" text-anchor="middle" style="font-size:26px;font-weight:800">${ESB('P','hyd')} = Q · p</text>`+`<g opacity="${a.toFixed(2)}">`+T(240,130,'Q = 2 l/min = 3,33 · 10⁻⁵ m³/s','ein2','middle')+T(240,160,'p = 60 bar = 6 · 10⁶ Pa','ein2','middle')+T(240,200,ESB('P','hyd')+' = 3,33 · 10⁻⁵ m³/s · 6 · 10⁶ N/m² = 200 W','ein1','middle')+'</g>'+T(240,245,'Faustregel: 1 l/min · 1 bar = 1,67 W','ein2','middle')}},
+ {d:11,t:'Die Kraft am Kolben ist Druck mal Fläche: F = p · A. Reibung kostet etwas, η = 96 %. Probe: Kraft mal Geschwindigkeit muss wieder die Leistung ergeben, P = F · v.',
+  s:'Die Kraft am Kolben ist Druck mal Fläche: F gleich p mal A. Reibung kostet etwas, Eta gleich 96 Prozent. Probe: Kraft mal Geschwindigkeit muss wieder die Leistung ergeben, P gleich F mal v.',
+  f:k=>{const a=EINQ(k/.8);return `<rect class="fluid" x="60" y="80" width="100" height="80"/><path class="wall" d="M60 80H220M60 160H220"/><rect class="pst" x="160" y="82" width="12" height="76"/><path d="M172 120H230" stroke="var(--ink)" stroke-width="6"/>`+AR(230,120,70*a,0,'var(--red)')+T(260,100,'F','ein1')+T(110,60,'p = 60 bar','ein2','middle')+T(110,185,'A = 12,6 cm²','ein2','middle')+T(360,90,'F = p · A · η','ein1','middle')+T(360,124,'= 7,2 kN','ein1','middle')+T(360,170,'Probe: P = F · v','ein2','middle')+T(360,200,'7238 N · 0,0265 m/s = 192 W','ein2','middle')+T(360,230,'= 200 W · 0,96 ✓','ein2','middle')}},
+ {d:13,t:'Alles zusammen: A = π · (0,04 m)² / 4 = 1,26 · 10⁻³ m². F = 6 · 10⁶ Pa · 1,26 · 10⁻³ m² · 0,96 = 7,2 kN. v = Q / A = 3,33 · 10⁻⁵ m³/s / 1,26 · 10⁻³ m² = 0,0265 m/s. P = F · v = 192 W.',
+  s:'Alles zusammen: A gleich Pi mal 0,04 Meter zum Quadrat durch 4 gleich 1,26 mal 10 hoch minus 3 Quadratmeter. F gleich 7,2 Kilonewton. v gleich Q durch A gleich 0,0265 Meter pro Sekunde. P gleich F mal v gleich 192 Watt.',
+  f:k=>EFX(k,[['A = π · (0,04 m)² / 4 = 1,26 · 10⁻³ m²','m'],['F = p · A · η = 7238 N ≈ 7,2 kN','m'],['v = Q / A = 0,0265 m/s = 2,65 cm/s','m'],['P = F · v = 192 W','r']],['F = 6 · 10⁶ N/m² · 1,26 · 10⁻³ m² · 0,96'])},
+ {d:9,t:'Merke: P_hyd = Q · p, F = p · A, v = Q / A. Einheiten erst in m³/s und Pa umrechnen.',
+  s:'Merke: P hyd gleich Q mal p, F gleich p mal A, v gleich Q durch A. Einheiten erst in Kubikmeter pro Sekunde und Pascal umrechnen.',
+  f:(k,t)=>EMRK(k,t,`<rect class="fluid" x="30" y="100" width="90" height="70"/><path class="wall" d="M30 100H180M30 170H180"/><rect class="pst" x="120" y="102" width="12" height="66"/><path d="M132 135H180" stroke="var(--ink)" stroke-width="5"/>`+AR(180,135,40,0,'var(--red)')+T(230,141,'F','ein1'),ESB('P','hyd')+' = Q · p','F = p · A, v = Q / A')}
+],
+'Pneumatik: Luftverbrauch':[
+ {d:11,t:'Ein Pneumatikzylinder taktet 60-mal pro Minute. Jeder Hub frisst Druckluft, und der Kompressor muss das liefern. Wie viel Luft ist das?',
+  s:'Ein Pneumatikzylinder taktet 60 mal pro Minute. Jeder Hub frisst Druckluft, und der Kompressor muss das liefern. Wie viel Luft ist das?',
+  f:(k,t)=>{const p=.5+.4*Math.sin(t*3);return EZYL(60,90,200,70,p,{fill:'var(--card)'})+EGAS(60,90,200*p,70,8,t,2)+T(160,70,'Ø 35 mm, Hub 185 mm','ein2','middle')+T(160,200,'60 Hübe je Minute','ein1','middle')+`<rect x="330" y="90" width="120" height="70" rx="8" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>`+T(390,120,'Kompressor','ein2','middle')+T(390,146,'6 bar','ein1','middle')+`<path d="M330 125H272" stroke="var(--line)" stroke-width="3"/>`+T(385,230,'Luft je Minute?','ein1','middle')}},
+ {d:11,t:'Je Hub füllt sich der Zylinder einmal: Hubvolumen = Fläche mal Hub. A = π · d² / 4 = 9,6 cm², mal 18,5 cm sind 178 cm³, also 0,18 Liter.',
+  s:'Je Hub füllt sich der Zylinder einmal: Hubvolumen gleich Fläche mal Hub. A gleich Pi d Quadrat durch 4 gleich 9,6 Quadratzentimeter, mal 18,5 Zentimeter sind 178 Kubikzentimeter, also 0,18 Liter.',
+  f:k=>{const a=EINQ(k/.8);return EZYL(60,90,200,70,.95)+`<rect x="63" y="93" width="${(187*a).toFixed(0)}" height="64" fill="var(--amber)" opacity=".5"/>`+`<path d="M63 180H250M63 176v8M250 176v8" stroke="var(--flow)" stroke-width="2"/>`+T(156,204,'s = 185 mm','ein1','middle')+`<ellipse cx="300" cy="125" rx="12" ry="35" fill="var(--amber)" opacity=".5" stroke="var(--ink)" stroke-width="1.5"/>`+T(330,120,'A = π · d² / 4','ein2')+T(330,146,'= 9,6 cm²','ein1')+T(240,250,ESB('V','Hub')+' = A · s = 9,6 cm² · 18,5 cm = 178 cm³','ein1','middle')}},
+ {d:11,t:'Aber: Im Zylinder steht die Luft unter 6 bar Überdruck, also 7 bar absolut. Angesaugt hat der Kompressor dafür das Siebenfache an Normluft, denn p · V bleibt konstant.',
+  s:'Aber: Im Zylinder steht die Luft unter 6 bar Überdruck, also 7 bar absolut. Angesaugt hat der Kompressor dafür das Siebenfache an Normluft, denn p mal V bleibt konstant.',
+  f:(k,t)=>{const a=EINQ(k/.8);return `<rect x="30" y="60" width="${(40+180*a).toFixed(0)}" height="100" rx="6" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`+EGAS(30,60,40+180*a,100,14,t,1)+T(30+(40+180*a)/2,185,a>.5?'1 bar: 7 · V':'7 bar: V','ein1','middle')+T(468,90,'(6 + 1) bar / 1 bar = 7','ein1','end')+T(468,124,'p · V = konst.','ein2','end')+T(468,170,'0,178 L · 7','ein2','end')+T(468,204,'= 1,25 L Normluft je Hub','ein1','end')}},
+ {d:11,t:'Der Luftverbrauch ist also Q = k · A · s · n · (p_e + p_amb) / p_amb. k = 1 für einfach wirkend, k = 2 für doppelt wirkend, weil dann beide Seiten gefüllt werden.',
+  s:'Der Luftverbrauch ist also Q gleich k mal A mal s mal n mal p e plus p amb durch p amb. k gleich 1 für einfach wirkend, k gleich 2 für doppelt wirkend, weil dann beide Seiten gefüllt werden.',
+  f:k=>{const a=EINQ(k/.6);return `<text x="240" y="80" text-anchor="middle" style="font-size:24px;font-weight:800">Q = k · A · s · n · (${ESB('p','e')} + ${ESB('p','amb')}) / ${ESB('p','amb')}</text>`+`<g opacity="${a.toFixed(2)}">`+T(240,130,'A · s: Hubvolumen · n: Hübe je Minute','ein2','middle')+T(240,160,'('+ESB('p','e')+' + '+ESB('p','amb')+') / '+ESB('p','amb')+': Verdichtung','ein2','middle')+T(240,205,'k = 1 einfach wirkend','ein1','middle')+T(240,235,'k = 2 doppelt wirkend','ein1','middle')+'</g>'}},
+ {d:13,t:'Alles zusammen: Q = 1 · 9,6 cm² · 18,5 cm · 60 1/min · 7 = 74 700 cm³/min ≈ 75 L/min Normluft. Das muss der Kompressor für diesen einen Zylinder liefern.',
+  s:'Alles zusammen: Q gleich 1 mal 9,6 Quadratzentimeter mal 18,5 Zentimeter mal 60 pro Minute mal 7 gleich 74 700 Kubikzentimeter pro Minute, etwa 75 Liter pro Minute Normluft.',
+  f:k=>EFX(k,[['A = π · (3,5 cm)² / 4 = 9,6 cm²','m'],[ESB('V','Hub')+' = 9,6 cm² · 18,5 cm = 178 cm³','m'],['Q = 1 · 178 cm³ · 60 1/min · (6 + 1) / 1','m'],['Q = 74 700 cm³/min ≈ 75 L/min','r']],['doppelt wirkend (k = 2): rund 150 L/min'])},
+ {d:9,t:'Merke: Luftverbrauch = Hubvolumen · Hübe · Verdichtungsverhältnis. Absolutdruck: Überdruck + 1 bar.',
+  s:'Merke: Luftverbrauch gleich Hubvolumen mal Hübe mal Verdichtungsverhältnis. Absolutdruck: Überdruck plus 1 bar.',
+  f:(k,t)=>EMRK(k,t,EZYL(30,100,150,60,.6)+EGAS(30,100,90,60,6,t,2),'Q = k·A·s·n·('+ESB('p','e')+'+1)/1','Normluft, in L/min')}
+]});
+
 let einP=null;
 function einShow(n){const w=$('#ein'),S=EIN[n];if(einP)einP.stop();einP=null;if(!w)return;w.innerHTML='';w.hidden=!S;if(!S)return;
  const tot=S.reduce((a,x)=>a+x.d,0),mm=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
