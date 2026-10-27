@@ -8738,6 +8738,161 @@ const EIN={
    if(k>.4)h+=T(345,206,'Selbst ausprobieren','ein1','middle')+AR(345,218,0,36,'var(--acc)');
    return h}}
 ]};
+/* Formelszene: Zeilen nacheinander einblenden (h = Formel, m = eingesetzt, r = Ergebnis), Legende darunter */
+const EFX=(k,L,F=[])=>L.map(([x,c],i)=>{const o=Math.min(1,Math.max(0,(k-i*.2)/.15));return`<text x="30" y="${50+i*40}" opacity="${o.toFixed(2)}" style="font-size:${c=='m'?19:24}px;font-weight:700${c=='r'?';fill:var(--ok)':''}">${x}</text>`}).join('')+
+ F.map((x,i)=>`<text class="ein2" x="30" y="${50+L.length*40+i*24}" opacity="${Math.min(1,Math.max(0,(k-.15-i*.08)/.15)).toFixed(2)}">${x}</text>`).join('');
+/* Merksatz-Szene: Bild links, Formelkarte rechts (pulsiert), danach Hinweis auf die Simulation */
+const EMRK=(k,t,bild,f1,f2)=>{const p=1+.04*Math.sin(t*4);return bild+`<g transform="translate(345 110) scale(${p.toFixed(3)})"><rect x="-120" y="-38" width="240" height="76" rx="12" fill="var(--card)" stroke="var(--amber)" stroke-width="3"/><text x="0" y="-6" text-anchor="middle" style="font-size:22px;font-weight:800">${f1}</text><text class="ein2" x="0" y="22" text-anchor="middle">${f2}</text></g>`+
+ (k>.4?T(345,196,'Selbst ausprobieren','ein1','middle')+AR(345,208,0,36,'var(--acc)'):'')};
+/* tiefgestellter Index in SVG-Text */
+const ESB=(a,b)=>`${a}<tspan baseline-shift="sub" style="font-size:70%">${b}</tspan>`;
+/* Hydraulische Presse: kleiner Kolben links (Oberkante y1), großer rechts (y2) */
+const EHYD=(y1,y2,o={})=>{let h=`<rect class="fluid" x="100" y="${y1+12}" width="40" height="${240-y1-12}"/><rect class="fluid" x="255" y="${y2+12}" width="150" height="${240-y2-12}"/><rect class="fluid" x="140" y="215" width="115" height="25"/><path class="wall" d="M100 70V240H405V70M140 70V215H255V70"/>`+
+ `<rect class="pst" x="103" y="${y1}" width="34" height="12"/><line x1="120" x2="120" y1="${y1}" y2="${y1-34}" stroke="var(--ink)" stroke-width="5"/><rect class="pst" x="258" y="${y2}" width="144" height="12"/>`+BAR3(285,y2-40,84,40,'var(--wire)',10)+T(327,y2-14,'Last','ein2','middle');
+ if(o.F1)h+=AR(120,y1-34-o.F1-10,0,o.F1+10,'var(--flow)')+T(132,y1-40-o.F1/2,'F₁','ein1');
+ if(o.F2)h+=AR(330,236,0,-Math.min(o.F2,236-y2-16),'var(--flow)')+T(345,226,'F₂','ein1');
+ return h};
+/* Stromkreis: Batterie links, Widerstand oben, Strommesser rechts; Ladungen laufen mit der Geschwindigkeit ~ I */
+const ECIR=(t,U,R,I)=>{const P=[[40,50],[260,50],[260,220],[40,220]],len=880;
+ let h=`<path d="M40 50H150M210 50H260V220H40V150M40 130V50" class="w"/>`;
+ for(let i=0;i<14;i++){let d=((i/14)*len+t*60*I)%len;let x,y;if(d<220){x=40+d;y=50}else if(d<390){x=260;y=50+d-220}else if(d<610){x=260-(d-390);y=220}else{x=40;y=220-(d-610)}
+  if(!(x==40&&y>128&&y<152))h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="var(--amber)" stroke="var(--ink)" stroke-width="1"/>`}
+ h+=`<rect x="150" y="38" width="60" height="24" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>`+T(180,28,'R','ein1','middle');
+ h+=`<path d="M22 130H58M30 150H50" stroke="var(--ink)" stroke-width="4"/>`+T(62,128,'+','ein2')+T(68,150,'U','ein1');
+ h+=`<circle cx="260" cy="135" r="20" fill="var(--card)" stroke="var(--ink)" stroke-width="2.5"/>`+T(260,142,'A','ein1','middle');
+ h+=T(300,90,'U = '+nf(U,3)+' V','ein1')+T(300,135,'R = '+nf(R,3)+' Ω','ein1')+`<text x="300" y="185" style="font-size:24px;font-weight:800;fill:var(--flow)">I = ${nf(I,3)} A</text>`;return h};
+/* Hebel: Drehpunkt bei (240,150), 80 px je m, Neigung dg in Grad */
+const EHEB=(dg,l1,l2,o={})=>{const px=240,py=150,sc=80,r=-dg*PI/180,co=Math.cos(r),si=Math.sin(r),A=[px-l1*sc*co,py-l1*sc*si],B=[px+l2*sc*co,py+l2*sc*si];
+ let h=`<polygon points="${px},${py} ${px-30},${py+60} ${px+30},${py+60}" fill="var(--mute)" stroke="var(--ink)" stroke-width="2.5"/><line x1="${px-45}" x2="${px+45}" y1="${py+60}" y2="${py+60}" stroke="var(--ink)" stroke-width="5"/>`+
+  `<line x1="${(px-(l1*sc+12)*co).toFixed(1)}" y1="${(py-(l1*sc+12)*si).toFixed(1)}" x2="${(px+(l2*sc+12)*co).toFixed(1)}" y2="${(py+(l2*sc+12)*si).toFixed(1)}" stroke="var(--ink)" stroke-width="10" stroke-linecap="round"/><circle cx="${px}" cy="${py}" r="8" fill="var(--amber)" stroke="var(--ink)" stroke-width="2"/>`;
+ const box=(p,F,n)=>{const q=26+12*Math.cbrt(F/100);return`<line x1="${p[0].toFixed(1)}" x2="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" y2="${(p[1]+12).toFixed(1)}" stroke="var(--ink)" stroke-width="2"/><rect class="box" x="${(p[0]-q/2).toFixed(1)}" y="${(p[1]+12).toFixed(1)}" width="${q.toFixed(1)}" height="${q.toFixed(1)}" rx="3"/>`+T(p[0].toFixed(1),(p[1]+18+q/2).toFixed(1),n,'ein1','middle')+T(p[0].toFixed(1),(p[1]+34+q).toFixed(1),Math.round(F)+' N','ein2','middle')};
+ if(o.F1)h+=box(A,o.F1,'F₁');if(o.F2)h+=box(B,o.F2,'F₂');
+ if(o.P1)h+=AR(A[0],A[1]-12-o.P1L,0,o.P1L,'var(--red)')+T(A[0]+8,A[1]-18-o.P1L/2,'F₁ = '+Math.round(o.P1)+' N','ein1');
+ if(o.St)h+=BAR3(B[0]-30,B[1]-46,60,40,'#8a96a1',10)+T(B[0]+4,B[1]-64,o.St,'ein2','middle');
+ if(o.l1)h+=`<path d="M${A[0].toFixed(1)} ${py+82}v-8M${A[0].toFixed(1)} ${py+78}H${px}M${px} ${py+82}v-8" stroke="var(--red)" stroke-width="2" fill="none"/>`+T(((A[0]+px)/2).toFixed(1),py+102,'l₁ = '+nf(l1,2)+' m','ein1','middle');
+ return h};
+/* Universalindikator: Farbe zum pH-Wert */
+const EPHC=pH=>{const S=[[0,[215,38,61]],[3,[244,96,54]],[5,[242,193,78]],[7,[59,178,115]],[9,[46,134,171]],[11,[61,52,139]],[14,[106,27,154]]];pH=Math.min(14,Math.max(0,pH));let i=0;while(i<S.length-2&&pH>S[i+1][0])i++;const [a,ca]=S[i],[b,cb]=S[i+1],f=(pH-a)/(b-a);return'rgb('+ca.map((v,j)=>Math.round(v+(cb[j]-v)*f)).join(',')+')'};
+const EPHS=(x,y,w,ptr)=>{let g='';for(let i=0;i<=14;i++)g+=`<stop offset="${(i/14).toFixed(3)}" stop-color="${EPHC(i)}"/>`;let h=`<defs><linearGradient id="eph">${g}</linearGradient></defs><rect x="${x}" y="${y}" width="${w}" height="26" rx="6" fill="url(#eph)" stroke="var(--ink)" stroke-width="1.5"/>`;
+ for(let i=0;i<=14;i+=7)h+=T(x+w*i/14,y+48,String(i),'ein2','middle');if(ptr!=null){const px=x+w*ptr/14;h+=`<polygon points="${px.toFixed(1)},${y-2} ${(px-9).toFixed(1)},${y-18} ${(px+9).toFixed(1)},${y-18}" fill="var(--ink)"/>`}return h};
+const EMOL=(x,y,r,c,l,o=1)=>`<g opacity="${o}">`+BALL(x,y,r,c)+T(x,y+6,l,'ein1','middle')+'</g>';
+Object.assign(EIN,{
+'Hydraulik':[
+ {d:11,t:'Mit einem Wagenheber hebt eine Hand ein ganzes Auto. Das Geheimnis ist das eingeschlossene Öl.',
+  s:'Mit einem Wagenheber hebt eine Hand ein ganzes Auto. Das Geheimnis ist das eingeschlossene Öl.',
+  f:k=>{const a=EINQ(k/.8);return EHYD(95+60*a,150-6*a,{F1:30})+T(240,28,'kleine Hand, schwere Last','ein2','middle')}},
+ {d:11,t:'Drückst Du mit F₁ auf die kleine Fläche A₁, entsteht der Druck p = F₁ / A₁. Er ist im ganzen Öl überall gleich.',
+  s:'Drückst Du mit F eins auf die kleine Fläche A eins, entsteht der Druck p gleich F eins durch A eins. Er ist im ganzen Öl überall gleich.',
+  f:(k,t)=>{let h=EHYD(120,145,{F1:30});const P=[[120,180],[120,228],[180,228],[230,228],[290,200],[370,200],[330,170]];
+   P.forEach(([x,y],i)=>{const o=Math.min(1,Math.max(0,(k-.1-i*.08)/.15));h+=`<g opacity="${o.toFixed(2)}">`+T(x,y+6,'p','ein1','middle')+'</g>'});
+   return h+T(240,28,'p = F₁ / A₁, überall gleich','ein1','middle')}},
+ {d:11,t:'Der gleiche Druck drückt von unten auf die große Fläche A₂. Ist A₂ 50-mal so groß, ist auch F₂ 50-mal so groß.',
+  s:'Der gleiche Druck drückt von unten auf die große Fläche A zwei. Ist A zwei fünfzig mal so groß, ist auch F zwei fünfzig mal so groß.',
+  f:k=>{const a=EINQ(k/.7);return EHYD(120,145,{F1:30,F2:10+70*a})+T(240,28,'F₂ = 50 · F₁','ein1','middle')}},
+ {d:11,t:'Dafür bezahlst Du mit dem Weg: Der kleine Kolben muss 50-mal so weit gedrückt werden, wie der große steigt.',
+  s:'Dafür bezahlst Du mit dem Weg. Der kleine Kolben muss fünfzig mal so weit gedrückt werden, wie der große steigt.',
+  f:k=>{const a=EINQ(k/.8),y1=95+80*a,y2=150-1.6*a;
+   return EHYD(y1,y2)+`<path d="M60 95H100M60 ${y1.toFixed(1)}H100" stroke="var(--red)" stroke-width="2" stroke-dasharray="4 3"/><path d="M66 95V${y1.toFixed(1)}" stroke="var(--red)" stroke-width="2"/>`+T(14,(95+y1)/2+6,'s₁','ein1')+
+    (a>.5?`<path d="M420 150H440M420 ${y2.toFixed(1)}H440" stroke="var(--red)" stroke-width="2"/>`+T(446,150,'s₂','ein1'):'')+T(240,28,'s₂ = s₁ / 50','ein1','middle')}},
+ {d:13,t:'Alles zusammen: p = F₁ / A₁ = F₂ / A₂. Beispiel: 200 N auf 2 cm² erzeugen 100 N/cm², auf 100 cm² werden daraus 10 kN.',
+  s:'Alles zusammen: p gleich F eins durch A eins gleich F zwei durch A zwei. 200 Newton auf 2 Quadratzentimeter erzeugen 100 Newton pro Quadratzentimeter. Auf 100 Quadratzentimeter werden daraus 10 Kilonewton.',
+  f:k=>EFX(k,[['p = F₁ / A₁ = F₂ / A₂','h'],['p = 200 N / 2 cm² = 100 N/cm²','m'],['F₂ = 100 N/cm² · 100 cm²','m'],['F₂ = 10 000 N = 10 kN','r']],['100 N/cm² = 10 bar'])},
+ {d:9,t:'Merke: Die Kraft wird größer, der Weg kleiner, die Arbeit bleibt (ohne Verluste) gleich. So arbeiten Wagenheber, Hebebühne und Bagger.',
+  s:'Merke: Die Kraft wird größer, der Weg kleiner, die Arbeit bleibt ohne Verluste gleich. So arbeiten Wagenheber, Hebebühne und Bagger.',
+  f:(k,t)=>EMRK(k,t,`<g transform="translate(-30 60) scale(.55)">${EHYD(120,145,{F1:30,F2:60})}</g>`,'F₁ · s₁ = F₂ · s₂','Kraft × Weg bleibt gleich')}
+],
+'Ohmsches Gesetz':[
+ {d:11,t:'Die Spannung U treibt den Strom I durch den Widerstand R, ähnlich wie Druck Wasser durch ein enges Rohr.',
+  s:'Die Spannung U treibt den Strom I durch den Widerstand R, ähnlich wie Druck Wasser durch ein enges Rohr.',
+  f:(k,t)=>ECIR(t,12,12,1)},
+ {d:11,t:'Mehr Spannung, mehr Strom: Verdoppelst Du U, verdoppelt sich auch I.',
+  s:'Mehr Spannung, mehr Strom. Verdoppelst Du U, verdoppelt sich auch I.',
+  f:(k,t)=>{const U=6+6*EINQ((k-.15)/.6);return ECIR(t,Math.round(U*2)/2,12,Math.round(U*2)/2/12)}},
+ {d:11,t:'Ein größerer Widerstand bremst: Bei gleicher Spannung fließt weniger Strom.',
+  s:'Ein größerer Widerstand bremst. Bei gleicher Spannung fließt weniger Strom.',
+  f:(k,t)=>{const R=Math.round(12+12*EINQ((k-.15)/.6));return ECIR(t,12,R,12/R)}},
+ {d:11,t:'Im I-U-Diagramm ist das eine Gerade durch den Ursprung. Je steiler die Gerade, desto kleiner ist R.',
+  s:'Im I U Diagramm ist das eine Gerade durch den Ursprung. Je steiler die Gerade, desto kleiner ist R.',
+  f:k=>{const x0=70,y0=200,W=330,H=150,X=u=>x0+u/12*W,Y=i=>y0-i/1*H,a=EINQ(k/.5),b=EINQ((k-.3)/.5);
+   let h=`<path d="M${x0} ${y0-H-14}V${y0}H${x0+W+20}" fill="none" stroke="var(--ink)" stroke-width="2"/>`+T(x0+10,y0-H-4,'I in A','ein2')+T(x0+W+20,y0+52,'U in V','ein2','end');
+   [[6,.5],[12,1]].forEach(([u,i])=>{h+=T(X(u),y0+24,String(u),'ein2','middle')+T(x0-8,Y(i)+6,nf(i),'ein2','end')});
+   h+=`<line x1="${x0}" y1="${y0}" x2="${X(12*a).toFixed(1)}" y2="${Y(a).toFixed(1)}" stroke="var(--flow)" stroke-width="4"/>`+(a>.9?T(X(12)-6,Y(1)-10,'R = 12 Ω','ein1','end'):'');
+   h+=`<line x1="${x0}" y1="${y0}" x2="${X(12*b).toFixed(1)}" y2="${Y(.5*b).toFixed(1)}" stroke="var(--red)" stroke-width="4"/>`+(b>.9?T(X(12)-6,Y(.5)+28,'R = 24 Ω','ein1','end'):'');return h}},
+ {d:13,t:'Alles zusammen: U = R · I. Umgestellt nach dem Strom: I = U / R. Beispiel: 12 V an 24 Ω ergeben 0,5 A.',
+  s:'Alles zusammen: U gleich R mal I. Umgestellt nach dem Strom: I gleich U durch R. Zwölf Volt an vierundzwanzig Ohm ergeben null Komma fünf Ampere.',
+  f:k=>EFX(k,[['U = R · I','h'],['I = U / R','h'],['I = 12 V / 24 Ω','m'],['I = 0,5 A','r']],['U: Spannung in V','R: Widerstand in Ω','I: Stromstärke in A'])},
+ {d:9,t:'Merke: Der Strom steigt mit der Spannung und sinkt mit dem Widerstand. Mit U = R · I rechnest Du jede der drei Größen aus.',
+  s:'Merke: Der Strom steigt mit der Spannung und sinkt mit dem Widerstand. Mit U gleich R mal I rechnest Du jede der drei Größen aus.',
+  f:(k,t)=>EMRK(k,t,`<polygon points="120,40 30,210 210,210" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/><line x1="66" y1="140" x2="174" y2="140" stroke="var(--ink)" stroke-width="2.5"/><line x1="120" y1="140" x2="120" y2="210" stroke="var(--ink)" stroke-width="2.5"/><text x="120" y="122" text-anchor="middle" style="font-size:30px;font-weight:800">U</text><text x="90" y="190" text-anchor="middle" style="font-size:28px;font-weight:800">R</text><text x="150" y="190" text-anchor="middle" style="font-size:28px;font-weight:800">I</text>`+T(120,250,'Formeldreieck','ein2','middle'),'U = R · I','I = U / R, R = U / I')}
+],
+'Hebel':[
+ {d:11,t:'Mit einer langen Stange hebst Du einen schweren Stein. Entscheidend ist, wo Du drückst.',
+  s:'Mit einer langen Stange hebst Du einen schweren Stein. Entscheidend ist, wo Du drückst.',
+  f:k=>{const a=EINQ((k-.2)/.6);return EHEB(-8+16*a,2,.5,{P1:150,P1L:50,St:'600 N'})}},
+ {d:11,t:'Das Drehmoment M = F · l ist Kraft mal Hebelarm. Der Hebelarm l ist der Abstand vom Drehpunkt zur Kraft.',
+  s:'Das Drehmoment M gleich F mal l ist Kraft mal Hebelarm. Der Hebelarm l ist der Abstand vom Drehpunkt zur Kraft.',
+  f:k=>{const a=EINQ(k/.5);return EHEB(0,1.5,1.5,{P1:200,P1L:40,l1:a>.05})+(k>.5?T(240,30,'M = 200 N · 1,5 m = 300 N·m','ein1','middle'):'')}},
+ {d:11,t:'Im Gleichgewicht ist das linksdrehende Moment so groß wie das rechtsdrehende: 100 N · 1,5 m = 150 N · 1 m.',
+  s:'Im Gleichgewicht ist das linksdrehende Moment so groß wie das rechtsdrehende. 100 Newton mal 1,5 Meter gleich 150 Newton mal 1 Meter.',
+  f:k=>{const F2=100+50*EINQ((k-.1)/.6),M1=150,M2=F2,dg=Math.abs(M1-M2)<1?0:15*Math.tanh(3*(M1-M2)/Math.max(M1,M2));
+   return EHEB(dg,1.5,1,{F1:100,F2})+T(20,30,'M₁ = 150 N·m','ein2')+T(460,30,'M₂ = '+Math.round(M2)+' N·m','ein2','end')+(Math.abs(M1-M2)<1?T(240,30,'Gleichgewicht','ein1','middle'):'')}},
+ {d:11,t:'Langer Hebelarm, kleine Kraft: Je weiter außen Du drückst, desto weniger Kraft brauchst Du.',
+  s:'Langer Hebelarm, kleine Kraft. Je weiter außen Du drückst, desto weniger Kraft brauchst Du.',
+  f:k=>{const l1=Math.round((.75+1.25*EINQ((k-.1)/.7))*20)/20,F=300/l1;return EHEB(0,l1,.5,{P1:F,P1L:16+F/5,St:'600 N',l1:1})+T(20,30,'M = 600 N · 0,5 m = 300 N·m','ein2')}},
+ {d:13,t:'Alles zusammen: F₁ · l₁ = F₂ · l₂. Beispiel: 100 N an 1,5 m halten 150 N an 1 m im Gleichgewicht.',
+  s:'Alles zusammen: F eins mal l eins gleich F zwei mal l zwei. 100 Newton an 1,5 Metern halten 150 Newton an einem Meter im Gleichgewicht.',
+  f:k=>EFX(k,[['F₁ · l₁ = F₂ · l₂','h'],['F₂ = F₁ · l₁ / l₂','h'],['F₂ = 100 N · 1,5 m / 1 m','m'],['F₂ = 150 N','r']],['F: Kraft in N','l: Hebelarm in m','M = F · l in N·m'])},
+ {d:9,t:'Merke: Langer Hebelarm, kleine Kraft. So funktionieren Schraubenschlüssel, Brechstange und Schubkarre.',
+  s:'Merke: Langer Hebelarm, kleine Kraft. So funktionieren Schraubenschlüssel, Brechstange und Schubkarre.',
+  f:(k,t)=>EMRK(k,t,`<g transform="rotate(-20 120 150)"><rect x="40" y="140" width="170" height="18" rx="9" fill="var(--wire)" stroke="var(--ink)" stroke-width="2"/><circle cx="40" cy="149" r="26" fill="var(--wire)" stroke="var(--ink)" stroke-width="2"/><polygon points="28,137 52,137 58,149 52,161 28,161 22,149" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/></g>`+AR(196,40,0,48,'var(--red)')+T(186,66,'F','ein1','end')+T(120,250,'Schraubenschlüssel','ein2','middle'),'F₁ · l₁ = F₂ · l₂','M = F · l')}
+],
+'Wirkungsgrad':[
+ {d:11,t:'Kein Gerät wandelt Energie vollständig in Nutzen um. Ein Elektromotor nimmt zum Beispiel 1000 W auf.',
+  s:'Kein Gerät wandelt Energie vollständig in Nutzen um. Ein Elektromotor nimmt zum Beispiel 1000 Watt auf.',
+  f:k=>{const a=EINQ(k/.6);return `<rect x="20" y="90" width="${(170*a).toFixed(1)}" height="100" fill="var(--flow)" opacity=".5"/>`+BAR3(190,80,90,120,'var(--wire)',12)+T(240,148,'Motor','ein1','middle')+T(100,80,'zugeführt','ein2','middle')+(a>.5?T(100,146,'1000 W','ein1','middle'):'')}},
+ {d:11,t:'Davon kommen 900 W als Bewegung heraus. Die restlichen 100 W werden zu Wärme und sind Verlust.',
+  s:'Davon kommen 900 Watt als Bewegung heraus. Die restlichen 100 Watt werden zu Wärme und sind Verlust.',
+  f:k=>{const a=EINQ(k/.6);return `<rect x="20" y="90" width="170" height="100" fill="var(--flow)" opacity=".5"/>`+T(100,146,'1000 W','ein1','middle')+
+   `<rect x="292" y="90" width="${(170*a).toFixed(1)}" height="90" fill="var(--amber)" opacity=".85"/><path d="M292 180h${(20*a).toFixed(1)}q30 0 30 30v${(40*a).toFixed(1)}h-10v${(-40*a).toFixed(1)}q0 -20 -20 -20h${(-20*a).toFixed(1)}z" fill="var(--red)" opacity=".7"/>`+BAR3(190,80,90,120,'var(--wire)',12)+T(240,148,'Motor','ein1','middle')+
+   (a>.6?T(380,142,'Nutzen 900 W','ein1','middle')+T(316,256,'Verlust 100 W','ein2'):'')}},
+ {d:11,t:'Der Wirkungsgrad η sagt, welcher Anteil genutzt wird: Nutzen geteilt durch Aufwand.',
+  s:'Der Wirkungsgrad Eta sagt, welcher Anteil genutzt wird: Nutzen geteilt durch Aufwand.',
+  f:k=>{const a=EINQ(k/.6);return BAR3(40,70,300*.9*a,40,'var(--amber)',10)+T(40,50,'Nutzen 900 W','ein2')+`<line x1="40" x2="${(350).toFixed(0)}" y1="130" y2="130" stroke="var(--ink)" stroke-width="3"/>`+BAR3(40,150,300*a,40,'var(--flow)',10,{op:.5})+T(40,215,'Aufwand 1000 W','ein2')+
+   (k>.6?`<text x="360" y="142" style="font-size:28px;font-weight:800;fill:var(--ok)">= 90 %</text>`:'')}},
+ {d:11,t:'Zum Vergleich: Elektromotor ca. 90 %, Benzinmotor ca. 30 %, Glühlampe ca. 5 %. Der Rest wird vor allem zu Wärme.',
+  s:'Zum Vergleich: Elektromotor etwa 90 Prozent, Benzinmotor etwa 30 Prozent, Glühlampe etwa 5 Prozent. Der Rest wird vor allem zu Wärme.',
+  f:k=>[['Elektromotor',90],['Benzinmotor',30],['Glühlampe',5]].map(([n,e],i)=>{const g=EINQ((k-i*.12)/.45),y=60+i*68,w=240;
+   return T(20,y-14,n,'ein2')+BAR3(20,y,w*e/100*g,30,'var(--amber)',8,{s:0})+BAR3(20+w*e/100*g,y,w*(1-e/100)*g,30,'var(--red)',8,{op:.7})+(g>.9?T(20+w+20,y+23,'ca. '+e+' %','ein1'):'')}).join('')+T(20,262,'gelb: Nutzen · rot: Verlust','ein2')},
+ {d:13,t:'Alles zusammen: η = Nutzen / Aufwand. Beispiel: 900 W / 1000 W = 0,9 = 90 %. Mehrere Stufen nacheinander werden multipliziert.',
+  s:'Alles zusammen: Eta gleich Nutzen durch Aufwand. 900 Watt durch 1000 Watt gleich null Komma neun, also 90 Prozent. Mehrere Stufen nacheinander werden multipliziert.',
+  f:k=>EFX(k,[['η = '+ESB('P','nutz')+' / '+ESB('P','zu'),'h'],['η = 900 W / 1000 W','m'],['η = 0,9 = 90 %','r']],['Verlust: 1000 W − 900 W = 100 W','Mehrere Stufen: '+ESB('η','ges')+' = '+ESB('η','1')+' · '+ESB('η','2')+' · …'])},
+ {d:9,t:'Merke: η ist immer kleiner als 1, also unter 100 %. Der Rest ist Verlust, meist Wärme.',
+  s:'Merke: Eta ist immer kleiner als 1, also unter 100 Prozent. Der Rest ist Verlust, meist Wärme.',
+  f:(k,t)=>EMRK(k,t,BAR3(20,90,150,50,'var(--amber)',10,{s:0})+BAR3(170,90,20,50,'var(--red)',10,{op:.7})+T(20,170,'Nutzen + Verlust = Aufwand','ein2')+T(20,70,'100 %','ein2'),'η = '+ESB('P','nutz')+' / '+ESB('P','zu'),'immer kleiner als 1')}
+],
+'Säuren & Basen':[
+ {d:11,t:'Zitronensaft, Wasser, Seifenlauge: Mit Universalindikator zeigt die Farbe, ob eine Lösung sauer, neutral oder alkalisch ist.',
+  s:'Zitronensaft, Wasser, Seifenlauge. Mit Universalindikator zeigt die Farbe, ob eine Lösung sauer, neutral oder alkalisch ist.',
+  f:k=>[['Zitronensaft',2.4,'pH 2,4'],['Wasser',7,'pH 7'],['Seifenlauge',10,'pH 10']].map(([n,p,l],i)=>{const x=40+i*150,a=EINQ((k-.15-i*.12)/.35);
+   return EGL(x,80,90,120,{lv:84,c:a>0?EPHC(p):'var(--flow)',op:a>0?.35+.5*a:.3})+T(x+45,236,n,'ein2','middle')+(a>.8?T(x+45,64,l,'ein1','middle'):'')}).join('')},
+ {d:11,t:'Die pH-Skala reicht von 0 bis 14: unter 7 sauer, genau 7 neutral, über 7 alkalisch.',
+  s:'Die pH Skala reicht von 0 bis 14. Unter 7 sauer, genau 7 neutral, über 7 alkalisch.',
+  f:k=>{const p=14*EINQ(k/.8);return EPHS(30,110,420,p)+T(30+420*p/14,74,'pH '+nf(Math.round(p*2)/2,3),'ein1','middle')+T(30,200,'sauer','ein1')+T(240,200,'neutral','ein1','middle')+T(450,200,'alkalisch','ein1','end')}},
+ {d:12,t:'Säuren geben Protonen (H⁺) ab. In Wasser entstehen dabei H₃O⁺-Ionen. Je mehr davon, desto saurer die Lösung.',
+  s:'Säuren geben Protonen ab. In Wasser entstehen dabei H 3 O plus Ionen. Je mehr davon, desto saurer die Lösung.',
+  f:k=>{const a=EINQ((k-.2)/.5),hx=140+(270-140)*a,hy=110-40*Math.sin(a*PI);
+   return EMOL(90,110,26,'#7cc47f','Cl')+EMOL(hx,hy,15,'#ffffff','H')+EMOL(330,110,24,'#e05a4f','O')+EMOL(300,150,15,'#ffffff','H')+EMOL(360,150,15,'#ffffff','H')+
+    T(90,190,a>.95?'Cl⁻':'HCl','ein1','middle')+T(330,210,a>.95?'H₃O⁺':'H₂O','ein1','middle')+(a>.95?'':AR(170,60,90,0,'var(--red)','H⁺',1))+T(240,256,'HCl + H₂O → H₃O⁺ + Cl⁻','ein2','middle')}},
+ {d:11,t:'Jeder pH-Schritt bedeutet Faktor 10: pH 3 ist zehnmal so sauer wie pH 4 und hundertmal so sauer wie pH 5.',
+  s:'Jeder pH Schritt bedeutet Faktor 10. pH 3 ist zehnmal so sauer wie pH 4 und hundertmal so sauer wie pH 5.',
+  f:k=>T(20,34,'Anteil H₃O⁺-Ionen','ein2')+[[5,1],[4,10],[3,100]].map(([p,f],i)=>{const g=EINQ((k-i*.18)/.4),y=60+i*64,w=3+3*f*g;return T(20,y+24,'pH '+p,'ein1')+BAR3(90,y,w,30,EPHC(p),8)+(g>.8?T(104+w,y+24,'× '+f,'ein1'):'')}).join('')},
+ {d:13,t:'Säure und Base heben sich auf, das heißt Neutralisation: Säure + Base → Salz + Wasser.',
+  s:'Säure und Base heben sich auf, das heißt Neutralisation. Säure plus Base ergibt Salz und Wasser.',
+  f:k=>{const p=1+6*EINQ((k-.3)/.5);return EFX(k,[['Säure + Base → Salz + Wasser','m'],['HCl + NaOH → NaCl + H₂O','m'],['H₃O⁺ + OH⁻ → 2 H₂O','m']])+EGL(370,150,80,96,{lv:70,c:EPHC(p),op:.8})+T(410,136,'pH '+nf(Math.round(p*10)/10,2),'ein1','middle')}},
+ {d:9,t:'Merke: Unter pH 7 sauer, pH 7 neutral, über pH 7 alkalisch. Jeder Schritt ist Faktor 10.',
+  s:'Merke: Unter pH 7 sauer, pH 7 neutral, über pH 7 alkalisch. Jeder Schritt ist Faktor 10.',
+  f:(k,t)=>EMRK(k,t,EPHS(10,110,200,7)+T(110,80,'neutral','ein2','middle'),'pH 7 = neutral','jeder Schritt: Faktor 10')}
+]});
 let einP=null;
 function einShow(n){const w=$('#ein'),S=EIN[n];if(einP)einP.stop();einP=null;if(!w)return;w.innerHTML='';w.hidden=!S;if(!S)return;
  const tot=S.reduce((a,x)=>a+x.d,0),mm=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
