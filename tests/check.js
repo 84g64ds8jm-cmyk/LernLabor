@@ -107,8 +107,8 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
  // Funktionsname und Argument (v198): „sin 75°“, „cos α“, „lg c(H₃O⁺)“, „√ 2“ stehen mit geschütztem Leerzeichen, damit kein Zeilenumbruch dazwischen kommt (Lösungswege, Hilfen, Themen, Glossar, Formelsammlung)
  {const c6=await b.newContext({viewport:{width:360,height:800}});const q=await c6.newPage();q.on('pageerror',e=>errs.push('Funktionsname: '+e.message));
   await q.addInitScript(()=>{try{localStorage.setItem('ll_tour','1')}catch(e){}});await q.goto('file://'+path.resolve(__dirname,'../index.html'));await q.waitForTimeout(700);
-  errs.push(...await q.evaluate(async()=>{const bad=[],tick=()=>new Promise(r=>setTimeout(r,0)),FN=/(?<![A-Za-zÄÖÜäöüß_])((?:arc)?(?:sin|cos|tan|cot)h?(?:²|³|⁻¹)?|ln|lg|log[₀-₉ₐ-ₓ]*|exp|√)[ \t\r\n]+(?![a-zäöüß]{3})\S{1,8}/g,
-   scan=(w,el)=>{el.querySelectorAll('svg,script,style,noscript,template,textarea').forEach(x=>x.remove());const t=el.textContent;let m;FN.lastIndex=0;while((m=FN.exec(t))){bad.push(w+': „'+m[0].replace(/\s+/g,' ')+'“ kann umbrechen („'+t.slice(Math.max(0,m.index-40),m.index+30).replace(/\s+/g,' ')+'“)');if(bad.length>60)return}},
+  errs.push(...await q.evaluate(async()=>{const bad=[],tick=()=>new Promise(r=>setTimeout(r,0)),FN=/(?<![A-Za-zÄÖÜäöüß_])((?:arc)?(?:sin|cos|tan|cot)h?(?:²|³|⁻¹)?|ln|lg|log[₀-₉ₐ-ₓ]*|exp|√)[ \t\r\n]+(?![a-zäöüß]{3})\S{1,8}/g,TG=/(?<![\d,.])\d{1,3}[ \t\r\n]\d{3}(?!\d)/g,
+   scan=(w,el)=>{el.querySelectorAll('svg,script,style,noscript,template,textarea').forEach(x=>x.remove());const t=el.textContent;let m;FN.lastIndex=0;TG.lastIndex=0;while((m=TG.exec(t))){bad.push(w+': Tausendergruppe „'+m[0]+'“ kann umbrechen oder im Bruch zerfallen („'+t.slice(Math.max(0,m.index-30),m.index+30).replace(/\s+/g,' ')+'“)');if(bad.length>60)return}while((m=FN.exec(t))){bad.push(w+': „'+m[0].replace(/\s+/g,' ')+'“ kann umbrechen („'+t.slice(Math.max(0,m.index-40),m.index+30).replace(/\s+/g,' ')+'“)');if(bad.length>60)return}},
    box=document.createElement('div');box.style.width='120px';document.body.appendChild(box);
    const put=(w,ls)=>{box.innerHTML=(ls||[]).map(l=>'<div>'+String(l)+'</div>').join('');subify(box);scan(w,box)};
    [['90 mm · sin 75° = 86,933 mm','sin 75°'],['tan α = sin α / cos α','cos α'],['sin und cos','sin und'],['lg c(H₃O⁺) = −7','lg c'],['log₂ x sei','log₂ x'],['√ 2 ≈ 1,414','√ 2'],['Cosinus und Sinus ln','Cosinus und Sinus ln']].forEach(([a,w])=>{box.textContent=a;subify(box);if(!box.textContent.includes(w))bad.push('Funktionsname: „'+a+'“ ergibt „'+box.textContent+'“')});
@@ -117,6 +117,10 @@ const path=require('path');let chromium;try{({chromium}=require('playwright'))}c
    EXW.concat(PXW).forEach(([k,f])=>{for(let i=0;i<10;i++){try{const d=f(mk(i*31337+5));sol.push(['Prüfungs-/Praxisaufgabe „'+k+'“',[d.intro||'',...d.steps.flatMap(s=>[s[0],...s[3],s[5]||''])]])}catch(e){}}});
    HW.forEach(u=>(u.x?[...u.tasks,u.x]:u.tasks).forEach(t=>{if(t.gen)for(let i=0;i<10;i++){try{const c=t.gen();sol.push(['Hausaufgabe „'+t.name+'“',[c.q,...(c.sol||[])]])}catch(e){}}}));
    for(let sd=1;sd<=20;sd++)mcNew(sd).qs.forEach(x=>sol.push(['Mathe-Check',[x.q,...(x.sol||[])]]));
+   // Tausendergruppen (v207): „209 100 J / 60 s“ – die ganze Zahl steht im Zähler, nicht nur „100 J“; auch Aufträge und Begründen-Kästen
+   [['P = Q / t = 209 100 J / 60 s ≈ 3,5 kW','209 100 J'],['F = 96 485 C/mol / 2','96 485 C/mol'],['A = 1 000 000 mm² / 4','1 000 000 mm²']].forEach(([a,w])=>{box.textContent=a;subify(box);const f=[...box.querySelectorAll('.fn')].pop();if(!f||f.textContent.replace(/\u00A0/g,' ')!==w)bad.push('Bruch: „'+a+'“ hat den Zähler „'+(f?f.textContent:'')+'“')});
+   const strs=(o,a=[])=>{if(typeof o==='string')a.push(o);else if(o&&typeof o==='object')Object.values(o).forEach(x=>strs(x,a));return a};
+   sol.push(['Aufträge',strs(typeof AUF!=='undefined'?AUF:{})],['Begründen',strs(typeof BET!=='undefined'?BET:{})]);
    sol.forEach(([w,ls])=>put(w,ls));box.remove();
    for(let i=0;i<M.length;i++){try{go(i);render();await tick();scan('Thema „'+M[i].name+'“',document.body.cloneNode(true))}catch(e){}}cur=-1;prac=false;nav();
    try{glOpen();await tick();scan('Glossar',document.body.cloneNode(true))}catch(e){}
