@@ -9277,7 +9277,7 @@ function mcView(){const box=$('#mc');if(!box)return;const a=mcAll(),run=store.ge
 function mcMemHTML(){const a=mcAll();if(!(a['1']&&a['1'].r))return`<div class="panel"><h2>🧮 Mathe-Check</h2><p class="sub">Noch nicht gemacht. Der Check zeigt Dir in 20 Minuten, wo Du in den Mathe-Grundlagen stehst.</p><div class="pb"><button type="button" class="sbtn2" data-mco="1">Zum Mathe-Check →</button></div></div>`;
  return`<div class="panel"><h2>🧮 Mathe-Check</h2>${mcTable(a)}<div class="pb"><button type="button" class="sbtn2" data-mco="1">Startplan und Lösungswege →</button></div></div>`}
 /* Pilot-Einstellungen: Version, Neuigkeit, Kontakt */
-const APPV=210,NEWS='Begründen & Skizzieren: Aufgaben aus größeren Praxisaufgaben tragen keine Teilnummer mehr, z. B. nur noch „Fabrikauftrag:“.';
+const APPV=211,NEWS='Formelsammlung: Der Hinweis zur Prüfung sagt jetzt klar, dass ein Handy als Hilfsmittel nicht erlaubt ist.';
 /* Änderungsliste für Dozenten: fachliche Korrekturen mit Datum, neueste zuerst. Bei jeder fachlichen Korrektur ergänzen. */
 const CHL=[
 ['30.10.2026',210,['Begründen & Skizzieren: 13 Aufgaben aus größeren Praxisaufgaben (Fabrikauftrag, Offshore-Windpark, Umzug mit Klavier, Eiskunstläuferin, Leuchte in der Werkshalle) tragen keine Teilnummer mehr, z. B. „Fabrikauftrag:“ statt „Fabrikauftrag, Teil 4:“. In zwei Musterlösungen zur Werkshallen-Leuchte fiel der Verweis auf andere Teile weg.']],
@@ -9881,7 +9881,7 @@ const fsLeg=s=>s?s.split('|').map(x=>x.split('~')):[];
 function fsOpen(){prac=false;cur=-1;FSN=true;nav();fsView();window.scrollTo(0,0)}
 function fsView(){const box=$('#fsm');if(!box)return;
  box.innerHTML=`<div class="panel fsp"><h2>📘 Formelsammlung</h2><p class="sub">Alle Formeln nach Fächern, jeweils mit Formelzeichen, Benennung und Einheit. Dazu Umrechnungen, Konstanten und Stoffwerte.</p>
- <p class="fsw">⚖️ <b>In der Prüfung</b> gelten nur die Hilfsmittel, die die IHK zulässt (siehe Einladung). Ob Du diese Sammlung ausgedruckt mitnehmen darfst, entscheidet die Kammer. Frag vorher nach.</p>
+ <p class="fsw">⚖️ <b>In der Prüfung</b> gelten nur die Hilfsmittel, die die IHK zulässt (siehe Einladung). Ein Handy ist als Hilfsmittel nicht erlaubt.</p>
  <input id="fsq" type="search" class="glq" placeholder="Suchen, z. B. Druck, FG oder Wirkungsgrad" aria-label="Formelsammlung durchsuchen" autocomplete="off" value="${glEsc(FSS.q)}">
  <div class="glf" role="group" aria-label="Fach">${FSF.map(([k,n])=>`<button type="button" class="chip" data-fsf="${k}" aria-pressed="${FSS.f===k}">${k===''?'Alle':k==='U'?IC[FU]+' Einheiten':k==='K'?'📌 Konstanten':(IC[k]||'')+' '+k}</button>`).join('')}</div>
  <div class="pb"><button type="button" class="sbtn2 prbtn" id="fspr">🖨️ Drucken oder als PDF sichern</button></div></div>
